@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>bailsformed · projects</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#3b2f4a;--ink2:#6b5a7a;--paper:#fffaf0;--muted:#e9dcc6;--pink:#f29bb5;--gold:#f6c453;--purple:#8a6fd1}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:Nunito,system-ui,sans-serif;
+  background:radial-gradient(circle at 20% 10%,#3d3057 0,transparent 40%),radial-gradient(circle at 80% 90%,#3a2d52 0,transparent 40%),#2b2240}
+.wrap{max-width:900px;margin:0 auto;padding:28px 16px 40px}
+.px{font-family:"Pixelify Sans",monospace}
+.panel{background:var(--paper);border:3px solid var(--ink);border-radius:4px;box-shadow:0 4px 0 #1d1629,inset 0 -4px 0 var(--muted)}
+header{display:flex;gap:18px;align-items:center;padding:18px 20px;flex-wrap:wrap}
+header svg{width:72px;image-rendering:pixelated;flex:none;background:#cfe8ff;border:3px solid var(--ink);border-radius:4px;padding:6px}
+h1{font-size:30px;margin:0}
+.sub{color:var(--ink2);margin:4px 0 0;font-size:15px}
+.stars{color:#f6c453;letter-spacing:6px;text-align:center;margin:22px 0 8px;font-size:14px}
+h2{color:#fff3dc;font-size:20px;margin:6px 0 12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.card{padding:16px}
+a.card{display:block;text-decoration:none;color:inherit;transition:transform .1s}
+a.card:hover{transform:translateY(-3px)}
+a.card:focus-visible{outline:3px dashed var(--pink);outline-offset:3px}
+.card .ic{font-size:34px}
+.card h3{margin:6px 0 4px;font-size:20px}
+.card p{margin:0 0 10px;font-size:14px;line-height:1.45;color:var(--ink2)}
+.chip{display:inline-block;font-family:"Pixelify Sans",monospace;font-size:12px;border:2px solid var(--ink);border-radius:3px;padding:1px 7px;background:#ffe7a6}
+.card.soon{opacity:.6;border-style:dashed;cursor:default}
+.card.soon .chip{background:var(--muted)}
+footer{color:#b9aacc;font-size:12px;text-align:center;margin-top:28px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="panel">
+    <svg viewBox="0 0 12 16" shape-rendering="crispEdges" aria-hidden="true" id="me"></svg>
+    <div>
+      <h1 class="px">bailsformed's workshop</h1>
+      <p class="sub">Little tools and games I'm building, one quest at a time ✨</p>
+    </div>
+  </header>
+
+  <div class="stars">✦ ✦ ✦</div>
+  <h2 class="px">🗂 My projects</h2>
+
+  <div class="grid">
+    <a class="card panel" href="medquest/">
+      <div class="ic">🩺</div>
+      <h3 class="px">MedQuest</h3>
+      <p>A cozy pixel RPG that tracks my real road from transfer student to medical student.</p>
+      <span class="chip">▶ Play</span>
+    </a>
+    <div class="card panel soon">
+      <div class="ic">🌱</div>
+      <h3 class="px">Next project</h3>
+      <p>Something new is growing here…</p>
+      <span class="chip">Coming soon</span>
+    </div>
+  </div>
+
+  <footer class="px">made with care · bailsformed.github.io</footer>
+</div>
+<script>
+const G=["...HHHHHH...","..HHHHHHHH..",".HHHHHHHHHH.",".HHSSSSSSHH.",".HSSSSSSSSH.",".HSESSSSESH.",".HRSSSSSSRH.","..SSSMMSSS..","...SSSSSS...","..TTTTTTTT..",".TTTTTTTTTT.",".STTTTTTTTS.","..TTTTTTTT..","..PPP..PPP..","..PPP..PPP..","..BBB..BBB.."];
+const P={H:"#4a2f23",S:"#f1c08f",E:"#2b2240",R:"#f4a3b4",M:"#c2566f",T:"#8a6fd1",P:"#4a4d6e",B:"#3b2f4a"};
+let o="";G.forEach((r,y)=>[...r].forEach((c,x)=>{if(P[c])o+=`<rect x="${x}" y="${y}" width="1" height="1" fill="${P[c]}"/>`;}));
+document.getElementById("me").innerHTML=o;
+</script>
+</body>
+</html>

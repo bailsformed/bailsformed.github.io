@@ -1,0 +1,1218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MedQuest: Bailey's Road to the White Coat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#fbf3e4; --paper:#fffaf0; --ink:#3b2f4a; --ink2:#6b5a7a; --line:#3b2f4a;
+  --grass:#9bd27a; --grass2:#7fbf62; --path:#ecd09a; --water:#86cfe8;
+  --pink:#f29bb5; --pinkd:#d9708f; --gold:#f6c453; --golddk:#c9952a; --purple:#8a6fd1; --purpled:#6a50b0;
+  --green:#5fae6a; --blue:#4f97d1; --red:#e2607f; --muted:#e9dcc6;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#2e2440;color:var(--ink);font-family:Nunito,system-ui,sans-serif;}
+body{min-height:100vh;background:
+  radial-gradient(circle at 20% 10%, #3d3057 0, transparent 40%),
+  radial-gradient(circle at 80% 90%, #3a2d52 0, transparent 40%), #2b2240;}
+.px{font-family:"Pixelify Sans",monospace;letter-spacing:.3px}
+.wrap{max-width:1180px;margin:0 auto;padding:14px}
+/* pixel panel */
+.panel{background:var(--paper);border:3px solid var(--line);border-radius:4px;
+  box-shadow:0 4px 0 #1d1629, inset 0 -4px 0 var(--muted);position:relative}
+.btn{font-family:"Pixelify Sans",monospace;font-size:15px;cursor:pointer;border:3px solid var(--line);
+  background:var(--gold);color:var(--ink);padding:7px 14px;border-radius:4px;
+  box-shadow:0 3px 0 var(--line);transition:transform .06s, box-shadow .06s}
+.btn:hover{filter:brightness(1.05)}
+.btn:active{transform:translateY(3px);box-shadow:0 0 0 var(--line)}
+.btn.pink{background:var(--pink)} .btn.purple{background:var(--purple);color:#fff}
+.btn.ghost{background:var(--paper)} .btn.green{background:#8fd18f}
+.btn.sm{font-size:13px;padding:4px 9px;border-width:2px;box-shadow:0 2px 0 var(--line)}
+.btn:focus-visible,.tab:focus-visible{outline:3px dashed var(--purple);outline-offset:2px}
+input,select,textarea{font-family:Nunito,sans-serif;font-size:14px;border:2px solid var(--line);border-radius:4px;
+  padding:7px 9px;background:#fff;color:var(--ink)}
+textarea{resize:vertical}
+/* HUD */
+.hud{display:flex;align-items:center;gap:14px;padding:10px 14px;flex-wrap:wrap}
+.portrait{width:64px;height:64px;background:#cfe8ff;border:3px solid var(--line);border-radius:4px;cursor:pointer;
+  display:flex;align-items:flex-end;justify-content:center;overflow:hidden;flex:none}
+.portrait svg{width:56px;height:auto;image-rendering:pixelated}
+.hud-main{flex:1;min-width:220px}
+.hud-name{font-size:20px;font-weight:700;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.lvl{background:var(--purple);color:#fff;font-size:13px;padding:2px 8px;border-radius:3px;border:2px solid var(--line)}
+.title-tag{color:var(--ink2);font-size:14px}
+.xpbar{height:16px;border:3px solid var(--line);border-radius:3px;background:#efe3cc;margin-top:6px;overflow:hidden;position:relative}
+.xpfill{height:100%;background:repeating-linear-gradient(90deg,var(--pink) 0 8px,#f5adc2 8px 16px);transition:width .6s}
+.xptext{font-size:12px;color:var(--ink2);margin-top:3px}
+.hud-side{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.nextdate{font-size:13px;background:#fff3c9;border:2px solid var(--line);border-radius:4px;padding:4px 8px;max-width:330px}
+.savestat{font-size:12px;color:var(--ink2)}
+/* tabs */
+.tabs{display:flex;gap:6px;margin:12px 0 10px;flex-wrap:wrap}
+.tab{font-family:"Pixelify Sans",monospace;font-size:16px;cursor:pointer;background:#d8c9ad;border:3px solid var(--line);
+  border-radius:4px 4px 0 0;padding:6px 12px;color:var(--ink)}
+.tab.on{background:var(--paper);box-shadow:inset 0 4px 0 var(--pink)}
+.view{display:none}.view.on{display:block}
+/* map */
+.mapgrid{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(280px,1fr);gap:12px}
+@media (max-width:860px){.mapgrid{grid-template-columns:1fr}}
+.mapbox{padding:6px;overflow:hidden}
+#map{width:100%;height:auto;display:block;image-rendering:pixelated;border-radius:2px;background:var(--grass)}
+.node{cursor:pointer}
+.node:hover .nodering{stroke:var(--pink)}
+.node:focus{outline:none}.node:focus .nodering{stroke:var(--purple);stroke-width:2}
+.hero{transition:transform 1.4s cubic-bezier(.45,.05,.3,1)}
+.bob{animation:bob 1.1s steps(2) infinite}
+@keyframes bob{0%{transform:translateY(0)}50%{transform:translateY(-1px)}}
+.side{padding:14px}
+.chip{display:inline-block;font-family:"Pixelify Sans",monospace;font-size:12px;background:var(--muted);border:2px solid var(--line);
+  border-radius:3px;padding:1px 7px;margin-right:4px}
+.chip.pink{background:#fbd5e0}.chip.gold{background:#ffe7a6}.chip.green{background:#cdeec7}.chip.purple{background:#ddd2f7}
+h2.px{font-size:22px;margin:6px 0 4px}
+h3.px{font-size:17px;margin:14px 0 6px}
+.qlist{list-style:none;margin:8px 0 0;padding:0}
+.qitem{display:flex;align-items:center;gap:10px;padding:8px 8px;border:2px solid var(--line);border-radius:4px;margin-bottom:6px;
+  background:#fff;cursor:pointer;transition:transform .08s}
+.qitem:hover{transform:translateX(3px);background:#fff8e6}
+.qitem.done{background:#eaf6e6}
+.qbox{width:22px;height:22px;border:3px solid var(--line);border-radius:3px;flex:none;display:flex;align-items:center;justify-content:center;
+  font-weight:900;background:#fff;font-size:14px}
+.qitem.done .qbox{background:var(--green);color:#fff}
+.qt{flex:1;font-weight:700;font-size:14px;line-height:1.25}
+.qt small{display:block;font-weight:600;color:var(--ink2);font-size:12px}
+.qxp{font-family:"Pixelify Sans",monospace;font-size:12px;color:var(--purpled);white-space:nowrap}
+.minibar{height:10px;border:2px solid var(--line);border-radius:3px;background:#efe3cc;overflow:hidden}
+.minibar>i{display:block;height:100%;background:var(--green)}
+.dates{font-size:13px;margin:0;padding-left:0;list-style:none}
+.dates li{padding:4px 0;border-bottom:1px dashed #d8c9ad;display:flex;gap:8px}
+.dates li.past{opacity:.45;text-decoration:line-through}
+.dates b{font-family:"Pixelify Sans",monospace;font-weight:600;white-space:nowrap;min-width:80px}
+/* modal */
+.scrim{position:fixed;inset:0;background:rgba(30,22,44,.6);display:none;align-items:flex-start;justify-content:center;z-index:50;
+  padding:30px 12px;overflow:auto}
+.scrim.on{display:flex}
+.modal{width:min(720px,100%);padding:18px 20px 16px;animation:pop .18s steps(3)}
+@keyframes pop{from{transform:scale(.92);opacity:.4}to{transform:scale(1);opacity:1}}
+.mclose{position:absolute;top:8px;right:10px}
+.sage{display:flex;gap:12px;align-items:flex-start;margin:12px 0}
+.sage svg{width:60px;flex:none;image-rendering:pixelated}
+.bubble{background:#fff;border:3px solid var(--line);border-radius:6px;padding:10px 12px;position:relative;font-size:15px;line-height:1.5}
+.bubble:before{content:"";position:absolute;left:-12px;top:16px;border:6px solid transparent;border-right-color:var(--line)}
+.sec{margin-top:12px;font-size:15px;line-height:1.55}
+.sec h4{font-family:"Pixelify Sans",monospace;font-size:15px;margin:0 0 4px;color:var(--purpled)}
+.steps{list-style:none;padding:0;margin:0}
+.steps li{display:flex;gap:10px;align-items:flex-start;padding:6px 8px;border:2px dashed #cdbb9b;border-radius:4px;margin-bottom:5px;
+  cursor:pointer;background:#fff}
+.steps li.ok{background:#eaf6e6;border-style:solid;border-color:var(--green)}
+.steps li.ok span.t{text-decoration:line-through;color:var(--ink2)}
+.steps .cb{width:20px;height:20px;border:3px solid var(--line);border-radius:3px;flex:none;margin-top:1px;background:#fff;
+  font-weight:900;font-size:12px;display:flex;align-items:center;justify-content:center}
+.steps li.ok .cb{background:var(--green);color:#fff}
+.steps .sx{margin-left:auto;font-family:"Pixelify Sans",monospace;font-size:11px;color:var(--purpled);white-space:nowrap}
+.tip{background:#fff3c9;border:2px solid var(--line);border-radius:4px;padding:8px 10px}
+.mfoot{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:14px;flex-wrap:wrap}
+.links a{color:var(--purpled);font-weight:700}
+/* toast */
+#toasts{position:fixed;right:14px;bottom:14px;display:flex;flex-direction:column;gap:8px;z-index:80;align-items:flex-end}
+.toast{background:var(--paper);border:3px solid var(--line);border-radius:4px;box-shadow:0 4px 0 #1d1629;padding:10px 14px;
+  font-family:"Pixelify Sans",monospace;font-size:15px;display:flex;gap:10px;align-items:center;max-width:340px;animation:slide .25s steps(4)}
+.toast.ach{background:#ffe7a6}
+.toast .big{font-size:26px}
+@keyframes slide{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:90}
+/* journal */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:860px){.grid2{grid-template-columns:1fr}}
+.meter{margin-bottom:12px}
+.meter .top{display:flex;justify-content:space-between;font-weight:800;font-size:14px}
+.meter .bar{height:20px;border:3px solid var(--line);border-radius:3px;background:#efe3cc;overflow:hidden;display:flex}
+.meter .bar i{display:block;height:100%}
+.meter .note{font-size:12px;color:var(--ink2)}
+.form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.form .full{grid-column:1/-1}
+.form label{font-size:12px;font-weight:800;display:flex;flex-direction:column;gap:3px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-family:"Pixelify Sans",monospace;text-align:left;font-weight:600;border-bottom:3px solid var(--line);padding:5px 6px;white-space:nowrap}
+td{border-bottom:1px dashed #d8c9ad;padding:6px;vertical-align:top}
+.tbl{max-height:420px;overflow:auto}
+.dot{display:inline-block;width:10px;height:10px;border:2px solid var(--line);border-radius:2px;margin-right:5px;vertical-align:-1px}
+.empty{color:var(--ink2);font-style:italic;padding:12px 4px}
+/* spellbook */
+.gpabox{display:flex;gap:12px;flex-wrap:wrap}
+.gpa{flex:1;min-width:140px;text-align:center;padding:10px;border:3px solid var(--line);border-radius:4px;background:#fff}
+.gpa .n{font-family:"Pixelify Sans",monospace;font-size:34px;font-weight:700}
+.gpa .l{font-size:12px;font-weight:800;color:var(--ink2)}
+.course td select,.course td input{padding:4px 5px;font-size:13px}
+.st-done{background:#eaf6e6}.st-doing{background:#fff8e1}
+/* trophies */
+.trophies{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.trophy{border:3px solid var(--line);border-radius:4px;padding:10px;text-align:center;background:#fff}
+.trophy .ic{font-size:34px;line-height:1.1;margin-bottom:4px}
+.trophy b{font-family:"Pixelify Sans",monospace;font-weight:600;font-size:15px;display:block}
+.trophy small{color:var(--ink2);font-size:12px;display:block;margin-top:3px}
+.trophy.locked{background:#eee3d0;opacity:.75}
+.trophy.locked .ic{filter:grayscale(1) brightness(.6)}
+.trophy .when{font-size:11px;color:var(--green);font-weight:800}
+/* codex */
+.codex{columns:2 320px;column-gap:14px}
+.cx{break-inside:avoid;border:2px solid var(--line);background:#fff;border-radius:4px;padding:10px 12px;margin-bottom:10px;font-size:14px;line-height:1.5}
+.cx b{font-family:"Pixelify Sans",monospace;font-size:16px;font-weight:600;color:var(--purpled);display:block;margin-bottom:2px}
+.swatches{display:flex;gap:6px;flex-wrap:wrap}
+.sw{width:30px;height:30px;border:3px solid var(--line);border-radius:4px;cursor:pointer}
+.sw.on{outline:3px solid var(--pink);outline-offset:2px}
+.muted{color:var(--ink2)}
+.footer{color:#b9aacc;font-size:12px;text-align:center;margin:16px 0 6px}
+.chbanner{text-align:center}
+.chbanner .px{font-size:26px}
+.notes{width:100%;min-height:60px}
+.qfilter{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.chsec{margin-bottom:14px}
+.chhead{display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap}
+.chhead .minibar{flex:1;min-width:120px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="panel hud">
+    <div class="portrait" id="portrait" title="Customize your character" role="button" tabindex="0"></div>
+    <div class="hud-main">
+      <div class="hud-name px"><span id="heroName">Bailey</span><span class="lvl" id="lvl">LV 1</span><span class="title-tag" id="titleTag"></span></div>
+      <div class="xpbar"><div class="xpfill" id="xpfill" style="width:0"></div></div>
+      <div class="xptext" id="xptext"></div>
+    </div>
+    <div class="hud-side">
+      <div class="nextdate" id="nextdate"></div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <span class="savestat" id="savestat">Saving in this browser</span>
+        <button class="btn sm ghost" id="soundBtn" title="Sound on/off">🔊</button>
+        <button class="btn sm ghost" id="setBtn" title="Save & settings">⚙︎</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab on" data-v="map">🗺 World Map</button>
+    <button class="tab" data-v="quests">📜 Quest Log</button>
+    <button class="tab" data-v="journal">📓 Adventure Journal</button>
+    <button class="tab" data-v="spell">📘 Spellbook</button>
+    <button class="tab" data-v="trophy">🏆 Trophy Room</button>
+    <button class="tab" data-v="codex">🦉 Codex</button>
+  </div>
+
+  <!-- MAP -->
+  <section class="view on" id="v-map">
+    <div class="mapgrid">
+      <div><div class="panel mapbox"><svg id="map" viewBox="0 0 320 200" shape-rendering="crispEdges" aria-label="World map"></svg></div>
+    <div class="panel side" style="margin-top:12px">
+      <h3 class="px" style="margin-top:0">📅 Key dates on your route</h3>
+      <ul class="dates" id="dates"></ul>
+      <div class="muted" style="font-size:12px;margin-top:6px">≈ = estimated from last cycle's published pattern. Always confirm on the official AAMC, AACOM and New Paltz sites. (Dates checked Nov 2026.)</div>
+    </div></div>
+      <div class="panel side" id="chapterSide" style="align-self:start"></div>
+    </div>
+  </section>
+
+  <!-- QUEST LOG -->
+  <section class="view" id="v-quests">
+    <div class="panel side">
+      <div class="qfilter"><h2 class="px" style="margin:0;flex:1">📜 Quest Log</h2>
+        <label style="font-size:14px;font-weight:700"><input type="checkbox" id="hideDone"> Hide completed</label></div>
+      <div id="questLog"></div>
+    </div>
+  </section>
+
+  <!-- JOURNAL -->
+  <section class="view" id="v-journal">
+    <div class="grid2">
+      <div class="panel side">
+        <h2 class="px" style="margin-top:0">📓 Hour meters</h2>
+        <div id="meters"></div>
+        <div class="muted" style="font-size:12px">These are common targets from advisors, not official requirements. Quality and reflection matter more than raw numbers.</div>
+      </div>
+      <div class="panel side">
+        <h2 class="px" style="margin-top:0">➕ Log an adventure</h2>
+        <form class="form" id="logForm">
+          <label>Date<input type="date" name="date" required></label>
+          <label>Hours<input type="number" name="hrs" min="0.25" step="0.25" required placeholder="4"></label>
+          <label class="full">Type<select name="cat" id="catSel"></select></label>
+          <label>Place / organization<input name="place" placeholder="Hospice of ___"></label>
+          <label>Contact (name / email)<input name="contact" placeholder="Dr. Rivera"></label>
+          <label class="full">Memorable moment / reflection<textarea name="note" rows="3" placeholder="What happened? What did you learn about medicine or yourself?"></textarea></label>
+          <div class="full" style="display:flex;justify-content:flex-end"><button class="btn pink" type="submit">Log it! (+2 XP / hr)</button></div>
+        </form>
+      </div>
+    </div>
+    <div class="panel side" style="margin-top:12px">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <h2 class="px" style="margin:0;flex:1">🗂 Journal entries</h2>
+        <button class="btn sm ghost" id="copyCsv">Copy as CSV</button>
+      </div>
+      <div class="tbl" id="logTable"></div>
+    </div>
+  </section>
+
+  <!-- SPELLBOOK -->
+  <section class="view" id="v-spell">
+    <div class="panel side">
+      <h2 class="px" style="margin-top:0">📘 Spellbook: courses & GPA</h2>
+      <p class="muted" style="margin-top:0;font-size:14px">Med schools count <b>every</b> college course you've taken, including Lone Star. Mark each prereq's status and grade. Science courses (B/C/P/M) count toward your <b>BCPM GPA</b>.</p>
+      <div class="gpabox">
+        <div class="gpa"><div class="n" id="gpaAll">–</div><div class="l">CUMULATIVE GPA (est.)</div></div>
+        <div class="gpa"><div class="n" id="gpaSci">–</div><div class="l">BCPM SCIENCE GPA (est.)</div></div>
+        <div class="gpa"><div class="n" id="prereqPct">0/0</div><div class="l">PREREQS COMPLETE</div></div>
+      </div>
+      <div class="tbl" style="max-height:none;margin-top:12px"><table class="course" id="courseTable"></table></div>
+      <h3 class="px">➕ Add another course (psych major, Lone Star, electives…)</h3>
+      <form class="form" id="courseForm" style="grid-template-columns:2fr 1fr 1fr 1fr auto;align-items:end">
+        <label>Course name<input name="name" required placeholder="Abnormal Psychology"></label>
+        <label>Type<select name="cat"><option value="O">Non-science</option><option value="B">Biology</option><option value="C">Chemistry</option><option value="P">Physics</option><option value="M">Math</option></select></label>
+        <label>Credits<input type="number" name="cr" min="0" step="0.5" value="3"></label>
+        <label>School<input name="school" placeholder="New Paltz"></label>
+        <button class="btn" type="submit">Add</button>
+      </form>
+      <p class="muted" style="font-size:12px">Estimates only. AMCAS and AACOMAS use their own grade conversions. Each med school sets its own prerequisite list, so confirm with your advisor and in MSAR.</p>
+    </div>
+  </section>
+
+  <!-- TROPHIES -->
+  <section class="view" id="v-trophy">
+    <div class="panel side">
+      <h2 class="px" style="margin-top:0">🏆 Trophy Room <span class="chip gold" id="trophyCount"></span></h2>
+      <div class="trophies" id="trophies"></div>
+    </div>
+  </section>
+
+  <!-- CODEX -->
+  <section class="view" id="v-codex">
+    <div class="panel side">
+      <div class="sage" style="margin-top:0"><span id="sageCodex"></span><div class="bubble">The Codex holds every strange word you'll hear on this journey. When someone at school says “BCPM” or “secondaries,” look it up here!</div></div>
+      <div class="codex" id="codex"></div>
+    </div>
+  </section>
+
+  <div class="footer px">MedQuest · built for Bailey · Progress saves automatically</div>
+</div>
+
+<div class="scrim" id="scrim"><div class="panel modal" id="modal" role="dialog" aria-modal="true"></div></div>
+<div id="toasts" aria-live="polite"></div>
+<canvas id="confetti"></canvas>
+
+<script>
+// ===================== GAME CONTENT =====================
+const CHAPTERS = [
+  {id:0, name:"Moving Day Meadow", when:"Now → Jan 2027", season:"Prologue",
+   blurb:"Unpack, gather your records, and meet your guide. Everything here sets up the whole adventure."},
+  {id:1, name:"Hawk Hollow", when:"Spring 2027", season:"Semester 1",
+   blurb:"Your first New Paltz semester: first lab sciences, first professors, and your first clinical hours."},
+  {id:2, name:"Summer Glade", when:"Summer 2027", season:"Summer",
+   blurb:"Summer classes keep you on pace while you start shadowing physicians, including a DO."},
+  {id:3, name:"Laboratory Lagoon", when:"Fall 2027", season:"Semester 2",
+   blurb:"Orgo, physics, research, and recruiting the people who will write your letters."},
+  {id:4, name:"MCAT Mountain", when:"Spring 2028", season:"Semester 3",
+   blurb:"The hardest climb: finish the last prereqs, defeat the MCAT, and write your story."},
+  {id:5, name:"Application Castle", when:"May → Sept 2028", season:"Application Summer",
+   blurb:"Submit AMCAS (MD) and AACOMAS (DO) early, then conquer the secondaries."},
+  {id:6, name:"Interview Tower", when:"Fall 2028 → Winter 2029", season:"Senior Year",
+   blurb:"Practice, interview, send your thank-yous, and keep your grades strong."},
+  {id:7, name:"White Coat Summit", when:"Spring → Summer 2029", season:"Finale",
+   blurb:"Acceptance, graduation, and the White Coat Ceremony. You become a medical student."}
+];
+
+// Each quest: id, ch, title, xp, when, what (what it is), why, steps[], tip, links[]
+const QUESTS = [
+// ---------- CHAPTER 0 ----------
+{id:"q0_1", ch:0, title:"Talk to the Sage", xp:50, when:"Today",
+ what:`Hoo-hoo! Welcome, traveler. To become a doctor you need to show medical schools <b>five things</b>: (1) you can handle hard science (your <b>GPA</b>), (2) you can master the material (your <b>MCAT</b> score), (3) you know what medicine really looks like (<b>shadowing + clinical hours</b>), (4) you care about people (<b>service</b>), and (5) people who know you vouch for you (<b>letters</b>). Every quest in this game feeds one of those five.`,
+ why:`Medical schools use "holistic review." No single number decides it. They're asking: <i>can this person succeed in med school, and will they be a good doctor?</i> Your past jobs, your career change, and your maturity all count.`,
+ steps:["Read the five pillars above","Open the Codex tab and read “MD vs DO”","Look at the 8 chapters on the World Map"],
+ tip:`You don't need to finish every quest perfectly. The game shows you what exists so nothing surprises you later.`},
+
+{id:"q0_2", ch:0, title:"MD or DO? Know your classes", xp:60, when:"Before spring 2027",
+ what:`There are two kinds of U.S. physicians. <b>MD</b> (allopathic) schools use the <b>AMCAS</b> application. <b>DO</b> (osteopathic) schools use <b>AACOMAS</b>. Both become fully licensed physicians, both match into the same residencies, and both can practice any specialty. DO training adds <b>OMM</b> (osteopathic manipulative medicine), a hands-on, whole-person approach.`,
+ why:`You're applying to <b>both</b>, so you'll file two applications in the same cycle. DO schools often want to see that you've shadowed a DO, and many want a letter from one. Knowing this now means you'll plan for it.`,
+ steps:["Write down one thing that appeals to you about MD","Write down one thing that appeals to you about DO","Name 2–3 MD and 2–3 DO schools in NY you're curious about"],
+ tip:`Applying to both widens your options. It isn't a "backup" move: DO schools want applicants who truly understand osteopathic philosophy, so learn it for real.`},
+
+{id:"q0_3", ch:0, title:"Gather your scrolls (transcripts)", xp:60, when:"Nov–Dec 2026",
+ what:`Your <b>transcripts</b> are your official grade records. New Paltz needs your Lone Star College transcript to award transfer credit. Later, AMCAS and AACOMAS will need an official transcript from <b>every college you've ever attended</b>, even one class.`,
+ why:`Med schools recalculate your GPA from <b>all</b> of your college coursework. Lone Star grades count toward your med school GPA even though your New Paltz GPA starts fresh.`,
+ steps:["Order an official Lone Star transcript sent to SUNY New Paltz (if you haven't)","Download an unofficial copy for yourself","Make a “Med School” folder (cloud drive) and save it there","List any OTHER college you ever took a class at, even dual credit"],
+ tip:`Keep a single “Med School” folder for everything: transcripts, job dates, supervisor contacts, journal exports. Future-you will be grateful in May 2028.`},
+
+{id:"q0_4", ch:0, title:"Appraise your inherited loot", xp:80, when:"When New Paltz posts your credit evaluation",
+ what:`Your ~48 Lone Star credits are “inherited loot.” Some may already count as med school <b>prerequisites</b> (biology, chemistry, math, English, psychology). The rest count toward your bachelor's.`,
+ why:`Knowing exactly which prereqs you've already finished decides whether the straight-through route fits. Each finished science course is a semester you don't have to repeat.`,
+ steps:["Find your transfer credit evaluation / degree audit at New Paltz","Open the Spellbook tab and mark any prereqs already completed","Enter your Lone Star grades for those courses in the Spellbook","Add your other Lone Star courses (so your GPA estimate is accurate)"],
+ tip:`Some med schools prefer core sciences to be taken at a 4-year school. Taking upper-level sciences at New Paltz (biochem, genetics) shows you can handle 4-year rigor. Ask your advisor whether to retake anything.`},
+
+{id:"q0_5", ch:0, title:"Summon your Guide", xp:100, when:"Dec 2026 – Jan 2027",
+ what:`New Paltz has a <b>Health Career Advisement</b> program. The pre-med advisor (listed as <b>Debra Adair, Ph.D.</b>) helps students plan for medical school. They ask you to fill out a pre-health meeting form before your first meeting.`,
+ why:`Your advisor knows New Paltz's course sequencing, how letters work there, and how past students got in. This is the most valuable 1-hour meeting of your first year.`,
+ steps:["Visit the Health Career Advisement page (link below)","Fill out the pre-health meeting form","Email to request a meeting (adaird@newpaltz.edu, per the site)","Bring these questions: Which of my transfer credits count as prereqs? Is applying in May 2028 realistic? Does New Paltz write a committee or composite letter? Which physics and math should I take?","Write down what you learned in the quest notes below"],
+ tip:`Say you're a non-traditional transfer, a psychology major, working part-time, aiming for both MD and DO, and hoping to apply straight through. Advisors give much better advice with the whole picture.`,
+ links:[{l:"New Paltz Health Career Advisement",u:"https://www.newpaltz.edu/healthcareeradvisement/"}]},
+
+{id:"q0_6", ch:0, title:"Claim your AAMC ID", xp:40, when:"Anytime now",
+ what:`The <b>AAMC</b> (Association of American Medical Colleges) runs the MCAT, AMCAS, and the Fee Assistance Program. You need one free AAMC account for all of it.`,
+ why:`You'll use the same login for 2+ years. Making it now means you can explore MSAR and free prep resources early.`,
+ steps:["Create your free AAMC account","Use a professional email you'll keep for years","Save your AAMC ID in your Med School folder"],
+ links:[{l:"AAMC for Students",u:"https://students-residents.aamc.org/"}]},
+
+{id:"q0_7", ch:0, title:"Recall your past lives", xp:80, when:"Before spring 2027",
+ what:`Your earlier careers are <b>real experience points</b>. Implementation analyst, HR lead, store manager, and customer care supervisor all go in the application's Work & Activities section.`,
+ why:`Schools look for teamwork, reliability, communication, and leadership. You've done these for years. Non-traditional applicants who explain their path well stand out.`,
+ steps:["List each past job with start/end dates and hours per week","For each, write down a supervisor or contact who could confirm it","Write 2–3 sentences about a moment you grew or led someone","Log them in the Adventure Journal (category: Leadership or Work)"],
+ tip:`AMCAS asks for a contact person for each experience. Collect names and emails now while they're easy to find.`},
+
+{id:"q0_8", ch:0, title:"Plan your route", xp:80, when:"With your advisor",
+ what:`<b>Your route, “Straight Through”:</b><br>• Spring 2027: Gen Bio I, Gen Chem I (+ psych/stats)<br>• Summer 2027: Bio II / Chem II (summer session)<br>• Fall 2027: Orgo I, Physics I<br>• Spring 2028: Orgo II, Physics II, Biochem, <b>MCAT</b><br>• May–June 2028: <b>Apply</b> (MD + DO)<br>• Fall 2028–Spring 2029: interviews, finish your degree<br>• Summer/Fall 2029: <b>Start med school</b>`,
+ why:`Be honest with yourself: this route is <b>fast</b>. It packs most of the science sequence into about 3 semesters plus a summer, while you work. It can be done, but there's a checkpoint (The Fork in the Road) in Jan 2028. If you need more time, a gap year is normal, not a failure.`,
+ steps:["Draft your semester-by-semester plan with your advisor","Decide which classes to take in summer 2027","Put the Key Dates from the map panel into your calendar"],
+ tip:`If Lone Star already covered Gen Bio or Gen Chem, the route gets much easier. That's why the Inherited Loot quest matters.`},
+
+// ---------- CHAPTER 1 ----------
+{id:"q1_1", ch:1, title:"Equip your first spells", xp:80, when:"Registration for Spring 2027",
+ what:`Register for your first pre-med courses. The usual first-semester pair is <b>General Biology I + lab</b> and <b>General Chemistry I + lab</b>, plus psych major courses and <b>Statistics</b>.`,
+ why:`Bio and chem are the foundation everything else builds on. Organic chemistry, biochem, and the MCAT all assume you know them.`,
+ steps:["Confirm your exact course list with your advisor","Register for Gen Bio I + lab and Gen Chem I + lab (unless already done)","Add psych major courses and Statistics","Check your total load works with your part-time job"],
+ tip:`Two lab sciences plus work is a full load. It's better to take fewer courses and earn A's than to take more and earn B-minuses.`},
+
+{id:"q1_2", ch:1, title:"Learn the GPA arts", xp:70, when:"Week 1",
+ what:`Med schools look at two GPAs: your <b>cumulative GPA</b> (everything) and your <b>science GPA</b>, called <b>BCPM</b> (Biology, Chemistry, Physics, Math). Both AMCAS and AACOMAS count <b>every attempt</b> of a course, so a retake doesn't erase the first grade.`,
+ why:`Your first try at each science course matters. A strong upward trend also helps a lot, and non-trads often show one.`,
+ steps:["Find New Paltz's tutoring/learning center","Block out weekly study hours in your calendar (about 2–3 hours per credit hour)","Go to office hours in the first 3 weeks of every class","Track your grades in the Spellbook tab"],
+ tip:`Use active recall (flashcards, practice problems) instead of re-reading. It's also exactly how you'll study for the MCAT.`},
+
+{id:"q1_3", ch:1, title:"Befriend the professors", xp:60, when:"All semester",
+ what:`Your future <b>letters of recommendation</b> come from professors who actually know you. A letter that says “earned an A” is weak. A letter that says “asked thoughtful questions all semester” is strong.`,
+ why:`You'll need roughly 3–5 letters, including science professors. Relationships take time to build, so start now.`,
+ steps:["Go to office hours at least twice per class this semester","Ask a real question about the material (not just about grades)","Mention you're pre-med and a career-changer","Write down each professor's name in your notes"],
+ tip:`Your management background makes you comfortable talking with professors. Use that strength.`},
+
+{id:"q1_4", ch:1, title:"Join a guild", xp:50, when:"Early in semester",
+ what:`Join New Paltz's pre-med or pre-health student club.`,
+ why:`Clubs share shadowing leads, volunteer events, and talks from doctors. Later, an officer role becomes <b>leadership</b> experience.`,
+ steps:["Find the pre-health club (student involvement page or ask your advisor)","Attend 2 meetings","Sign up for their email list or group chat"]},
+
+{id:"q1_5", ch:1, title:"Side-quest: the clinical job", xp:120, when:"Spring 2027",
+ what:`<b>Power move for you:</b> make your part-time job a <b>clinical</b> one, so you earn money and clinical hours at the same time. Common options: <b>medical scribe</b> (often trains you on the job), <b>EMT-Basic</b> (needs a certification course), <b>CNA</b> (state-approved training program), <b>patient care tech</b>, <b>medical assistant</b>, or <b>hospice aide</b>.`,
+ why:`“Clinical experience” means direct patient contact, and it's one of the most important parts of your application. Many successful applicants have a few hundred hours. A paid clinical job gets you there steadily.`,
+ steps:["Pick 1–2 roles that fit your class schedule","Research openings or training programs around New Paltz, Kingston and Poughkeepsie","Apply (your HR background makes your résumé strong!)","Work your first shift and log it in the Journal"],
+ tip:`Scribing teaches medical language and shows you how doctors think. EMT and CNA give you hands-on patient care. Any of them is great.`},
+
+{id:"q1_6", ch:1, title:"First clinical volunteering", xp:80, when:"Apply early in semester",
+ what:`Hospital, hospice, or free-clinic volunteer programs put you around patients. Expect an application, a health screening (vaccines/TB test), and orientation first.`,
+ why:`It adds patient-facing hours and shows you serve without being paid. Onboarding can take weeks, so apply early.`,
+ steps:["Find 2 volunteer programs near you (hospital or hospice)","Submit an application","Complete the health screening and orientation","Log your first shift"],
+ tip:`Hospice volunteering is often less competitive to get into and very meaningful to write about.`},
+
+{id:"q1_7", ch:1, title:"Serve the village", xp:60, when:"Ongoing",
+ what:`<b>Non-clinical</b> service helps people outside a medical setting: food pantries, tutoring, shelters, crisis lines, community events.`,
+ why:`Schools look for a “service orientation.” Steady, long-term commitment to one or two places means more than many one-day events.`,
+ steps:["Choose one cause you actually care about","Commit to a regular schedule (even 2–3 hrs/month)","Log hours in the Journal"]},
+
+{id:"q1_8", ch:1, title:"Start your Adventure Journal", xp:50, when:"After your first shift",
+ what:`Log every hour of shadowing, clinical work, service, research, and leadership in the Journal tab, with the place, a contact person, and a short note about a memorable moment.`,
+ why:`AMCAS asks for each experience's dates, total hours, and a contact, plus a description of up to 700 characters. Your notes become your essays later.`,
+ steps:["Log your first Journal entry","Write one “memorable moment” note","Set a weekly reminder to log hours (Sunday night works)"],
+ tip:`Write down the feeling and the lesson, not just the task. “I held a patient's hand during a scary scan” beats “escorted patients.”`},
+
+{id:"q1_9", ch:1, title:"Boss fight: Finals", xp:100, when:"May 2027",
+ what:`Finish your first New Paltz semester strong.`,
+ why:`Your first semester sets the tone, and your grades go straight into your BCPM GPA.`,
+ steps:["Make a study plan two weeks before finals","Take every final","Enter your final grades in the Spellbook"]},
+
+// ---------- CHAPTER 2 ----------
+{id:"q2_1", ch:2, title:"Summer session spells", xp:80, when:"Summer 2027",
+ what:`To stay on the straight-through route, you'll likely take the second half of a sequence over summer, such as <b>Gen Bio II</b> or <b>Gen Chem II</b>.`,
+ why:`Orgo needs Gen Chem II. The MCAT (spring 2028) tests bio, chem, orgo, physics, biochem, psych and sociology. Summer is how you fit it all in.`,
+ steps:["Confirm which summer course(s) with your advisor","Register (New Paltz summer session if possible)","Finish and enter your grade"],
+ tip:`A summer course packs 15 weeks into about 5–6. Lighten your work hours during it if you can.`},
+
+{id:"q2_2", ch:2, title:"Find your first shadow", xp:120, when:"Summer 2027",
+ what:`<b>Shadowing</b> means quietly following a physician through their day to see what being a doctor is really like. You observe; you don't do patient care.`,
+ why:`Schools want proof that you understand a physician's real day. A common target is around 40–60 hours spread across several doctors.`,
+ steps:["List 10 possible physicians (your own doctor, family network, alumni, advisor leads)","Send 5 short, polite emails asking to shadow (template in tip)","Complete any forms the clinic requires (privacy/HIPAA, vaccines)","Do your first shadowing day and log it in the Journal"],
+ tip:`Template: “Dear Dr. ___, I'm a pre-medical student at SUNY New Paltz transitioning from a career in HR technology. I'd be grateful for the chance to shadow you for a day or two this summer, at whatever time is convenient. I'm happy to complete any paperwork your office requires. Thank you for considering it!”`},
+
+{id:"q2_3", ch:2, title:"Seek the Osteopath", xp:100, when:"Summer–Fall 2027",
+ what:`Shadow at least one <b>DO</b> physician. You can search for DOs through the American Osteopathic Association's resources.`,
+ why:`Many DO schools strongly recommend, and some require, a letter from a DO. They want proof that you understand osteopathic medicine. If the DO gets to know you, ask them for a letter later.`,
+ steps:["Find 2–3 DOs near you","Request to shadow (same email template)","Shadow and log with category “Shadowing · DO”","Note the DO's name and contact for a possible letter"],
+ links:[{l:"AACOM (osteopathic medical colleges)",u:"https://www.aacom.org/"}]},
+
+{id:"q2_4", ch:2, title:"Diversify your shadows", xp:80, when:"Summer 2027 → Spring 2028",
+ what:`Shadow 3 or more different physicians, ideally including <b>primary care</b> (family or internal medicine) plus one or two specialties.`,
+ why:`Variety shows you've explored medicine. Primary care exposure is valued by many schools, especially DO schools.`,
+ steps:["Shadow a primary care physician","Shadow a specialist","Reach 40+ total shadowing hours"]},
+
+{id:"q2_5", ch:2, title:"Fee Assistance Program", xp:100, when:"2027 (opens early in the year)",
+ what:`The AAMC <b>Fee Assistance Program (FAP)</b> helps applicants who couldn't otherwise afford the MCAT and applications. Benefits include a reduced MCAT fee ($145 instead of the standard fee), free official MCAT prep, free access to the MSAR school database, and an AMCAS fee waiver.`,
+ why:`<b>Timing trick:</b> benefits approved in 2027 last until Dec 31, 2028, which covers your 2028 MCAT <i>and</i> your 2028 AMCAS. Benefits are <b>not retroactive</b>, so you must be approved BEFORE you register or pay.`,
+ steps:["Read the FAP eligibility rules (household income; they may ask about parents)","Gather tax documents","Submit the FAP application in 2027","Get a decision BEFORE registering for the MCAT"],
+ tip:`As a full-time student with part-time income, you may qualify. Check now because it can save you hundreds of dollars.`,
+ links:[{l:"AAMC Fee Assistance Program",u:"https://students-residents.aamc.org/fee-assistance-program/fee-assistance-program"}]},
+
+{id:"q2_6", ch:2, title:"Keep the clinical fire burning", xp:60, when:"Summer 2027",
+ what:`Keep steady clinical hours through summer.`,
+ why:`Steady involvement over a long time reads as real commitment, not box-checking.`,
+ steps:["Work or volunteer clinically most weeks this summer","Reach 100+ clinical hours total","Log everything"]},
+
+// ---------- CHAPTER 3 ----------
+{id:"q3_1", ch:3, title:"Advanced spells: Orgo & Physics", xp:80, when:"Fall 2027",
+ what:`Take <b>Organic Chemistry I + lab</b> and <b>Physics I + lab</b> (algebra-based is usually fine), plus psych major courses.`,
+ why:`These are heavily tested on the MCAT. Orgo has a reputation, but it's learnable with daily practice.`,
+ steps:["Register for Orgo I + Physics I","Do practice problems daily (not just before exams)","Enter your grades at the end of the semester"],
+ tip:`Orgo is like a language: learn the mechanisms (how electrons move) instead of memorizing reactions.`},
+
+{id:"q3_2", ch:3, title:"Join a research party", xp:100, when:"Fall 2027",
+ what:`Join a faculty member's research lab. <b>Psychology research counts!</b> As a psych major, a psych lab is a natural fit.`,
+ why:`Research isn't required at most schools, but it shows curiosity and scientific thinking, and it can lead to a strong letter.`,
+ steps:["Read faculty pages in Psychology (and Biology)","Email 3 professors whose work interests you","Offer roughly 6–10 hours a week and ask if course credit is possible","Log research hours in the Journal"],
+ tip:`Mention a specific paper or project of theirs in your email. It shows you did your homework.`},
+
+{id:"q3_3", ch:3, title:"Claim your MCAT date", xp:100, when:"≈ Oct 2027",
+ what:`Book your MCAT. Registration for the 2027 testing year opened Oct 20–22, 2026, so expect 2028 registration around <b>Oct 2027</b>. Pick a date in <b>Mar–May 2028</b>.`,
+ why:`Scores come back about a month after the test. Testing by spring means your score is ready when you submit in late May/June. Popular dates fill up fast.`,
+ steps:["Get your FAP decision first (if applying)","Watch AAMC for the 2028 registration opening day","Register for a Mar–May 2028 date","Put your test date in your calendar and plan your study backward from it"],
+ links:[{l:"AAMC MCAT exam info",u:"https://students-residents.aamc.org/taking-mcat-exam/taking-mcat-exam"}]},
+
+{id:"q3_4", ch:3, title:"Peek at the dragon", xp:80, when:"End of Fall 2027",
+ what:`Take a practice MCAT to see your starting point. The MCAT has 4 sections: <b>Chem/Phys</b>, <b>CARS</b> (reading and reasoning), <b>Bio/Biochem</b>, and <b>Psych/Soc</b>. Each is scored 118–132, for a total of 472–528.`,
+ why:`A baseline score tells you where to focus. Your psych major gives you a head start on Psych/Soc!`,
+ steps:["Take a diagnostic or sample test under timed conditions","Record your section scores in the quest notes","Identify your 2 weakest areas"]},
+
+{id:"q3_5", ch:3, title:"Recruit your letter writers", xp:100, when:"Fall 2027",
+ what:`New Paltz advises building your list of possible recommenders in the <b>fall before you apply</b>. A typical set: 2 science professors, 1 non-science professor (psych!), a physician you shadowed, a DO (for DO schools), and a clinical or work supervisor.`,
+ why:`Most programs want about 3–5 letters. Medical schools may also accept a composite letter, which summarizes several letters. Ask your advisor whether New Paltz offers one.`,
+ steps:["List 6–7 possible letter writers","Ask your advisor whether New Paltz writes a committee or composite letter","Keep building those relationships this semester"],
+ links:[{l:"New Paltz: Requesting letters",u:"https://www.newpaltz.edu/healthcareeradvisement/request-for-letters-of-recommendation-/"}]},
+
+{id:"q3_6", ch:3, title:"Rise as a leader", xp:60, when:"Fall 2027 → Spring 2028",
+ what:`Take on a leadership role: a club officer, a trainer at your job, or organizing a volunteer event.`,
+ why:`Doctors lead care teams. You already have management experience, and new leadership shows you're still growing.`,
+ steps:["Find one leadership opportunity","Take it on","Log your leadership hours"]},
+
+{id:"q3_7", ch:3, title:"Begin the story scroll", xp:50, when:"Fall 2027",
+ what:`Start a running list of moments that answer <b>“Why medicine?”</b> These become your personal statement.`,
+ why:`Great essays come from specific moments, not general statements. Collecting them over months beats brainstorming in a panic.`,
+ steps:["Write 5 meaningful moments (patients, work, family, career change)","For each, note what you learned about yourself","Review your Journal notes for more"]},
+
+// ---------- CHAPTER 4 ----------
+{id:"q4_0", ch:4, title:"The Fork in the Road", xp:120, when:"Jan 2028 checkpoint",
+ what:`Checkpoint time. Ask yourself honestly: Will my MCAT-tested courses be done or finishing this semester? Are my practice scores near my goal? Do I have roughly 150+ clinical and 30+ shadowing hours, with more coming?`,
+ why:`If yes, keep the straight-through route. If not, choose the <b>Gap Year route</b>: graduate in 2029, apply in May 2029, start med school in 2030. Many, if not most, matriculants take at least one gap year. Applying once, strongly, beats applying early and weakly, because re-applying is hard.`,
+ steps:["Review your Journal hours and Spellbook GPA","Look at your practice MCAT trend","Meet with your advisor about readiness","Decide: Straight Through or Gap Year"],
+ tip:`Choosing the gap year isn't losing. It's strategy. Use the time for full-time clinical work, which pays and strengthens your application.`},
+
+{id:"q4_1", ch:4, title:"Final prereq spells", xp:80, when:"Spring 2028",
+ what:`Take <b>Organic Chemistry II</b>, <b>Physics II</b>, and <b>Biochemistry</b>.`,
+ why:`Biochemistry is one of the most heavily tested subjects on the MCAT.`,
+ steps:["Register for Orgo II, Physics II, Biochem","Keep up with daily practice","Enter your grades"]},
+
+{id:"q4_2", ch:4, title:"MCAT training montage", xp:150, when:"~3–4 months before test day",
+ what:`Build a study plan: content review, then practice questions, then full-length practice tests. <b>AAMC Official Prep</b> materials are the most realistic (free with FAP).`,
+ why:`The MCAT tests reasoning more than memorization. Full-length practice builds the stamina for a ~7.5-hour exam day.`,
+ steps:["Write a weekly study schedule backward from test day","Finish content review of your weakest areas","Do CARS passages most days","Take at least 4 full-length practice tests","Review every missed question and figure out why you missed it"],
+ tip:`Studying while taking classes and working is a lot. Consider cutting work hours in the final 4–6 weeks if you can.`},
+
+{id:"q4_3", ch:4, title:"Boss fight: Defeat the MCAT", xp:250, when:"Mar–May 2028",
+ what:`Test day! Bring your accepted ID, arrive early, and pack snacks for breaks.`,
+ why:`Your score arrives about a month later, just in time for applications.`,
+ steps:["Sleep well the night before","Take the MCAT","Celebrate (seriously)","Record your score when it's released"]},
+
+{id:"q4_4", ch:4, title:"Collect your letters", xp:120, when:"Early spring 2028",
+ what:`Ask your recommenders, by <b>email</b>, not in a hallway. Include your résumé, your personal statement draft, what you did together, and why you're pursuing medicine. Offer them a polite way to say no.`,
+ why:`Give writers several weeks. Faculty may be unavailable during breaks. Letters are submitted through the AMCAS Letter Service (MD) and AACOMAS (DO).`,
+ steps:["Send letter request emails with your info packet","Follow up politely after 1–2 weeks if needed","Confirm each letter is submitted","Send thank-you notes"],
+ links:[{l:"New Paltz: Requesting letters",u:"https://www.newpaltz.edu/healthcareeradvisement/request-for-letters-of-recommendation-/"}]},
+
+{id:"q4_5", ch:4, title:"Write your origin story", xp:150, when:"Feb–May 2028",
+ what:`The <b>personal statement</b> is a short essay (AMCAS allows 5,300 characters including spaces) answering “Why do you want to be a doctor?”`,
+ why:`Your story stands out: you moved from HR technology and people leadership into medicine. Explain the <i>why</i> with specific moments.`,
+ steps:["Pick your 2–3 strongest moments from the Story Scroll","Write a rough draft","Get feedback from your advisor and the writing center","Revise at least 3 times","Final version done by early May"],
+ tip:`Show, don't tell. Instead of “I'm compassionate,” describe the moment that proved it.`},
+
+{id:"q4_6", ch:4, title:"Build your school list", xp:100, when:"Spring 2028",
+ what:`Choose where to apply. Use <b>MSAR</b> for MD schools (free with FAP) and AACOM's school information for DO schools. Compare median GPA/MCAT, location, mission, and cost.`,
+ why:`A balanced list across MD and DO, with some reach, some target, and some safer schools, gives you the best odds. Check New York state residency rules for SUNY medical schools.`,
+ steps:["Make a spreadsheet of possible MD schools","Add possible DO schools","Compare against your GPA and MCAT","Finalize your list with your advisor"]},
+
+{id:"q4_7", ch:4, title:"Budget the quest", xp:60, when:"Spring 2028",
+ what:`Applying costs real money. For the 2027 cycle, AMCAS charged $180 for the first school and $48 for each additional school. AACOMAS, secondaries, and situational judgment tests add more.`,
+ why:`Budgeting ahead (you're great at this!) and applying for FAP prevents surprises in June.`,
+ steps:["Estimate primary application costs for your list","Add secondary fees (roughly $50–150 each)","Set aside a savings target"]},
+
+// ---------- CHAPTER 5 ----------
+{id:"q5_1", ch:5, title:"Open the castle gates", xp:120, when:"Early May 2028",
+ what:`AMCAS and AACOMAS open in early May. Start filling them in: biographical info, then <b>every course you've ever taken</b>, entered exactly from your transcripts.`,
+ why:`Entering coursework is tedious and has to match your transcripts exactly. Your Spellbook will help a lot.`,
+ steps:["Open your AMCAS application","Open your AACOMAS application","Enter all coursework from every transcript","Request official transcripts be sent from Lone Star and New Paltz"]},
+
+{id:"q5_2", ch:5, title:"Chronicle your deeds", xp:120, when:"May 2028",
+ what:`Fill in the <b>Work & Activities</b> section. AMCAS allows up to 15 experiences and lets you mark up to 3 as “most meaningful” (those get an extra essay).`,
+ why:`This is where your Journal pays off: dates, hours, contacts, and reflections are already saved.`,
+ steps:["Export your Journal (Copy CSV)","Pick your top 15 experiences","Choose your 3 most meaningful","Write and polish each description"]},
+
+{id:"q5_3", ch:5, title:"Submit early!", xp:200, when:"Late May – June 2028",
+ what:`Submit as soon as your application is strong. AACOMAS lets you submit right when it opens. AMCAS submissions begin a few weeks later.`,
+ why:`Admissions are <b>rolling</b>: seats and interview slots fill as the cycle goes on. AMCAS also verifies your coursework, which can take a few weeks in peak season.`,
+ steps:["Proofread everything twice","Submit AACOMAS","Submit AMCAS","Celebrate!"]},
+
+{id:"q5_4", ch:5, title:"Secondary quests", xp:150, when:"June – Sept 2028",
+ what:`After you submit, schools send <b>secondary applications</b>: more essays plus a fee.`,
+ why:`Returning secondaries within about 1–2 weeks shows interest and keeps you early in the rolling pile.`,
+ steps:["Pre-write common prompts (challenge, diversity, why this school)","Track every secondary and its due date","Submit each within ~2 weeks"]},
+
+{id:"q5_5", ch:5, title:"Situational judgment trials", xp:80, when:"Summer 2028",
+ what:`Some schools require <b>Casper</b> (Acuity Insights) or the AAMC <b>PREview</b> exam. These test how you'd handle real-world ethical and interpersonal situations.`,
+ why:`Your years managing people and handling HR situations are real practice for this.`,
+ steps:["Check which of your schools require Casper or PREview","Register early","Take a practice test","Complete the required test(s)"]},
+
+// ---------- CHAPTER 6 ----------
+{id:"q6_1", ch:6, title:"Interview training", xp:100, when:"Fall 2028",
+ what:`Practice traditional interviews and <b>MMIs</b> (Multiple Mini Interviews: short timed stations with scenarios). New Paltz pre-health advisors offer mock interviews.`,
+ why:`An interview invite means you're academically qualified. Now they want to know who you are.`,
+ steps:["Prep answers to “Tell me about yourself,” “Why medicine?” and “Why DO?”","Do a mock interview with your advisor","Practice 3 MMI-style scenarios"]},
+
+{id:"q6_2", ch:6, title:"Attend interviews", xp:200, when:"Fall 2028 – Winter 2029",
+ what:`Go to your interviews, whether virtual or in person.`,
+ why:`This is your chance to show maturity, communication skills, and genuine motivation.`,
+ steps:["Prepare for each school's mission and curriculum","Attend your first interview","Send a thank-you note after each interview"]},
+
+{id:"q6_3", ch:6, title:"Finish senior year strong", xp:80, when:"2028–2029",
+ what:`Keep your grades up and finish your psychology degree.`,
+ why:`Schools see your final transcript, and acceptances can depend on finishing well.`,
+ steps:["Finish fall 2028 courses","Finish spring 2029 courses","Confirm you'll graduate on time"]},
+
+{id:"q6_4", ch:6, title:"Letters of update", xp:60, when:"Winter 2029",
+ what:`If you're waitlisted or waiting, send short <b>update letters</b> with new accomplishments, or a <b>letter of intent</b> to your top choice.`,
+ why:`Schools can use updates when deciding who comes off the waitlist.`,
+ steps:["List new accomplishments since you applied","Send a concise update to each waiting school"]},
+
+// ---------- CHAPTER 7 ----------
+{id:"q7_1", ch:7, title:"The acceptance scroll", xp:200, when:"Fall 2028 – Spring 2029",
+ what:`Receive your first acceptance! 🎉`,
+ why:`You did it. Every hour logged and every exam studied led here.`,
+ steps:["Read the acceptance details and deadlines","Tell the people who helped you","Thank your letter writers"]},
+
+{id:"q7_2", ch:7, title:"Choose your school", xp:100, when:"Spring 2029",
+ what:`Compare your offers: financial aid, location, curriculum, and support for students like you. Follow AAMC's timeline for choosing an MD school and each DO school's deposit deadlines.`,
+ why:`Pick the place where you'll thrive for 4 years.`,
+ steps:["Compare financial aid packages","Visit or attend second-look events","Commit to one school"]},
+
+{id:"q7_3", ch:7, title:"Fund the journey", xp:80, when:"Spring 2029",
+ what:`File the <b>FAFSA</b> for med school, look for scholarships, and understand your loan options. Service programs like the National Health Service Corps or military scholarships pay tuition in exchange for service.`,
+ why:`Med school is expensive. Smart planning now reduces debt stress later.`,
+ steps:["File the FAFSA","Apply to 3+ scholarships","Make a med school budget"]},
+
+{id:"q7_4", ch:7, title:"Graduate from New Paltz", xp:250, when:"≈ May 2029",
+ what:`Walk across the stage. <b>Bachelor's degree: complete.</b> 🎓`,
+ why:`You started this quest with no degree. Now you have one.`,
+ steps:["Apply for graduation","Attend commencement","Send your final transcript to your med school"]},
+
+{id:"q7_5", ch:7, title:"The White Coat Ceremony", xp:300, when:"≈ Summer 2029",
+ what:`Put on your white coat. <b>You are a medical student.</b> 🩺✨`,
+ why:`This is where a new adventure begins.`,
+ steps:["Attend orientation","Receive your white coat","Take a picture for your future self"]}
+];
+
+const HOUR_CATS = [
+  {id:"shadow_md", label:"Shadowing · MD", group:"shadow", color:"#8a6fd1"},
+  {id:"shadow_do", label:"Shadowing · DO", group:"shadow", color:"#b39ae8"},
+  {id:"clin_paid", label:"Clinical · Paid job", group:"clinical", color:"#e2607f"},
+  {id:"clin_vol", label:"Clinical · Volunteer", group:"clinical", color:"#f29bb5"},
+  {id:"service", label:"Non-clinical service", group:"service", color:"#5fae6a"},
+  {id:"research", label:"Research", group:"research", color:"#4f97d1"},
+  {id:"leadership", label:"Leadership", group:"leadership", color:"#e8a33c"},
+  {id:"work", label:"Work (non-clinical)", group:"work", color:"#9a8c7a"}
+];
+const GOALS = [
+  {group:"shadow", label:"Shadowing", goal:50, note:"Common target: ~40–60 hrs across 3+ physicians, including a DO"},
+  {group:"clinical", label:"Clinical experience", goal:300, note:"Direct patient contact. Many applicants have a few hundred hours"},
+  {group:"service", label:"Non-clinical service", goal:150, note:"Long-term commitment matters more than total hours"},
+  {group:"research", label:"Research", goal:100, note:"Optional at many schools, but valued"},
+  {group:"leadership", label:"Leadership", goal:100, note:"Your past management experience counts too!"}
+];
+
+const DEFAULT_COURSES = [
+  ["General Biology I + lab","B",4],["General Biology II + lab","B",4],
+  ["General Chemistry I + lab","C",4],["General Chemistry II + lab","C",4],
+  ["Organic Chemistry I + lab","C",4],["Organic Chemistry II + lab","C",4],
+  ["Physics I + lab","P",4],["Physics II + lab","P",4],
+  ["Biochemistry","B",3],["Genetics (recommended)","B",4],
+  ["Statistics","M",3],["College Math / Calculus","M",4],
+  ["English / Writing I","O",3],["English / Writing II","O",3],
+  ["Intro Psychology","O",3],["Intro Sociology","O",3]
+];
+
+const CODEX = [
+  ["MD vs DO","Two types of physicians with the same rights and the same residencies. MD = allopathic (apply through AMCAS). DO = osteopathic (apply through AACOMAS), with added training in osteopathic manipulative medicine (OMM) and a whole-person philosophy."],
+  ["AMCAS","The AAMC's application service for MD schools. One application goes to many schools. It typically opens in early May, and submissions start a few weeks later."],
+  ["AACOMAS","The application service for DO schools, run by AACOM. It usually opens in early May, and you can submit right away."],
+  ["Application cycle names","Confusing on purpose (not really). AMCAS names a cycle by the year you'd START med school; AACOMAS uses both years. For you: apply in 2028 to start in 2029."],
+  ["MCAT","Medical College Admission Test. A ~7.5-hour computer exam with four sections: Chem/Phys, CARS, Bio/Biochem, and Psych/Soc. Total score is 472–528. Testing runs January through September each year."],
+  ["CARS","Critical Analysis & Reasoning Skills: the MCAT reading section. No science knowledge needed, just careful reading and logic."],
+  ["BCPM GPA","Your science GPA, using only Biology, Chemistry, Physics, and Math courses. Schools look at it alongside your overall GPA."],
+  ["Prerequisites","Courses med schools require or strongly recommend: usually a year each of biology, general chemistry, organic chemistry, and physics, plus biochemistry, English, math/stats, and often psychology and sociology. Each school sets its own list."],
+  ["Shadowing","Observing a physician at work. You watch; you don't provide care. It shows you understand what doctors actually do."],
+  ["Clinical experience","Hands-on, direct patient contact (paid or volunteer): scribe, EMT, CNA, MA, hospice volunteer, and similar roles."],
+  ["Non-clinical service","Helping people outside healthcare, such as a food pantry, tutoring, or a shelter. It shows service orientation."],
+  ["Letters of recommendation","Usually 3–5 letters from science and non-science professors, physicians, and supervisors. DO schools often want one from a DO."],
+  ["Committee / Composite letter","Some colleges write one combined letter on behalf of their pre-med students. Ask your New Paltz advisor whether they offer one."],
+  ["MSAR","Medical School Admission Requirements: the AAMC database of MD schools' stats and requirements. Free with the Fee Assistance Program."],
+  ["Secondary application","Extra school-specific essays (and a fee) that arrive after you submit your primary application."],
+  ["Casper / PREview","Situational judgment tests that some schools require. They measure how you'd handle real-world interpersonal and ethical situations."],
+  ["MMI","Multiple Mini Interview: a series of short, timed stations, each with a scenario or question."],
+  ["Rolling admissions","Schools review applications and offer interviews as applications arrive, so applying early really helps."],
+  ["Fee Assistance Program (FAP)","An AAMC program that lowers MCAT and application costs and adds free prep. It must be approved BEFORE you pay; it is not retroactive."],
+  ["Gap year","Time between college and med school, often spent working clinically. It's very common and a smart option, not a failure."],
+  ["Matriculant","A student who actually enrolls in med school (as opposed to an applicant)."],
+  ["Residency","Training after med school (3–7 years) in a specialty. Both MDs and DOs match into the same residency system."]
+];
+
+const KEY_DATES = [
+  {d:"2026-12-01", t:"Move-in day in New Paltz 🏡"},
+  {d:"2027-01-25", t:"Spring 2027 semester begins (check the New Paltz calendar)", est:1},
+  {d:"2027-02-01", t:"AAMC Fee Assistance opens for 2027 (it opened Feb 2 in 2026)", est:1},
+  {d:"2027-05-20", t:"Summer session: Bio II / Chem II", est:1},
+  {d:"2027-10-20", t:"2028 MCAT registration opens (2027 dates opened Oct 20–22, 2026)", est:1},
+  {d:"2028-01-15", t:"The Fork in the Road checkpoint"},
+  {d:"2028-04-15", t:"Target MCAT window: Mar–May 2028", est:1},
+  {d:"2028-05-04", t:"AMCAS & AACOMAS open (early May)", est:1},
+  {d:"2028-05-28", t:"AMCAS submissions begin (late May)", est:1},
+  {d:"2029-05-20", t:"New Paltz graduation 🎓", est:1},
+  {d:"2029-08-01", t:"Med school begins 🩺", est:1}
+];
+
+</script>
+<script>
+"use strict";
+// ===================== UTIL =====================
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const today=()=>{const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);};
+const uid=()=>Math.random().toString(36).slice(2,9);
+const QMAP=Object.fromEntries(QUESTS.map(q=>[q.id,q]));
+
+// ===================== STATE =====================
+const KEY="medquest_bailey_v1";
+function freshState(){
+  return {v:1,updatedAt:0,hero:{name:"Bailey",hair:0,skin:1,shirt:0},q:{},logs:[],
+    courses:DEFAULT_COURSES.map(([n,c,cr])=>({id:uid(),name:n,cat:c,cr,status:"todo",grade:"",school:"",prereq:true})),
+    ach:{},seenIntro:false,sound:true,branch:"straight"};
+}
+let S=freshState();
+try{const raw=localStorage.getItem(KEY); if(raw){S=Object.assign(freshState(),JSON.parse(raw));}}catch(e){}
+
+let cloud={db:null,ref:null,ok:false,writing:false,pending:false};
+let saveTimer=null;
+function save(){
+  S.updatedAt=Date.now();
+  try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
+  clearTimeout(saveTimer); saveTimer=setTimeout(pushCloud,1200);
+}
+async function pushCloud(){
+  if(!cloud.ref) return;
+  if(cloud.writing){cloud.pending=true;return;}
+  cloud.writing=true;
+  try{ await cloud.ref.set({state:JSON.stringify(S),updatedAt:S.updatedAt}); setSaveStat("☁ Saved to your account"); }
+  catch(e){ setSaveStat("Saved in this browser only"); }
+  cloud.writing=false;
+  if(cloud.pending){cloud.pending=false;pushCloud();}
+}
+function setSaveStat(t){const el=$("#savestat"); if(el) el.textContent=t;}
+async function initCloud(){
+  if(!(window.claude&&typeof window.claude.use==="function")){setSaveStat("Saved in this browser");return;}
+  try{
+    const [db,user]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);
+    if(!db||!user){setSaveStat("Saved in this browser");return;}
+    const id=await user.id(); if(!id){setSaveStat("Saved in this browser");return;}
+    const ref=db.collection("data/users/"+id).doc("save");
+    let timedOut=false; const t=setTimeout(()=>{timedOut=true;setSaveStat("Saved in this browser");},10000);
+    const snap=await ref.get(); clearTimeout(t); if(timedOut) return;
+    let remote=snap; if(snap&&typeof snap.data==="function") remote=snap.data();
+    if(remote&&remote.data&&remote.state===undefined) remote=remote.data;
+    cloud.ref=ref;
+    if(remote&&remote.state&&(remote.updatedAt||0)>(S.updatedAt||0)){
+      try{S=Object.assign(freshState(),JSON.parse(remote.state));localStorage.setItem(KEY,JSON.stringify(S));renderAll();}catch(e){}
+      setSaveStat("☁ Synced with your account");
+    } else { await pushCloud(); }
+  }catch(e){ setSaveStat("Saved in this browser"); }
+}
+
+// ===================== SOUND =====================
+let actx=null;
+function beep(notes){
+  if(!S.sound) return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==="suspended")actx.resume();
+    let t=actx.currentTime;
+    notes.forEach(([f,d])=>{const o=actx.createOscillator(),g=actx.createGain();o.type="square";o.frequency.value=f;
+      g.gain.setValueAtTime(.05,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+d);t+=d*.85;});
+  }catch(e){}
+}
+const SFX={tick:()=>beep([[880,.07]]),done:()=>beep([[523,.09],[659,.09],[784,.09],[1047,.18]]),
+  ach:()=>beep([[784,.1],[988,.1],[1175,.1],[1568,.25]]),level:()=>beep([[523,.12],[523,.12],[784,.12],[1047,.3]])};
+
+// ===================== PIXEL ART =====================
+const HAIR=["#4a2f23","#1f1b24","#c9893b","#e8c26a","#b8475a","#7d5ba6"];
+const SKIN=["#ffdcc0","#f1c08f","#d79a6b","#a8693f","#7a4a2a"];
+const SHIRT=["#8a6fd1","#f29bb5","#5aa9e6","#6fbf73","#f6a04d","#3b2f4a"];
+const HERO_A=[
+"...HHHHHH...",
+"..HHHHHHHH..",
+".HHHHHHHHHH.",
+".HHSSSSSSHH.",
+".HSSSSSSSSH.",
+".HSESSSSESH.",
+".HRSSSSSSRH.",
+"..SSSMMSSS..",
+"...SSSSSS...",
+"..TTTTTTTT..",
+".TTTTTTTTTT.",
+".STTTTTTTTS.",
+"..TTTTTTTT..",
+"..PPP..PPP..",
+"..PPP..PPP..",
+"..BBB..BBB.."];
+function heroGrid(){
+  const lv=levelInfo().lv, coat=!!(S.q.q7_5&&S.q.q7_5.d), scope=lv>=5||coat, badge=lv>=3;
+  return HERO_A.map((row,r)=>row.split("").map((ch,c)=>{
+    if(ch==="T"&&coat&&(c<=3||c>=8)) return "W";
+    if(scope&&((r===9&&(c===4||c===7))||(r===10&&(c===4||c===7))||(r===11&&c===6))) return "K";
+    if(badge&&!coat&&r===10&&c===8) return "Y";
+    return ch;}).join(""));
+}
+function heroPal(){return {H:HAIR[S.hero.hair]||HAIR[0],S:SKIN[S.hero.skin]||SKIN[1],E:"#2b2240",R:"#f4a3b4",M:"#c2566f",
+  T:SHIRT[S.hero.shirt]||SHIRT[0],P:"#4a4d6e",B:"#3b2f4a",W:"#ffffff",K:"#58b6c9",Y:"#f6c453"};}
+function pix(grid,pal,x=0,y=0,s=1){
+  let o="";grid.forEach((row,r)=>{for(let c=0;c<row.length;c++){const ch=row[c];if(ch==="."||!pal[ch])continue;
+    o+=`<rect x="${x+c*s}" y="${y+r*s}" width="${s}" height="${s}" fill="${pal[ch]}"/>`;}});return o;}
+function heroSVG(){const g=heroGrid();return `<svg viewBox="-1 -1 14 18" shape-rendering="crispEdges">${pix(g,heroPal())}</svg>`;}
+const OWL=[
+"O..........O",
+"OO........OO",
+"OOOOOOOOOOOO",
+"OWWWOOOOWWWO",
+"WWKWWOOWWKWW",
+"OWWWOYYOWWWO",
+"OOOOOYYOOOOO",
+"OBBBBBBBBBBO",
+"OBCBBCBBCBBO",
+".OBBBBBBBBO.",
+"..OOOOOOOO..",
+"...YY..YY..."];
+const OWLCAP=["...GGGGGG...","GGGGGGGGGGGG","....GGGG..T.","..........T."];
+function owlSVG(){return `<svg viewBox="-1 -5 14 18" shape-rendering="crispEdges">${pix(OWLCAP,{G:"#3b2f4a",T:"#f6c453"},0,-4)}${pix(OWL,{O:"#b07a4f",W:"#fff",K:"#2b2240",Y:"#f6c453",B:"#f3d9b5",C:"#c99a6a"})}</svg>`;}
+
+// Map icons
+const ICONS=[
+ {g:["......RR......",".....RRRR.....","....RRRRRR....","...RRRRRRRR...","..RRRRRRRRRR..",".RRRRRRRRRRRR.","..WWWWWWWWWW..","..WBBWWWWBBW..","..WBBWWWWBBW..","..WWWWDDWWWW..","..WWWWDDWWWWXX","..WWWWDDWWWWXX"],
+  p:{R:"#e2607f",W:"#fff3dc",B:"#86cfe8",D:"#8a5a3c",X:"#d9a865"}},
+ {g:[".....GGGG.....","...GGGGGGGG...",".GGGGGGGGGGGG.",".KKKKKKKKKKKK.",".KCKBKCKBKCKK.",".KCKBKCKBKCKK.",".KCKKKCKKKCKK.",".KCKBKCKBKCKK.",".KCKBKCDDKCKK.",".KKKKKKDDKKKK.","SSSSSSSSSSSSSS"],
+  p:{G:"#4a4d6e",K:"#c96a4a",C:"#fff3dc",B:"#86cfe8",D:"#5a3a2c",S:"#bfb4a2"}},
+ {g:["..............",".WWWWWWWWWWWW.",".WWWWWLLWWWWW.",".WWWWLLLLWWWW.",".WWWWWLLWWWWW.",".WWWWWWWWWWWW.",".WBBWWWWWWBBW.",".WBBWWWWWWBBW.",".WWWWWDDWWWWW.",".WWWWWDDWWWWW."],
+  p:{W:"#f7f7f2",L:"#5fae6a",B:"#86cfe8",D:"#8a5a3c"}},
+ {g:[".....GGGG.....",".....GBBG.....",".....GBBG.....","....GBBBBG....","...GBPPPPBG...","..GBPPOPPPBG..","..GPPPPPOPPG..","..GPOPPPPPPG..","...GGGGGGGG..."],
+  p:{G:"#3b2f4a",B:"#e9f6ff",P:"#a98be8",O:"#fff"}},
+ {g:[".......FFF....",".......FF.....",".......K......","......NNN.....",".....NNNNN....","....MNNNMMM...","...MMMMMMMMM..","..MMMMMMMMMMM.",".MMMMMMMMMMMMM","MMMMMMMMMMMMMM"],
+  p:{F:"#e2607f",K:"#3b2f4a",N:"#ffffff",M:"#8b85a8"}},
+ {g:["F..........F..","C.C.C..C.C.C..","CCCCC..CCCCC..","CCCCCCCCCCCC..","CCBCCCCCCBCC..","CCCCCCCCCCCC..","CCCCCDDCCCCC..","CCCCCDDCCCCC.."],
+  p:{F:"#f29bb5",C:"#c9c2d8",B:"#3b2f4a",D:"#8a5a3c"}},
+ {g:["....FF....","...TTTT...","...TBBT...","...TTTT...","...TTTT...","...TBBT...","...TTTT...","..TTTDTT..","..TTTDTT.."],
+  p:{F:"#8a6fd1",T:"#d6b48a",B:"#3b2f4a",D:"#8a5a3c"}},
+ {g:["......Y.......",".....YYY......","..YYYYYYYYY...","....YYYYY.....","....YY.YY.....","...Y.....Y....","..HHHHHHHHH...",".HHHHHHHHHHH.."],
+  p:{Y:"#f6c453",H:"#7fbf62"}}
+];
+const NODES=[[38,172],[104,158],[168,176],[248,152],[236,96],[146,108],[62,62],[178,30]];
+const TREE=["..LLL..",".LLLLL.","LLLDLLL","LLLLLLL",".LLLLL.","...B...","...B..."];
+
+// ===================== PROGRESS =====================
+const LV=[0,120,300,550,850,1250,1750,2350,3050,3900,4900,6000];
+const TITLES=["Curious Newcomer","Hawk Hatchling","Lab Coat Sprout","Office-Hours Regular","Bedside Apprentice","Shadow Scout",
+  "Organic Alchemist","Research Ranger","MCAT Climber","Application Knight","Interview Ace","White Coat Hopeful"];
+function qState(id){return S.q[id]||(S.q[id]={d:0,s:[],n:""});}
+function isDone(id){return !!(S.q[id]&&S.q[id].d);}
+function hoursBy(fn){return S.logs.filter(fn).reduce((a,l)=>a+(+l.hrs||0),0);}
+function groupHours(g){return hoursBy(l=>{const c=HOUR_CATS.find(x=>x.id===l.cat);return c&&c.group===g;});}
+const GP={"A":4,"A-":3.7,"B+":3.3,"B":3,"B-":2.7,"C+":2.3,"C":2,"C-":1.7,"D+":1.3,"D":1,"F":0};
+function gpa(sciOnly){let pts=0,cr=0;S.courses.forEach(c=>{if(c.status!=="done"||!(c.grade in GP))return;if(sciOnly&&c.cat==="O")return;
+  const k=+c.cr||0;pts+=GP[c.grade]*k;cr+=k;});return cr?pts/cr:null;}
+function computeXP(){
+  let xp=0;
+  QUESTS.forEach(q=>{const st=S.q[q.id];if(!st)return;if(st.d)xp+=q.xp;xp+=(st.s||[]).filter(Boolean).length*10;});
+  xp+=Math.min(hoursBy(()=>true),1500)*2;
+  S.courses.forEach(c=>{if(c.status==="done"){xp+=60;if(c.grade==="A"||c.grade==="A-")xp+=20;}});
+  xp+=Object.keys(S.ach).length*25;
+  return Math.round(xp);
+}
+function levelInfo(){
+  const xp=computeXP();let lv=1;for(let i=0;i<LV.length;i++)if(xp>=LV[i])lv=i+1;
+  const cur=LV[lv-1],nxt=LV[lv]??null;
+  let title=TITLES[lv-1]; if(isDone("q7_5")) title="Medical Student ✦";
+  return {xp,lv,cur,nxt,title};
+}
+function chapterProgress(ch){const qs=QUESTS.filter(q=>q.ch===ch);const d=qs.filter(q=>isDone(q.id)).length;return {d,t:qs.length};}
+function currentChapter(){for(const c of CHAPTERS){const p=chapterProgress(c.id);if(p.d<p.t)return c.id;}return 7;}
+
+// ===================== ACHIEVEMENTS =====================
+const distinct=(cats)=>new Set(S.logs.filter(l=>cats.includes(l.cat)&&(l.contact||"").trim()).map(l=>l.contact.trim().toLowerCase())).size;
+const prereqStat=()=>{const p=S.courses.filter(c=>c.prereq);return {d:p.filter(c=>c.status==="done").length,t:p.length};};
+const ACH=[
+ {id:"first_quest",ic:"👣",n:"First Step",d:"Complete your first quest",t:()=>QUESTS.some(q=>isDone(q.id))},
+ ...CHAPTERS.map(c=>({id:"ch"+c.id,ic:["🏡","🦅","🌻","⚗️","⛰️","🏰","🗼","🥼"][c.id],n:c.name+" Cleared",d:"Finish every quest in Chapter "+c.id,
+   t:()=>{const p=chapterProgress(c.id);return p.d===p.t;}})),
+ {id:"first_log",ic:"📓",n:"Dear Diary",d:"Log your first Journal entry",t:()=>S.logs.length>0},
+ {id:"past_lives",ic:"🕰️",n:"Past Lives",d:"Log a leadership or work entry from your earlier career",t:()=>S.logs.some(l=>(l.cat==="leadership"||l.cat==="work")&&l.date&&l.date<"2026-11-01")},
+ {id:"first_shadow",ic:"👥",n:"Shadow Initiate",d:"Log your first shadowing hours",t:()=>groupHours("shadow")>0},
+ {id:"do_shadow",ic:"🤲",n:"Osteo-Curious",d:"Shadow a DO physician",t:()=>hoursBy(l=>l.cat==="shadow_do")>0},
+ {id:"shadow3",ic:"🧑‍⚕️",n:"Shadow Squad",d:"Shadow 3 different physicians (use the Contact field)",t:()=>distinct(["shadow_md","shadow_do"])>=3},
+ {id:"shadow50",ic:"🌙",n:"Shadow Master",d:"Reach 50 shadowing hours",t:()=>groupHours("shadow")>=50},
+ {id:"clin1",ic:"🩹",n:"First Patient",d:"Log your first clinical hours",t:()=>groupHours("clinical")>0},
+ {id:"clin100",ic:"💗",n:"Bedside 100",d:"100 clinical hours",t:()=>groupHours("clinical")>=100},
+ {id:"clin300",ic:"💖",n:"Bedside Veteran",d:"300 clinical hours",t:()=>groupHours("clinical")>=300},
+ {id:"serve50",ic:"🤝",n:"Helping Hands",d:"50 non-clinical service hours",t:()=>groupHours("service")>=50},
+ {id:"serve150",ic:"🌟",n:"Heart of Gold",d:"150 non-clinical service hours",t:()=>groupHours("service")>=150},
+ {id:"research1",ic:"🔬",n:"Lab Rat",d:"Log your first research hours",t:()=>groupHours("research")>0},
+ {id:"lead50",ic:"🚩",n:"Captain",d:"50 leadership hours",t:()=>groupHours("leadership")>=50},
+ {id:"hours500",ic:"🏃",n:"Marathoner",d:"500 total logged hours",t:()=>hoursBy(()=>true)>=500},
+ {id:"prereq_half",ic:"📗",n:"Halfway Scholar",d:"Finish half of your prereqs",t:()=>{const p=prereqStat();return p.t&&p.d>=p.t/2;}},
+ {id:"prereq_all",ic:"📚",n:"Prereq Master",d:"Finish every prereq",t:()=>{const p=prereqStat();return p.t&&p.d===p.t;}},
+ {id:"scholar",ic:"🅰️",n:"Straight-A Spellcaster",d:"Earn A or A- in 4 courses",t:()=>S.courses.filter(c=>c.status==="done"&&(c.grade==="A"||c.grade==="A-")).length>=4},
+ {id:"honor",ic:"🎖️",n:"Honor Roll",d:"3.5+ estimated GPA with 4+ graded courses",t:()=>{const g=gpa(false);return g!==null&&g>=3.5&&S.courses.filter(c=>c.status==="done"&&c.grade in GP).length>=4;}},
+ {id:"guide",ic:"🦉",n:"Guided",d:"Meet your pre-health advisor",t:()=>isDone("q0_5")},
+ {id:"fap",ic:"💰",n:"Coin Saver",d:"Complete the Fee Assistance quest",t:()=>isDone("q2_5")},
+ {id:"wise",ic:"🧭",n:"Wise Traveler",d:"Face the Fork in the Road honestly",t:()=>isDone("q4_0")},
+ {id:"dragon",ic:"🐉",n:"Dragon Slayer",d:"Defeat the MCAT",t:()=>isDone("q4_3")},
+ {id:"sent",ic:"📮",n:"Sent!",d:"Submit your applications",t:()=>isDone("q5_3")},
+ {id:"lv5",ic:"⭐",n:"Rising Star",d:"Reach Level 5",t:()=>levelInfo().lv>=5},
+ {id:"lv10",ic:"🌠",n:"Legend",d:"Reach Level 10",t:()=>levelInfo().lv>=10},
+ {id:"whitecoat",ic:"🥼",n:"Doctor-in-Training",d:"Earn your white coat",t:()=>isDone("q7_5")}
+];
+function checkAch(){
+  let got=[];
+  for(let pass=0;pass<2;pass++) ACH.forEach(a=>{if(!S.ach[a.id]&&a.t()){S.ach[a.id]=today();got.push(a);}});
+  got.forEach((a,i)=>setTimeout(()=>{toast(`<span class="big">${a.ic}</span><div>★ NEW ACHIEVEMENT ★<br><b>${esc(a.n)}</b></div>`,"ach");SFX.ach();confetti(60);},350*i+200));
+  return got.length;
+}
+
+// ===================== UI HELPERS =====================
+function toast(html,cls=""){const t=document.createElement("div");t.className="toast "+cls;t.innerHTML=html;const box=$("#toasts");box.appendChild(t);while(box.children.length>4)box.firstChild.remove();
+  setTimeout(()=>{t.style.transition="opacity .4s";t.style.opacity="0";setTimeout(()=>t.remove(),450);},3600);}
+const cv=$("#confetti"),cx=cv.getContext("2d");let parts=[],raf=null;
+function confetti(n=80){
+  cv.width=innerWidth;cv.height=innerHeight;const cols=["#f29bb5","#f6c453","#8a6fd1","#5fae6a","#86cfe8"];
+  for(let i=0;i<n;i++)parts.push({x:innerWidth/2+(Math.random()-.5)*200,y:innerHeight*.35,vx:(Math.random()-.5)*9,vy:-Math.random()*9-3,
+    s:4+Math.floor(Math.random()*3)*2,c:cols[i%cols.length],l:90+Math.random()*40});
+  if(!raf)loop();
+}
+function loop(){cx.clearRect(0,0,cv.width,cv.height);parts.forEach(p=>{p.vy+=.3;p.x+=p.vx;p.y+=p.vy;p.l--;cx.fillStyle=p.c;cx.fillRect(Math.round(p.x),Math.round(p.y),p.s,p.s);});
+  parts=parts.filter(p=>p.l>0&&p.y<cv.height+20);raf=parts.length?requestAnimationFrame(loop):(cx.clearRect(0,0,cv.width,cv.height),null);}
+function openModal(html){$("#modal").innerHTML=html;$("#scrim").classList.add("on");const f=$("#modal").querySelector("button,input");if(f)f.focus();}
+function closeModal(){$("#scrim").classList.remove("on");}
+$("#scrim").addEventListener("click",e=>{if(e.target.id==="scrim")closeModal();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
+
+// ===================== PROGRESS EVENTS =====================
+let lastLv=null,lastCh=null;
+function afterChange(){
+  const before=lastLv;
+  checkAch();save();
+  const li=levelInfo();
+  if(before!==null&&li.lv>before){setTimeout(()=>{toast(`<span class="big">⬆️</span><div>LEVEL UP!<br><b>LV ${li.lv} · ${esc(li.title)}</b></div>`,"ach");SFX.level();confetti(120);},150);}
+  const ch=currentChapter();
+  if(lastCh!==null&&ch>lastCh){const c=CHAPTERS[lastCh];setTimeout(()=>chapterBanner(c,CHAPTERS[ch]),700);}
+  renderAll();
+}
+function chapterBanner(done,next){
+  confetti(160);SFX.level();
+  openModal(`<div class="chbanner"><div style="width:90px;margin:4px auto">${heroSVG()}</div>
+   <div class="px">✨ CHAPTER COMPLETE ✨</div><h2 class="px">${esc(done.name)}</h2>
+   <div class="sage" style="justify-content:center">${owlSVG()}<div class="bubble" style="text-align:left">Wonderful work, ${esc(S.hero.name)}! Your next stop is <b>${esc(next.name)}</b> (${esc(next.when)}). ${esc(next.blurb)}</div></div>
+   <button class="btn pink" onclick="closeModal()">Onward! →</button></div>`);
+}
+
+// ===================== RENDER: HUD =====================
+function renderHUD(){
+  const li=levelInfo();
+  $("#heroName").textContent=S.hero.name||"Hero";
+  $("#lvl").textContent="LV "+li.lv;
+  $("#titleTag").textContent=li.title;
+  const pct=li.nxt?((li.xp-li.cur)/(li.nxt-li.cur))*100:100;
+  $("#xpfill").style.width=Math.max(2,Math.min(100,pct))+"%";
+  $("#xptext").textContent=li.nxt?`${li.xp} XP · ${li.nxt-li.xp} XP to level ${li.lv+1}`:`${li.xp} XP · MAX LEVEL`;
+  $("#portrait").innerHTML=heroSVG();
+  const t=today(),nx=KEY_DATES.find(k=>k.d>=t);
+  if(nx){const days=Math.round((new Date(nx.d)-new Date(t))/864e5);
+    $("#nextdate").innerHTML=`⏳ <b>${days} day${days===1?"":"s"}</b> to: ${esc(nx.t)}${nx.est?" (≈)":""}`;}
+  $("#soundBtn").textContent=S.sound?"🔊":"🔈";
+  lastLv=li.lv;lastCh=currentChapter();
+}
+
+// ===================== RENDER: MAP =====================
+let selCh=null;
+function renderMap(){
+  const cur=currentChapter(); if(selCh===null) selCh=cur;
+  let o=`<defs><pattern id="gp" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#9bd27a"/>
+    <rect x="1" y="2" width="1" height="1" fill="#88c56a"/><rect x="5" y="6" width="1" height="1" fill="#88c56a"/><rect x="6" y="1" width="1" height="1" fill="#b2de95"/></pattern></defs>
+    <rect width="320" height="200" fill="url(#gp)"/>`;
+  // lagoon
+  o+=`<ellipse cx="208" cy="124" rx="24" ry="13" fill="#5fb6d4"/><ellipse cx="208" cy="123" rx="21" ry="10" fill="#86cfe8"/>
+     <rect x="198" y="119" width="6" height="1" fill="#c9eefa"/><rect x="212" y="126" width="5" height="1" fill="#c9eefa"/>`;
+  // path
+  const d="M"+NODES.map(p=>p.join(",")).join(" L");
+  o+=`<path d="${d}" fill="none" stroke="#c9a96a" stroke-width="9" stroke-linejoin="round" stroke-linecap="round"/>
+      <path d="${d}" fill="none" stroke="#ecd09a" stroke-width="6" stroke-linejoin="round" stroke-linecap="round"/>
+      <path d="${d}" fill="none" stroke="#f7e3b8" stroke-width="1" stroke-dasharray="2 4"/>`;
+  // trees & flowers
+  const trees=[[8,120],[18,95],[290,20],[302,62],[300,182],[118,64],[100,12],[24,20],[272,190],[132,190],[205,70],[60,110],[285,110],[160,150]];
+  trees.forEach(([x,y])=>o+=pix(TREE,{L:"#4f9a4a",D:"#6cb562",B:"#7a5232"},x,y));
+  [[20,150],[80,185],[150,140],[230,180],[270,60],[90,90],[190,60],[40,40]].forEach(([x,y],i)=>{o+=`<rect x="${x}" y="${y}" width="2" height="2" fill="${["#f29bb5","#fff","#f6c453"][i%3]}"/>`;});
+  // nodes
+  CHAPTERS.forEach(c=>{
+    const [x,y]=NODES[c.id],ic=ICONS[c.id],w=ic.g[0].length,h=ic.g.length,p=chapterProgress(c.id),done=p.d===p.t;
+    o+=`<g class="node" data-ch="${c.id}" tabindex="0" role="button" aria-label="Chapter ${c.id}: ${esc(c.name)}">
+      <ellipse cx="${x}" cy="${y+2}" rx="12" ry="4" fill="#00000022"/>
+      ${pix(ic.g,ic.p,Math.round(x-w*.8),Math.round(y-h*1.6-1),1.6)}
+      <rect class="nodering" x="${x-5}" y="${y+1}" width="10" height="7" fill="${done?"#5fae6a":(c.id===cur?"#f6c453":"#fffaf0")}" stroke="#3b2f4a" stroke-width="1"/>
+      <text x="${x}" y="${y+6.6}" font-size="5.5" text-anchor="middle" font-family="Pixelify Sans, monospace" fill="#3b2f4a">${done?"✓":c.id}</text>
+      ${c.id===selCh?`<rect x="${x-7}" y="${y-1}" width="14" height="11" fill="none" stroke="#e2607f" stroke-width="1" stroke-dasharray="2 1"/>`:""}
+    </g>`;
+  });
+  // hero
+  const [hx,hy]=NODES[cur];
+  o+=`<g class="hero" id="heroG" style="transform:translate(${hx+9}px,${hy-19}px)"><g class="bob">${pix(heroGrid(),heroPal(),0,0,1.25)}</g></g>`;
+  $("#map").innerHTML=o;
+  $$("#map .node").forEach(n=>{const go=()=>{selCh=+n.dataset.ch;SFX.tick();renderMap();renderChapterSide();};
+    n.addEventListener("click",go);n.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}});});
+}
+function questRow(q){
+  const st=S.q[q.id]||{},done=!!st.d,ns=(st.s||[]).filter(Boolean).length;
+  return `<li class="qitem ${done?"done":""}" data-q="${q.id}" tabindex="0"><span class="qbox">${done?"✓":""}</span>
+    <span class="qt">${esc(q.title)}<small>${esc(q.when)}${q.steps&&!done?` · ${ns}/${q.steps.length} steps`:""}</small></span><span class="qxp">+${q.xp} XP</span></li>`;
+}
+function bindQuestRows(root){root.querySelectorAll(".qitem").forEach(el=>{const go=()=>openQuest(el.dataset.q);
+  el.addEventListener("click",go);el.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();go();}});});}
+function renderChapterSide(){
+  const c=CHAPTERS[selCh],p=chapterProgress(c.id),cur=currentChapter();
+  const qs=QUESTS.filter(q=>q.ch===c.id);
+  const next=qs.find(q=>!isDone(q.id));
+  $("#chapterSide").innerHTML=`
+   <span class="chip purple">Chapter ${c.id}</span><span class="chip gold">${esc(c.when)}</span>${c.id===cur?'<span class="chip pink">📍 You are here</span>':""}
+   <h2 class="px">${esc(c.name)}</h2>
+   <div class="muted" style="font-size:14px">${esc(c.blurb)}</div>
+   <div style="display:flex;align-items:center;gap:8px;margin:10px 0 4px"><div class="minibar" style="flex:1"><i style="width:${p.d/p.t*100}%"></i></div><span class="px" style="font-size:13px">${p.d}/${p.t}</span></div>
+   ${next?`<button class="btn pink" style="width:100%;margin:6px 0" data-next="${next.id}">▶ Next quest: ${esc(next.title)}</button>`:'<div class="chip green" style="margin:6px 0">All quests complete! ✨</div>'}
+   <ul class="qlist">${qs.map(questRow).join("")}</ul>`;
+  bindQuestRows($("#chapterSide"));
+  const nb=$("#chapterSide [data-next]"); if(nb) nb.addEventListener("click",()=>openQuest(nb.dataset.next));
+}
+function renderDates(){
+  const t=today();
+  $("#dates").innerHTML=KEY_DATES.map(k=>{const dt=new Date(k.d+"T12:00:00");
+    const lab=dt.toLocaleDateString("en-US",{month:"short",year:"numeric"});
+    return `<li class="${k.d<t?"past":""}"><b>${k.est?"≈ ":""}${lab}</b><span>${esc(k.t)}</span></li>`;}).join("");
+}
+
+// ===================== QUEST MODAL =====================
+function openQuest(id){
+  const q=QMAP[id],st=qState(id),ch=CHAPTERS[q.ch];
+  if(!Array.isArray(st.s))st.s=[];
+  const done=!!st.d;
+  openModal(`
+   <button class="btn sm ghost mclose" onclick="closeModal()" aria-label="Close">✕</button>
+   <span class="chip purple">Ch ${q.ch} · ${esc(ch.name)}</span><span class="chip gold">🕒 ${esc(q.when)}</span><span class="chip pink">+${q.xp} XP</span>
+   <h2 class="px" style="font-size:24px">${done?"✅ ":"⚔️ "}${esc(q.title)}</h2>
+   <div class="sage">${owlSVG()}<div class="bubble">${q.what}</div></div>
+   <div class="sec"><h4>✦ Why it matters</h4>${q.why}</div>
+   ${q.steps?`<div class="sec"><h4>✦ Your steps <span class="muted" style="font-family:Nunito;font-size:12px">(+10 XP each)</span></h4>
+     <ul class="steps">${q.steps.map((s,i)=>`<li class="${st.s[i]?"ok":""}" data-i="${i}" tabindex="0" role="checkbox" aria-checked="${!!st.s[i]}"><span class="cb">${st.s[i]?"✓":""}</span><span class="t">${esc(s)}</span><span class="sx">+10</span></li>`).join("")}</ul></div>`:""}
+   ${q.tip?`<div class="sec tip"><b>🦉 Sage's tip:</b> ${esc(q.tip)}</div>`:""}
+   ${q.links?`<div class="sec links"><h4>✦ Links</h4>${q.links.map(l=>`<a href="${esc(l.u)}" target="_blank" rel="noopener">${esc(l.l)} ↗</a>`).join("<br>")}</div>`:""}
+   <div class="sec"><h4>✦ Your notes</h4><textarea class="notes" id="qnotes" placeholder="Names, dates, what you learned...">${esc(st.n||"")}</textarea></div>
+   <div class="mfoot"><span class="muted" style="font-size:13px">${done?"Completed "+esc(st.at||""):"You can complete a quest anytime. Steps are just a guide."}</span>
+     ${done?`<button class="btn ghost" id="qundo">↺ Mark not done</button>`:`<button class="btn green" id="qdone">✓ Complete quest (+${q.xp} XP)</button>`}</div>`);
+  $$("#modal .steps li").forEach(li=>{const tog=()=>{const i=+li.dataset.i;st.s[i]=!st.s[i];SFX.tick();
+      li.classList.toggle("ok",st.s[i]);li.setAttribute("aria-checked",!!st.s[i]);li.querySelector(".cb").textContent=st.s[i]?"✓":"";
+      if(st.s[i])toast(`<span class="big">✨</span><div>+10 XP</div>`);
+      if(!st.d&&q.steps.every((_,k)=>st.s[k])){const b=$("#qdone");if(b){b.textContent="🎉 All steps done! Complete quest →";b.classList.add("pink");}}
+      afterChange();};
+    li.addEventListener("click",tog);li.addEventListener("keydown",e=>{if(e.key===" "||e.key==="Enter"){e.preventDefault();tog();}});});
+  $("#qnotes").addEventListener("input",e=>{st.n=e.target.value;save();});
+  const db=$("#qdone"); if(db) db.addEventListener("click",()=>{st.d=1;st.at=today();SFX.done();confetti(90);
+    toast(`<span class="big">⚔️</span><div>QUEST COMPLETE<br><b>+${q.xp} XP</b></div>`);closeModal();afterChange();});
+  const ub=$("#qundo"); if(ub) ub.addEventListener("click",()=>{st.d=0;closeModal();afterChange();});
+}
+
+// ===================== QUEST LOG =====================
+function renderQuestLog(){
+  const hide=$("#hideDone").checked,cur=currentChapter();
+  $("#questLog").innerHTML=CHAPTERS.map(c=>{
+    const p=chapterProgress(c.id),qs=QUESTS.filter(q=>q.ch===c.id&&!(hide&&isDone(q.id)));
+    return `<div class="chsec"><div class="chhead"><span class="px" style="font-size:18px;font-weight:700">${["🏡","🦅","🌻","⚗️","⛰️","🏰","🗼","🥼"][c.id]} Ch ${c.id} · ${esc(c.name)}</span>
+     <span class="chip gold">${esc(c.when)}</span>${c.id===cur?'<span class="chip pink">📍 current</span>':""}
+     <div class="minibar"><i style="width:${p.d/p.t*100}%"></i></div><span class="px" style="font-size:13px">${p.d}/${p.t}</span></div>
+     ${qs.length?`<ul class="qlist">${qs.map(questRow).join("")}</ul>`:'<div class="muted" style="font-size:13px">All done here ✨</div>'}</div>`;}).join("");
+  bindQuestRows($("#questLog"));
+}
+$("#hideDone").addEventListener("change",renderQuestLog);
+
+// ===================== JOURNAL =====================
+$("#catSel").innerHTML=HOUR_CATS.map(c=>`<option value="${c.id}">${esc(c.label)}</option>`).join("");
+$("#logForm").date.value=today();
+function renderJournal(){
+  $("#meters").innerHTML=GOALS.map(g=>{
+    const cats=HOUR_CATS.filter(c=>c.group===g.group),tot=groupHours(g.group);
+    const segs=cats.map(c=>{const h=hoursBy(l=>l.cat===c.id);return `<i style="width:${Math.min(100,h/g.goal*100)}%;background:${c.color}" title="${esc(c.label)}: ${h} hrs"></i>`;}).join("");
+    const extra=g.group==="shadow"?` · DO: ${hoursBy(l=>l.cat==="shadow_do")} hrs · ${distinct(["shadow_md","shadow_do"])} physicians`:"";
+    return `<div class="meter"><div class="top"><span>${esc(g.label)}</span><span class="px">${+tot.toFixed(2)} / ${g.goal} hrs ${tot>=g.goal?"⭐":""}</span></div>
+      <div class="bar">${segs}</div><div class="note">${esc(g.note)}${extra}</div></div>`;}).join("")+
+    `<div class="meter"><div class="top"><span>Work (non-clinical)</span><span class="px">${+hoursBy(l=>l.cat==="work").toFixed(2)} hrs</span></div><div class="note">Past jobs count as experience on your application!</div></div>`;
+  const logs=[...S.logs].sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+  $("#logTable").innerHTML=logs.length?`<table><tr><th>Date</th><th>Type</th><th>Hrs</th><th>Place</th><th>Contact</th><th>Reflection</th><th></th></tr>
+    ${logs.map(l=>{const c=HOUR_CATS.find(x=>x.id===l.cat)||{label:l.cat,color:"#ccc"};
+      return `<tr><td style="white-space:nowrap">${esc(l.date)}</td><td style="white-space:nowrap"><span class="dot" style="background:${c.color}"></span>${esc(c.label)}</td><td>${esc(l.hrs)}</td>
+      <td>${esc(l.place)}</td><td>${esc(l.contact)}</td><td style="min-width:180px">${esc(l.note)}</td>
+      <td><button class="btn sm ghost" data-del="${l.id}" aria-label="Delete entry">🗑</button></td></tr>`;}).join("")}</table>`
+    :`<div class="empty">No entries yet. Log your first adventure above, even a past job counts!</div>`;
+  $$("#logTable [data-del]").forEach(b=>b.addEventListener("click",()=>{
+    if(b.dataset.confirm){S.logs=S.logs.filter(l=>l.id!==b.dataset.del);afterChange();}
+    else{b.dataset.confirm=1;b.textContent="Sure?";b.classList.add("pink");setTimeout(()=>{if(b.isConnected){delete b.dataset.confirm;b.textContent="🗑";b.classList.remove("pink");}},2500);}}));
+}
+$("#logForm").addEventListener("submit",e=>{
+  e.preventDefault();const f=e.target,hrs=parseFloat(f.hrs.value);if(!(hrs>0))return;
+  S.logs.push({id:uid(),date:f.date.value,cat:f.cat.value,hrs,place:f.place.value.trim(),contact:f.contact.value.trim(),note:f.note.value.trim()});
+  SFX.done();toast(`<span class="big">📓</span><div>Logged ${hrs} hrs<br><b>+${Math.round(hrs*2)} XP</b></div>`);
+  f.hrs.value="";f.note.value="";afterChange();
+});
+async function copyText(txt,label){
+  try{await navigator.clipboard.writeText(txt);toast(`<span class="big">📋</span><div>${esc(label)} copied!</div>`);}
+  catch(e){openModal(`<button class="btn sm ghost mclose" onclick="closeModal()">✕</button><h2 class="px">Copy this</h2>
+    <p class="muted">Your browser blocked automatic copying. Select all of the text below and copy it.</p><textarea style="width:100%;height:260px">${esc(txt)}</textarea>`);}
+}
+$("#copyCsv").addEventListener("click",()=>{
+  const q=v=>`"${String(v??"").replace(/"/g,'""')}"`;
+  const rows=[["Date","Type","Hours","Place","Contact","Reflection"].join(",")].concat(
+    S.logs.map(l=>[l.date,(HOUR_CATS.find(c=>c.id===l.cat)||{}).label||l.cat,l.hrs,l.place,l.contact,l.note].map(q).join(",")));
+  copyText(rows.join("\n"),"Journal CSV");
+});
+
+// ===================== SPELLBOOK =====================
+function renderSpell(){
+  const ga=gpa(false),gs=gpa(true),p=prereqStat();
+  $("#gpaAll").textContent=ga===null?"–":ga.toFixed(2);
+  $("#gpaSci").textContent=gs===null?"–":gs.toFixed(2);
+  $("#prereqPct").textContent=`${p.d}/${p.t}`;
+  const catN={B:"Bio",C:"Chem",P:"Phys",M:"Math",O:"Non-sci"};
+  const opts=(v)=>`<option value=""${v?"":" selected"}>–</option>`+Object.keys(GP).map(g=>`<option${g===v?" selected":""}>${g}</option>`).join("")+
+    `<option value="W"${v==="W"?" selected":""}>W</option><option value="P/F"${v==="P/F"?" selected":""}>Pass</option>`;
+  $("#courseTable").innerHTML=`<tr><th>Course</th><th>Type</th><th>Cr</th><th>Status</th><th>Grade</th><th>School</th><th></th></tr>`+
+   S.courses.map(c=>`<tr class="st-${c.status}" data-id="${c.id}"><td style="font-weight:700">${c.prereq?"⭐ ":""}${esc(c.name)}</td><td>${catN[c.cat]||c.cat}</td>
+    <td><input type="number" min="0" step="0.5" value="${esc(c.cr)}" data-f="cr" style="width:56px"></td>
+    <td><select data-f="status"><option value="todo"${c.status==="todo"?" selected":""}>Not yet</option><option value="doing"${c.status==="doing"?" selected":""}>In progress</option><option value="done"${c.status==="done"?" selected":""}>✓ Done</option></select></td>
+    <td><select data-f="grade">${opts(c.grade)}</select></td>
+    <td><input data-f="school" value="${esc(c.school)}" placeholder="Lone Star / New Paltz" style="width:140px"></td>
+    <td>${c.prereq?"":`<button class="btn sm ghost" data-rm="${c.id}" aria-label="Remove course">🗑</button>`}</td></tr>`).join("");
+  $$("#courseTable [data-f]").forEach(el=>el.addEventListener("change",()=>{
+    const c=S.courses.find(x=>x.id===el.closest("tr").dataset.id),f=el.dataset.f;
+    c[f]=f==="cr"?(+el.value||0):el.value;
+    if(f==="grade"&&el.value&&c.status!=="done"){c.status="done";}
+    if(f==="status"&&el.value==="done"){SFX.done();toast(`<span class="big">📘</span><div>Spell learned!<br><b>+60 XP</b></div>`);}
+    afterChange();}));
+  $$("#courseTable [data-rm]").forEach(b=>b.addEventListener("click",()=>{S.courses=S.courses.filter(c=>c.id!==b.dataset.rm);afterChange();}));
+}
+$("#courseForm").addEventListener("submit",e=>{e.preventDefault();const f=e.target;
+  S.courses.push({id:uid(),name:f.name.value.trim(),cat:f.cat.value,cr:+f.cr.value||0,status:"todo",grade:"",school:f.school.value.trim(),prereq:false});
+  f.name.value="";afterChange();});
+
+// ===================== TROPHIES / CODEX =====================
+function renderTrophies(){
+  const n=Object.keys(S.ach).length;$("#trophyCount").textContent=`${n} / ${ACH.length}`;
+  $("#trophies").innerHTML=ACH.map(a=>{const got=S.ach[a.id];return `<div class="trophy ${got?"":"locked"}"><div class="ic">${a.ic}</div><b>${esc(a.n)}</b><small>${esc(a.d)}</small>${got?`<div class="when">Unlocked ${esc(got)}</div>`:""}</div>`;}).join("");
+}
+function renderCodex(){
+  $("#sageCodex").innerHTML=owlSVG();$("#sageCodex svg").style.width="60px";
+  $("#codex").innerHTML=CODEX.map(([t,d])=>`<div class="cx"><b>${esc(t)}</b>${esc(d)}</div>`).join("");
+}
+
+// ===================== CHARACTER & SETTINGS =====================
+function openCharacter(){
+  const sw=(arr,key)=>arr.map((c,i)=>`<div class="sw ${S.hero[key]===i?"on":""}" style="background:${c}" data-k="${key}" data-i="${i}" role="button" tabindex="0" aria-label="${key} color ${i+1}"></div>`).join("");
+  openModal(`<button class="btn sm ghost mclose" onclick="closeModal()">✕</button>
+   <h2 class="px">🎨 Your character</h2>
+   <div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap">
+    <div id="charPrev" style="width:110px;background:#cfe8ff;border:3px solid var(--line);border-radius:4px;padding:8px">${heroSVG()}</div>
+    <div style="flex:1;min-width:220px">
+     <label style="font-weight:800;font-size:13px">Name<br><input id="cname" value="${esc(S.hero.name)}" maxlength="24"></label>
+     <div style="margin-top:10px;font-weight:800;font-size:13px">Hair</div><div class="swatches">${sw(HAIR,"hair")}</div>
+     <div style="margin-top:8px;font-weight:800;font-size:13px">Skin</div><div class="swatches">${sw(SKIN,"skin")}</div>
+     <div style="margin-top:8px;font-weight:800;font-size:13px">Outfit</div><div class="swatches">${sw(SHIRT,"shirt")}</div>
+    </div></div>
+   <p class="muted" style="font-size:13px">Your outfit changes as you grow: a gold pin at Level 3, a stethoscope at Level 5, and the white coat at the very end. 🥼</p>
+   <div class="mfoot"><span></span><button class="btn pink" onclick="closeModal()">Looks great!</button></div>`);
+  $("#cname").addEventListener("input",e=>{S.hero.name=e.target.value||"Hero";save();renderHUD();});
+  $$("#modal .sw").forEach(s=>{const go=()=>{S.hero[s.dataset.k]=+s.dataset.i;SFX.tick();save();renderHUD();renderMap();
+      $$(`#modal .sw[data-k="${s.dataset.k}"]`).forEach(x=>x.classList.toggle("on",x===s));$("#charPrev").innerHTML=heroSVG();};
+    s.addEventListener("click",go);s.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go();}});});
+}
+$("#portrait").addEventListener("click",openCharacter);
+$("#portrait").addEventListener("keydown",e=>{if(e.key==="Enter")openCharacter();});
+$("#soundBtn").addEventListener("click",()=>{S.sound=!S.sound;save();renderHUD();if(S.sound)SFX.tick();});
+$("#setBtn").addEventListener("click",()=>{
+  openModal(`<button class="btn sm ghost mclose" onclick="closeModal()">✕</button><h2 class="px">⚙︎ Save & settings</h2>
+   <p style="font-size:14px">Status: <b>${esc($("#savestat").textContent)}</b>. Your progress saves automatically. When you're signed in, it also syncs to your account, so it follows you across devices.</p>
+   <h3 class="px">💾 Backup save file</h3>
+   <p class="muted" style="font-size:13px">Copy a backup code and keep it in your Med School folder. Paste it below to restore.</p>
+   <button class="btn" id="bkCopy">Copy backup code</button>
+   <textarea id="bkIn" style="width:100%;height:90px;margin-top:10px" placeholder="Paste a backup code here to restore"></textarea>
+   <button class="btn ghost" id="bkLoad" style="margin-top:6px">Restore from code</button>
+   <h3 class="px">🔄 Replay</h3>
+   <button class="btn ghost" id="introBtn">Replay the Sage's intro</button>
+   <button class="btn ghost" id="resetBtn" style="margin-left:6px">Reset all progress</button>
+   <div id="resetMsg" class="muted" style="font-size:13px;margin-top:6px"></div>`);
+  $("#bkCopy").addEventListener("click",()=>copyText(JSON.stringify(S),"Backup code"));
+  $("#bkLoad").addEventListener("click",()=>{try{const d=JSON.parse($("#bkIn").value);if(!d||!d.q)throw 0;S=Object.assign(freshState(),d);closeModal();afterChange();toast("✅ Save restored!");}
+    catch(e){$("#bkIn").style.borderColor="#e2607f";toast("That code didn't work. Check that you pasted all of it.");}});
+  $("#introBtn").addEventListener("click",()=>{closeModal();intro(0);});
+  $("#resetBtn").addEventListener("click",e=>{const b=e.target;if(b.dataset.c){S=freshState();S.seenIntro=true;closeModal();save();renderAll();toast("Fresh start! 🌱");}
+    else{b.dataset.c=1;b.textContent="Click again to erase everything";b.classList.add("pink");$("#resetMsg").textContent="Tip: copy a backup code first.";}});
+});
+
+// ===================== INTRO =====================
+const INTRO=[
+  ()=>`Hoo-hoo! Hello, <b>${esc(S.hero.name)}</b>! I'm the Sage, and I'll be your guide on the long road to the <b>white coat</b>. 🥼`,
+  ()=>`Here's your quest: <b>finish your bachelor's at SUNY New Paltz</b> while collecting everything medical schools look for: grades, the MCAT, shadowing, clinical hours, service, and great letters.`,
+  ()=>`Every <b>quest</b> explains <i>what</i> a thing is, <i>why</i> it matters, and the exact <i>steps</i>. Check off steps for XP. Log real hours in your <b>Journal</b> and real classes in your <b>Spellbook</b>, and you'll level up as you actually progress.`,
+  ()=>`You chose the <b>Straight Through</b> route: apply in May 2028 and start med school in 2029. It's a brave, fast route! I'll put a checkpoint, <b>The Fork in the Road</b>, in Jan 2028 so you can choose a gap year if you need one. Both paths end in a white coat.`,
+  ()=>`One more thing: your years in HR, management and tech are <b>not</b> wasted. They're experience points medical schools value. Ready? Your first quest is waiting in <b>Moving Day Meadow</b>! 🏡`
+];
+function intro(i){
+  openModal(`<div class="sage" style="margin-top:4px">${owlSVG()}<div class="bubble" style="min-height:96px">${INTRO[i]()}</div></div>
+   <div class="mfoot"><span class="px muted">${i+1} / ${INTRO.length}</span>
+   <span>${i>0?`<button class="btn ghost" id="ib">← Back</button>`:""}
+   ${i<INTRO.length-1?`<button class="btn pink" id="in">Next →</button>`:`<button class="btn pink" id="ig">Let's go! ⚔️</button>`}</span></div>`);
+  SFX.tick();
+  const b=$("#ib");if(b)b.addEventListener("click",()=>intro(i-1));
+  const n=$("#in");if(n)n.addEventListener("click",()=>intro(i+1));
+  const g=$("#ig");if(g)g.addEventListener("click",()=>{S.seenIntro=true;save();closeModal();openQuest("q0_1");});
+}
+
+// ===================== TABS / BOOT =====================
+$$(".tab").forEach(t=>t.addEventListener("click",()=>{
+  $$(".tab").forEach(x=>x.classList.toggle("on",x===t));$$(".view").forEach(v=>v.classList.toggle("on",v.id==="v-"+t.dataset.v));SFX.tick();
+  try{history.replaceState(null,"","#"+t.dataset.v);}catch(e){}
+}));
+function renderAll(){renderHUD();renderMap();renderChapterSide();renderDates();renderQuestLog();renderJournal();renderSpell();renderTrophies();}
+renderCodex();
+checkAch();
+renderAll();
+const h=(location.hash||"").slice(1);const tb=$(`.tab[data-v="${h}"]`);if(tb)tb.click();
+if(!S.seenIntro) setTimeout(()=>intro(0),400);
+initCloud();
+</script>
+</body>
+</html>
