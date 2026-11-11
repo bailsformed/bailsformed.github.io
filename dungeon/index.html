@@ -197,6 +197,10 @@ td{border-bottom:1px dashed var(--edge);padding:6px;vertical-align:top}
 .chhead .minibar{flex:1;min-width:120px}
 .heart{position:absolute;font-size:16px;animation:up 1s forwards;pointer-events:none}
 @keyframes up{to{transform:translateY(-34px);opacity:0}}
+.bkb{margin-top:12px;display:flex;gap:12px;align-items:center;padding:10px 14px;flex-wrap:wrap;box-shadow:0 0 0 2px var(--red),0 0 16px #ff4d6d55}
+.bkb .say2{flex:1;min-width:220px;background:#fff5ea;color:#2a1f30;border:3px solid var(--line);border-radius:6px;padding:7px 10px;font-size:14px;font-weight:700}
+.inclaude .dl{display:none}.claudeonly{display:none}.inclaude .claudeonly{display:block}
+.exrow{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 </style>
 </head>
 <body>
@@ -222,6 +226,7 @@ td{border-bottom:1px dashed var(--edge);padding:6px;vertical-align:top}
     </div>
   </div>
 
+  <div id="bkBanner"></div>
   <div class="tabs" role="tablist">
     <button class="tab on" data-v="map">🗺 Dungeon</button>
     <button class="tab" data-v="quests">⚔️ Quest Log</button>
@@ -276,9 +281,10 @@ td{border-bottom:1px dashed var(--edge);padding:6px;vertical-align:top}
     <div class="panel side" style="margin-top:12px">
       <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
         <h2 class="px" style="margin:0;flex:1">🗂 Log entries</h2>
-        <button class="btn sm ghost" id="copyCsv">Copy as CSV</button>
+        <span class="exrow"><button class="btn sm ghost" id="copyLogs" title="Pastes straight into columns in Google Sheets or Excel">📋 Copy for Sheets/Excel</button><button class="btn sm dl" id="dlLogs">⬇ Download CSV</button></span>
       </div>
       <div class="tbl" id="logTable"></div>
+      <div class="claudeonly muted" style="font-size:12px;margin-top:6px">Downloads are blocked inside Claude. Use “Copy for Sheets/Excel,” or the download buttons on your GitHub version.</div>
     </div>
   </section>
 
@@ -286,6 +292,7 @@ td{border-bottom:1px dashed var(--edge);padding:6px;vertical-align:top}
     <div class="panel side">
       <h2 class="px" style="margin-top:0">🧪 Skill Sheet: courses & GPA</h2>
       <p class="muted" style="margin-top:0;font-size:14px">Med schools count <b style="color:#fff">every</b> college course you've ever taken, at every school. Science courses (Bio, Chem, Phys, Math) make up your <b style="color:#fff">BCPM GPA</b>.</p>
+      <div class="exrow" style="margin-bottom:10px"><button class="btn sm ghost" id="copyCourses">📋 Copy courses for Sheets/Excel</button><button class="btn sm dl" id="dlCourses">⬇ Download courses CSV</button></div>
       <div class="gpabox">
         <div class="gpa"><div class="n" id="gpaAll">–</div><div class="l">CUMULATIVE GPA (est.)</div></div>
         <div class="gpa"><div class="n" id="gpaSci">–</div><div class="l">BCPM SCIENCE GPA (est.)</div></div>
@@ -1166,8 +1173,38 @@ $("#logForm").addEventListener("submit",e=>{e.preventDefault();const f=e.target,
   f.hrs.value="";f.note.value="";afterChange();});
 async function copyText(txt,label){try{await navigator.clipboard.writeText(txt);toast(`<span class="big">📋</span><div>${esc(label)} copied!</div>`);}
   catch(e){openModal(`<button class="btn sm ghost mclose" onclick="closeModal()">✕</button><h2 class="px">Copy this</h2><p class="muted">Your browser blocked auto-copy. Select all of the text below and copy it.</p><textarea style="width:100%;height:260px">${esc(txt)}</textarea>`);}}
-$("#copyCsv").addEventListener("click",()=>{const q=v=>`"${String(v??"").replace(/"/g,'""')}"`;
-  copyText([["Date","Type","Hours","Place","Contact","Reflection"].join(",")].concat(S.logs.map(l=>[l.date,(HOUR_CATS.find(c=>c.id===l.cat)||{}).label||l.cat,l.hrs,l.place,l.contact,l.note].map(q).join(","))).join("\n"),"Grind Log CSV");});
+// ---------- exports & backups ----------
+const IN_CLAUDE=!!(window.claude&&typeof window.claude.use==="function");
+if(IN_CLAUDE)document.body.classList.add("inclaude");
+let dlCap=null;
+if(IN_CLAUDE){window.claude.use("downloads").then(d=>{dlCap=d;if(d)document.body.classList.remove("inclaude");}).catch(()=>{});}
+async function download(name,text,type){if(dlCap){try{await dlCap.save({filename:name,data:text});return true;}catch(e){if(e&&e.code!=="declined")toast("That download didn't go through. Try Copy instead.");return false;}}
+  try{const blob=new Blob([text],{type});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);return true;}catch(e){return false;}}
+const csvEsc=v=>`"${String(v??"").replace(/"/g,'""')}"`;
+const LOG_HEAD=["Date","Type","Hours","Place / organization","Contact","Reflection"];
+function logRows(){return S.logs.slice().sort((a,b)=>(a.date||"").localeCompare(b.date||"")).map(l=>[l.date,(HOUR_CATS.find(c=>c.id===l.cat)||{}).label||l.cat,l.hrs,l.place,l.contact,l.note]);}
+const COURSE_HEAD=["Course","Type","Credits","Status","Grade","School","Prerequisite"];
+function courseRows(){return S.courses.map(c=>[c.name,{B:"Biology",C:"Chemistry",P:"Physics",M:"Math",O:"Non-science"}[c.cat]||c.cat,c.cr,{todo:"Not yet",doing:"In progress",done:"Done"}[c.status]||c.status,c.grade,c.school,c.prereq?"Yes":"No"]);}
+const toCSV=(h,rows)=>"\ufeff"+[h,...rows].map(r=>r.map(csvEsc).join(",")).join("\r\n");
+const toTSV=(h,rows)=>[h,...rows].map(r=>r.map(v=>String(v??"").replace(/[\t\r\n]+/g," ").trim()).join("\t")).join("\n");
+const fileStamp=()=>today();
+$("#copyLogs").addEventListener("click",()=>{if(!S.logs.length){toast("No entries to copy yet.");return;}copyText(toTSV(LOG_HEAD,logRows()),"Log (paste into cell A1)");});
+$("#dlLogs").addEventListener("click",async()=>{if(!S.logs.length){toast("No entries to download yet.");return;}if(await download(`dungeon-hours-${fileStamp()}.csv`,toCSV(LOG_HEAD,logRows()),"text/csv;charset=utf-8"))toast("⬇ Hours CSV downloaded");});
+$("#copyCourses").addEventListener("click",()=>copyText(toTSV(COURSE_HEAD,courseRows()),"Courses (paste into cell A1)"));
+$("#dlCourses").addEventListener("click",async()=>{if(await download(`dungeon-courses-${fileStamp()}.csv`,toCSV(COURSE_HEAD,courseRows()),"text/csv;charset=utf-8"))toast("⬇ Courses CSV downloaded");});
+function markBackup(){S.lastBackup=Date.now();S.snoozeBackup=0;save();renderBackupBanner();}
+function hasData(){return S.logs.length>0||S.courses.some(c=>c.status!=="todo")||Object.values(S.q).some(q=>q&&(q.d||(q.s||[]).some(Boolean)));}
+function renderBackupBanner(){const el=$("#bkBanner");if(!el)return;const now=Date.now(),wk=7*864e5;
+  const due=hasData()&&(!S.lastBackup||now-S.lastBackup>wk)&&!(S.snoozeBackup&&now<S.snoozeBackup);
+  if(!due){el.innerHTML="";return;}
+  const days=S.lastBackup?Math.floor((now-S.lastBackup)/864e5):null;
+  el.innerHTML=`<div class="panel bkb"><div style="width:70px;flex:none">${stoatSVG()}</div><div class="say2">${days===null?"Excuse me. You have NEVER backed up. If the Dungeon eats our data I'm going to scream. Back it up. For me.":`Ugh, it's been <b>${days} days</b> since you backed up. If the Dungeon eats our data I'm going to scream. Back it up. For me.`}</div><button class="btn red" id="bkNow">💾 Back up now</button><button class="btn sm ghost" id="bkLater">Tomorrow</button></div>`;
+  $("#bkNow").addEventListener("click",()=>$("#setBtn").click());
+  $("#bkLater").addEventListener("click",()=>{S.snoozeBackup=Date.now()+864e5;save();renderBackupBanner();});}
+let persistAsked=false;
+function askPersist(){if(persistAsked||!hasData())return;persistAsked=true;try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});}catch(e){}}
+function restoreText(txt){try{const d=JSON.parse(txt);if(!d||!d.q)throw 0;S=Object.assign(freshState(),d);closeModal();afterChange();toast("✅ Save restored!");return true;}catch(e){toast("That backup didn't work. Make sure it's the whole code or the right file.");return false;}}
+
 
 // ---------- skill sheet ----------
 function renderSpell(){const ga=gpa(false),gs=gpa(true),p=prereqStat();$("#gpaAll").textContent=ga===null?"–":ga.toFixed(2);$("#gpaSci").textContent=gs===null?"–":gs.toFixed(2);$("#prereqPct").textContent=`${p.d}/${p.t}`;
@@ -1228,15 +1265,19 @@ $("#setBtn").addEventListener("click",()=>{
   openModal(`<button class="btn sm ghost mclose" onclick="closeModal()">✕</button><h2 class="px">⚙︎ Save & settings</h2>
    <p style="font-size:14px">Progress saves automatically in this browser on this device. To move it to another device or browser, use the backup code below.</p>
    <label style="font-weight:800;font-size:13px">Companion name<br><input id="sname" value="${esc(S.stoat)}" maxlength="28"></label>
-   <h3 class="px">💾 Backup save</h3>
-   <button class="btn" id="bkCopy">Copy backup code</button>
+   <h3 class="px">💾 Weekly backup</h3>
+   <p class="muted" style="font-size:13px">A backup saves <b>everything</b>: hours, courses, grades, quests, notes and loot. Last full backup: <b>${S.lastBackup?new Date(S.lastBackup).toLocaleDateString():"never"}</b>.</p>
+   <button class="btn dl" id="bkDl">⬇ Download backup file</button> <button class="btn ghost" id="bkCopy">📋 Copy backup code</button>
    <textarea id="bkIn" style="width:100%;height:90px;margin-top:10px" placeholder="Paste a backup code here to restore"></textarea>
    <button class="btn ghost" id="bkLoad" style="margin-top:6px">Restore from code</button>
+   <div class="dl" style="margin-top:10px;font-size:13px;font-weight:700">Or restore from a backup file: <input type="file" id="bkFile" accept=".json,application/json"></div>
    <h3 class="px">🔄 Replay</h3>
    <button class="btn ghost" id="introBtn">Replay the intro</button> <button class="btn ghost" id="resetBtn">Reset all progress</button>
    <div id="resetMsg" class="muted" style="font-size:13px;margin-top:6px"></div>`);
   $("#sname").addEventListener("input",e=>{S.stoat=e.target.value||"Lady Bailsworth";save();renderHUD();});
-  $("#bkCopy").addEventListener("click",()=>copyText(JSON.stringify(S),"Backup code"));
+  $("#bkCopy").addEventListener("click",()=>{copyText(JSON.stringify(S),"Backup code");markBackup();});
+  $("#bkDl").addEventListener("click",async()=>{if(await download(`dungeon-backup-${fileStamp()}.json`,JSON.stringify(S,null,1),"application/json")){markBackup();toast("💾 Backup file downloaded");}});
+  $("#bkFile").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>restoreText(r.result);r.readAsText(f);});
   $("#bkLoad").addEventListener("click",()=>{try{const d=JSON.parse($("#bkIn").value);if(!d||!d.q)throw 0;S=Object.assign(freshState(),d);closeModal();afterChange();toast("✅ Save restored!");}catch(e){toast("That code didn't work. Make sure you copied all of it.","sysx");}});
   $("#introBtn").addEventListener("click",()=>{closeModal();intro(0);});
   $("#resetBtn").addEventListener("click",e=>{const b=e.target;if(b.dataset.c){S=freshState();S.seenIntro=true;closeModal();save();renderAll();toast("Fresh meat! 🌱");}
@@ -1264,7 +1305,7 @@ function intro(i){openModal(`<div style="min-height:120px">${INTRO[i]()}</div>
 // ---------- boot ----------
 $$(".tab").forEach(t=>t.addEventListener("click",()=>{$$(".tab").forEach(x=>x.classList.toggle("on",x===t));$$(".view").forEach(v=>v.classList.toggle("on",v.id==="v-"+t.dataset.v));SFX.tick();
   try{history.replaceState(null,"","#"+t.dataset.v);}catch(e){}}));
-function renderAll(){renderHUD();renderMap();renderChapterSide();renderDates();renderQuestLog();renderJournal();renderSpell();renderLoot();}
+function renderAll(){renderBackupBanner();askPersist();renderHUD();renderMap();renderChapterSide();renderDates();renderQuestLog();renderJournal();renderSpell();renderLoot();}
 renderCodex();checkAch();renderAll();
 const h=(location.hash||"").slice(1);const tb=$(`.tab[data-v="${h}"]`);if(tb)tb.click();
 if(!S.seenIntro)setTimeout(()=>intro(0),400);
