@@ -31,6 +31,9 @@ a.card:focus-visible{outline:3px dashed var(--pink);outline-offset:3px}
 .chip{display:inline-block;font-family:"Pixelify Sans",monospace;font-size:12px;border:2px solid var(--ink);border-radius:3px;padding:1px 7px;background:#ffe7a6}
 .card.soon{opacity:.6;border-style:dashed;cursor:default}
 .card.soon .chip{background:var(--muted)}
+.card.gift{background:#221b2b;color:#efe6d8;box-shadow:0 4px 0 #0a080e,0 0 0 2px #ff4d6d,0 0 16px #ff4d6d55}
+.card.gift p{color:#c9b9d9}
+.card.gift .chip{background:#ff4d6d;color:#fff}
 footer{color:#b9aacc;font-size:12px;text-align:center;margin-top:28px}
 </style>
 </head>
@@ -60,6 +63,17 @@ footer{color:#b9aacc;font-size:12px;text-align:center;margin-top:28px}
       <p>Something new is growing here…</p>
       <span class="chip">Coming soon</span>
     </div>
+  </div>
+
+  <div class="stars">✦ ✦ ✦</div>
+  <h2 class="px">💝 Made for someone special</h2>
+  <div class="grid">
+    <a class="card panel gift" href="dungeon/">
+      <div class="ic">⚔️</div>
+      <h3 class="px">MED SCHOOL DUNGEON</h3>
+      <p>Built for my boyfriend: a pixel dungeon crawl to the white coat, with a very opinionated stoat companion who may or may not be me.</p>
+      <span class="chip">▶ Enter the dungeon</span>
+    </a>
   </div>
 
   <footer class="px">made with care · bailsformed.github.io</footer>
