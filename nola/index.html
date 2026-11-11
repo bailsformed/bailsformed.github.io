@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#bfe8ee">
+<title>Magnolia Isle 🌸</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Lexend:wght@400;500;600&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --fs:18px; --lh:1.7; --ls:0; --ws:0;
+  --body:"Lexend",system-ui,sans-serif;
+  --cream:#fffaf2; --card:#ffffff; --ink:#3a3340; --ink2:#6f6578; --line:#eadfce;
+  --pink:#f4a7bb; --pinkd:#e07c99; --sage:#9fd3a8; --saged:#5fae78; --sky:#bfe8ee; --skyd:#5fb3c4;
+  --butter:#fbe39a; --lav:#d9ccf3; --lavd:#9b84d6; --sand:#f6e3b4;
+}
+*{box-sizing:border-box}
+html{font-size:var(--fs)}
+body{margin:0;background:linear-gradient(180deg,#e8f6f4 0,#fff6ee 320px,#fffaf2 100%);color:var(--ink);font-family:var(--body);line-height:var(--lh);
+  letter-spacing:var(--ls);word-spacing:var(--ws);min-height:100vh;padding-bottom:96px}
+h1,h2,h3,.fred{font-family:"Fredoka",system-ui,sans-serif;font-weight:600;letter-spacing:.2px;line-height:1.25}
+.wrap{max-width:980px;margin:0 auto;padding:14px 14px 0}
+button{font-family:inherit}
+.btn{font-family:"Fredoka",system-ui,sans-serif;font-weight:600;font-size:1rem;border:none;border-radius:999px;padding:.6em 1.2em;cursor:pointer;
+  background:var(--pink);color:#4a2635;box-shadow:0 4px 0 var(--pinkd);transition:transform .08s,box-shadow .08s;line-height:1.2}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--pinkd)}
+.btn.sage{background:var(--sage);color:#1f4a2c;box-shadow:0 4px 0 var(--saged)}
+.btn.sky{background:var(--sky);color:#164651;box-shadow:0 4px 0 var(--skyd)}
+.btn.lav{background:var(--lav);color:#3b2a68;box-shadow:0 4px 0 var(--lavd)}
+.btn.ghost{background:#fff;color:var(--ink);box-shadow:0 3px 0 var(--line);border:2px solid var(--line)}
+.btn.big{font-size:1.15rem;padding:.8em 1.5em}
+.btn.sm{font-size:.85rem;padding:.4em .9em}
+.btn:focus-visible,.place:focus,.tile:focus-visible,.navb:focus-visible{outline:3px solid var(--lavd);outline-offset:3px}
+.card{background:var(--card);border-radius:24px;box-shadow:0 6px 0 var(--line),0 10px 30px #b9a99a22;padding:18px 20px}
+input,select,textarea{font-family:var(--body);font-size:1rem;border:2px solid var(--line);border-radius:14px;padding:.55em .8em;background:#fff;color:var(--ink);width:100%}
+textarea{resize:vertical}
+label.f{display:block;font-weight:600;font-size:.9rem;margin:.6em 0 .25em}
+/* top bar */
+.top{display:flex;align-items:center;gap:12px;padding:10px 14px}
+.me{width:58px;height:58px;border-radius:50%;background:#fde7ef;border:3px solid #fff;box-shadow:0 3px 0 var(--line);overflow:hidden;cursor:pointer;flex:none;display:flex;align-items:flex-end;justify-content:center}
+.me svg{width:56px}
+.topmid{flex:1;min-width:0}
+.hello{font-family:"Fredoka",system-ui,sans-serif;font-size:1.25rem;font-weight:600}
+.lvl{font-size:.85rem;color:var(--ink2)}
+.bar{height:14px;background:#f3ebdf;border-radius:999px;overflow:hidden;margin-top:4px}
+.bar>i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--pink),#f7c6d4);transition:width .6s}
+.iconbtn{width:46px;height:46px;border-radius:50%;border:2px solid var(--line);background:#fff;font-size:1.25rem;cursor:pointer;flex:none}
+/* nav */
+.nav{position:fixed;left:0;right:0;bottom:0;background:#fffdf8ee;backdrop-filter:blur(6px);border-top:2px solid var(--line);display:flex;justify-content:center;gap:2px;padding:6px 4px 10px;z-index:30}
+.navb{flex:1;max-width:120px;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:0;padding:4px 2px;border-radius:16px;color:var(--ink2);font-size:.72rem;font-family:"Fredoka",system-ui,sans-serif;font-weight:600}
+.navb span{font-size:1.5rem;line-height:1.2}
+.navb.on{background:#fde7ef;color:var(--ink)}
+.view{display:none;animation:fade .25s}
+.view.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* home */
+.island{width:100%;height:auto;display:block;border-radius:28px;box-shadow:0 6px 0 #a9dbe3}
+.place{cursor:pointer}
+.place:hover .pl{filter:brightness(1.05)}
+.today{margin-top:14px;display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.today .qi{font-size:2.6rem;width:72px;height:72px;border-radius:22px;background:#fde7ef;display:flex;align-items:center;justify-content:center;flex:none}
+.today .tx{flex:1;min-width:180px}
+.eyebrow{font-family:"Fredoka",system-ui,sans-serif;font-weight:600;color:var(--pinkd);font-size:.85rem;text-transform:uppercase;letter-spacing:1px}
+.note{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:14px;background:#fff7d9;border-radius:22px;padding:12px 16px;box-shadow:0 5px 0 #f1e2a8}
+.note svg{width:62px;flex:none}
+.note p{margin:0;font-weight:500}.note>div{min-width:170px}
+.banner{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:14px;background:#eaf4ff;border-radius:22px;padding:12px 16px;box-shadow:0 5px 0 #cfe0f2}
+.banner svg{width:54px;flex:none}
+.banner p{margin:0;flex:1;min-width:200px}
+/* journey */
+.stones{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.stone{background:#fff;border:none;border-radius:28px;padding:14px 10px;text-align:center;cursor:pointer;box-shadow:0 5px 0 var(--line);font-family:inherit;color:var(--ink);position:relative}
+.stone .em{font-size:2.2rem}
+.stone b{font-family:"Fredoka",system-ui,sans-serif;font-weight:600;display:block;font-size:1rem}
+.stone small{display:block;color:var(--ink2);font-size:.75rem;line-height:1.3}
+.stone.cur{background:#fde7ef;box-shadow:0 5px 0 var(--pink)}
+.stone.done{background:#e6f5e9;box-shadow:0 5px 0 var(--sage)}
+.ring{width:100%;height:8px;background:#f3ebdf;border-radius:9px;overflow:hidden;margin-top:6px}
+.ring i{display:block;height:100%;background:var(--saged)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:12px}
+.tile{background:#fff;border:none;border-radius:22px;padding:14px 10px;cursor:pointer;box-shadow:0 5px 0 var(--line);text-align:center;font-family:inherit;color:var(--ink);position:relative}
+.tile .em{font-size:2.2rem;display:block}
+.tile b{font-family:"Fredoka",system-ui,sans-serif;font-weight:600;font-size:1rem;display:block;line-height:1.25;margin-top:4px}
+.tile.done{background:#e6f5e9;box-shadow:0 5px 0 var(--sage)}
+.tile .ck{position:absolute;top:8px;right:10px;font-size:1.1rem}
+.tile.next{box-shadow:0 5px 0 var(--pink);outline:3px dashed var(--pink);outline-offset:-6px}
+/* quest player */
+.scrim{position:fixed;inset:0;background:#3a334055;display:none;align-items:center;justify-content:center;z-index:50;padding:14px;overflow:auto}
+.scrim.on{display:flex}
+.modal{width:min(620px,100%);max-height:calc(100vh - 28px);overflow:auto;background:var(--cream);border-radius:30px;padding:18px 20px 20px;position:relative;animation:pop .2s}
+@keyframes pop{from{transform:scale(.95);opacity:0}to{transform:none;opacity:1}}
+.mhead{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.dots{display:flex;gap:6px;flex:1;flex-wrap:wrap}
+.dots i{width:10px;height:10px;border-radius:50%;background:#eadfce}
+.dots i.on{background:var(--pinkd)}.dots i.ok{background:var(--saged)}
+.qcard{background:#fff;border-radius:24px;padding:18px;box-shadow:0 5px 0 var(--line);min-height:200px;display:flex;flex-direction:column;gap:10px}
+.pipsay{display:flex;gap:12px;align-items:flex-start}
+.pipsay svg{width:70px;flex:none}
+.pipsay .bub{background:#f2f9fb;border-radius:20px;padding:12px 14px;flex:1;font-size:1.05rem}
+.bigq{font-size:3rem;line-height:1}
+.steplbl{font-family:"Fredoka",system-ui,sans-serif;font-weight:600;color:var(--pinkd)}
+.steptxt{font-size:1.2rem;font-weight:500}
+.kind{background:#fde7ef;border-radius:18px;padding:10px 14px;font-weight:500}
+.tip{background:#fff7d9;border-radius:18px;padding:10px 14px}
+.mfoot{display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:14px;flex-wrap:wrap}
+.speak{border:2px solid var(--line);background:#fff;border-radius:999px;padding:.35em .9em;cursor:pointer;font-family:"Fredoka",system-ui,sans-serif;font-weight:600;font-size:.9rem;color:var(--ink)}
+.speak.on{background:var(--sky)}
+.links a{color:#5c49a8;font-weight:600}
+/* garden */
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.stat{background:#fff;border-radius:22px;padding:12px;text-align:center;box-shadow:0 5px 0 var(--line)}
+.stat .em{font-size:1.8rem}
+.stat .n{font-family:"Fredoka",system-ui,sans-serif;font-weight:700;font-size:1.7rem;line-height:1.1}
+.stat small{display:block;color:var(--ink2);font-size:.78rem;line-height:1.3}
+.stat .ring i{background:var(--c)}
+.heart{display:flex;gap:12px;align-items:center;background:#fff7d9;border-radius:22px;padding:12px 16px;margin:12px 0;box-shadow:0 5px 0 #f1e2a8}
+.heart .h{font-size:2.2rem}
+.gardenbox{background:#eaf5e2;border-radius:26px;padding:8px;margin-top:12px;box-shadow:0 5px 0 #cfe6c3}
+.beds{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:6px}
+.bed{background:#fff9ef;border-radius:20px;padding:10px;box-shadow:0 4px 0 #d9c9a8}
+.bed .fl{display:flex;flex-wrap:wrap;gap:2px;min-height:34px;align-items:flex-end}
+.bed .fl svg{width:26px;height:34px}
+.bed b{font-family:"Fredoka",system-ui,sans-serif;font-weight:600;font-size:.92rem;display:block;margin-top:4px;border-top:6px solid #c9a77d55;padding-top:4px}
+.catpick{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.catpick button{background:#fff;border:3px solid var(--line);border-radius:18px;padding:8px 6px;cursor:pointer;font-family:"Fredoka",system-ui,sans-serif;font-weight:600;font-size:.88rem;color:var(--ink);line-height:1.2}
+.catpick button span{display:block;font-size:1.6rem}
+.catpick button.on{border-color:var(--pinkd);background:#fde7ef}
+.stepper{display:flex;align-items:center;gap:10px}
+.stepper button{width:48px;height:48px;border-radius:50%;border:2px solid var(--line);background:#fff;font-size:1.4rem;cursor:pointer}
+.stepper .v{font-family:"Fredoka",system-ui,sans-serif;font-size:1.8rem;font-weight:700;min-width:70px;text-align:center}
+.toggle{display:flex;gap:10px;align-items:center;font-weight:600;cursor:pointer}
+.toggle input{width:24px;height:24px}
+.entries{display:grid;gap:10px;margin-top:10px}
+.entry{background:#fff;border-radius:20px;padding:12px 14px;box-shadow:0 4px 0 var(--line);display:flex;gap:12px;align-items:flex-start}
+.entry .em{font-size:1.6rem}
+.entry .tx{flex:1;min-width:0}
+.entry b{font-family:"Fredoka",system-ui,sans-serif;font-weight:600}
+.entry .meta{font-size:.82rem;color:var(--ink2)}
+.entry p{margin:.2em 0 0;font-size:.92rem}
+.x{border:none;background:none;cursor:pointer;font-size:1.1rem;color:var(--ink2)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+/* books */
+.gpas{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.shelf{background:#f1dfc4;border-radius:22px;padding:14px 12px 0;margin-top:14px;box-shadow:0 5px 0 #d9c19c}
+.shelfrow{display:flex;gap:6px;align-items:flex-end;flex-wrap:wrap;border-bottom:12px solid #c99c6a;padding:0 4px 0;margin-bottom:14px;min-height:150px}
+.book{width:52px;height:140px;border-radius:8px 8px 4px 4px;border:none;cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center;box-shadow:inset -5px 0 0 #00000014;padding:0}
+.book span{writing-mode:vertical-rl;transform:rotate(180deg);font-family:"Fredoka",system-ui,sans-serif;font-weight:600;font-size:.78rem;color:#3a3340;line-height:1.1;max-height:120px;overflow:hidden;padding:4px 0}
+.book .st{position:absolute;top:4px;left:0;right:0;text-align:center;font-size:.9rem;writing-mode:horizontal-tb;transform:none}
+.book.todo{opacity:.55}
+.book.h1{height:128px}.book.h2{height:140px}.book.h3{height:118px}
+.gradepick{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.gradepick button,.statpick button{border:3px solid var(--line);background:#fff;border-radius:14px;padding:.45em 0;font-family:"Fredoka",system-ui,sans-serif;font-weight:600;font-size:1rem;cursor:pointer;color:var(--ink)}
+.gradepick button.on,.statpick button.on{border-color:var(--pinkd);background:#fde7ef}
+.statpick{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+/* mail & stickers */
+.mails{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.env{background:#fff;border:none;border-radius:22px;padding:16px 10px;cursor:pointer;box-shadow:0 5px 0 var(--line);text-align:center;font-family:inherit;color:var(--ink)}
+.env .em{font-size:2.4rem;display:block}
+.env b{font-family:"Fredoka",system-ui,sans-serif;font-weight:600;display:block;line-height:1.25}
+.env small{color:var(--ink2)}
+.env.new{box-shadow:0 5px 0 var(--pink)}
+.letter{white-space:pre-line;font-size:1.05rem;background:#fff;border-radius:22px;padding:18px;box-shadow:0 5px 0 var(--line);background-image:repeating-linear-gradient(180deg,transparent 0 calc(var(--lh)*1rem - 1px),#f3e7e7 calc(var(--lh)*1rem - 1px) calc(var(--lh)*1rem))}
+.stickers{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px}
+.stk{background:#fff;border-radius:26px;padding:12px 8px;text-align:center;box-shadow:0 5px 0 var(--line)}
+.stk .em{font-size:2.6rem;display:inline-block;filter:drop-shadow(0 3px 0 #fff) drop-shadow(0 0 2px #e8d9c7)}
+.stk b{font-family:"Fredoka",system-ui,sans-serif;font-weight:600;display:block;font-size:.95rem;line-height:1.25}
+.stk small{color:var(--ink2);font-size:.75rem;display:block;line-height:1.3}
+.stk.lock{background:#f6efe5;box-shadow:0 5px 0 #eadfce}
+.stk.lock .em{filter:grayscale(1) opacity(.35)}
+.stk.lock b{color:var(--ink2)}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{border:3px solid var(--line);background:#fff;border-radius:14px;padding:.35em .8em;cursor:pointer;font-family:"Fredoka",system-ui,sans-serif;font-weight:600;color:var(--ink)}
+.seg button.on{border-color:var(--pinkd);background:#fde7ef}
+.sw{width:40px;height:40px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px var(--line);cursor:pointer}
+.sw.on{box-shadow:0 0 0 4px var(--pinkd)}
+.muted{color:var(--ink2)}
+h2.title{font-size:1.5rem;margin:.2em 0 .4em;display:flex;align-items:center;gap:8px}
+#toasts{position:fixed;left:50%;transform:translateX(-50%);bottom:96px;display:flex;flex-direction:column;gap:8px;z-index:80;align-items:center;width:min(420px,92vw)}
+.toast{background:#fff;border-radius:999px;padding:.6em 1.2em;box-shadow:0 5px 0 var(--line),0 8px 24px #0002;font-family:"Fredoka",system-ui,sans-serif;font-weight:600;animation:up .3s;text-align:center}
+@keyframes up{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
+#petals{position:fixed;inset:0;pointer-events:none;z-index:90}
+.inclaude .dl{display:none}
+@media (min-width:860px){
+  .homegrid{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;align-items:start}
+  .today{margin-top:0}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card top">
+    <div class="me" id="me" role="button" tabindex="0" aria-label="Change your look"></div>
+    <div class="topmid">
+      <div class="hello" id="hello">Hi, Nola!</div>
+      <div class="lvl" id="lvl"></div>
+      <div class="bar"><i id="xpbar" style="width:0"></i></div>
+    </div>
+    <button class="iconbtn" id="setBtn" aria-label="Reading comfort and settings" title="Reading comfort & settings">Aa</button>
+  </div>
+  <div id="backupBanner"></div>
+
+  <!-- HOME -->
+  <section class="view on" id="v-home" style="margin-top:14px">
+    <div class="homegrid">
+      <svg class="island" id="island" viewBox="0 0 400 260" role="img" aria-label="Magnolia Isle"></svg>
+      <div>
+        <div class="card today" id="today"></div>
+        <div class="note" id="noteOfDay"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- JOURNEY -->
+  <section class="view" id="v-journey" style="margin-top:14px">
+    <h2 class="title">🗺️ Your journey</h2>
+    <p class="muted" style="margin-top:0">Each stepping stone is a season of college. Tap one to see its quests.</p>
+    <div class="stones" id="stones"></div>
+    <div class="card" id="seasonBox" style="margin-top:16px"></div>
+  </section>
+
+  <!-- GARDEN -->
+  <section class="view" id="v-garden" style="margin-top:14px">
+    <div class="row" style="justify-content:space-between">
+      <h2 class="title" style="margin:0">🌷 Your garden</h2>
+      <button class="btn big" id="logBtn">＋ Log hours</button>
+    </div>
+    <p class="muted">Every activity you log grows a flower. Your hours are saved here for your applications.</p>
+    <div class="stats" id="stats"></div>
+    <div class="heart" id="honors"></div>
+    <div class="gardenbox"><div class="beds" id="beds"></div></div>
+    <div class="card" style="margin-top:16px">
+      <div class="row" style="justify-content:space-between">
+        <h3 style="margin:0">📔 Garden diary</h3>
+        <div class="row"><button class="btn sm ghost" id="copyLogs">📋 Copy for Sheets</button><button class="btn sm sky dl" id="dlLogs">⬇ Download</button></div>
+      </div>
+      <div class="entries" id="entries"></div>
+    </div>
+  </section>
+
+  <!-- BOOKS -->
+  <section class="view" id="v-books" style="margin-top:14px">
+    <div class="row" style="justify-content:space-between">
+      <h2 class="title" style="margin:0">📚 Your bookshelf</h2>
+      <button class="btn sage" id="addCourse">＋ Add a class</button>
+    </div>
+    <p class="muted">Each book is a class. Tap a book to mark it done and add your grade. Faded books are still to come.</p>
+    <div class="gpas" id="gpas"></div>
+    <div class="shelf" id="shelf"></div>
+    <div class="row" style="margin-top:6px"><button class="btn sm ghost" id="copyCourses">📋 Copy classes for Sheets</button><button class="btn sm sky dl" id="dlCourses">⬇ Download classes</button></div>
+    <p class="muted" style="font-size:.8rem">These are common Tulane pre-med classes. Your advisor can confirm the exact ones for you.</p>
+  </section>
+
+  <!-- MAIL -->
+  <section class="view" id="v-mail" style="margin-top:14px">
+    <h2 class="title">📮 Mailbox</h2>
+    <p class="muted" style="margin-top:0">Letters, tips, and cozy notes, just for you.</p>
+    <div class="mails" id="mails"></div>
+  </section>
+
+  <!-- STICKERS -->
+  <section class="view" id="v-stickers" style="margin-top:14px">
+    <h2 class="title">🎀 Sticker book <span class="muted" style="font-size:1rem" id="stkCount"></span></h2>
+    <p class="muted" style="margin-top:0">Earn stickers as you grow. Faded ones are still waiting for you.</p>
+    <div class="stickers" id="stickers"></div>
+  </section>
+  <p class="muted" style="text-align:center;font-size:.8rem;margin:22px 0">Magnolia Isle · made with love by your cousin Bailey 💛 · saves on this device</p>
+</div>
+
+<nav class="nav" aria-label="Places">
+  <button class="navb on" data-v="home"><span>🏝️</span>Home</button>
+  <button class="navb" data-v="journey"><span>🗺️</span>Journey</button>
+  <button class="navb" data-v="garden"><span>🌷</span>Garden</button>
+  <button class="navb" data-v="books"><span>📚</span>Books</button>
+  <button class="navb" data-v="mail"><span>📮</span>Mail</button>
+  <button class="navb" data-v="stickers"><span>🎀</span>Stickers</button>
+</nav>
+
+<div class="scrim" id="scrim"><div class="modal" id="modal" role="dialog" aria-modal="true"></div></div>
+<div id="toasts" aria-live="polite"></div>
+<canvas id="petals"></canvas>
+
+<script>
+// ================= MAGNOLIA ISLE: content =================
+const SEASONS = [
+ {name:"First Bloom", when:"Fall 2026 (right now!)", icon:"🌱", blurb:"Your very first semester. Get through finals, find your helpers, and plant your garden."},
+ {name:"Magnolia Spring", when:"Spring 2027", icon:"🌸", blurb:"Second-semester science, honors service hours, new friends, and Mardi Gras."},
+ {name:"Sunny Shore", when:"Summer 2027", icon:"☀️", blurb:"Shadow doctors, try clinical work, and get some real rest."},
+ {name:"Oak Grove", when:"Sophomore year · 2027–28", icon:"🌳", blurb:"Orgo, genetics, research, and stepping up as a leader."},
+ {name:"Lighthouse", when:"Junior year · 2028–29", icon:"🗼", blurb:"Physics, biochem, MCAT prep, letters, and your personal story."},
+ {name:"The Big Send", when:"Summer 2029", icon:"📬", blurb:"MCAT day, and sending out your med school applications."},
+ {name:"Starlight", when:"Senior year · 2029–30", icon:"✨", blurb:"Interviews, finishing your double major, and taking care of you."},
+ {name:"White Coat Garden", when:"2030", icon:"🥼", blurb:"Acceptance, graduation, and your white coat."}
+];
+
+// Each quest: id, s (season), icon, title, when, what, why, steps[], tip, kind, links[]
+const QUESTS = [
+// ---------- Season 0 ----------
+{id:"n0_1",s:0,icon:"🐦",title:"Hi, I'm Pip!",when:"Today",
+ what:"I'm Pip, your guide on Magnolia Isle. Being pre-med is a long, pretty walk, not a race.",
+ why:"Med schools look at five things: your grades, the MCAT, time with patients and doctors, helping your community, and people who will cheer for you in letters. We'll grow all five, one small step at a time.",
+ steps:["Say hi to Pip 👋","Peek at the Journey map","Tap your picture to pick your look"],
+ tip:"See the 🔊 button? Tap it on any card and I'll read it out loud to you.",
+ kind:"You're already doing amazing. Seriously."},
+{id:"n0_2",s:0,icon:"📝",title:"Exam season survival kit",when:"Right now",
+ what:"Finals are a LOT. Let's make them feel smaller.",
+ why:"Your brain works best when it's rested, fed, and doing one thing at a time.",
+ steps:["Pick just ONE exam to start with","Study for 25 minutes, then rest for 5","Eat a real meal today, not just snacks","Sleep before the test. All-nighters make it harder to remember things."],
+ tip:"Try saying answers out loud, or teaching them to a friend (or a pillow!). Explaining helps you remember.",
+ kind:"One test does not define you. You are so much more than a grade. 💛"},
+{id:"n0_3",s:0,icon:"🤝",title:"Find your helpers",when:"This semester",
+ what:"Tulane has people whose whole job is helping you do your best.",
+ why:"Asking for help is a skill. Smart students and great doctors do it all the time.",
+ steps:["Look up the Goldman Center for Student Accessibility. If reading, testing, or focus feels harder than it should, they can set up things like extra test time.","Look up the Academic Learning & Tutoring Center for help with tough classes","Save the Counseling Center (at Campus Health) for stressful days","Save these websites on your phone"],
+ tip:"Goldman Center requests can take a few weeks to review, so start before you need them, like before midterms.",
+ kind:"Needing help doesn't mean you're behind. It means you're smart.",
+ links:[{l:"Goldman Center for Student Accessibility",u:"https://accessibility.tulane.edu/"},{l:"Tulane Campus Health",u:"https://campushealth.tulane.edu/"}]},
+{id:"n0_4",s:0,icon:"🧭",title:"Meet the pre-health advisors",when:"Before spring",
+ what:"Tulane has Pre-Health Advisors who help students get ready for medical school.",
+ why:"They know Tulane's classes, timelines, and how letters work there. One meeting saves a LOT of guessing.",
+ steps:["Find Pre-Health Advising on Tulane's advising website","Book a meeting","Ask: Which science classes come next? How do my transfer credits fit? Does Tulane write a committee letter?","Write what you learned in your notes"],
+ tip:"Tell them about your double major and honors program. They'll help it all fit together.",
+ kind:"Look at you, planning ahead like a pro! ✨",
+ links:[{l:"Tulane Advising",u:"https://advising.tulane.edu/"}]},
+{id:"n0_5",s:0,icon:"🗓️",title:"Plan your spring classes",when:"Registration time",
+ what:"Pre-med science classes come in a set order. Many Tulane pre-meds take General Chemistry I and Intro Cell Biology in the fall, then General Chemistry II and Diversity of Life (EBIO) in the spring, each with a lab.",
+ why:"Each class unlocks the next one. Staying in order keeps you on track for the MCAT.",
+ steps:["Check with your advisor which science classes are next","Fit in your double major classes","Keep it balanced. A calm semester is a strong semester.","Register! 🎉"],
+ tip:"Your transfer credits for MATH 1210 and ENGL 1010 are already done. Ask your advisor if you still need another writing course.",
+ kind:"Every class you finish is a little seed planted. 🌱"},
+{id:"n0_6",s:0,icon:"🌷",title:"Plant your garden",when:"This week",
+ what:"The Garden is where you log your hours: shadowing, volunteering, clinical work, research, and leadership. Every log grows a flower!",
+ why:"Med school applications ask for the dates, hours, and a contact person for every activity. Saving them now means no stress later.",
+ steps:["Open the Garden","Log one activity from this semester","Add a little memory about it"],
+ tip:"Applications mostly care about college. If you're continuing something from high school, log it too!",
+ kind:"Watching your garden grow is going to feel so good."},
+{id:"n0_7",s:0,icon:"☕",title:"Cozy little routine",when:"Any time",
+ what:"You're becoming an adult, and that's a lot! A small routine makes every week easier.",
+ why:"Taking care of yourself is part of taking care of your grades.",
+ steps:["Pick a laundry day","Drink a glass of water right now 💧","Call or text someone from home","Take a walk under the oaks"],
+ tip:"Put your laundry day and study blocks in your phone calendar with alarms. Future-you will say thank you.",
+ kind:"You are allowed to rest. Rest is productive. 🌙"},
+// ---------- Season 1 ----------
+{id:"n1_1",s:1,icon:"🧪",title:"Science, part two",when:"Spring 2027",
+ what:"Many pre-meds take General Chemistry II and Diversity of Life (EBIO) this semester, each with a lab.",
+ why:"These finish your first year of science, which most med schools require.",
+ steps:["Walk into your first lab feeling brave","Find a study buddy in each science class","Do a few practice problems most days","Add your final grades to the Bookshelf"],
+ tip:"Short and often beats long and rare. 20 minutes a day is better than 5 hours the night before.",
+ kind:"Look how far you've come since August!"},
+{id:"n1_2",s:1,icon:"🍎",title:"Office hours magic",when:"All semester",
+ what:"Office hours are times when professors sit and wait for students to visit. Most students never go!",
+ why:"Professors who know you can write your letters later. Med schools usually want at least three.",
+ steps:["Visit office hours once for each science class","Ask one question about the material","Mention that you're pre-med"],
+ tip:"Write your question in your phone first, so your mind doesn't go blank.",
+ kind:"They're going to be lucky to know you."},
+{id:"n1_3",s:1,icon:"🙌",title:"Honors helping hours",when:"Spring 2027",
+ what:"Your honors program asks for 20 volunteer or service-learning hours.",
+ why:"Service hours count twice: for honors AND for your med school application!",
+ steps:["Pick a place you'd love to help","Sign up for a regular time","Log each visit in the Garden (keep the Honors heart on 💛)","Reach 20 hours!"],
+ tip:"The Garden tracks your honors hours for you. Watch the heart meter fill up.",
+ kind:"Helping people looks so good on you. 💛"},
+{id:"n1_4",s:1,icon:"🏛️",title:"Tulane's service learning",when:"By your 5th semester",
+ what:"To graduate, Tulane asks for two levels of service learning. The first is a service-learning course taken by the end of your fifth semester.",
+ why:"Pick one you're excited about. Public Health has great options, and it can be part of your med school story.",
+ steps:["Ask your advisor which service-learning courses fit your majors","Pick the semester you'll take it","Take it and log your service hours"],
+ tip:"Your service-learning hours can go in your Garden too.",
+ kind:"You're going to make New Orleans a little brighter. 🌆"},
+{id:"n1_5",s:1,icon:"🩺",title:"Join a pre-health club",when:"Spring 2027",
+ what:"Tulane has student groups like the Pre-Medical Society, TU MedPals, and Tulane EMS.",
+ why:"Clubs share volunteer spots, shadowing tips, and friends who totally get it.",
+ steps:["Look up pre-health clubs on WaveSync","Go to one meeting","Say hi to one new person"],
+ tip:"Tulane EMS is a student-run emergency medical group, which can be a way into real patient care.",
+ kind:"Your people are out there. Go find them!"},
+{id:"n1_6",s:1,icon:"🎭",title:"Mardi Gras balance",when:"Feb 2027",
+ what:"Mardi Gras season is SO fun, and fun is part of college too!",
+ why:"A happy, rested you learns better. Balance is the goal, not perfection.",
+ steps:["Plan study time around the parade days","Stay with your friends and keep your phone charged","Drink water and eat real food","Enjoy it! 💜💚💛"],
+ tip:"Finish one assignment early so parade days feel guilt-free.",
+ kind:"Go make the best memories. You deserve them."},
+// ---------- Season 2 ----------
+{id:"n2_1",s:2,icon:"👀",title:"Shadow a doctor",when:"Summer 2027",
+ what:"Shadowing means following a doctor for a day to see what their job is really like. You watch and learn.",
+ why:"Med schools want to see that you know what doctors really do. A common goal is around 40 to 60 hours with a few different doctors over college.",
+ steps:["List doctors you could ask","Send a short, polite email","Shadow, then log it in the Garden"],
+ tip:"Having a doctor in your family is so special! Also shadow doctors outside the family. You'll see different kinds of medicine, and they can write you letters.",
+ kind:"You get to see your future up close. How exciting!"},
+{id:"n2_2",s:2,icon:"🦴",title:"Meet a DO",when:"Summer 2027 or later",
+ what:"There are two kinds of doctors, MDs and DOs. Both are full doctors. DOs learn extra hands-on skills and a whole-person approach.",
+ why:"If you might apply to DO schools, many want to see that you've shadowed a DO, and some want a letter from one.",
+ steps:["Read “MD vs DO” in Pip's Mailbox","Find a DO to shadow","Log it as Shadowing · DO"],
+ tip:"Not sure yet? Totally okay! Shadowing a DO helps you decide.",
+ kind:"Curious minds make the best doctors."},
+{id:"n2_3",s:2,icon:"💗",title:"Clinical experience",when:"Start any time",
+ what:"Clinical experience means working with patients directly. You could be a scribe, EMT, nursing assistant, medical assistant, or hospital or hospice volunteer.",
+ why:"It's one of the most important parts of a med school application. Steady time over months and years matters most.",
+ steps:["Choose one role that sounds fun","Apply or sign up","Log every shift in the Garden"],
+ tip:"A paid clinical job counts too, and your wallet will love it.",
+ kind:"Patients are going to feel so cared for with you around."},
+{id:"n2_4",s:2,icon:"🌴",title:"Summer: grow & rest",when:"Summer 2027",
+ what:"Some students do summer programs, like the ones on Tulane's Pre-Health Resources page. Others work, take a class, or rest.",
+ why:"There's no one right summer. Pick what helps you grow AND recharge.",
+ steps:["Look at Tulane's list of summer pre-health programs","Choose your summer plan","Plan at least one week of real rest"],
+ tip:"Many summer programs have deadlines in winter or early spring, so take a peek in the fall.",
+ kind:"Sunshine is good for you. Literally. ☀️",
+ links:[{l:"Tulane Pre-Health Resources",u:"https://advising.tulane.edu/node/2687"}]},
+// ---------- Season 3 ----------
+{id:"n3_1",s:3,icon:"⚗️",title:"Orgo time",when:"Sophomore year",
+ what:"Sophomore year usually brings Organic Chemistry I and II (with labs) and Genetics.",
+ why:"Orgo has a scary reputation, but lots of people end up loving it once it clicks. It's on the MCAT too.",
+ steps:["Do a few orgo problems every day","Draw the molecules or use a model kit","Go to tutoring early, not just before exams"],
+ tip:"Orgo is like a new language. Learn WHY things happen instead of memorizing every reaction.",
+ kind:"You can do hard things. You already have."},
+{id:"n3_2",s:3,icon:"🔬",title:"Join a research lab",when:"Sophomore year",
+ what:"Research means helping a professor answer a question. Biological anthropology and public health research both count!",
+ why:"Research isn't required everywhere, but it shows curiosity, and it can lead to a great letter.",
+ steps:["Read about professors in your majors","Email two whose work excites you","Ask if they have room for an undergrad","Log your research hours"],
+ tip:"Mention one specific thing about their work in your email. Professors love that.",
+ kind:"Science is lucky to have you."},
+{id:"n3_3",s:3,icon:"⭐",title:"Step up as a leader",when:"Sophomore year",
+ what:"Leadership can be a club officer role, tutoring, captaining a team, or starting something new.",
+ why:"Doctors lead teams every day, and schools love seeing you step up.",
+ steps:["Find one leadership role that fits you","Go for it!","Log your leadership hours"],
+ tip:"It doesn't have to be big. Organizing one service event counts!",
+ kind:"People follow kind leaders. That's you."},
+{id:"n3_4",s:3,icon:"🫙",title:"Fill your memory jar",when:"All of college",
+ what:"Save special moments: a patient who made you smile, a hard day you got through, why medicine matters to you.",
+ why:"Your personal statement grows from these moments. Saving them now makes the essay SO much easier.",
+ steps:["Add three memories to your Garden notes","Add one more each month"],
+ tip:"Voice notes count! If writing feels slow, record yourself talking, then type up the best parts later.",
+ kind:"Your story is already beautiful."},
+{id:"n3_5",s:3,icon:"🍂",title:"Plan a summer that grows you",when:"Summer 2028",
+ what:"The summer after sophomore year is a great time for research, a clinical job, or a summer program.",
+ why:"These activities make your application shine, and help you find what you love.",
+ steps:["Pick your summer plan by spring","Keep logging your hours","Rest a little too 🌊"],
+ tip:"Ask professors and your advisor about summer research. A lot of spots are never posted publicly.",
+ kind:"Every summer you get a little more YOU."},
+// ---------- Season 4 ----------
+{id:"n4_0",s:4,icon:"🌉",title:"The fork in the path",when:"Fall 2028",
+ what:"Some students apply to med school the summer after junior year. Many others take one or more gap years after graduating. Both are great!",
+ why:"A gap year can give you time to work, do research, and finish strong. Lots of med students took one.",
+ steps:["Look at your grades, hours, and MCAT readiness","Talk with your Pre-Health Advisor","Choose: apply in 2029, or take a gap year"],
+ tip:"Applying once, when you're ready, is better than applying too early.",
+ kind:"There's no wrong path. Only YOUR path. 🌸"},
+{id:"n4_1",s:4,icon:"🔭",title:"Physics & biochem",when:"Junior year",
+ what:"Junior year often brings Physics I and II (with labs) and Biochemistry.",
+ why:"Biochemistry is one of the biggest topics on the MCAT.",
+ steps:["Register for physics and biochem","Keep up with practice problems","Add your grades to the Bookshelf"],
+ tip:"Physics is easier when you draw a picture of every problem before solving it.",
+ kind:"Your brain is honestly so cool."},
+{id:"n4_2",s:4,icon:"💸",title:"Fee Assistance",when:"The year before your MCAT",
+ what:"The AAMC Fee Assistance Program lowers the price of the MCAT and med school applications, and gives you free official MCAT prep.",
+ why:"You have to be approved BEFORE you pay. It can't be added later.",
+ steps:["Check if you qualify (it's based on family income)","Apply before you register for the MCAT","Wait for approval, then register"],
+ tip:"Ask your family to help gather the tax info it needs.",
+ kind:"Smart AND money-savvy. Love that.",
+ links:[{l:"AAMC Fee Assistance Program",u:"https://students-residents.aamc.org/fee-assistance-program/fee-assistance-program"}]},
+{id:"n4_3",s:4,icon:"⏳",title:"Test support, if you want it",when:"Months before your MCAT",
+ what:"If you use accommodations at Tulane, like extra test time, you can ask for MCAT accommodations too.",
+ why:"The MCAT review takes a while, so apply well before your test date.",
+ steps:["Read the AAMC's MCAT accommodations page","Gather your paperwork","Apply months before you want to test"],
+ tip:"Using accommodations is completely normal. It's about fair access, nothing else.",
+ kind:"Showing up as yourself is always enough."},
+{id:"n4_4",s:4,icon:"🧠",title:"Your MCAT study plan",when:"Junior year",
+ what:"The MCAT is a long test (about 7½ hours) with four parts: chemistry and physics, reading and reasoning (called CARS), biology and biochemistry, and psychology and sociology.",
+ why:"A few months of steady studying works better than cramming.",
+ steps:["Take a practice test to see where you start","Make a weekly study schedule","Use the official AAMC practice materials","Take full practice tests before test day"],
+ tip:"Mix it up: videos, flashcards with pictures, and saying answers out loud. Find what works for YOUR brain.",
+ kind:"You're more prepared than you think."},
+{id:"n4_5",s:4,icon:"💌",title:"Collect your letters",when:"Junior year",
+ what:"Ask professors, a doctor you shadowed, and supervisors to write you letters. Ask by email, a few weeks ahead.",
+ why:"Most schools want at least three letters. Some colleges write one big committee letter instead, so ask your advisor how Tulane does it.",
+ steps:["List 4 to 6 people who know you well","Email them your resume and why you love medicine","Send thank-you notes"],
+ tip:"Ask people who know you well, not just people with fancy titles.",
+ kind:"So many people believe in you. 💛"},
+{id:"n4_6",s:4,icon:"✍️",title:"Write your story",when:"Spring 2029",
+ what:"The personal statement is a short essay (about one page) about why you want to be a doctor.",
+ why:"It's your chance to show who you are, beyond your grades.",
+ steps:["Pick your favorite moments from your memory jar","Write a messy first draft (messy is perfect!)","Get feedback from your advisor and Tulane's Writing Workshop","Revise a few times"],
+ tip:"Use text-to-speech to hear your essay read aloud. Listening catches things your eyes skip.",
+ kind:"Your voice matters. Let it shine."},
+// ---------- Season 5 ----------
+{id:"n5_1",s:5,icon:"🐉",title:"MCAT day",when:"Spring or early summer 2029",
+ what:"Test day! Bring your ID, snacks, and water for the breaks.",
+ why:"Your scores come back about a month later, in time for applications.",
+ steps:["Sleep well the night before","Take the MCAT","Celebrate! 🎉"],
+ tip:"During breaks, eat a snack and stretch. Don't think about the last section.",
+ kind:"Whatever happens, I'm so proud of you."},
+{id:"n5_2",s:5,icon:"📬",title:"Send your applications",when:"May–June 2029",
+ what:"MD schools use an application called AMCAS. DO schools use AACOMAS. Both open in early May.",
+ why:"Schools review applications as they arrive, so sending yours early really helps.",
+ steps:["Open your applications","Enter every class exactly like your transcript","Add your activities from the Garden","Submit!"],
+ tip:"Entering classes is tedious, so do a little each day and double-check it.",
+ kind:"Hitting submit is so brave. You did it!"},
+{id:"n5_3",s:5,icon:"📝",title:"Secondary essays",when:"Summer 2029",
+ what:"After you apply, schools send more essay questions. These are called secondaries.",
+ why:"Sending them back within about two weeks shows you're excited about the school.",
+ steps:["Pre-write answers to common questions","Track each school's due date","Send each one back in about two weeks"],
+ tip:"Reuse good ideas, but always change them to fit each school.",
+ kind:"You're almost there. Keep going! 💪"},
+{id:"n5_4",s:5,icon:"🎭",title:"Situational judgment tests",when:"Summer 2029",
+ what:"Some schools ask for tests called Casper or PREview. They show how you'd handle real-life situations with people.",
+ why:"They help schools see your kindness and good judgment.",
+ steps:["Check which of your schools want one","Sign up early","Take a practice test","Take the real one"],
+ tip:"There are no trick questions. Be thoughtful, kind, and honest.",
+ kind:"Your kindness is your superpower."},
+// ---------- Season 6 ----------
+{id:"n6_1",s:6,icon:"🎤",title:"Interview practice",when:"Fall 2029",
+ what:"Practice talking about yourself and why you love medicine. Advisors and the Career Center can give you mock interviews.",
+ why:"An interview means they already like you on paper. Now they want to meet the real you.",
+ steps:["Practice “Tell me about yourself”","Practice “Why medicine?”","Do one mock interview"],
+ tip:"Tell short stories with real moments. People remember stories more than lists.",
+ kind:"They're going to love meeting you."},
+{id:"n6_2",s:6,icon:"👗",title:"Interview day",when:"Fall 2029 – Winter 2030",
+ what:"Go to your interviews, online or in person.",
+ why:"This is your moment to shine!",
+ steps:["Learn a little about each school","Go to your interview","Send a short thank-you note after"],
+ tip:"It's okay to pause and think before you answer. Calm is confident.",
+ kind:"Be yourself. That's the best answer every time."},
+{id:"n6_3",s:6,icon:"🎓",title:"Finish strong",when:"Senior year",
+ what:"Finish your double major, your honors work, and Tulane's service learning.",
+ why:"Med schools see your final grades, so keep going strong to the end.",
+ steps:["Check your graduation requirements with your advisor","Finish fall classes","Finish spring classes"],
+ tip:"Senior year is busy. Keep your cozy routine going!",
+ kind:"You're writing the last chapter of something amazing."},
+{id:"n6_4",s:6,icon:"🌙",title:"While you wait",when:"Winter 2030",
+ what:"Waiting for answers is hard. If a school puts you on a waitlist, you can send a short update letter about what you've been doing.",
+ why:"Updates remind schools you're still excited about them.",
+ steps:["Write down new things you've done","Send a short update to schools you're waiting on","Do one nice thing for yourself"],
+ tip:"Hang out with your friends and enjoy senior year. The waiting is easier when life is full.",
+ kind:"Good things are coming. I can feel it. 🌟"},
+// ---------- Season 7 ----------
+{id:"n7_1",s:7,icon:"💌",title:"The YES!",when:"2029–2030",
+ what:"Your first acceptance! 🎉🎉🎉",
+ why:"Every flower in your garden led here.",
+ steps:["Scream (happily)","Tell your family","Thank the people who wrote your letters"],
+ tip:"Save the email. You'll want to read it again.",
+ kind:"I KNEW you could do it!!!"},
+{id:"n7_2",s:7,icon:"🏫",title:"Choose your school",when:"Spring 2030",
+ what:"If you get more than one acceptance, compare things like cost, location, and how you felt when you visited.",
+ why:"Pick the place where you'll be happy for four years.",
+ steps:["Compare financial aid offers","Visit or join second-look days","Pick your school!"],
+ tip:"Listen to your heart AND your budget.",
+ kind:"Wherever you go, you'll make it home."},
+{id:"n7_3",s:7,icon:"🎓",title:"Graduate from Tulane!",when:"≈ May 2030",
+ what:"Walk across the stage. Bachelor's degree: complete!",
+ why:"You did four years of hard, beautiful work.",
+ steps:["Apply for graduation","Celebrate with your people","Send your final transcript to your med school"],
+ tip:"Take SO many pictures.",
+ kind:"Your little island is all grown up. 🌺"},
+{id:"n7_4",s:7,icon:"🥼",title:"White coat day",when:"≈ Summer 2030",
+ what:"Put on your white coat. You are a medical student! 🩺",
+ why:"A new adventure begins.",
+ steps:["Go to orientation","Receive your white coat","Take a picture for little-you"],
+ tip:"Remember this feeling on the hard days.",
+ kind:"Dr. Nola has a really nice ring to it. 💛"}
+];
+
+const HOUR_CATS = [
+ {id:"shadow_md",label:"Shadowing · MD",short:"Shadow MD",icon:"👀",group:"shadow",color:"#b79ce8"},
+ {id:"shadow_do",label:"Shadowing · DO",short:"Shadow DO",icon:"🦴",group:"shadow",color:"#d6c4f5"},
+ {id:"clin_paid",label:"Clinical · Paid job",short:"Clinical job",icon:"💗",group:"clinical",color:"#f27aa0"},
+ {id:"clin_vol",label:"Clinical · Volunteer",short:"Clinical volunteer",icon:"🩹",group:"clinical",color:"#f7a8c0"},
+ {id:"service",label:"Community service",short:"Service",icon:"🙌",group:"service",color:"#7cc68a"},
+ {id:"research",label:"Research",short:"Research",icon:"🔬",group:"research",color:"#6fb4e3"},
+ {id:"leadership",label:"Leadership",short:"Leadership",icon:"⭐",group:"leadership",color:"#f5c24c"},
+ {id:"work",label:"Other work",short:"Other work",icon:"💼",group:"work",color:"#c9b08e"}
+];
+const GOALS = [
+ {group:"shadow",label:"Shadowing",icon:"👀",goal:50,note:"A common goal is about 40–60 hours with a few different doctors."},
+ {group:"clinical",label:"Patient care",icon:"💗",goal:300,note:"Steady time with patients over months and years."},
+ {group:"service",label:"Community service",icon:"🙌",goal:150,note:"Sticking with one place you love is better than lots of one-time visits."},
+ {group:"research",label:"Research",icon:"🔬",goal:100,note:"Optional for many schools, but lovely if you enjoy it."},
+ {group:"leadership",label:"Leadership",icon:"⭐",goal:100,note:"Leading anything you care about counts."}
+];
+
+// Tulane-flavored course list (confirm exact courses with your advisor)
+const DEFAULT_COURSES = [
+ ["General Chemistry I + lab (CHEM 1070/1075)","C",4,"chem"],["General Chemistry II + lab (CHEM 1080/1085)","C",4,"chem"],
+ ["Intro Cell & Molecular Biology (CELL 1010)","B",3,"bio"],["Diversity of Life + lab (EBIO 1010/1015)","B",4,"bio"],
+ ["Genetics (CELL 2050) + lab (CELL 2115)","B",4,"bio"],
+ ["Organic Chemistry I + lab (CHEM 2410/2415)","C",4,"chem"],["Organic Chemistry II + lab (CHEM 2420/2425)","C",4,"chem"],
+ ["Physics I + lab (PHYS 1210/1211)","P",4,"phys"],["Physics II + lab (PHYS 1220/1221)","P",4,"phys"],
+ ["Biochemistry (CELL 4010)","B",3,"bio"],
+ ["Calculus I (MATH 1210)","M",4,"math","done","Transfer credit"],["Statistics (ask advisor which one)","M",3,"math"],
+ ["Writing (ENGL 1010)","O",4,"eng","done","Transfer credit"],["Intro Psychology","O",3,"soc"],["Intro Sociology","O",3,"soc"]
+];
+
+const MAIL = [
+ {id:"m_bailey",icon:"💌",from:"Bailey",title:"A letter from Bailey",body:"Nola!! I made this little island just for you. You are already doing SO much, and I am so proud of you. Go easy on yourself, eat a real meal, and text me any time you need a hype girl. I love you!\n\n— Bailey"},
+ {id:"m_mdvsdo",icon:"🦴",from:"Pip",title:"MD vs DO",body:"There are two kinds of doctors in the U.S.: MDs and DOs.\n\nBoth are full doctors. Both can work in any specialty.\n\nDOs learn extra hands-on skills and a whole-person approach.\n\nMD schools use the AMCAS application. DO schools use AACOMAS. Lots of students apply to both!"},
+ {id:"m_study",icon:"📖",from:"Pip",title:"Study tricks that really work",body:"🌟 Quiz yourself instead of re-reading. Flashcards are great.\n\n🎧 Listen while you read. Text-to-speech and recorded lectures are your friends.\n\n🗣️ Explain it out loud, like you're teaching.\n\n🎨 Color-code your notes and draw pictures.\n\n⏱️ Study 25 minutes, rest 5. Repeat.\n\n😴 Sleep helps your brain store what you learned."},
+ {id:"m_adult",icon:"🧺",from:"Pip",title:"Little adulting tips",body:"🧺 Pick one laundry day every week.\n\n📅 Put everything in your phone calendar with alarms.\n\n💳 Check your bank app once a week. No surprises!\n\n🥗 Keep easy snacks with protein in your room.\n\n🩺 Know where Campus Health is before you get sick.\n\n📞 Call home sometimes. They miss you."},
+ {id:"m_words",icon:"📚",from:"Pip",title:"Pip's word book",body:"MCAT: the big entrance test for med school.\n\nAMCAS / AACOMAS: the applications for MD and DO schools.\n\nShadowing: following a doctor to watch and learn.\n\nClinical experience: working with patients directly.\n\nBCPM GPA: your science GPA (Biology, Chemistry, Physics, Math).\n\nSecondaries: extra essays schools send after you apply.\n\nGap year: time between college and med school. Super common!"},
+ {id:"m_hard",icon:"🫂",from:"Pip",title:"For hard days",body:"Hard days happen to everyone, even future doctors.\n\nTake a breath. Drink some water. Text someone who loves you.\n\nOne bad grade or one bad day doesn't change where you're going.\n\nIf things feel heavy for a while, the Counseling Center at Campus Health is there for you. Talking to someone is brave. 💛"}
+];
+
+const NOTES = [
+ "You're doing better than you think. 🌸",
+ "Drink some water, superstar. 💧",
+ "Small steps still move you forward.",
+ "Rest is part of the plan, not a break from it.",
+ "You belong at Tulane. You belong in medicine.",
+ "Be as kind to yourself as you are to everyone else.",
+ "Future Dr. Nola is cheering for you. 🩺",
+ "It's okay to not have it all figured out.",
+ "Your hard work is planting something beautiful.",
+ "One page at a time. One day at a time.",
+ "You are so loved. Don't forget it. 💛",
+ "Proud of you for showing up today."
+];
+
+const KEY_DATES = [
+ {d:"2026-12-10",t:"Fall finals: you've got this! 📝",est:1},
+ {d:"2027-01-15",t:"Spring semester begins (check Tulane's calendar)",est:1},
+ {d:"2027-02-09",t:"Mardi Gras day 🎭"},
+ {d:"2027-05-15",t:"Summer! Shadowing & rest ☀️",est:1},
+ {d:"2028-02-01",t:"Look into AAMC Fee Assistance (apply before MCAT signup)",est:1},
+ {d:"2028-10-20",t:"2029 MCAT registration opens",est:1},
+ {d:"2029-03-01",t:"MCAT window: spring to early summer 2029",est:1},
+ {d:"2029-05-04",t:"Med school applications open",est:1},
+ {d:"2030-05-15",t:"Tulane graduation 🎓",est:1},
+ {d:"2030-07-15",t:"Med school begins 🥼",est:1}
+];
+
+const STICKERS = [
+ // id, emoji, name, message, test fn defined in app
+ ["first","🌱","First sprout","You finished your first quest!"],
+ ["exam","📝","Exam warrior","You made it through exam season."],
+ ["helpers","🤝","Brave asker","You found your helpers."],
+ ["advisor","🧭","Planner","You met your pre-health advisors."],
+ ["garden1","🌷","First flower","You logged your first hours."],
+ ["garden10","💐","Bouquet","Ten garden entries!"],
+ ["honors","💛","Honors heart","20 honors service hours!"],
+ ["shadow1","👀","Little shadow","Your first shadowing."],
+ ["do","🦴","Bone friend","You shadowed a DO."],
+ ["clin100","💗","Caring heart","100 hours with patients."],
+ ["serve50","🙌","Helping hands","50 service hours."],
+ ["research","🔬","Little scientist","Your first research hours."],
+ ["lead","⭐","Shining leader","Leadership hours logged."],
+ ["book1","📚","Bookworm","You finished a class on your Bookshelf."],
+ ["dean","🎀","Gold star","A or A- in 4 classes."],
+ ["rest","🌙","Rest is productive","You finished your cozy routine."],
+ ["mardi","🎭","Purple, green & gold","Mardi Gras balance achieved."],
+ ["s0","🌱","First Bloom","You finished the First Bloom season!"],
+ ["s1","🌸","Magnolia Spring","You finished Magnolia Spring!"],
+ ["s2","☀️","Sunny Shore","You finished Sunny Shore!"],
+ ["s3","🌳","Oak Grove","You finished Oak Grove!"],
+ ["s4","🗼","Lighthouse","You finished Lighthouse!"],
+ ["s5","📬","The Big Send","You sent your applications!"],
+ ["s6","✨","Starlight","Senior year: done!"],
+ ["s7","🥼","Dr. Nola","White coat day! 🎉"],
+ ["backup","💾","Safe & sound","You made a backup!"]
+];
+
+</script>
+<script>
+"use strict";
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const today=()=>{const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);};
+const uid=()=>Math.random().toString(36).slice(2,9);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const QMAP=Object.fromEntries(QUESTS.map(q=>[q.id,q]));
+
+// ---------- state ----------
+const KEY="magnolia_isle_v1";
+function fresh(){return {v:1,updatedAt:0,me:{name:"Nola",hair:0,style:0,skin:0,outfit:0},q:{},logs:[],
+  courses:DEFAULT_COURSES.map(([n,c,cr,k,st,sc])=>({id:uid(),name:n,cat:c,cr,kind:k,status:st||"todo",grade:"",school:sc||"",prereq:true})),
+  stk:{},read:{},seenIntro:false,sound:true,read_rate:0.95,fs:18,font:"lexend",space:false,lastBackup:0,snooze:0};}
+let S=fresh();
+try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(fresh(),JSON.parse(r));}catch(e){}
+let cloud={ref:null,w:false,p:false},st=null;
+function save(){S.updatedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}clearTimeout(st);st=setTimeout(push,1200);}
+async function push(){if(!cloud.ref)return;if(cloud.w){cloud.p=true;return;}cloud.w=true;try{await cloud.ref.set({state:JSON.stringify(S),updatedAt:S.updatedAt});}catch(e){}cloud.w=false;if(cloud.p){cloud.p=false;push();}}
+const IN_CLAUDE=!!(window.claude&&typeof window.claude.use==="function");
+if(IN_CLAUDE)document.body.classList.add("inclaude");
+let dlCap=null;
+async function initClaude(){if(!IN_CLAUDE)return;
+  try{window.claude.use("downloads").then(d=>{dlCap=d;if(d)document.body.classList.remove("inclaude");}).catch(()=>{});}catch(e){}
+  try{const [db,user]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);if(!db||!user)return;const id=await user.id();if(!id)return;
+    const ref=db.collection("data/users/"+id).doc("save");let s=await ref.get();let r=s&&typeof s.data==="function"?s.data():s;if(r&&r.data&&r.state===undefined)r=r.data;cloud.ref=ref;
+    if(r&&r.state&&(r.updatedAt||0)>(S.updatedAt||0)){S=Object.assign(fresh(),JSON.parse(r.state));localStorage.setItem(KEY,JSON.stringify(S));applyComfort();renderAll();}else push();}catch(e){}}
+
+// ---------- reading comfort ----------
+function applyComfort(){const r=document.documentElement.style;r.setProperty("--fs",(S.fs||18)+"px");
+  r.setProperty("--body",S.font==="atkinson"?'"Atkinson Hyperlegible",system-ui,sans-serif':S.font==="system"?'system-ui,-apple-system,"Segoe UI",sans-serif':'"Lexend",system-ui,sans-serif');
+  r.setProperty("--lh",S.space?"1.95":"1.7");r.setProperty("--ls",S.space?".04em":"0");r.setProperty("--ws",S.space?".14em":"0");}
+applyComfort();
+const canSpeak="speechSynthesis" in window;
+function stopSpeak(){if(canSpeak)try{speechSynthesis.cancel();}catch(e){}$$(".speak.on").forEach(b=>b.classList.remove("on"));}
+function speak(text,btn){if(!canSpeak)return;const was=btn&&btn.classList.contains("on");stopSpeak();if(was)return;
+  try{const u=new SpeechSynthesisUtterance(text.replace(/<[^>]+>/g," ").replace(/[\u{1F300}-\u{1FAFF}☀-➿️]/gu,""));u.rate=S.read_rate||.95;
+    const v=speechSynthesis.getVoices().find(v=>/en(-|_)US/i.test(v.lang)&&/female|samantha|zira|aria|jenny|google us/i.test(v.name))||speechSynthesis.getVoices().find(v=>/^en/i.test(v.lang));if(v)u.voice=v;
+    if(btn){btn.classList.add("on");u.onend=u.onerror=()=>btn.classList.remove("on");}speechSynthesis.speak(u);}catch(e){}}
+const speakBtn=(id)=>canSpeak?`<button class="speak" data-say="${id}" aria-label="Read this out loud">🔊 Read to me</button>`:"";
+
+// ---------- sound ----------
+let ac=null;
+function chime(notes){if(!S.sound)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==="suspended")ac.resume();let t=ac.currentTime;
+  notes.forEach(f=>{const o=ac.createOscillator(),g=ac.createGain();o.type="sine";o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.09,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.5);
+  o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+.55);t+=.11;});}catch(e){}}
+const SFX={tap:()=>chime([880]),step:()=>chime([659,880]),done:()=>chime([523,659,784,1047]),sticker:()=>chime([784,988,1175,1568]),level:()=>chime([523,659,784,1047,1319])};
+
+// ---------- art ----------
+const HAIR=["#f0d58c","#e3b874","#a87645","#5b3a29","#2f2530","#c4563f","#f4a7bb"];
+const SKIN=["#ffe1cf","#f6cfae","#e2a77f","#b97a52","#8a5638"];
+const OUTFIT=["#f4a7bb","#9fd3a8","#a9d8f0","#d9ccf3","#fbe39a","#ffffff"];
+const STYLES=["Long","Bob","Bun"];
+function avatar(opts={}){const m=S.me,h=HAIR[m.hair]||HAIR[0],sk=SKIN[m.skin]||SKIN[0],o=OUTFIT[m.outfit]||OUTFIT[0],lv=levelInfo().lv,coat=isDone("n7_4"),bow=lv>=3,scope=lv>=5||coat;
+  const back=m.style===0?`<path d="M22 52 Q18 104 30 112 L70 112 Q82 104 78 52 Z" fill="${h}"/>`:m.style===1?`<path d="M22 50 Q20 82 30 86 L70 86 Q80 82 78 50 Z" fill="${h}"/>`:`<circle cx="50" cy="20" r="12" fill="${h}"/><path d="M24 50 Q22 70 28 74 L72 74 Q78 70 76 50 Z" fill="${h}"/>`;
+  return `<svg viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg">${back}
+   <path d="M28 88 Q50 80 72 88 L78 120 L22 120 Z" fill="${o}" stroke="#00000010"/>
+   ${coat?`<path d="M28 88 Q38 84 44 86 L40 120 L22 120 Z" fill="#fff" stroke="#e8e0d8"/><path d="M72 88 Q62 84 56 86 L60 120 L78 120 Z" fill="#fff" stroke="#e8e0d8"/>`:""}
+   <rect x="44" y="72" width="12" height="12" rx="5" fill="${sk}"/>
+   <circle cx="50" cy="52" r="26" fill="${sk}"/>
+   <path d="M24 52 Q24 24 50 24 Q76 24 76 52 Q68 36 52 38 Q36 36 24 52 Z" fill="${h}"/>
+   <ellipse cx="41" cy="56" rx="3.2" ry="4" fill="#3a2f3f"/><ellipse cx="59" cy="56" rx="3.2" ry="4" fill="#3a2f3f"/>
+   <circle cx="42.2" cy="54.6" r="1.1" fill="#fff"/><circle cx="60.2" cy="54.6" r="1.1" fill="#fff"/>
+   <circle cx="34" cy="64" r="5" fill="#f49ab0" opacity=".45"/><circle cx="66" cy="64" r="5" fill="#f49ab0" opacity=".45"/>
+   <path d="M45 66 Q50 71 55 66" stroke="#b5566f" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+   ${bow?`<g transform="translate(70 30)"><path d="M0 0 L-9 -6 L-9 6 Z M0 0 L9 -6 L9 6 Z" fill="#ff8fb1"/><circle r="3" fill="#ff6f9c"/></g>`:""}
+   ${scope?`<path d="M40 86 Q38 100 48 104 Q58 100 60 86" stroke="#7aa6c9" stroke-width="2.5" fill="none"/><circle cx="48" cy="106" r="3.5" fill="#cfe3f1" stroke="#7aa6c9" stroke-width="2"/>`:""}
+  </svg>`;}
+function pip(){return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="50" cy="94" rx="24" ry="4" fill="#00000012"/>
+  <path d="M40 88 l-3 6 M46 88 l0 6 M58 88 l3 6 M52 88 l0 6" stroke="#f2a74b" stroke-width="3" stroke-linecap="round"/>
+  <ellipse cx="50" cy="68" rx="28" ry="22" fill="#b9aea3"/>
+  <path d="M30 62 Q46 54 62 70 Q46 82 30 72 Z" fill="#9b8f84"/>
+  <ellipse cx="54" cy="74" rx="12" ry="9" fill="#d8cfc6"/>
+  <circle cx="40" cy="36" r="16" fill="#fffdf7"/>
+  <path d="M32 22 Q36 14 42 20 Q46 12 50 22" fill="#f6d77a"/>
+  <path d="M28 25 Q40 14 52 25 L52 28 L28 28 Z" fill="#7fb6d6"/><rect x="38" y="20" width="6" height="3" rx="1.5" fill="#f4a7bb"/>
+  <circle cx="36" cy="35" r="3" fill="#3a2f3f"/><circle cx="37" cy="34" r="1" fill="#fff"/>
+  <path d="M48 38 L92 46 Q90 50 84 50 L50 44 Z" fill="#f2b84b"/>
+  <path d="M52 44 Q70 62 86 50 L50 44 Z" fill="#e9a24a"/>
+  <circle cx="30" cy="42" r="3.5" fill="#f49ab0" opacity=".5"/>
+ </svg>`;}
+function flower(x,y,c,r){let p="";for(let i=0;i<5;i++){const a=i*72*Math.PI/180;p+=`<circle cx="${(x+Math.cos(a)*r).toFixed(1)}" cy="${(y+Math.sin(a)*r).toFixed(1)}" r="${(r*.75).toFixed(1)}" fill="${c}"/>`;}
+  return `<line x1="${x}" y1="${y}" x2="${x}" y2="${y+r*3.2}" stroke="#6aa86f" stroke-width="1.6"/><ellipse cx="${x+r*.9}" cy="${y+r*2.2}" rx="${r*.8}" ry="${r*.35}" fill="#7dbb80"/>${p}<circle cx="${x}" cy="${y}" r="${(r*.55).toFixed(1)}" fill="#fff3b0"/>`;}
+function oak(x,y,s=1){let m="";[[-14,4],[-6,8],[6,6],[14,3]].forEach(([dx,dy],i)=>m+=`<path d="M${x+dx*s} ${y+dy*s} q2 6 -1 12 q2 5 -1 9" stroke="#c9d6b8" stroke-width="1.4" fill="none" opacity=".9"/>`);
+  return `<rect x="${x-3*s}" y="${y}" width="${6*s}" height="${24*s}" rx="3" fill="#8a6a4c"/>
+   <circle cx="${x-12*s}" cy="${y}" r="${12*s}" fill="#6fae78"/><circle cx="${x+12*s}" cy="${y}" r="${12*s}" fill="#6fae78"/><circle cx="${x}" cy="${y-8*s}" r="${15*s}" fill="#82c08a"/>
+   <circle cx="${x-4*s}" cy="${y-12*s}" r="${5*s}" fill="#9fd3a8" opacity=".7"/>${m}`;}
+
+// ---------- progress ----------
+const LV=[0,100,250,450,700,1000,1350,1750,2200,2700,3300,4000];
+const LVN=["Tiny Seed","Sprout","Little Leaf","Sweet Bud","First Bloom","Wildflower","Magnolia","Live Oak","Garden Keeper","Starlight","Almost Doctor","White Coat Bloom"];
+function isDone(id){return !!(S.q[id]&&S.q[id].d);}
+function qs(id){return S.q[id]||(S.q[id]={d:0,s:[],n:""});}
+function hrs(fn){return S.logs.filter(fn).reduce((a,l)=>a+(+l.hrs||0),0);}
+function gh(g){return hrs(l=>{const c=HOUR_CATS.find(x=>x.id===l.cat);return c&&c.group===g;});}
+const GP={"A":4,"A-":3.7,"B+":3.3,"B":3,"B-":2.7,"C+":2.3,"C":2,"C-":1.7,"D+":1.3,"D":1,"F":0};
+function gpa(sci){let p=0,c=0;S.courses.forEach(k=>{if(k.status!=="done"||!(k.grade in GP))return;if(sci&&k.cat==="O")return;p+=GP[k.grade]*(+k.cr||0);c+=+k.cr||0;});return c?p/c:null;}
+function xp(){let x=0;QUESTS.forEach(q=>{const s=S.q[q.id];if(!s)return;if(s.d)x+=100;x+=(s.s||[]).filter(Boolean).length*10;});
+  x+=Math.min(hrs(()=>true),1000)*2;S.courses.forEach(c=>{if(c.status==="done")x+=40;});x+=Object.keys(S.stk).length*20;return Math.round(x);}
+function levelInfo(){const x=xp();let lv=1;LV.forEach((t,i)=>{if(x>=t)lv=i+1;});return {x,lv,cur:LV[lv-1],nxt:LV[lv]??null,name:isDone("n7_4")?"Dr. Nola 🥼":LVN[lv-1]};}
+function seasonProg(s){const q=QUESTS.filter(x=>x.s===s);return {d:q.filter(x=>isDone(x.id)).length,t:q.length};}
+function curSeason(){for(let i=0;i<SEASONS.length;i++){const p=seasonProg(i);if(p.d<p.t)return i;}return SEASONS.length-1;}
+function nextQuest(){const s=curSeason();return QUESTS.find(q=>q.s===s&&!isDone(q.id))||null;}
+const honorsHrs=()=>hrs(l=>l.honors);
+
+// ---------- stickers ----------
+const STEST={first:()=>QUESTS.some(q=>isDone(q.id)),exam:()=>isDone("n0_2"),helpers:()=>isDone("n0_3"),advisor:()=>isDone("n0_4"),
+ garden1:()=>S.logs.length>0,garden10:()=>S.logs.length>=10,honors:()=>honorsHrs()>=20,shadow1:()=>gh("shadow")>0,do:()=>hrs(l=>l.cat==="shadow_do")>0,
+ clin100:()=>gh("clinical")>=100,serve50:()=>gh("service")>=50,research:()=>gh("research")>0,lead:()=>gh("leadership")>0,
+ book1:()=>S.courses.some(c=>c.status==="done"&&c.school!=="Transfer credit"),dean:()=>S.courses.filter(c=>c.status==="done"&&(c.grade==="A"||c.grade==="A-")).length>=4,
+ rest:()=>isDone("n0_7"),mardi:()=>isDone("n1_6"),backup:()=>!!S.lastBackup};
+SEASONS.forEach((_,i)=>STEST["s"+i]=()=>{const p=seasonProg(i);return p.d===p.t;});
+function checkStickers(){const got=[];STICKERS.forEach(([id,em,nm,msg])=>{if(!S.stk[id]&&STEST[id]&&STEST[id]()){S.stk[id]=today();got.push([em,nm]);}});
+  got.forEach(([em,nm],i)=>setTimeout(()=>{toast(`${em} New sticker: ${esc(nm)}!`);SFX.sticker();petals(40);},500+i*700));return got.length;}
+
+// ---------- ui helpers ----------
+function toast(t){const e=document.createElement("div");e.className="toast";e.innerHTML=t;const b=$("#toasts");b.appendChild(e);while(b.children.length>3)b.firstChild.remove();setTimeout(()=>{e.style.transition="opacity .4s";e.style.opacity=0;setTimeout(()=>e.remove(),450);},3200);}
+const cv=$("#petals"),cx=cv.getContext("2d");let P=[],raf=null;
+function petals(n=60){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;cv.width=innerWidth;cv.height=innerHeight;const cols=["#f4a7bb","#ffffff","#fbe39a","#d9ccf3","#9fd3a8"];
+  for(let i=0;i<n;i++)P.push({x:Math.random()*innerWidth,y:-20-Math.random()*200,vx:(Math.random()-.5)*1.5,vy:1.5+Math.random()*2.5,r:4+Math.random()*5,a:Math.random()*6,c:cols[i%5]});if(!raf)loop();}
+function loop(){cx.clearRect(0,0,cv.width,cv.height);P.forEach(p=>{p.x+=p.vx+Math.sin(p.a)*.6;p.y+=p.vy;p.a+=.05;cx.fillStyle=p.c;cx.beginPath();cx.ellipse(p.x,p.y,p.r,p.r*.6,p.a,0,7);cx.fill();});
+  P=P.filter(p=>p.y<cv.height+20);raf=P.length?requestAnimationFrame(loop):(cx.clearRect(0,0,cv.width,cv.height),null);}
+function openModal(h){$("#modal").innerHTML=h;$("#scrim").classList.add("on");$("#modal").scrollTop=0;bindSpeak($("#modal"));}
+function closeModal(){stopSpeak();$("#scrim").classList.remove("on");}
+$("#scrim").addEventListener("click",e=>{if(e.target.id==="scrim")closeModal();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
+const SAY={};
+function bindSpeak(root){root.querySelectorAll("[data-say]").forEach(b=>b.addEventListener("click",()=>speak(SAY[b.dataset.say]||"",b)));}
+let lastLv=null;
+function changed(){const before=lastLv;checkStickers();save();const li=levelInfo();
+  if(before!==null&&li.lv>before)setTimeout(()=>{toast(`🌸 You grew! Level ${li.lv}: ${esc(li.name)}`);SFX.level();petals(90);},300);renderAll();}
+
+// ---------- views ----------
+function go(v){$$(".navb").forEach(b=>b.classList.toggle("on",b.dataset.v===v));$$(".view").forEach(x=>x.classList.toggle("on",x.id==="v-"+v));SFX.tap();scrollTo({top:0,behavior:"smooth"});
+  try{history.replaceState(null,"","#"+v);}catch(e){}}
+$$(".navb").forEach(b=>b.addEventListener("click",()=>go(b.dataset.v)));
+
+function renderTop(){const li=levelInfo();$("#me").innerHTML=avatar();$("#hello").textContent=`Hi, ${S.me.name||"friend"}!`;
+  $("#lvl").textContent=`Level ${li.lv} · ${li.name}`;$("#xpbar").style.width=(li.nxt?Math.max(3,(li.x-li.cur)/(li.nxt-li.cur)*100):100)+"%";lastLv=li.lv;}
+function renderBanner(){const el=$("#backupBanner"),now=Date.now();const has=S.logs.length||S.courses.some(c=>c.status==="done"&&c.school!=="Transfer credit")||Object.values(S.q).some(q=>q&&q.d);
+  if(has&&!S.startAt){S.startAt=now;save();}
+  const due=has&&(S.lastBackup?now-S.lastBackup>7*864e5:now-(S.startAt||now)>7*864e5)&&!(S.snooze&&now<S.snooze);
+  if(!due){el.innerHTML="";return;}
+  el.innerHTML=`<div class="banner">${pip()}<p><b>Little reminder:</b> ${S.lastBackup?"it's been a week since your last backup.":"let's save a backup of your island!"} It takes one tap and keeps your hours safe. 💾</p>
+   <button class="btn sky" id="bkNow">Back up now</button><button class="btn sm ghost" id="bkLater">Tomorrow</button></div>`;
+  $("#bkNow").addEventListener("click",openSettings);$("#bkLater").addEventListener("click",()=>{S.snooze=now+864e5;save();renderBanner();});}
+
+const PLACES=[
+ {v:"journey",x:322,y:62,label:"🗺️ Journey"},{v:"books",x:212,y:66,label:"📚 Books"},{v:"mail",x:88,y:88,label:"📮 Mail"},
+ {v:"garden",x:110,y:182,label:"🌷 Garden"},{v:"stickers",x:300,y:178,label:"🎀 Stickers"}];
+function renderIsland(){
+  let o=`<defs><linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cdeff2"/><stop offset="1" stop-color="#9fd8e2"/></linearGradient></defs>
+  <rect width="400" height="260" fill="url(#sea)"/>
+  ${[[30,30],[350,230],[60,235],[370,120],[20,150]].map(([x,y])=>`<path d="M${x} ${y} q6 -4 12 0 t12 0" stroke="#fff" stroke-width="2" fill="none" opacity=".7"/>`).join("")}
+  <path d="M40 140 Q30 60 120 40 Q210 18 300 34 Q385 50 372 140 Q365 222 270 236 Q170 252 90 230 Q42 214 40 140 Z" fill="#f6e3b4"/>
+  <path d="M56 140 Q50 72 126 54 Q210 34 296 48 Q366 62 356 140 Q350 210 266 222 Q172 236 96 216 Q58 202 56 140 Z" fill="#b6e0a4"/>
+  <path d="M150 210 Q190 170 180 130 Q172 100 210 82" stroke="#e9d6a7" stroke-width="9" fill="none" stroke-linecap="round"/>
+  <path d="M180 132 Q240 140 290 170" stroke="#e9d6a7" stroke-width="8" fill="none" stroke-linecap="round"/>
+  <path d="M176 128 Q130 120 100 100" stroke="#e9d6a7" stroke-width="8" fill="none" stroke-linecap="round"/>
+  ${oak(54,108,.9)}${oak(150,58,.8)}${oak(268,108,.85)}${oak(350,150,.75)}${oak(200,214,.7)}
+  ${[[130,120,"#fff"],[240,190,"#fff"],[80,165,"#f7c6d4"],[330,200,"#fff"],[250,60,"#f7c6d4"],[176,170,"#fff"]].map(([x,y,c])=>`<circle cx="${x}" cy="${y}" r="4" fill="${c}"/><circle cx="${x}" cy="${y}" r="1.6" fill="#f6d77a"/>`).join("")}`;
+  // buildings
+  o+=`<g class="place" data-v="journey" tabindex="0" role="button" aria-label="Journey"><g class="pl">
+     <rect x="314" y="28" width="16" height="34" rx="3" fill="#fff"/><rect x="314" y="36" width="16" height="6" fill="#f4a7bb"/><rect x="314" y="50" width="16" height="6" fill="#f4a7bb"/>
+     <rect x="311" y="20" width="22" height="9" rx="3" fill="#fbe39a"/><path d="M309 21 L322 10 L335 21 Z" fill="#e07c99"/></g></g>
+   <g class="place" data-v="books" tabindex="0" role="button" aria-label="Bookshelf library"><g class="pl">
+     <rect x="194" y="40" width="38" height="26" rx="4" fill="#fffaf0"/><path d="M188 42 L213 24 L238 42 Z" fill="#7fb6d6"/><rect x="208" y="50" width="10" height="16" rx="4" fill="#a87645"/>
+     <rect x="198" y="47" width="7" height="7" rx="2" fill="#cdeff2"/><rect x="221" y="47" width="7" height="7" rx="2" fill="#cdeff2"/></g></g>
+   <g class="place" data-v="mail" tabindex="0" role="button" aria-label="Mailbox and post office"><g class="pl">
+     <rect x="70" y="62" width="36" height="26" rx="4" fill="#fffaf0"/><path d="M64 64 L88 46 L112 64 Z" fill="#f4a7bb"/><rect x="83" y="72" width="10" height="16" rx="4" fill="#a87645"/>
+     <rect x="112" y="72" width="10" height="9" rx="3" fill="#7fb6d6"/><rect x="116" y="81" width="2" height="9" fill="#8a6a4c"/></g></g>
+   <g class="place" data-v="garden" tabindex="0" role="button" aria-label="Garden"><g class="pl">
+     <rect x="84" y="160" width="54" height="24" rx="6" fill="#a97f5a" opacity=".35"/>
+     ${flower(94,168,"#f4a7bb",3)}${flower(106,166,"#d9ccf3",3)}${flower(118,169,"#fbe39a",3)}${flower(130,166,"#f4a7bb",3)}
+     ${[84,96,108,120,132].map(x=>`<rect x="${x}" y="178" width="3" height="10" fill="#fff"/>`).join("")}<rect x="82" y="182" width="58" height="2.5" fill="#fff"/></g></g>
+   <g class="place" data-v="stickers" tabindex="0" role="button" aria-label="Sticker book shop"><g class="pl">
+     <rect x="284" y="160" width="34" height="20" rx="3" fill="#fffaf0"/><path d="M280 162 Q284 150 301 150 Q318 150 322 162 Z" fill="#fbe39a"/>
+     <path d="M280 162 h42" stroke="#f4a7bb" stroke-width="4" stroke-dasharray="6 6"/><circle cx="301" cy="170" r="4" fill="#f4a7bb"/></g></g>`;
+  PLACES.forEach(p=>{const w=p.label.length*5.6+14;o+=`<g class="place" data-v="${p.v}" aria-hidden="true"><rect x="${p.x-w/2}" y="${p.y+ (p.v==="garden"||p.v==="stickers"?12:4)}" width="${w}" height="15" rx="7.5" fill="#fff" opacity=".95"/>
+    <text x="${p.x}" y="${p.y+(p.v==="garden"||p.v==="stickers"?23:15)}" text-anchor="middle" font-family="Fredoka, system-ui, sans-serif" font-weight="600" font-size="9" fill="#3a3340">${p.label}</text></g>`;});
+  // you + pip
+  o+=`<g transform="translate(168 104)"><ellipse cx="22" cy="54" rx="16" ry="4" fill="#00000018"/><svg width="44" height="54" viewBox="0 0 100 120">${avatar().replace(/^<svg[^>]*>|<\/svg>$/g,"")}</svg></g>
+      <g transform="translate(208 128)"><svg width="34" height="34" viewBox="0 0 100 100">${pip().replace(/^<svg[^>]*>|<\/svg>$/g,"")}</svg></g>`;
+  $("#island").innerHTML=o;
+  $$("#island .place[tabindex]").forEach(g=>{const f=()=>go(g.dataset.v);g.addEventListener("click",f);g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();f();}});});
+  $$("#island .place[aria-hidden]").forEach(g=>g.addEventListener("click",()=>go(g.dataset.v)));
+}
+function renderToday(){const q=nextQuest(),s=SEASONS[curSeason()];
+  if(!q){$("#today").innerHTML=`<div class="qi">🥼</div><div class="tx"><div class="eyebrow">All done</div><h3 style="margin:.1em 0">You finished every quest!</h3><p class="muted" style="margin:0">Dr. Nola, we are SO proud of you.</p></div>`;return;}
+  const sd=(qs(q.id).s||[]).filter(Boolean).length;
+  $("#today").innerHTML=`<div class="qi">${q.icon}</div><div class="tx"><div class="eyebrow">Your one thing today</div><h3 style="margin:.1em 0;font-size:1.3rem">${esc(q.title)}</h3>
+   <div class="muted" style="font-size:.85rem">${s.icon} ${esc(s.name)} · ${esc(q.when)}${sd?` · ${sd} of ${q.steps.length} steps`:""}</div></div>
+   <div style="display:flex;flex-direction:column;gap:8px;width:100%"><button class="btn big" id="startQ">Let's do it ✨</button><button class="btn sm ghost" id="otherQ">Pick something else</button></div>`;
+  $("#startQ").addEventListener("click",()=>openQuest(q.id));$("#otherQ").addEventListener("click",()=>go("journey"));}
+function renderNote(){const i=Math.floor(Date.now()/864e5)%NOTES.length;SAY.note="A note from Pip. "+NOTES[i];
+  $("#noteOfDay").innerHTML=`${pip()}<div style="flex:1"><div class="eyebrow" style="color:#b08a1e">Pip's note for today</div><p>${esc(NOTES[i])}</p></div>${speakBtn("note")}`;bindSpeak($("#noteOfDay"));}
+
+// ---------- journey ----------
+let selS=null;
+function renderJourney(){const cur=curSeason();if(selS===null)selS=cur;
+  $("#stones").innerHTML=SEASONS.map((s,i)=>{const p=seasonProg(i),done=p.d===p.t;return `<button class="stone ${done?"done":i===cur?"cur":""}" data-s="${i}" ${i===selS?'style="outline:3px solid var(--pinkd);outline-offset:3px"':""}>
+    <span class="em">${s.icon}</span><b>${esc(s.name)}</b><small>${esc(s.when)}</small><div class="ring"><i style="width:${p.d/p.t*100}%"></i></div>${i===cur?'<small style="margin-top:4px">📍 You are here</small>':""}</button>`;}).join("");
+  $$("#stones .stone").forEach(b=>b.addEventListener("click",()=>{selS=+b.dataset.s;SFX.tap();renderJourney();$("#seasonBox").scrollIntoView({behavior:"smooth",block:"start"});}));
+  const s=SEASONS[selS],list=QUESTS.filter(q=>q.s===selS),nx=list.find(q=>!isDone(q.id));
+  SAY.season=`${s.name}. ${s.when}. ${s.blurb}`;
+  $("#seasonBox").innerHTML=`<div class="row" style="justify-content:space-between"><h3 style="margin:0;font-size:1.3rem">${s.icon} ${esc(s.name)}</h3>${speakBtn("season")}</div>
+   <p class="muted" style="margin:.3em 0 0">${esc(s.when)}</p><p style="margin:.4em 0 0">${esc(s.blurb)}</p>
+   <div class="tiles">${list.map(q=>`<button class="tile ${isDone(q.id)?"done":q===nx?"next":""}" data-q="${q.id}"><span class="ck">${isDone(q.id)?"✅":""}</span><span class="em">${q.icon}</span><b>${esc(q.title)}</b></button>`).join("")}</div>`;
+  bindSpeak($("#seasonBox"));$$("#seasonBox .tile").forEach(b=>b.addEventListener("click",()=>openQuest(b.dataset.q)));}
+
+// ---------- quest player ----------
+function openQuest(id,page=0){const q=QMAP[id],st=qs(id);if(!Array.isArray(st.s))st.s=[];
+  const steps=q.steps||[],total=2+steps.length+1;
+  const dots=Array.from({length:total},(_,i)=>{const isStep=i>=2&&i<2+steps.length;return `<i class="${i===page?"on":isStep&&st.s[i-2]?"ok":""}"></i>`;}).join("");
+  let body="",say="",foot="";
+  if(page===0){say=`${q.title}. ${q.what}`;body=`<div class="bigq">${q.icon}</div><h2 style="margin:0;font-size:1.5rem">${esc(q.title)}</h2>
+     <div class="pipsay">${pip()}<div class="bub">${esc(q.what)}</div></div>`;
+    foot=`<span></span><button class="btn big" data-go="1">Next →</button>`;}
+  else if(page===1){say=`Why it matters. ${q.why}`;body=`<div class="eyebrow">💡 Why it matters</div><div class="steptxt">${esc(q.why)}</div>`;
+    foot=`<button class="btn ghost" data-go="0">← Back</button><button class="btn big" data-go="2">Let's start →</button>`;}
+  else if(page<2+steps.length){const i=page-2;say=`Step ${i+1} of ${steps.length}. ${steps[i]}`;
+    body=`<div class="steplbl">Step ${i+1} of ${steps.length}</div><div class="steptxt">${esc(steps[i])}</div>${st.s[i]?'<div class="kind">✅ Done! Nice job.</div>':""}`;
+    foot=`<button class="btn sage big" style="width:100%" data-step="${i}">${st.s[i]?"Next →":"✓ I did it!"}</button><button class="btn ghost" data-go="${page-1}">← Back</button><button class="btn sm ghost" data-go="${page+1}">Not yet, skip →</button>`;}
+  else{say=`Pip's tip. ${q.tip}. And remember: ${q.kind}`;
+    body=`<div class="eyebrow">🐦 Pip's tip</div><div class="tip">${esc(q.tip)}</div><div class="kind">💗 ${esc(q.kind)}</div>
+      ${q.links?`<div class="links">${q.links.map(l=>`<a href="${esc(l.u)}" target="_blank" rel="noopener">${esc(l.l)} ↗</a>`).join("<br>")}</div>`:""}
+      <label class="f" for="qn">My notes (optional)</label><textarea id="qn" rows="2" placeholder="Names, dates, little thoughts...">${esc(st.n||"")}</textarea>`;
+    foot=`<button class="btn ghost" data-go="${page-1}">← Back</button>${st.d?`<button class="btn sm ghost" id="undo">Mark not done</button>`:`<button class="btn big" id="finish">Finish quest 🌸</button>`}`;}
+  SAY.q=say;
+  openModal(`<div class="mhead"><div class="dots" aria-label="Progress">${dots}</div>${speakBtn("q")}<button class="iconbtn" style="width:40px;height:40px" onclick="closeModal()" aria-label="Close">✕</button></div>
+    <div class="qcard">${body}</div><div class="mfoot">${foot}</div>`);
+  $$("#modal [data-go]").forEach(b=>b.addEventListener("click",()=>{SFX.tap();openQuest(id,+b.dataset.go);}));
+  $$("#modal [data-step]").forEach(b=>b.addEventListener("click",()=>{const i=+b.dataset.step;if(!st.s[i]){st.s[i]=true;SFX.step();toast("✨ +10 XP");changed();}openQuest(id,page+1);}));
+  const qn=$("#qn");if(qn)qn.addEventListener("input",e=>{st.n=e.target.value;save();});
+  const f=$("#finish");if(f)f.addEventListener("click",()=>{st.d=1;st.at=today();SFX.done();petals(80);closeModal();changed();
+    setTimeout(()=>openModal(`<div style="text-align:center"><div style="width:120px;margin:0 auto">${avatar()}</div><h2 style="font-size:1.6rem;margin:.2em 0">Quest complete! 🌸</h2>
+      <p style="font-size:1.1rem">${esc(q.kind)}</p><p class="muted">+100 XP</p><button class="btn big" onclick="closeModal()">Yay!</button></div>`),250);});
+  const u=$("#undo");if(u)u.addEventListener("click",()=>{st.d=0;closeModal();changed();});}
+
+// ---------- garden ----------
+function renderGarden(){
+  $("#stats").innerHTML=GOALS.map(g=>{const t=gh(g.group);return `<div class="stat" style="--c:${HOUR_CATS.find(c=>c.group===g.group).color}"><div class="em">${g.icon}</div><div class="n">${+t.toFixed(1)}</div><small>hours of ${esc(g.label.toLowerCase())}</small><div class="ring"><i style="width:${Math.min(100,t/g.goal*100)}%"></i></div><small>goal ≈ ${g.goal}</small></div>`;}).join("");
+  const h=honorsHrs();$("#honors").innerHTML=`<div class="h">💛</div><div style="flex:1"><b class="fred">Honors helping hours: ${+h.toFixed(1)} / 20</b><div class="ring" style="height:12px;background:#fff"><i style="width:${Math.min(100,h/20*100)}%;background:#f5c24c"></i></div></div>${h>=20?"🎉":""}`;
+  $("#beds").innerHTML=HOUR_CATS.filter(c=>c.group!=="work").map(c=>{const n=S.logs.filter(l=>l.cat===c.id).length,h=hrs(l=>l.cat===c.id);
+    const fl=Array.from({length:Math.min(n,18)},(_,k)=>`<svg viewBox="-8 -8 16 22">${flower(0,0,c.color,3.4)}</svg>`).join("")+(n>18?`<span class="muted" style="font-size:.8rem">+${n-18}</span>`:"");
+    return `<div class="bed">${n?`<div class="fl">${fl}</div>`:`<div class="fl muted" style="font-size:.85rem">🌱 waiting</div>`}<b>${c.icon} ${esc(c.short)}</b><span class="muted" style="font-size:.8rem">${+h.toFixed(1)} hrs</span></div>`;}).join("");
+  const L=[...S.logs].sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+  $("#entries").innerHTML=L.length?L.map(l=>{const c=HOUR_CATS.find(x=>x.id===l.cat)||{icon:"🌼",label:l.cat};
+    return `<div class="entry"><div class="em">${c.icon}</div><div class="tx"><b>${esc(c.label)} · ${esc(l.hrs)} hr${+l.hrs===1?"":"s"}</b>${l.honors?" 💛":""}
+      <div class="meta">${esc(l.date)}${l.place?" · "+esc(l.place):""}${l.contact?" · "+esc(l.contact):""}</div>${l.note?`<p>${esc(l.note)}</p>`:""}</div>
+      <button class="x" data-del="${l.id}" aria-label="Delete this entry">🗑️</button></div>`;}).join(""):`<p class="muted">Nothing here yet. Tap “Log hours” to plant your first flower! 🌱</p>`;
+  $$("#entries [data-del]").forEach(b=>b.addEventListener("click",()=>{if(b.dataset.c){S.logs=S.logs.filter(l=>l.id!==b.dataset.del);changed();}else{b.dataset.c=1;b.textContent="Delete?";setTimeout(()=>{if(b.isConnected){delete b.dataset.c;b.textContent="🗑️";}},2500);}}));}
+function openLog(){let cat=null,h=1,honors=true;
+  const draw=()=>{openModal(`<div class="mhead"><h2 style="margin:0;flex:1">🌷 Log your hours</h2><button class="iconbtn" style="width:40px;height:40px" onclick="closeModal()" aria-label="Close">✕</button></div>
+    <label class="f">What did you do?</label><div class="catpick">${HOUR_CATS.map(c=>`<button data-c="${c.id}" class="${cat===c.id?"on":""}"><span>${c.icon}</span>${esc(c.short)}</button>`).join("")}</div>
+    <label class="f">How many hours?</label><div class="stepper"><button id="hm" aria-label="Less">−</button><div class="v" id="hv">${h}</div><button id="hp" aria-label="More">＋</button></div>
+    <label class="f" for="ld">When?</label><input type="date" id="ld" value="${today()}">
+    <label class="f" for="lp">Where?</label><input id="lp" placeholder="Like: Children's hospital">
+    <label class="f" for="lc">Who can vouch for it? (name or email)</label><input id="lc" placeholder="Like: Dr. Landry or volunteer coordinator">
+    <label class="f" for="ln">A little memory (optional)</label><textarea id="ln" rows="2" placeholder="What happened? How did it feel?"></textarea>
+    <label class="toggle" style="margin-top:10px"><input type="checkbox" id="lh" ${honors?"checked":""}> 💛 Counts toward my Honors service hours</label>
+    <div class="mfoot"><span class="muted" style="font-size:.85rem" id="lmsg"></span><button class="btn big" id="lsave">Plant it 🌸</button></div>`);
+    $$("#modal .catpick button").forEach(b=>b.addEventListener("click",()=>{cat=b.dataset.c;honors=(cat==="service"||cat==="clin_vol");SFX.tap();keep();draw();restore();}));
+    $("#hm").addEventListener("click",()=>{h=Math.max(.5,h-.5);$("#hv").textContent=h;});$("#hp").addEventListener("click",()=>{h=Math.min(24,h+.5);$("#hv").textContent=h;});
+    $("#lh").addEventListener("change",e=>honors=e.target.checked);
+    $("#lsave").addEventListener("click",()=>{if(!cat){$("#lmsg").textContent="Tap what you did first 💗";return;}
+      S.logs.push({id:uid(),date:$("#ld").value||today(),cat,hrs:h,place:$("#lp").value.trim(),contact:$("#lc").value.trim(),note:$("#ln").value.trim(),honors:$("#lh").checked});
+      SFX.done();petals(50);closeModal();toast(`🌸 A new flower! +${Math.round(h*2)} XP`);changed();go("garden");});};
+  let saved={};const keep=()=>{["ld","lp","lc","ln"].forEach(k=>{const e=$("#"+k);if(e)saved[k]=e.value;});};
+  const restore=()=>{Object.entries(saved).forEach(([k,v])=>{const e=$("#"+k);if(e)e.value=v;});};
+  draw();}
+$("#logBtn").addEventListener("click",openLog);
+
+// ---------- books ----------
+const KCOL={chem:"#f4a7bb",bio:"#9fd3a8",phys:"#a9d8f0",math:"#fbe39a",eng:"#d9ccf3",soc:"#f6c9a7",other:"#e7dccd"};
+function renderBooks(){const g=gpa(false),s=gpa(true),done=S.courses.filter(c=>c.prereq&&c.status==="done").length,tot=S.courses.filter(c=>c.prereq).length;
+  $("#gpas").innerHTML=`<div class="stat"><div class="em">⭐</div><div class="n">${g===null?"–":g.toFixed(2)}</div><small>overall GPA (estimate)</small></div>
+   <div class="stat"><div class="em">🧪</div><div class="n">${s===null?"–":s.toFixed(2)}</div><small>science GPA (estimate)</small></div>
+   <div class="stat"><div class="em">📚</div><div class="n">${done}/${tot}</div><small>pre-med classes done</small></div>`;
+  const per=8,rows=[];for(let i=0;i<S.courses.length;i+=per)rows.push(S.courses.slice(i,i+per));
+  $("#shelf").innerHTML=rows.map(r=>`<div class="shelfrow">${r.map((c,i)=>`<button class="book ${c.status==="todo"?"todo":""} h${(i%3)+1}" data-b="${c.id}" style="background:${KCOL[c.kind]||KCOL.other}" aria-label="${esc(c.name)}, ${c.status==="done"?"done":c.status==="doing"?"taking now":"not yet"}">
+     <span class="st">${c.status==="done"?"✅":c.status==="doing"?"📖":""}</span><span>${esc(c.name.replace(/\s*\(.*\)/,""))}</span></button>`).join("")}</div>`).join("");
+  $$("#shelf .book").forEach(b=>b.addEventListener("click",()=>openBook(b.dataset.b)));}
+function openBook(id){const c=S.courses.find(x=>x.id===id);if(!c)return;
+  openModal(`<div class="mhead"><h2 style="margin:0;flex:1">📖 ${esc(c.name)}</h2><button class="iconbtn" style="width:40px;height:40px" onclick="closeModal()" aria-label="Close">✕</button></div>
+   <label class="f">Where are you with this class?</label><div class="statpick">${[["todo","Not yet"],["doing","Taking now"],["done","Done ✅"]].map(([v,l])=>`<button data-st="${v}" class="${c.status===v?"on":""}">${l}</button>`).join("")}</div>
+   <label class="f">Final grade</label><div class="gradepick">${Object.keys(GP).concat(["P","W"]).map(g=>`<button data-g="${g}" class="${c.grade===g?"on":""}">${g}</button>`).join("")}</div>
+   <div class="row" style="margin-top:6px"><label class="f" style="flex:1">Credits<input type="number" id="bc" min="0" step="0.5" value="${esc(c.cr)}"></label><label class="f" style="flex:2">School / note<input id="bs" value="${esc(c.school)}" placeholder="Tulane"></label></div>
+   <div class="mfoot">${c.prereq?"<span></span>":`<button class="btn sm ghost" id="brm">Remove class</button>`}<button class="btn big" id="bok">Save 💛</button></div>`);
+  let stt=c.status,gr=c.grade;
+  $$("#modal [data-st]").forEach(b=>b.addEventListener("click",()=>{stt=b.dataset.st;$$("#modal [data-st]").forEach(x=>x.classList.toggle("on",x===b));SFX.tap();}));
+  $$("#modal [data-g]").forEach(b=>b.addEventListener("click",()=>{gr=gr===b.dataset.g?"":b.dataset.g;if(gr)stt="done";$$("#modal [data-g]").forEach(x=>x.classList.toggle("on",x.dataset.g===gr));$$("#modal [data-st]").forEach(x=>x.classList.toggle("on",x.dataset.st===stt));SFX.tap();}));
+  $("#bok").addEventListener("click",()=>{const was=c.status;c.status=stt;c.grade=gr;c.cr=+$("#bc").value||0;c.school=$("#bs").value.trim();closeModal();
+    if(was!=="done"&&stt==="done"){SFX.done();petals(40);toast("📚 Class finished! +40 XP");}changed();});
+  const rm=$("#brm");if(rm)rm.addEventListener("click",()=>{S.courses=S.courses.filter(x=>x.id!==id);closeModal();changed();});}
+$("#addCourse").addEventListener("click",()=>{openModal(`<div class="mhead"><h2 style="margin:0;flex:1">＋ Add a class</h2><button class="iconbtn" style="width:40px;height:40px" onclick="closeModal()" aria-label="Close">✕</button></div>
+  <label class="f" for="an">Class name</label><input id="an" placeholder="Like: Intro to Public Health">
+  <label class="f">What kind?</label><div class="seg" id="ak">${[["bio","Biology","B"],["chem","Chemistry","C"],["phys","Physics","P"],["math","Math","M"],["soc","Social science","O"],["eng","Writing","O"],["other","Other","O"]].map(([k,l,c],i)=>`<button data-k="${k}" data-c="${c}" class="${i===6?"on":""}">${l}</button>`).join("")}</div>
+  <label class="f" for="acr">Credits</label><input id="acr" type="number" value="3" min="0" step="0.5">
+  <div class="mfoot"><span></span><button class="btn big" id="aok">Add to shelf 📚</button></div>`);
+  let k="other",c="O";$$("#ak button").forEach(b=>b.addEventListener("click",()=>{k=b.dataset.k;c=b.dataset.c;$$("#ak button").forEach(x=>x.classList.toggle("on",x===b));}));
+  $("#aok").addEventListener("click",()=>{const n=$("#an").value.trim();if(!n)return;S.courses.push({id:uid(),name:n,cat:c,cr:+$("#acr").value||0,kind:k,status:"todo",grade:"",school:"",prereq:false});closeModal();changed();});});
+
+// ---------- mail & stickers ----------
+function renderMail(){$("#mails").innerHTML=MAIL.map(m=>`<button class="env ${S.read[m.id]?"":"new"}" data-m="${m.id}"><span class="em">${S.read[m.id]?"📭":m.icon}</span><b>${esc(m.title)}</b><small>from ${esc(m.from)}${S.read[m.id]?"":" · new!"}</small></button>`).join("")+
+  `<button class="env" data-m="dates"><span class="em">📅</span><b>Important dates</b><small>from Pip</small></button>`;
+  $$("#mails .env").forEach(b=>b.addEventListener("click",()=>openMail(b.dataset.m)));}
+function openMail(id){let title,body;
+  if(id==="dates"){title="📅 Important dates";const t=today();body=KEY_DATES.map(k=>{const d=new Date(k.d+"T12:00:00").toLocaleDateString("en-US",{month:"short",year:"numeric"});return `${k.d<t?"✓ ":""}${k.est?"About ":""}${d}: ${k.t}`;}).join("\n\n")+"\n\n“About” dates are estimates. Always double-check official websites.";}
+  else{const m=MAIL.find(x=>x.id===id);title=`${m.icon} ${m.title}`;body=m.body;S.read[id]=1;save();}
+  SAY.mail=title.replace(/^\S+\s/,"")+". "+body;
+  openModal(`<div class="mhead"><h2 style="margin:0;flex:1">${esc(title)}</h2>${speakBtn("mail")}<button class="iconbtn" style="width:40px;height:40px" onclick="closeModal()" aria-label="Close">✕</button></div>
+   <div class="letter">${esc(body)}</div><div class="mfoot"><span></span><button class="btn" onclick="closeModal()">Close 💌</button></div>`);renderMail();}
+function renderStickers(){const n=Object.keys(S.stk).length;$("#stkCount").textContent=`${n} of ${STICKERS.length}`;
+  $("#stickers").innerHTML=STICKERS.map(([id,em,nm,msg])=>`<div class="stk ${S.stk[id]?"":"lock"}"><span class="em">${em}</span><b>${esc(nm)}</b><small>${esc(msg)}</small></div>`).join("");}
+
+// ---------- exports & backup ----------
+async function download(name,text,type){if(dlCap){try{await dlCap.save({filename:name,data:text});return true;}catch(e){if(e&&e.code!=="declined")toast("That didn't download. Try Copy instead.");return false;}}
+  try{const b=new Blob([text],{type});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);return true;}catch(e){return false;}}
+const csvE=v=>`"${String(v??"").replace(/"/g,'""')}"`;
+const toCSV=(h,r)=>"﻿"+[h,...r].map(x=>x.map(csvE).join(",")).join("\r\n");
+const toTSV=(h,r)=>[h,...r].map(x=>x.map(v=>String(v??"").replace(/[\t\r\n]+/g," ").trim()).join("\t")).join("\n");
+const LH=["Date","Type","Hours","Place","Contact","Memory","Honors"];
+const logRows=()=>S.logs.slice().sort((a,b)=>(a.date||"").localeCompare(b.date||"")).map(l=>[l.date,(HOUR_CATS.find(c=>c.id===l.cat)||{}).label||l.cat,l.hrs,l.place,l.contact,l.note,l.honors?"Yes":"No"]);
+const CH=["Class","Type","Credits","Status","Grade","School / note"];
+const courseRows=()=>S.courses.map(c=>[c.name,{B:"Biology",C:"Chemistry",P:"Physics",M:"Math",O:"Non-science"}[c.cat]||c.cat,c.cr,{todo:"Not yet",doing:"Taking now",done:"Done"}[c.status],c.grade,c.school]);
+async function copyText(t,label){try{await navigator.clipboard.writeText(t);toast(`📋 ${esc(label)} copied!`);return true;}catch(e){openModal(`<div class="mhead"><h2 style="margin:0;flex:1">Copy this</h2><button class="iconbtn" style="width:40px;height:40px" onclick="closeModal()">✕</button></div><p class="muted">Press and hold (or select all), then copy.</p><textarea style="height:240px">${esc(t)}</textarea>`);return false;}}
+$("#copyLogs").addEventListener("click",()=>{if(!S.logs.length)return toast("Log some hours first 🌱");copyText(toTSV(LH,logRows()),"Hours (paste in cell A1)");});
+$("#dlLogs").addEventListener("click",async()=>{if(!S.logs.length)return toast("Log some hours first 🌱");if(await download(`magnolia-hours-${today()}.csv`,toCSV(LH,logRows()),"text/csv;charset=utf-8"))toast("⬇ Hours downloaded");});
+$("#copyCourses").addEventListener("click",()=>copyText(toTSV(CH,courseRows()),"Classes (paste in cell A1)"));
+$("#dlCourses").addEventListener("click",async()=>{if(await download(`magnolia-classes-${today()}.csv`,toCSV(CH,courseRows()),"text/csv;charset=utf-8"))toast("⬇ Classes downloaded");});
+function backedUp(){S.lastBackup=Date.now();S.snooze=0;changed();}
+function restoreText(t){try{const d=JSON.parse(t);if(!d||!d.q)throw 0;S=Object.assign(fresh(),d);applyComfort();closeModal();changed();toast("✅ Your island is back!");}catch(e){toast("Hmm, that backup didn't work 💭");}}
+
+// ---------- settings ----------
+function openSettings(){const sw=(arr,key)=>arr.map((c,i)=>`<button class="sw ${S.me[key]===i?"on":""}" style="background:${c}" data-k="${key}" data-i="${i}" aria-label="${key} ${i+1}"></button>`).join("");
+  openModal(`<div class="mhead"><h2 style="margin:0;flex:1">⚙️ Make it cozy</h2><button class="iconbtn" style="width:40px;height:40px" onclick="closeModal()" aria-label="Close">✕</button></div>
+   <h3>📖 Reading comfort</h3>
+   <label class="f">Text size</label><div class="seg" id="fsz">${[[16,"Small"],[18,"Medium"],[21,"Large"],[24,"Extra large"]].map(([v,l])=>`<button data-v="${v}" class="${S.fs===v?"on":""}">${l}</button>`).join("")}</div>
+   <label class="f">Font</label><div class="seg" id="fnt">${[["lexend","Lexend"],["atkinson","Atkinson"],["system","Phone default"]].map(([v,l])=>`<button data-v="${v}" class="${S.font===v?"on":""}" style="font-family:${v==="lexend"?"Lexend":v==="atkinson"?"Atkinson Hyperlegible":"system-ui"}">${l}</button>`).join("")}</div>
+   <label class="toggle" style="margin-top:12px"><input type="checkbox" id="spc" ${S.space?"checked":""}> Extra space between letters and lines</label>
+   ${canSpeak?`<label class="f">Read-aloud speed</label><div class="seg" id="rate">${[[.8,"Slow"],[.95,"Normal"],[1.15,"Fast"]].map(([v,l])=>`<button data-v="${v}" class="${S.read_rate===v?"on":""}">${l}</button>`).join("")}</div>`:""}
+   <label class="toggle" style="margin-top:12px"><input type="checkbox" id="snd" ${S.sound?"checked":""}> Soft sounds</label>
+   <h3>🎀 You</h3>
+   <label class="f" for="nm">Your name</label><input id="nm" value="${esc(S.me.name)}" maxlength="24">
+   <div class="row" style="gap:16px;align-items:flex-start;margin-top:8px"><div id="avPrev" style="width:96px;background:#fde7ef;border-radius:22px;padding:6px">${avatar()}</div>
+    <div style="flex:1;min-width:200px"><label class="f">Hair</label><div class="row">${sw(HAIR,"hair")}</div>
+     <label class="f">Style</label><div class="seg" id="sty">${STYLES.map((s,i)=>`<button data-v="${i}" class="${S.me.style===i?"on":""}">${s}</button>`).join("")}</div>
+     <label class="f">Skin</label><div class="row">${sw(SKIN,"skin")}</div><label class="f">Outfit</label><div class="row">${sw(OUTFIT,"outfit")}</div></div></div>
+   <p class="muted" style="font-size:.85rem">As you grow you'll unlock a bow (level 3), a stethoscope (level 5), and your white coat at the very end. 🥼</p>
+   <h3>💾 Keep your island safe</h3>
+   <p style="margin-top:0">Your island saves on this device. Make a backup once a week so you never lose your hours. Last backup: <b>${S.lastBackup?new Date(S.lastBackup).toLocaleDateString():"not yet"}</b></p>
+   <div class="row"><button class="btn sky dl" id="bkDl">⬇ Download backup</button><button class="btn ghost" id="bkCp">📋 Copy backup code</button></div>
+   <label class="f dl">Restore from a backup file</label><input class="dl" type="file" id="bkF" accept=".json,application/json">
+   <label class="f" for="bkT">Or paste a backup code</label><textarea id="bkT" rows="2"></textarea><button class="btn sm ghost" id="bkR" style="margin-top:6px">Restore</button>
+   <h3>🔄 Other</h3><div class="row"><button class="btn sm ghost" id="intro2">Replay Pip's hello</button><button class="btn sm ghost" id="rst">Start over</button></div>`);
+  const seg=(sel,fn)=>$$(sel+" button").forEach(b=>b.addEventListener("click",()=>{$$(sel+" button").forEach(x=>x.classList.toggle("on",x===b));fn(b.dataset.v);save();SFX.tap();}));
+  seg("#fsz",v=>{S.fs=+v;applyComfort();});seg("#fnt",v=>{S.font=v;applyComfort();});if(canSpeak)seg("#rate",v=>S.read_rate=+v);
+  seg("#sty",v=>{S.me.style=+v;$("#avPrev").innerHTML=avatar();renderTop();renderIsland();});
+  $("#spc").addEventListener("change",e=>{S.space=e.target.checked;applyComfort();save();});$("#snd").addEventListener("change",e=>{S.sound=e.target.checked;save();});
+  $("#nm").addEventListener("input",e=>{S.me.name=e.target.value||"Nola";save();renderTop();});
+  $$("#modal .sw").forEach(b=>b.addEventListener("click",()=>{S.me[b.dataset.k]=+b.dataset.i;$$(`#modal .sw[data-k="${b.dataset.k}"]`).forEach(x=>x.classList.toggle("on",x===b));$("#avPrev").innerHTML=avatar();save();renderTop();renderIsland();SFX.tap();}));
+  $("#bkDl").addEventListener("click",async()=>{if(await download(`magnolia-backup-${today()}.json`,JSON.stringify(S,null,1),"application/json")){toast("💾 Backup saved!");backedUp();}});
+  $("#bkCp").addEventListener("click",async()=>{await copyText(JSON.stringify(S),"Backup code");backedUp();});
+  $("#bkF").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>restoreText(r.result);r.readAsText(f);});
+  $("#bkR").addEventListener("click",()=>restoreText($("#bkT").value));
+  $("#intro2").addEventListener("click",()=>{closeModal();intro(0);});
+  $("#rst").addEventListener("click",e=>{const b=e.target;if(b.dataset.c){const keep={fs:S.fs,font:S.font,space:S.space};S=Object.assign(fresh(),keep,{seenIntro:true});save();closeModal();renderAll();toast("A fresh new island 🌱");}
+    else{b.dataset.c=1;b.textContent="Tap again to erase everything";}});}
+$("#setBtn").addEventListener("click",openSettings);
+$("#me").addEventListener("click",openSettings);$("#me").addEventListener("keydown",e=>{if(e.key==="Enter")openSettings();});
+
+// ---------- intro ----------
+const INTRO=[
+ ()=>`Hi ${esc(S.me.name)}! 🌸 I'm <b>Pip</b>, and this is <b>Magnolia Isle</b>. Your cousin Bailey made this little island just for you.`,
+ ()=>`This island helps you on your way to med school, one small thing at a time. No giant lists. I'll always show you <b>one thing</b> to do next.`,
+ ()=>`Log your hours in the <b>Garden</b> and they'll grow into flowers. Put your classes on the <b>Bookshelf</b>. Earn <b>stickers</b> as you go. And check the <b>Mailbox</b> for tips and love notes.`,
+ ()=>`Tap <b>Aa</b> any time to make the words bigger, change the font, or add more space. Tap <b>🔊</b> and I'll read things out loud to you.`,
+ ()=>`One more thing: I know it's exam season. Be gentle with yourself. You're doing so, so well. Ready? 💛`
+];
+function intro(i){SAY.intro=INTRO[i]().replace(/<[^>]+>/g,"");
+  openModal(`<div class="mhead"><div class="dots">${INTRO.map((_,k)=>`<i class="${k===i?"on":k<i?"ok":""}"></i>`).join("")}</div>${speakBtn("intro")}</div>
+   <div class="qcard"><div class="pipsay">${pip()}<div class="bub" style="font-size:1.12rem">${INTRO[i]()}</div></div>
+   ${i===0?`<label class="f" for="inm">Your name</label><input id="inm" value="${esc(S.me.name)}" maxlength="24">`:""}</div>
+   <div class="mfoot">${i>0?`<button class="btn ghost" id="ib">← Back</button>`:"<span></span>"}${i<INTRO.length-1?`<button class="btn big" id="in">Next →</button>`:`<button class="btn big" id="ig">Let's go! 🌸</button>`}</div>`);
+  const nm=$("#inm");const keep=()=>{if(nm&&nm.value.trim()){S.me.name=nm.value.trim();save();renderTop();}};
+  const b=$("#ib");if(b)b.addEventListener("click",()=>{keep();intro(i-1);});const n=$("#in");if(n)n.addEventListener("click",()=>{keep();SFX.tap();intro(i+1);});
+  const g=$("#ig");if(g)g.addEventListener("click",()=>{S.seenIntro=true;save();closeModal();petals(70);SFX.done();renderAll();setTimeout(()=>openQuest("n0_1"),400);});}
+
+// ---------- boot ----------
+function renderAll(){renderTop();renderBanner();renderIsland();renderToday();renderNote();renderJourney();renderGarden();renderBooks();renderMail();renderStickers();
+  try{if(navigator.storage&&navigator.storage.persist&&S.logs.length)navigator.storage.persist().catch(()=>{});}catch(e){}}
+checkStickers();renderAll();
+if(canSpeak)try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>{};}catch(e){}
+const h=(location.hash||"").slice(1);if(["journey","garden","books","mail","stickers"].includes(h))go(h);
+if(!S.seenIntro)setTimeout(()=>intro(0),450);
+initClaude();
+</script>
+</body>
+</html>
