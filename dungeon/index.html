@@ -201,6 +201,16 @@ td{border-bottom:1px dashed var(--edge);padding:6px;vertical-align:top}
 .bkb .say2{flex:1;min-width:220px;background:#fff5ea;color:#2a1f30;border:3px solid var(--line);border-radius:6px;padding:7px 10px;font-size:14px;font-weight:700}
 .inclaude .dl{display:none}.claudeonly{display:none}.inclaude .claudeonly{display:block}
 .exrow{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+
+/* ---- Loot Ledger (shared pot) ---- */
+#v-ledger{--pot-ink:var(--text);--pot-dim:var(--dim);--pot-panel:var(--panel);--pot-panel2:var(--panel2);--pot-edge:var(--edge);--pot-accent:var(--gold);--pot-red:var(--red);--pot-green:var(--green);--pot-font:Nunito,system-ui,sans-serif;--pot-head-font:"Pixelify Sans",monospace}
+.pot-scrim{--pot-ink:#efe6d8;--pot-dim:#a898b8;--pot-panel:#211b2b;--pot-panel2:#2a2236;--pot-edge:#4a3d5c;--pot-accent:#ffcc4d;--pot-red:#ff4d6d;--pot-green:#7dff9b;--pot-head-font:"Pixelify Sans",monospace}
+.sysbox{background:#0a080e;border:2px solid var(--cyan);border-radius:3px;padding:8px 12px;font-family:VT323,monospace;font-size:20px;color:var(--cyan);box-shadow:0 0 12px #5ee6ff33}
+.sysbox b{display:block;font-size:13px;color:var(--gold);letter-spacing:1px}
+.ledger-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-top:8px}
+.boss{display:flex;gap:10px;align-items:center;border:2px solid var(--line);box-shadow:0 0 0 2px var(--edge);background:var(--panel2);padding:7px 10px;margin-top:8px;border-radius:3px}
+.boss .hp{flex:1;min-width:0}.boss .hp b{font-family:"Pixelify Sans",monospace}.boss .hp small{display:block;color:var(--dim)}
+.boss.dead{opacity:.55}.boss.dead b{text-decoration:line-through}
 </style>
 </head>
 <body>
@@ -234,6 +244,7 @@ td{border-bottom:1px dashed var(--edge);padding:6px;vertical-align:top}
     <button class="tab" data-v="spell">🧪 Skill Sheet</button>
     <button class="tab" data-v="loot">🎁 Loot & Achievements</button>
     <button class="tab" data-v="codex">📖 Guild Archive</button>
+    <button class="tab" data-v="ledger">💰 Loot Ledger</button>
   </div>
 
   <section class="view on" id="v-map">
@@ -328,6 +339,16 @@ td{border-bottom:1px dashed var(--edge);padding:6px;vertical-align:top}
     <div class="panel side">
       <div class="talk" style="margin-top:0"><div class="av" id="guideAv"></div><div class="bub guide"><span class="who">ARCHIVIST TOBBLE</span>Welcome to the Guild Archive. Every confusing word you'll hear on this journey is defined here. Unlike the System, I will not insult you. Much.</div></div>
       <div class="codex" id="codex"></div>
+    </div>
+  </section>
+
+  <section class="view" id="v-ledger">
+    <div class="panel" style="padding:14px">
+      <div class="sysbox" id="sysAI"><b class="px">📢 SYSTEM MESSAGE</b><span id="sysLine">Welcome to the Loot Ledger, Crawler.</span></div>
+      <div class="ledger-top"><div><h2 class="px" style="margin:6px 0 2px">💰 Loot Ledger</h2><div style="color:var(--dim);font-size:14px">Your gold, your debts, and the shared pot with Bailey. Same numbers she sees. No hiding the loot boxes.</div></div>
+        <a class="btn sm ghost" href="../pot/" target="_blank" rel="noopener">🍯 Open the joint Pot ↗</a></div>
+      <div id="bossBills"></div>
+      <div id="dLedger" style="margin-top:12px"></div>
     </div>
   </section>
 
@@ -1310,6 +1331,24 @@ renderCodex();checkAch();renderAll();
 const h=(location.hash||"").slice(1);const tb=$(`.tab[data-v="${h}"]`);if(tb)tb.click();
 if(!S.seenIntro)setTimeout(()=>intro(0),400);
 initCloud();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../pot/pot.js"></script>
+<script>
+/* ---- Loot Ledger: hooks this game into the shared Pot ---- */
+(function(){
+ if(!window.Pot)return;const P=window.Pot,esc=P.esc;let mounted=false;
+ const LINES=["Hello, Crawler. Your bank account has been observed. It is... a choice.","Reminder: rent is a boss fight. It respawns monthly. Nobody likes it.","NEW ACHIEVEMENT AVAILABLE: Import a statement without wincing.","The pot is shared. So is the shame of DoorDash. Proceed.","Gold spent on textbooks counts as armor. Gold spent on vending machines counts as nothing.","Your sponsor (Bailey) can see this. Behave accordingly.","Fun fact: compound interest is the only boss that hits harder every turn.","Crawler, you have unread bills. That is not a metaphor."];
+ const say=()=>{const e=document.getElementById("sysLine");if(e)e.textContent=LINES[Math.floor(Math.random()*LINES.length)];};
+ function bosses(){const el=document.getElementById("bossBills");if(!el)return;if(!P.D.me){el.innerHTML="";return;}
+  const L=P.upcoming(10);el.innerHTML=L.length?`<h3 class="px" style="margin:12px 0 0">💀 Boss fights in the next 10 days</h3>`+L.map(x=>`<div class="boss ${x.paid?"dead":""}"><span style="font-size:22px">${x.paid?"☠️":x.late?"🔥":"👹"}</span><div class="hp"><b>${esc(x.b.name)} · ${P.money(x.b.amount)}</b><small>${x.d.toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})} · ${x.paid?"DEFEATED":x.late?"ENRAGED (late)":x.b.autopay?"autopay will auto-attack":"manual fight"} · ${esc(P.memberOf(x.b.owner).display_name)}</small></div>${x.paid==="matched"?"":`<button class="btn sm ${x.paid?"ghost":"green"}" data-kill="${x.b.id}" data-m="${x.m}">${x.paid?"Undo":"Defeat"}</button>`}</div>`).join(""):`<p style="color:var(--dim)">No boss fights in the next 10 days. Suspicious. Enjoy it.</p>`;
+  el.querySelectorAll("[data-kill]").forEach(b=>b.addEventListener("click",()=>P.togglePaid(b.dataset.kill,b.dataset.m).then(()=>{if(typeof toast==="function"&&b.textContent==="Defeat")toast("☠️ BOSS DEFEATED: "+esc(P.D.bills.find(x=>x.id===b.dataset.kill).name));}).catch(e=>P.toast(e.message))));}
+ function mount(){if(mounted)return;mounted=true;say();const ready=P.start({skin:"dungeon",theme:"dungeon"});P.on(bosses);P.renderLedger(document.getElementById("dLedger"),{owner:"me"});
+  ready.then(()=>{bosses();});setInterval(say,45000);}
+ document.querySelectorAll('.tab[data-v="ledger"]').forEach(t=>t.addEventListener("click",mount));
+ if((location.hash||"")==="#ledger")mount();
+})();
 </script>
 <script data-goatcounter="https://bailsformed.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
