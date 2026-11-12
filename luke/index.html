@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OPERATION: OPEN FIELD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Saira+Stencil+One&family=Rajdhani:wght@500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#121611;--panel:#1b221a;--panel2:#232c21;--edge:#3a4836;--line:#0a0d09;--text:#e6ead9;--dim:#9aa88f;--olive:#6b7d4a;--amber:#f0b43c;--red:#e0605a;--blue:#5aa0e0;--green:#7bd36b;--gold:#e0b25a}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:Barlow,system-ui,sans-serif;font-size:16px;line-height:1.55}
+body{background:radial-gradient(ellipse at 50% -20%,#2a3a24 0,transparent 60%),repeating-linear-gradient(0deg,transparent 0 39px,#ffffff06 39px 40px),repeating-linear-gradient(90deg,transparent 0 39px,#ffffff06 39px 40px),var(--bg);min-height:100vh}
+.sten{font-family:"Saira Stencil One",Rajdhani,system-ui,sans-serif;letter-spacing:1px;font-weight:400}
+.hud,.raj{font-family:Rajdhani,system-ui,sans-serif;font-weight:600;letter-spacing:.5px}
+.wrap{max-width:1180px;margin:0 auto;padding:12px}
+.panel{background:var(--panel);border:1px solid var(--edge);border-radius:6px;box-shadow:0 0 0 1px var(--line),0 8px 24px #0006;position:relative}
+.panel.corner:before,.panel.corner:after{content:"";position:absolute;width:12px;height:12px;border:2px solid var(--amber)}
+.panel.corner:before{top:-2px;left:-2px;border-right:none;border-bottom:none}.panel.corner:after{bottom:-2px;right:-2px;border-left:none;border-top:none}
+.pad{padding:14px 16px}
+.btn{font-family:Rajdhani,system-ui,sans-serif;font-weight:700;font-size:15px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:1px solid #000;border-radius:4px;padding:8px 14px;background:var(--amber);color:#1a1405;box-shadow:0 3px 0 #000;transition:transform .06s}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 #000}
+.btn.ghost{background:var(--panel2);color:var(--text);border-color:var(--edge)}
+.btn.red{background:var(--red);color:#fff}.btn.green{background:var(--green)}.btn.blue{background:var(--blue);color:#06121e}
+.btn.sm{font-size:13px;padding:5px 10px}
+.btn:focus-visible,.tab:focus-visible,[tabindex]:focus-visible{outline:2px dashed var(--amber);outline-offset:2px}
+input,select,textarea{font-family:Barlow,sans-serif;font-size:15px;background:#0e120d;color:var(--text);border:1px solid var(--edge);border-radius:4px;padding:8px 10px;width:100%}
+textarea{resize:vertical}
+label.f{display:block;font-family:Rajdhani,system-ui,sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;color:var(--dim);text-transform:uppercase;margin:10px 0 4px}
+/* HUD */
+.top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:10px 14px}
+.port{width:62px;height:62px;background:#0e120d;border:1px solid var(--edge);border-radius:4px;display:flex;align-items:flex-end;justify-content:center;cursor:pointer;flex:none}
+.port svg{width:50px;image-rendering:pixelated}
+.idblk{flex:1;min-width:220px}
+.cs{font-family:"Saira Stencil One",Rajdhani,sans-serif;font-size:24px;line-height:1.1;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.rank{font-family:Rajdhani,system-ui,sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;background:var(--olive);color:#fff;padding:2px 8px;border-radius:3px;cursor:pointer;user-select:none}
+.xp{height:10px;background:#0e120d;border:1px solid var(--edge);border-radius:2px;margin-top:6px;overflow:hidden}
+.xp i{display:block;height:100%;background:repeating-linear-gradient(90deg,var(--amber) 0 10px,#d99a24 10px 12px);transition:width .6s}
+.xpt{font-family:Rajdhani,system-ui,sans-serif;font-size:13px;color:var(--dim);margin-top:2px}
+.ticker{font-family:Rajdhani,system-ui,sans-serif;font-weight:600;font-size:14px;color:var(--amber);max-width:380px;border-left:2px solid var(--amber);padding-left:10px}
+.tabs{display:flex;gap:4px;margin:12px 0;flex-wrap:wrap}
+.tab{font-family:Rajdhani,sans-serif;font-weight:700;letter-spacing:1.5px;font-size:15px;text-transform:uppercase;background:var(--panel);color:var(--dim);border:1px solid var(--edge);padding:7px 12px;border-radius:4px;cursor:pointer}
+.tab.on{background:var(--olive);color:#fff;border-color:#8da062}
+.view{display:none}.view.on{display:block}
+.grid2{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(290px,1fr);gap:12px;align-items:start}
+@media(max-width:860px){.grid2{grid-template-columns:1fr}}
+/* map */
+#map{width:100%;height:auto;display:block;border-radius:4px}
+.zone{cursor:pointer}.zone:hover .zl{fill:var(--amber)}
+.egg{cursor:pointer;animation:flk 3.2s infinite}
+@keyframes flk{0%,86%,100%{opacity:.38}88%{opacity:.9}90%{opacity:.25}93%{opacity:.75}}
+.egg.found{animation:none;opacity:.12}
+.sweep{transform-origin:200px 130px;animation:sw 7s linear infinite}
+@keyframes sw{to{transform:rotate(360deg)}}
+.blink{animation:bl 1.2s steps(2) infinite}@keyframes bl{50%{opacity:.2}}
+h2.sten{font-size:22px;margin:4px 0 6px}
+h3.raj{font-size:17px;margin:12px 0 6px;text-transform:uppercase;letter-spacing:1.5px;color:var(--amber)}
+.chip{display:inline-block;font-family:Rajdhani,system-ui,sans-serif;font-weight:700;font-size:12px;letter-spacing:1px;padding:1px 7px;border-radius:3px;border:1px solid var(--edge);background:var(--panel2);margin:0 4px 4px 0;text-transform:uppercase}
+.chip.med{border-color:var(--red);color:#ffb3ae}.chip.law{border-color:var(--blue);color:#b6d6f5}.chip.wild{border-color:var(--gold);color:#f3d9a6}.chip.recon{border-color:#999;color:#ddd}
+.co{display:flex;gap:12px;align-items:flex-start;background:#0e120d;border:1px solid var(--edge);border-left:3px solid var(--amber);padding:10px 12px;border-radius:4px}
+.co svg{width:52px;flex:none;image-rendering:pixelated;cursor:pointer}
+.co .who{font-family:Rajdhani,system-ui,sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;color:var(--amber)}
+.sig{margin:8px 0}
+.sig .row{display:flex;justify-content:space-between;font-family:Rajdhani,system-ui,sans-serif;font-weight:700;letter-spacing:1px;font-size:14px}
+.sig .bar{height:12px;background:#0e120d;border:1px solid var(--edge);border-radius:2px;overflow:hidden}
+.sig .bar i{display:block;height:100%}
+.sig small{color:var(--dim);font-size:12px}
+.dates{list-style:none;margin:0;padding:0;font-size:14px}
+.dates li{display:flex;gap:10px;padding:4px 0;border-bottom:1px dashed var(--edge)}
+.dates li.past{opacity:.4;text-decoration:line-through}
+.dates b{font-family:Rajdhani,system-ui,sans-serif;color:var(--amber);min-width:84px}
+/* missions */
+.ph{margin-bottom:14px}
+.phh{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.phh .sten{font-size:19px}
+.prog{flex:1;min-width:120px;height:8px;background:#0e120d;border:1px solid var(--edge);border-radius:2px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--green)}
+.ml{list-style:none;margin:0;padding:0}
+.mi{display:flex;align-items:center;gap:10px;padding:9px 10px;background:var(--panel2);border:1px solid var(--edge);border-radius:4px;margin-bottom:6px;cursor:pointer}
+.mi:hover{border-color:var(--amber)}
+.mi.done{background:#18251a;border-color:#2f5a35}
+.mi.lock{opacity:.45;cursor:default}
+.mi .st{width:24px;height:24px;border:1px solid var(--edge);display:flex;align-items:center;justify-content:center;font-weight:700;background:#0e120d;flex:none;font-size:13px}
+.mi.done .st{background:var(--green);color:#0e120d}
+.mi .t{flex:1;font-weight:600;line-height:1.25}.mi .t small{display:block;color:var(--dim);font-weight:500;font-size:12px}
+/* modal */
+.scrim{position:fixed;inset:0;background:#000b;display:none;align-items:flex-start;justify-content:center;z-index:50;padding:24px 12px;overflow:auto}
+.scrim.on{display:flex}
+.modal{width:min(720px,100%);padding:18px 18px 16px;animation:pop .15s}
+@keyframes pop{from{transform:scale(.96);opacity:.3}to{transform:none;opacity:1}}
+.x{position:absolute;top:8px;right:10px}
+.brief{background:#0e120d;border:1px solid var(--edge);padding:10px 12px;border-radius:4px;font-size:16px}
+.lbl{font-family:Rajdhani,system-ui,sans-serif;font-weight:700;letter-spacing:2px;font-size:12px;color:var(--amber);text-transform:uppercase}
+.obj{list-style:none;margin:0;padding:0}
+.obj li{display:flex;gap:10px;align-items:flex-start;padding:7px 8px;border:1px solid var(--edge);border-radius:4px;margin-bottom:5px;cursor:pointer;background:var(--panel2)}
+.obj li.ok{background:#18251a;border-color:#2f5a35}.obj li.ok .tx{color:var(--dim);text-decoration:line-through}
+.obj .cb{width:20px;height:20px;border:1px solid var(--edge);background:#0e120d;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex:none;margin-top:2px}
+.obj li.ok .cb{background:var(--green);color:#0e120d}
+.obj .xpv{margin-left:auto;font-family:Rajdhani,system-ui,sans-serif;font-size:12px;color:var(--green)}
+.foot{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:14px;flex-wrap:wrap}
+.choice{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px}
+.choice button{font-family:Rajdhani,system-ui,sans-serif;font-weight:700;letter-spacing:1px;font-size:15px;background:var(--panel2);color:var(--text);border:1px solid var(--edge);border-radius:4px;padding:10px 6px;cursor:pointer;line-height:1.2}
+.choice button span{display:block;font-size:22px}
+.choice button.on{border-color:var(--amber);background:#2e2a14}
+.scale{display:flex;gap:6px}
+.scale button{flex:1;font-family:Rajdhani,system-ui,sans-serif;font-weight:700;font-size:18px;background:var(--panel2);color:var(--text);border:1px solid var(--edge);border-radius:4px;padding:8px 0;cursor:pointer}
+.scale button.on{background:var(--amber);color:#1a1405}
+/* lists */
+.cards{display:grid;gap:8px}
+.card{background:var(--panel2);border:1px solid var(--edge);border-radius:4px;padding:10px 12px}
+.card .h{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.card b{font-family:Rajdhani,system-ui,sans-serif;font-size:16px;letter-spacing:.5px}
+.card p{margin:4px 0 0;font-size:14px}
+.card .m{color:var(--dim);font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{font-family:Rajdhani,system-ui,sans-serif;letter-spacing:1px;text-align:left;color:var(--amber);border-bottom:1px solid var(--edge);padding:6px;white-space:nowrap;text-transform:uppercase;font-size:13px}
+td{border-bottom:1px dashed var(--edge);padding:6px;vertical-align:top}
+.tbl{overflow:auto;max-height:440px}
+.st-done{background:#18251a}.st-doing{background:#2a2614}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.tile{background:#0e120d;border:1px solid var(--edge);border-radius:4px;padding:10px;text-align:center}
+.tile .n{font-family:Rajdhani,system-ui,sans-serif;font-weight:700;font-size:30px;color:var(--amber);line-height:1}
+.tile small{color:var(--dim);font-family:Rajdhani,system-ui,sans-serif;letter-spacing:1px;font-size:12px;text-transform:uppercase}
+.form2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 10px}.form2 .full{grid-column:1/-1}
+@media(max-width:560px){.form2{grid-template-columns:1fr}}
+/* intel */
+.caches{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.cache{border:1px solid var(--edge);border-radius:4px;padding:10px;background:var(--panel2);cursor:pointer}
+.cache.lock{background:repeating-linear-gradient(45deg,#151a14 0 8px,#11150f 8px 16px);cursor:default}
+.cache b{font-family:Rajdhani,system-ui,sans-serif;letter-spacing:1px}
+.cache .m{font-size:12px;color:var(--dim)}
+.radio{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#0b0f0a;border:1px solid var(--edge);border-radius:4px;padding:10px}
+.radio input{max-width:140px;font-family:Rajdhani,system-ui,sans-serif;font-size:22px;letter-spacing:4px;text-align:center;color:var(--green)}
+.redacted{background:#000;color:#000;border-radius:2px;padding:0 4px;user-select:none}
+.vals{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px}
+.vals button{text-align:left;background:var(--panel2);color:var(--text);border:1px solid var(--edge);border-radius:4px;padding:8px 10px;cursor:pointer;font-family:Barlow;font-size:14px}
+.vals button.on{border-color:var(--amber);background:#2e2a14}
+.gear{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.gi{border:1px solid var(--edge);background:var(--panel2);border-radius:4px;padding:10px}
+.gi.lock{opacity:.4}
+.gi b{font-family:Rajdhani,system-ui,sans-serif;letter-spacing:1px;font-size:15px}
+.gi p{margin:4px 0 0;font-size:13px;color:var(--dim)}
+.sw{width:30px;height:30px;border:1px solid #000;border-radius:3px;cursor:pointer}
+.sw.on{outline:2px solid var(--amber);outline-offset:2px}
+.muted{color:var(--dim)}
+#toasts{position:fixed;right:12px;bottom:12px;display:flex;flex-direction:column;gap:6px;z-index:80;align-items:flex-end}
+.toast{background:#0b0f0a;border:1px solid var(--amber);border-left:4px solid var(--amber);color:var(--text);padding:8px 12px;font-family:Rajdhani,system-ui,sans-serif;font-weight:700;letter-spacing:.5px;max-width:340px;animation:sl .2s;box-shadow:0 6px 18px #000a}
+.toast.g{border-color:var(--green)}
+@keyframes sl{from{transform:translateX(30px);opacity:0}to{transform:none;opacity:1}}
+.inclaude .dl{display:none}
+.letter{white-space:pre-line;background:#e9e4d2;color:#1d1a12;font-family:"Courier New",monospace;padding:18px;border-radius:2px;font-size:15px;line-height:1.6;box-shadow:inset 0 0 40px #b8ad8a}
+.stamp{display:inline-block;border:3px solid #b23a2f;color:#b23a2f;font-family:"Saira Stencil One",sans-serif;padding:2px 10px;transform:rotate(-6deg);font-size:20px;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="panel corner top">
+    <div class="port" id="port" role="button" tabindex="0" aria-label="Loadout"></div>
+    <div class="idblk">
+      <div class="cs"><span id="callsign">LUKE</span><span class="rank" id="rank" title="Rank">RECRUIT</span></div>
+      <div class="xp"><i id="xpbar" style="width:0"></i></div>
+      <div class="xpt" id="xpt"></div>
+    </div>
+    <div class="ticker" id="ticker"></div>
+    <button class="btn ghost sm" id="setBtn" aria-label="Settings">⚙ SYS</button>
+  </div>
+  <div id="bkBanner"></div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab on" data-v="hq">HQ</button>
+    <button class="tab" data-v="missions">Missions</button>
+    <button class="tab" data-v="debrief">Debrief</button>
+    <button class="tab" data-v="field">Field Log</button>
+    <button class="tab" data-v="training">Training</button>
+    <button class="tab" data-v="intel">Intel</button>
+    <button class="tab" data-v="loadout">Loadout</button>
+  </div>
+
+  <section class="view on" id="v-hq">
+    <div class="grid2">
+      <div class="panel" style="padding:6px"><svg id="map" viewBox="0 0 400 260" aria-label="Operations map"></svg>
+        <div class="muted raj" style="font-size:12px;padding:4px 6px">TAP A ZONE TO DEPLOY · SOMETHING ON THIS MAP IS HIDDEN</div></div>
+      <div style="display:grid;gap:12px;align-content:start">
+        <div class="panel corner pad" id="objective"></div>
+        <div class="panel pad"><div class="lbl">Signal strength</div><div id="miniSig"></div><div class="muted" style="font-size:12px">Built from your debriefs. File more after-action reports to sharpen the signal.</div></div>
+        <div class="panel pad"><div class="lbl">Timeline</div><ul class="dates" id="dates"></ul><div class="muted" style="font-size:11px;margin-top:4px">Dates are estimates. Verify with LSU, AAMC and LSAC.</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="v-missions"><div class="panel pad" id="missionList"></div></section>
+
+  <section class="view" id="v-debrief">
+    <div class="grid2">
+      <div class="panel corner pad">
+        <div class="foot" style="margin-top:0"><h2 class="sten" style="margin:0">INTEL BOARD</h2><button class="btn" id="newAar">+ File After-Action Report</button></div>
+        <p class="muted" style="margin:6px 0">Every debrief scores what gave you energy and curiosity, and which path it points toward. Patterns show up over time. This is <b>your</b> data. Nobody else's opinion counts here.</p>
+        <div id="board"></div>
+      </div>
+      <div class="panel pad" id="valuesBox"></div>
+    </div>
+    <div class="panel pad" style="margin-top:12px">
+      <div class="foot" style="margin-top:0"><h3 class="raj" style="margin:0">Report archive</h3><span><button class="btn ghost sm" id="cpAar">Copy for Sheets</button> <button class="btn sm dl" id="dlAar">Download</button></span></div>
+      <div class="cards" id="aars" style="margin-top:8px"></div>
+    </div>
+  </section>
+
+  <section class="view" id="v-field">
+    <div class="grid2">
+      <div class="panel pad"><h2 class="sten" style="margin-top:0">FIELD LOG</h2><div class="tiles" id="fieldTiles"></div>
+        <p class="muted" style="font-size:13px">Common med targets: about 40–60 shadowing hours with several doctors, and steady clinical hours over time. Law schools care more about depth and leadership than hour counts.</p></div>
+      <div class="panel corner pad"><h3 class="raj" style="margin-top:0">Log hours</h3>
+        <form class="form2" id="logForm">
+          <label class="f full">Type<select name="cat" id="catSel"></select></label>
+          <label class="f">Date<input type="date" name="date" required></label>
+          <label class="f">Hours<input type="number" name="hrs" min="0.25" step="0.25" required placeholder="3"></label>
+          <label class="f">Where<input name="place" placeholder="Our Lady of the Lake"></label>
+          <label class="f">Contact (name / email)<input name="contact" placeholder="Dr. Landry"></label>
+          <label class="f full">Note (what happened / what you noticed)<textarea name="note" rows="2"></textarea></label>
+          <div class="full foot"><span></span><button class="btn green" type="submit">Log it (+2 XP/hr)</button></div>
+        </form></div>
+    </div>
+    <div class="panel pad" style="margin-top:12px"><div class="foot" style="margin-top:0"><h3 class="raj" style="margin:0">Entries</h3><span><button class="btn ghost sm" id="cpLog">Copy for Sheets</button> <button class="btn sm dl" id="dlLog">Download CSV</button></span></div>
+      <div class="tbl" id="logTable" style="margin-top:8px"></div></div>
+  </section>
+
+  <section class="view" id="v-training">
+    <div class="panel pad">
+      <div class="foot" style="margin-top:0"><h2 class="sten" style="margin:0">TRAINING RECORD</h2><span><button class="btn ghost sm" id="cpCrs">Copy for Sheets</button> <button class="btn sm dl" id="dlCrs">Download CSV</button></span></div>
+      <p class="muted">Every college class counts toward the GPA med and law schools calculate. BIOL/CHEM/PHYS/MATH courses make up your science GPA. Course numbers are LSU's usual pre-med set. Confirm yours with your advisor.</p>
+      <div class="tiles" id="gpaTiles"></div>
+      <div class="tbl" style="max-height:none;margin-top:10px"><table id="crs"></table></div>
+      <h3 class="raj">Add a class</h3>
+      <form class="form2" id="crsForm" style="grid-template-columns:2fr 1fr 1fr auto;align-items:end">
+        <label class="f">Name<input name="name" required placeholder="Intro to Law & Society"></label>
+        <label class="f">Type<select name="cat"><option value="O">Non-science</option><option value="B">Biology</option><option value="C">Chemistry</option><option value="P">Physics</option><option value="M">Math</option></select></label>
+        <label class="f">Credits<input type="number" name="cr" value="3" min="0" step=".5"></label>
+        <button class="btn" type="submit" style="margin-bottom:2px">Add</button>
+      </form>
+    </div>
+  </section>
+
+  <section class="view" id="v-intel">
+    <div class="grid2">
+      <div class="panel corner pad">
+        <h2 class="sten" style="margin-top:0">INTEL CACHES <span class="chip" id="cacheCount"></span></h2>
+        <p class="muted" style="margin-top:0">Hidden across this operation. Some are on the map. Some need a radio frequency. Some only appear when you've earned them. Each one is a door. Go through it.</p>
+        <div class="radio"><span class="lbl">FIELD RADIO</span><input id="freq" inputmode="numeric" maxlength="6" placeholder="----" aria-label="Radio frequency"><button class="btn sm" id="tune">Tune</button><span class="muted raj" id="radioMsg" style="font-size:13px"></span></div>
+        <div class="caches" id="caches" style="margin-top:10px"></div>
+        <div id="classified" style="margin-top:12px"></div>
+      </div>
+      <div class="panel pad">
+        <h3 class="raj" style="margin-top:0">Rabbit holes</h3>
+        <p class="muted" style="margin-top:0;font-size:14px">Anything you wondered about. Science, law, history, people, anything. No question is off-limits. +15 XP each.</p>
+        <form id="rhForm"><textarea name="q" rows="2" placeholder="I wondered why..." required></textarea>
+          <div class="foot" style="margin-top:6px"><select name="tag" style="max-width:160px"><option>Science</option><option>Law</option><option>People</option><option>History</option><option>Other</option></select>
+          <label class="raj" style="display:flex;gap:6px;align-items:center"><input type="checkbox" name="looked" style="width:auto"> I looked it up</label><button class="btn" type="submit">Log</button></div></form>
+        <div class="cards" id="rh" style="margin-top:10px"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="v-loadout">
+    <div class="grid2">
+      <div class="panel corner pad">
+        <h2 class="sten" style="margin-top:0">LOADOUT</h2>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start">
+          <div id="bigSprite" style="width:120px;background:#0e120d;border:1px solid var(--edge);padding:10px;border-radius:4px"></div>
+          <div style="flex:1;min-width:220px">
+            <label class="f" for="csIn">Callsign</label><input id="csIn" maxlength="16">
+            <label class="f">Hair</label><div style="display:flex;gap:6px;flex-wrap:wrap" id="swH"></div>
+            <label class="f">Skin</label><div style="display:flex;gap:6px;flex-wrap:wrap" id="swS"></div>
+            <label class="f">Jacket</label><div style="display:flex;gap:6px;flex-wrap:wrap" id="swJ"></div>
+          </div>
+        </div>
+      </div>
+      <div class="panel pad"><h3 class="raj" style="margin-top:0">Gear & commendations</h3><div class="gear" id="gear"></div></div>
+    </div>
+  </section>
+  <div class="muted raj" style="text-align:center;font-size:12px;margin:18px 0;letter-spacing:2px">OPERATION: OPEN FIELD · BUILT WITH LOVE BY BAILEY · SAVES ON THIS DEVICE</div>
+</div>
+<div class="scrim" id="scrim"><div class="panel corner modal" id="modal" role="dialog" aria-modal="true"></div></div>
+<div id="toasts" aria-live="polite"></div>
+
+<script>
+// ================= OPERATION: OPEN FIELD — content =================
+const PHASES = [
+ {name:"BOOT CAMP", when:"Now → Jan 2027", brief:"Finish the semester. Find your support units. Get honest with yourself."},
+ {name:"RECON", when:"Spring 2027", brief:"Scout all three paths, Medicine, Law and Wildcard, with your own eyes. Keep med on track while you look."},
+ {name:"FIELD OPS", when:"Summer 2027", brief:"Get out of the classroom. Work, interview people, read something nobody assigned."},
+ {name:"ADVANCED TRAINING", when:"Fall 2027", brief:"Harder classes, research, leadership. Test-drive both entrance exams."},
+ {name:"DECISION POINT", when:"Spring 2028", brief:"Make the call with your data. Then commit and prepare."},
+ {name:"EXECUTION", when:"Summer → Fall 2028", brief:"Apply. Medical, legal, or your wildcard. Execute the plan."},
+ {name:"EXTRACTION", when:"Spring 2029", brief:"Close it out. Graduate LSU. Move to your next mission."}
+];
+const PATHS = {
+ med:{name:"MEDICAL",icon:"✚",color:"#e0605a",dossier:"Doctors diagnose and treat people. Path: finish your science prereqs, get clinical hours and shadowing, take the MCAT, apply to MD/DO schools, then 4 years of med school plus 3–7 years of residency. Long road, hands-on with people every day."},
+ law:{name:"LEGAL",icon:"⚖",color:"#5aa0e0",dossier:"Lawyers advise, argue and solve problems inside the rules that run society. Path: any major works. Strong GPA, the LSAT, then 3 years of law school and the bar exam. Lots of reading, writing and arguing. Fields range from courtrooms to contracts to patents."},
+ wild:{name:"WILDCARD",icon:"?",color:"#e0b25a",dossier:"Unknown territory. A biology degree opens more doors than most people realize: physician assistant, epidemiology, genetic counseling, research, biotech, forensic science, public health, teaching, coaching, or patent law (science + law). Recon decides what's out here."}
+};
+
+// Missions: id, p (phase), path (optional: med/law/wild), title, when, brief, why, obj[], co (commanding officer note), q (debrief question)
+const MISSIONS = [
+// ---- PHASE 0: BOOT CAMP ----
+{id:"o0_1",p:0,title:"Report to Command",when:"Now",
+ brief:"This is your mission system for the next two and a half years. Not a lecture. You'll scout three paths, Medicine, Law and Wildcard, and log what you actually feel, not what anyone expects you to feel.",
+ why:"Nobody can tell you which path is yours. Not your family, not your brother, not your cousin. You find out by running missions and watching your own data.",
+ obj:["Set your callsign (tap your badge up top)","Check your loadout","Open the Intel Board on the Debrief tab"],
+ co:"Short version: show up, try things, tell the truth in your debriefs. That's the whole job.",
+ q:"Gut check. How do you honestly feel about your future right now?"},
+{id:"o0_2",p:0,title:"Finals: Execute the Plan",when:"Dec 2026",
+ brief:"Orgo and microbiology are heavy. Heavy is fine. Unplanned is not.",
+ why:"Your science GPA keeps doors open on every path, not just med.",
+ obj:["List every exam and its date","Plan study blocks backward from each exam","Do practice problems instead of re-reading notes","Sleep 7+ hours the night before each exam"],
+ co:"Orgo rewards reps, not talent. Do the problems. Then do more problems.",
+ q:"Which class do you actually find interesting, even when it's hard?"},
+{id:"o0_3",p:0,title:"Know Your Support Units",when:"This semester",
+ brief:"LSU has units whose whole job is backing you up. Know where they are before you need them.",
+ why:"Elite teams use every tool they have. Using support isn't weakness. It's tactics.",
+ obj:["Find LSU Disability Services. If anything makes class harder than it should be (hearing in a big lecture hall, note-taking, testing, focus), they can set up things like captioning, note-taking help or extra exam time.","Find the Center for Academic Success: tutoring, study coaching, workshops","Save the Mental Health Service at the Student Health Center in your phone"],
+ co:"You don't get extra points for doing it the hard way. Use your gear.",
+ q:"What's one thing that makes class harder for you than it should be?"},
+{id:"o0_4",p:0,title:"Load Your Service Record",when:"This week",
+ brief:"Open the Training tab and mark every class you've finished, with grades.",
+ why:"Med schools and law schools both recalculate your GPA from every college class. You need to know where you actually stand.",
+ obj:["Mark finished classes as done with grades","Mark orgo and micro as in progress","Add any other classes you've taken"],
+ co:"Know your numbers. You can't plan from a position you won't look at.",
+ q:"Looking at your record, what are you proud of?"},
+{id:"o0_5",p:0,path:"med",title:"Brief: Pre-Health Advisor",when:"Before spring",
+ brief:"LSU's College of Science has pre-health advisors. Get on the pre-med email list and book a meeting.",
+ why:"Even if you're unsure, staying on the med track keeps the option alive. They'll tell you exactly which classes come next.",
+ obj:["Find College of Science pre-health advising","Join the pre-medical email list","Ask: What's my next science class? When should I take the MCAT if I decide on med?"],
+ co:"Unsure is fine. Uninformed isn't.",
+ q:"How did you feel walking out of that meeting? Lighter or heavier?"},
+{id:"o0_6",p:0,path:"law",title:"Brief: Pre-Law Advisor",when:"Before spring",
+ brief:"Pre-law advising at LSU is open to every undergrad, any major. You book through Navigate, and there's a Pre-Law Moodle page to join.",
+ why:"Law schools don't require a specific major. A biology degree is fine, and sometimes a real advantage.",
+ obj:["Join the LSU Pre-Law Moodle page","Book a pre-law advising appointment in Navigate","Ask: What would I need to do to keep law open as a bio major?"],
+ co:"You got fired up watching someone love law school. Find out if the fire is yours.",
+ q:"Did talking about law feel like curiosity, or like excitement borrowed from someone else?"},
+{id:"o0_7",p:0,title:"Fear Inventory",when:"Any time",
+ brief:"Write down what you're actually afraid of about your future. All of it. Failing a class. Disappointing someone. Picking wrong. Nobody reads this but you.",
+ why:"A fear you can name, you can plan around. A fear you ignore makes your decisions for you.",
+ obj:["Name three fears in your mission notes","For each one, write the worst realistic outcome","For each one, write what you'd do if it happened"],
+ co:"People fail orgo and still become doctors. What you can't recover from is never trying because you were scared.",
+ q:"Which of your fears is about you, and which is about what other people think?"},
+{id:"o0_8",p:0,title:"Curiosity Is Allowed",when:"Ongoing",
+ brief:"You're allowed to be curious about anything: science, law, history, philosophy, why people believe what they believe. Questions aren't disloyal. They're how sharp people think.",
+ why:"Doctors and lawyers both get paid to ask the questions other people are scared to ask.",
+ obj:["Log 3 things you wondered about this week in Rabbit Holes (Intel tab)","Look one of them up for 15 minutes","Find a hidden intel cache on the HQ map"],
+ co:"There is no question you're not allowed to ask in here. None.",
+ q:"What's a question you've had for a long time but never asked out loud?"},
+// ---- PHASE 1: RECON ----
+{id:"o1_1",p:1,title:"Values Recon",when:"Spring 2027",
+ brief:"Run the Values Recon on the Debrief tab. Pick the five things that matter most to you in a career.",
+ why:"Careers are bundles of daily activities. Knowing what you value tells you which bundles fit.",
+ obj:["Complete Values Recon","Write why you picked your #1"],
+ co:"Pick what's true, not what sounds good. Nobody's grading this.",
+ q:"Did anything surprise you about what you picked?"},
+{id:"o1_2",p:1,path:"med",title:"Recon: Medicine",when:"Spring 2027",
+ brief:"Shadow a doctor for at least one full day. Watch the real job: patients, paperwork, pace.",
+ why:"Med schools expect shadowing, and you need to see the job, not the title.",
+ obj:["Shadow at least one doctor who is NOT family","Log the hours in the Field Log","File an after-action report the same day"],
+ co:"Family can open doors. They can't tell you if you belong in the room. Go see for yourself.",
+ q:"During the shadow, when did you check the clock, and when did you forget about it?"},
+{id:"o1_3",p:1,path:"law",title:"Recon: Law",when:"Spring 2027",
+ brief:"Watch law happen. Most courtrooms are open to the public. Sit in on a hearing, talk to a lawyer you know (Gage counts), and check out events at LSU's Paul M. Hebert Law Center.",
+ why:"You need to see the daily work: reading, writing, arguing, waiting. Not just the passion of someone who loves it.",
+ obj:["Sit in on a court session","Talk to a lawyer for 20 minutes about their actual day","Attend one LSU Law or pre-law event","File an after-action report"],
+ co:"Admiring someone's passion is different from having your own. Find out which one this is.",
+ q:"Was it the law that pulled you in, or the person who loves it?"},
+{id:"o1_4",p:1,path:"wild",title:"Recon: Wildcard",when:"Spring 2027",
+ brief:"Scout unknown territory. Pick three careers a biology degree can lead to and look at what the job is actually like.",
+ why:"If you only look at two doors, you'll pick one of those two doors. Look around first.",
+ obj:["Pick 3 careers (ideas: physician assistant, epidemiologist, genetic counselor, patent attorney, forensic scientist, research scientist, coach/teacher)","Watch a 'day in the life' for each","Talk to one person who does one of them"],
+ co:"You don't owe anyone a path they already picked for you.",
+ q:"Which one did you keep thinking about after you closed the tab?"},
+{id:"o1_5",p:1,title:"Join a Unit",when:"Spring 2027",
+ brief:"Join one organization. Options: AED (the pre-health honor society, which meets every two weeks), a pre-law or mock trial group, or an intramural or club team.",
+ why:"You grew up on teams. Structure and people who push you are probably part of how you work best.",
+ obj:["Pick one organization","Attend two meetings or practices","Talk to one older student about their path"],
+ co:"Lone wolves burn out. Get a squad.",
+ q:"What did you miss about being on a team, and did this give any of it back?"},
+{id:"o1_6",p:1,path:"med",title:"Clinical Patrol",when:"Spring 2027 →",
+ brief:"Start regular clinical volunteering (hospital, clinic or hospice), even a few hours a month.",
+ why:"Keeping med as an option means hours with patients have to start building now. Hours can't be crammed later.",
+ obj:["Pick a volunteer site","Complete onboarding","Log your first clinical shift"],
+ co:"Consistency beats intensity. Two hours every week beats twenty hours once.",
+ q:"How did you feel around patients? Be specific."},
+{id:"o1_7",p:1,title:"Hold the Line: Spring Classes",when:"Spring 2027",
+ brief:"Keep the science sequence moving: usually Orgo II (CHEM 2262) and its lab (CHEM 2364), plus statistics (EXST 2201, which LSU's New Orleans med school requires).",
+ why:"These keep med open AND build a strong GPA, which law schools want too.",
+ obj:["Confirm spring classes with your advisor","Register","Enter final grades in Training"],
+ co:"You don't have to know your path to protect your options.",
+ q:"Which class gave you the most energy this semester? Which drained you?"},
+// ---- PHASE 2: FIELD OPS ----
+{id:"o2_1",p:2,title:"Summer Deployment",when:"Summer 2027",
+ brief:"Get a job or internship that teaches you something: a clinical job (scribe, EMT, CNA), a runner or clerk at a law office, or a research spot.",
+ why:"Real work tells you more in eight weeks than a semester of thinking about it.",
+ obj:["Pick your deployment by spring","Apply to at least 3 places","Log your hours all summer"],
+ co:"You want to know what you like? Go do something and pay attention.",
+ q:"What part of the work made time go fast?"},
+{id:"o2_2",p:2,title:"Read Something Nobody Assigned",when:"Summer 2027",
+ brief:"Read one book outside your comfort zone. Options: The Immortal Life of Henrietta Lacks (medicine and ethics), Just Mercy (law and justice), The Emperor of All Maladies (the history of cancer).",
+ why:"What you choose to read when nobody's making you is real data about what you care about.",
+ obj:["Pick one book","Finish it","Log one rabbit hole it sent you down"],
+ co:"Audiobooks count. Finishing counts more than format.",
+ q:"What idea from the book stuck with you?"},
+{id:"o2_3",p:2,title:"Interview Three People",when:"Summer 2027",
+ brief:"Do short informational interviews: one doctor, one lawyer, one wildcard. Ask what they actually do all day and what they'd tell their 20-year-old self.",
+ why:"People love talking about their work. You get the truth in 20 minutes.",
+ obj:["Interview a doctor","Interview a lawyer","Interview a wildcard professional","File an after-action report for each"],
+ co:"Ask the uncomfortable question: 'What do you hate about your job?'",
+ q:"Whose job did you want, honestly?"},
+{id:"o2_4",p:2,title:"Physical Training",when:"Ongoing",
+ brief:"Keep a training routine. Lift, run, play, whatever keeps you moving.",
+ why:"You know how to train. Discipline in one area spills into the others.",
+ obj:["Train 3 times a week for 4 weeks","Set a consistent sleep window","Notice how training affects your focus"],
+ co:"Your body is gear. Maintain it.",
+ q:"Do you miss football? What exactly do you miss?"},
+// ---- PHASE 3: ADVANCED TRAINING ----
+{id:"o3_1",p:3,title:"Advanced Coursework",when:"Fall 2027",
+ brief:"Junior-year science: physics, genetics (BIOL 2153) and biochemistry (BIOL 4087 or 4093), which LSU's med schools require.",
+ why:"This finishes most of the MCAT content. It's also strong evidence of discipline for any path.",
+ obj:["Plan junior-year classes with your advisor","Register","Enter grades in Training"],
+ co:"Hard classes are proof you can do hard things. Collect proof.",
+ q:"Which topic made you want to know more?"},
+{id:"o3_2",p:3,title:"Research Op",when:"Fall 2027",
+ brief:"Join a faculty research lab. You're in microbiology now, so a micro or biology lab is a natural fit.",
+ why:"Research shows curiosity. It also tests whether you like discovering things, which is useful wildcard data.",
+ obj:["Read faculty research pages","Email 2–3 professors","Commit to a lab","Log research hours"],
+ co:"Professors respect students who've read their work. Mention something specific.",
+ q:"Does figuring out unknowns excite you or exhaust you?"},
+{id:"o3_3",p:3,title:"Leadership Op",when:"Fall 2027",
+ brief:"Lead something: an officer role, a study group, coaching, organizing an event.",
+ why:"Every path wants people who can lead. You learn whether you like it.",
+ obj:["Take one leadership role","Log leadership hours","File an after-action report"],
+ co:"You've taken orders well your whole life. Now find out if you can give them.",
+ q:"How did it feel to be the one in charge?"},
+{id:"o3_4",p:3,title:"Test Intel: MCAT vs LSAT",when:"Fall 2027",
+ brief:"Take a free practice section of each. The MCAT has four sections over about 7½ hours: chem/physics, reading and reasoning, bio/biochem, and psych/soc. The LSAT has two scored Logical Reasoning sections, one Reading Comprehension section, an unscored section, and a separate argumentative writing task.",
+ why:"How the test feels, puzzling science passages or untangling arguments, is real data about the work behind it.",
+ obj:["Do one free MCAT practice set","Do one free LSAT practice section","File an after-action report for each"],
+ co:"Don't judge it by your score. Judge it by which one you'd want to get better at.",
+ q:"Which test made you want to try one more question?"},
+{id:"o3_5",p:3,path:"med",title:"Committee Briefing",when:"Nov 2027",
+ brief:"LSU has a Pre-Medical/Pre-Dental Review Committee. Its informational meeting covers the application process, timelines and deadlines.",
+ why:"If med is still on the table, you need to know the committee process and its deadlines before spring.",
+ obj:["Attend the committee information meeting","Write down the deadlines"],
+ co:"Showing up to a meeting costs an hour. Missing a deadline costs a year.",
+ q:"After hearing the process, do you want this? Gut answer first."},
+// ---- PHASE 4: DECISION POINT ----
+{id:"o4_1",p:4,title:"THE CALL",when:"Spring 2028",decision:true,
+ brief:"Review your Intel Board: debriefs, values, field hours. Then make the call: Medical, Legal, Wildcard, or Extend Recon (a gap year or more time to decide).",
+ why:"You've collected two years of real data on yourself. Use it.",
+ obj:["Review your Intel Board","Talk it through with someone you trust","Make the call below"],
+ co:"Choose with data. Not fear, and not for anyone's approval. You can change course later, but commit for now.",
+ q:"In one sentence: why this path?"},
+{id:"o4_2",p:4,title:"Letters of Recommendation",when:"Spring 2028",
+ brief:"Line up 3–5 people who know you well: professors, a research mentor, supervisors.",
+ why:"Every path needs letters. Strong letters come from people who've actually watched you work.",
+ obj:["List possible writers","Ask by email with your resume and goals","Send thank-you notes"],
+ co:"Ask early and ask directly. 'Can you write me a strong letter?' is a fair question.",
+ q:"Who in your life has seen you at your best?"},
+{id:"o4_3",p:4,path:"med",title:"MCAT Op",when:"Spring–Summer 2028",
+ brief:"Build a 3–4 month study plan using the official AAMC practice materials, then take the MCAT. Look into the AAMC Fee Assistance Program first. You have to be approved before you pay.",
+ why:"The MCAT is the biggest single number on a med application.",
+ obj:["Check Fee Assistance eligibility","Build a weekly study schedule","Take full-length practice tests","Take the MCAT"],
+ co:"Treat it like a season. Practice, film review, game day.",
+ q:"What did prepping teach you about how you work?"},
+{id:"o4_4",p:4,path:"law",title:"LSAT Op",when:"Spring–Fall 2028",
+ brief:"Build an LSAT study plan focused on Logical Reasoning and Reading Comprehension, then take the test. LSAC offers fee waivers if money's tight.",
+ why:"The LSAT and your GPA are the two biggest numbers on a law school application.",
+ obj:["Check LSAC fee waiver eligibility","Create an LSAC account","Study 3–4 months with official practice tests","Take the LSAT"],
+ co:"Logical Reasoning is two-thirds of your score. Train there.",
+ q:"Does arguing with the questions energize you or wear you out?"},
+{id:"o4_5",p:4,path:"wild",title:"Build Your Wildcard Plan",when:"Spring 2028",
+ brief:"Define the target: the program or job, its requirements, deadlines, and the test it needs, if any (PA school, MPH, research job, etc.).",
+ why:"A wildcard without a plan is just a maybe. Turn it into a mission.",
+ obj:["Name your target role or program","List its requirements","Find 3 programs or employers","Map your timeline"],
+ co:"Unusual path, same discipline. Plan it like the others.",
+ q:"What made this one beat medicine and law for you?"},
+{id:"o4_6",p:4,path:"recon",title:"Extended Recon Plan",when:"Spring 2028",
+ brief:"Not ready to choose? That's legitimate. Plan a gap year or extra time that generates real data: a clinical job, paralegal work, research.",
+ why:"Lots of people take time after college before med or law school. Choosing to wait is a choice too.",
+ obj:["Pick a job that tests your top two paths","Set a new decision date","Keep filing after-action reports"],
+ co:"Waiting on purpose is strategy. Waiting because you're scared isn't. Know which one you're doing.",
+ q:"What specific information do you still need to decide?"},
+// ---- PHASE 5: EXECUTION ----
+{id:"o5_1",p:5,title:"Write Your Statement",when:"Spring–Summer 2028",
+ brief:"Every path has a personal statement. Yours: why this path, told through real moments from your debriefs.",
+ why:"It's the one place they hear your voice. Your after-action reports are your raw material.",
+ obj:["Pull your best moments from your debriefs","Write a rough draft","Get feedback from your advisor","Revise until it sounds like you"],
+ co:"Don't write what you think they want. Write what's true. True is more interesting.",
+ q:"What's the real reason? Say it plainly."},
+{id:"o5_2",p:5,path:"med",title:"Submit Med Applications",when:"May–June 2028",
+ brief:"AMCAS (MD) and AACOMAS (DO) open in early May. Submit early. Coordinate your LSU committee materials by their deadlines.",
+ why:"Med admissions are rolling, so earlier really does mean better odds.",
+ obj:["Complete the LSU committee submission","Enter all coursework","Submit AMCAS / AACOMAS","Complete secondary essays within about two weeks"],
+ co:"Early and complete beats perfect and late.",
+ q:"When you hit submit, what did you feel?"},
+{id:"o5_3",p:5,path:"law",title:"Submit Law Applications",when:"Fall 2028",
+ brief:"Apply through LSAC's Credential Assembly Service. Louisiana schools include LSU Law, Tulane Law, Loyola New Orleans Law and Southern University Law Center. Apply early in the cycle.",
+ why:"Many law schools review applications on a rolling basis, so early applications get more attention and scholarship money.",
+ obj:["Send transcripts and letters to LSAC","Finalize your school list","Submit applications"],
+ co:"Scholarship money goes fastest early. Don't leave it on the table.",
+ q:"When you hit submit, what did you feel?"},
+{id:"o5_4",p:5,path:"wild",title:"Execute Wildcard Applications",when:"Fall 2028",
+ brief:"Submit your program or job applications on your plan's timeline.",
+ why:"Same discipline, different target.",
+ obj:["Prepare materials","Submit applications","Prep for interviews"],
+ co:"Own it. You picked this on purpose.",
+ q:"When you hit submit, what did you feel?"},
+{id:"o5_5",p:5,path:"recon",title:"Run Your Gap-Year Ops",when:"2028–2029",
+ brief:"Line up the job or experience that tests your top paths, and keep debriefing.",
+ why:"Data keeps coming. Keep collecting it.",
+ obj:["Secure a post-grad job or experience","File monthly after-action reports"],
+ co:"Make the gap count. Every month is recon.",
+ q:"What's the data telling you now?"},
+// ---- PHASE 6: EXTRACTION ----
+{id:"o6_1",p:6,title:"Interviews & Decisions",when:"Winter–Spring 2029",
+ brief:"Prep for interviews and compare offers. Look at cost, location, and how the place made you feel.",
+ why:"Interviews are a two-way recon. You're evaluating them too.",
+ obj:["Do a mock interview","Attend your interviews","Compare offers"],
+ co:"Eye contact, short stories, real answers. You've been practicing this in your debriefs for years.",
+ q:"Which place felt like your people?"},
+{id:"o6_2",p:6,title:"Graduate LSU",when:"≈ May 2029",
+ brief:"Finish your biological sciences degree and walk.",
+ why:"Mission accomplished.",
+ obj:["Apply for graduation","Finish your final classes","Walk"],
+ co:"Look at where you started. Then look where you're standing.",
+ q:"What would you tell the guy who started this game?"},
+{id:"o6_3",p:6,title:"Final Debrief: Who Are You Now?",when:"2029",
+ brief:"Read your very first after-action report. Then write one more.",
+ why:"The point was never just a career. It was figuring out who you are when nobody's choosing for you.",
+ obj:["Re-read your first debrief","Write your final debrief"],
+ co:"Proud of you, soldier. That's not a line. It's a debrief.",
+ q:"What do you know about yourself now that you didn't know then?"}
+];
+
+const HOUR_CATS = [
+ {id:"shadow_md",label:"Shadowing · MD",short:"Shadow MD",path:"med",color:"#e0605a"},
+ {id:"shadow_do",label:"Shadowing · DO",short:"Shadow DO",path:"med",color:"#e88a6a"},
+ {id:"clinical",label:"Clinical (patient contact)",short:"Clinical",path:"med",color:"#d9534f"},
+ {id:"legal",label:"Legal exposure (court / law office)",short:"Legal",path:"law",color:"#5aa0e0"},
+ {id:"service",label:"Community service",short:"Service",path:null,color:"#6fbf73"},
+ {id:"research",label:"Research",short:"Research",path:"wild",color:"#b28ae0"},
+ {id:"leadership",label:"Leadership",short:"Leadership",path:null,color:"#e0b25a"},
+ {id:"work",label:"Work / job",short:"Work",path:null,color:"#9a9a8a"}
+];
+
+const DEFAULT_COURSES = [
+ ["General Biology I + lab (BIOL 1201/1208)","B",4,""],["General Biology II + lab (BIOL 1202/1209)","B",4,""],
+ ["General Chemistry I (CHEM 1201)","C",3,""],["General Chemistry II (CHEM 1202)","C",3,""],["General Chemistry Lab (CHEM 1212)","C",2,""],
+ ["Organic Chemistry I (CHEM 2261)","C",3,"doing"],["Organic Chemistry II (CHEM 2262)","C",3,""],["Organic Chem Lab (CHEM 2364)","C",2,""],
+ ["Microbiology (BIOL 2051)","B",4,"doing"],["Genetics (BIOL 2153)","B",4,""],["Biochemistry (BIOL 4087 or 4093)","B",3,""],
+ ["Physics I (PHYS 2001)","P",3,""],["Physics II (PHYS 2002)","P",3,""],["Statistics (EXST 2201)","M",4,""],
+ ["English Comp I (ENGL 1001)","O",3,""],["English Comp II (ENGL 2000)","O",3,""],["Intro Psychology (PSYC 2000)","O",3,""],["Intro Sociology (SOCL 2001)","O",3,""]
+];
+
+// Values recon: [label, med, law, wild]
+const VALUES = [
+ ["Helping one person at a time",2,0,1],["Solving puzzles & diagnosing problems",2,1,1],["Arguing a point / debating",0,2,0],["Reading & writing a lot",0,2,1],
+ ["Working with my hands",2,0,1],["How the human body works",2,0,1],["How rules & society work",0,2,0],["Standing up for someone",1,2,0],
+ ["Being part of a team",1,0,1],["Being outside / active",0,0,2],["High stakes, fast decisions",2,1,0],["Time for family & life",0,0,2],
+ ["Lab work & discovery",1,0,2],["Leading people",1,1,1],["Building or creating things",0,0,2],["Persuading people",0,2,1]
+];
+
+// ---- HIDDEN INTEL (easter eggs) ----
+// how: map | radio:CODE | konami | co5 | aar5 | midnight | phase0
+const INTEL = [
+ {id:"i_bulb",how:"map",title:"Flickering Bulb",tag:"MED",
+  body:"In 1928, Alexander Fleming came back from vacation and found mold growing on a bacteria plate. Around the mold, the bacteria were dead. That accident became penicillin.",
+  dig:"How did penicillin go from one moldy plate to mass production during World War II?",
+  hint:"Field radio note scratched on the bulb: 'Next freq = the year a London doctor took the handle off a water pump.'"},
+ {id:"i_snow",how:"radio:1854",title:"Freq 1854: The Pump",tag:"MED",
+  body:"In 1854, a cholera outbreak hit London. Dr. John Snow mapped every death and traced them to one water pump on Broad Street. He had the handle removed, and the outbreak slowed. That map helped start the science of epidemiology.",
+  dig:"Look up John Snow's Broad Street cholera map. What did he see that nobody else did?",
+  hint:"Static on the line: 'Next freq = the year a prisoner's handwritten letter changed the right to a lawyer.'"},
+ {id:"i_gideon",how:"radio:1963",title:"Freq 1963: The Pencil Letter",tag:"LAW",
+  body:"Clarence Gideon couldn't afford a lawyer, so he wrote his appeal to the U.S. Supreme Court by hand, in pencil, from prison. In Gideon v. Wainwright (1963), the Court ruled that states must provide a lawyer to defendants charged with felonies who can't afford one.",
+  dig:"Search: Gideon v. Wainwright. How did one handwritten letter reach the Supreme Court?",
+  hint:"Last transmission: 'Final freq = the year 'you have the right to remain silent' became law of the land.'"},
+ {id:"i_miranda",how:"radio:1966",title:"Freq 1966: Your Rights",tag:"LAW",
+  body:"'You have the right to remain silent' comes from Miranda v. Arizona (1966). The Court ruled that police must tell suspects their rights before questioning them in custody.",
+  dig:"What happened to Ernesto Miranda after the ruling? (Spoiler: it's not what you'd expect.)",hint:""},
+ {id:"i_crate",how:"map",title:"Supply Crate",tag:"LAW",
+  body:"Louisiana's legal system is different from the other 49 states. Its private law (contracts, property, family) comes from the civil law tradition of France and Spain, shaped by Napoleonic-era codes. The other 49 states use English common law.",
+  dig:"Why does Louisiana law work differently, and what does that mean for lawyers trained there?",hint:""},
+ {id:"i_tags",how:"map",title:"Dog Tags on the Fence",tag:"WILD",
+  body:"In 2013, the U.S. Supreme Court ruled in AMP v. Myriad Genetics that naturally occurring human DNA can't be patented. Biology and law collided, and the people who argued it needed to understand both.",
+  dig:"What does a patent attorney with a biology degree actually do? (Science degree + law degree is a real combo.)",hint:""},
+ {id:"i_radio",how:"map",title:"Abandoned Radio",tag:"MED",
+  body:"Bacteriophages, or 'phages,' are viruses that only infect bacteria. Doctors have used them experimentally to treat infections that antibiotics couldn't kill. You're in microbiology right now. This is your field.",
+  dig:"Search: phage therapy for antibiotic-resistant infections. Where is this research happening?",hint:""},
+ {id:"i_symbol",how:"map",title:"Strange Symbol",tag:"WILD",
+  body:"Tardigrades, tiny eight-legged 'water bears,' survived being exposed to the vacuum of space on a 2007 satellite mission. They can dry out and come back to life years later.",
+  dig:"How do tardigrades survive things that would kill almost anything else?",hint:""},
+ {id:"i_konami",how:"konami",title:"Classic Code",tag:"WILD",
+  body:"Secret intel: a famous claim says bacteria in your body outnumber your own cells 10 to 1. Scientists recalculated it in 2016, and the ratio is closer to 1 to 1. Even 'facts' everybody repeats can be wrong. That's why you check.",
+  dig:"Search: 'revised estimates for the number of human and bacteria cells in the body.' Learn to love being proven wrong.",hint:""},
+ {id:"i_co",how:"co5",title:"Command's Personal File",tag:"MED",
+  body:"In 1951, cells were taken from Henrietta Lacks during cancer treatment, without her knowledge or consent. Her cells, called 'HeLa,' became one of the most important tools in medical research, used in work on the polio vaccine and much more. Her story changed how we think about consent.",
+  dig:"Read or listen to The Immortal Life of Henrietta Lacks. Science, ethics and law in one story.",hint:""},
+ {id:"i_aar",how:"aar5",title:"Analyst's Note",tag:"WILD",
+  body:"You've filed 5 debriefs. Here's what intelligence analysts know: patterns only show up when you collect data honestly over time. One report is an opinion. Ten is a trend. You're building a trend about yourself.",
+  dig:"Look at your Intel Board. Is a signal starting to separate from the noise?",hint:""},
+ {id:"i_midnight",how:"midnight",title:"Night Watch",tag:"MED",
+  body:"It's late. Intel says sleep is when your brain locks in what you learned that day. Staying up all night before an exam works against the memory you're trying to build.",
+  dig:"Search: how sleep consolidates memory. Then go to bed, soldier.",hint:""}
+];
+
+const CO_LINES = [
+ "Discipline is doing it when you don't feel like it.",
+ "Curiosity isn't a distraction from the mission. It IS the mission.",
+ "You don't need certainty to move. You need the next step.",
+ "Failure is data. Quitting is the only real loss.",
+ "Your path doesn't have to match anyone else's. Including family.",
+ "Wondering why is allowed. Asking it out loud is brave.",
+ "Show up. Log it. Debrief. Repeat.",
+ "Use every piece of gear you've got. Nobody wins a fight half-equipped.",
+ "Fear is a signal, not a command.",
+ "You process fast. Trust what you're noticing."
+];
+
+const KEY_DATES = [
+ {d:"2026-12-08",t:"Fall finals: orgo & micro",est:1},
+ {d:"2027-01-12",t:"Spring semester starts (check LSU calendar)",est:1},
+ {d:"2027-05-20",t:"Summer deployment begins",est:1},
+ {d:"2027-11-01",t:"LSU pre-med committee information meeting",est:1},
+ {d:"2028-03-01",t:"THE CALL: decision point",est:1},
+ {d:"2028-05-04",t:"Med applications open (if med)",est:1},
+ {d:"2028-09-01",t:"Law applications open (if law)",est:1},
+ {d:"2029-05-15",t:"Graduate LSU",est:1}
+];
+
+const CLASSIFIED = "Luke,\n\nYou found all of it. That means you dug, you got curious, and you didn't stop at the first answer. That's who you are, even if nobody told you that's allowed.\n\nI remember you as a tiny kid holding your own on a controller with your brother's friends, way before you were supposed to. You've always been quicker than people give you credit for. I watch you take in new information and file it away in real time. It's a gift.\n\nYou don't have to pick the path anyone expects. You don't have to be sure yet. You just have to keep asking questions and be honest about what lights you up.\n\nWhatever you choose, I'm proud of you. Always.\n\n— Bailey";
+
+</script>
+<script>
+"use strict";
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const today=()=>{const d=new Date();return new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);};
+const uid=()=>Math.random().toString(36).slice(2,9);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const MMAP=Object.fromEntries(MISSIONS.map(m=>[m.id,m]));
+// ---------- state ----------
+const KEY="op_open_field_v1";
+function fresh(){return {v:1,updatedAt:0,cs:"LUKE",me:{hair:0,skin:1,jacket:0},m:{},aars:[],logs:[],rh:[],intel:{},values:null,path:null,
+  courses:DEFAULT_COURSES.map(([n,c,cr,st])=>({id:uid(),name:n,cat:c,cr,status:st||"todo",grade:"",prereq:true})),coClicks:0,seenIntro:false,lastBackup:0,startAt:0,snooze:0,sound:true};}
+let S=fresh();try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(fresh(),JSON.parse(r));}catch(e){}
+let cloud={ref:null,w:false,p:false},st=null;
+function save(){S.updatedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}clearTimeout(st);st=setTimeout(push,1200);}
+async function push(){if(!cloud.ref)return;if(cloud.w){cloud.p=true;return;}cloud.w=true;try{await cloud.ref.set({state:JSON.stringify(S),updatedAt:S.updatedAt});}catch(e){}cloud.w=false;if(cloud.p){cloud.p=false;push();}}
+const IN_CLAUDE=!!(window.claude&&typeof window.claude.use==="function");if(IN_CLAUDE)document.body.classList.add("inclaude");
+let dlCap=null;
+async function initClaude(){if(!IN_CLAUDE)return;try{window.claude.use("downloads").then(d=>{dlCap=d;if(d)document.body.classList.remove("inclaude");}).catch(()=>{});}catch(e){}
+  try{const [db,user]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);if(!db||!user)return;const id=await user.id();if(!id)return;const ref=db.collection("data/users/"+id).doc("save");
+    let s=await ref.get();let r=s&&typeof s.data==="function"?s.data():s;if(r&&r.data&&r.state===undefined)r=r.data;cloud.ref=ref;
+    if(r&&r.state&&(r.updatedAt||0)>(S.updatedAt||0)){S=Object.assign(fresh(),JSON.parse(r.state));localStorage.setItem(KEY,JSON.stringify(S));renderAll();}else push();}catch(e){}}
+// ---------- sound ----------
+let ac=null;function tone(n,type="square"){if(!S.sound)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==="suspended")ac.resume();let t=ac.currentTime;
+  n.forEach(([f,d])=>{const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(.04,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+d);t+=d*.9;});}catch(e){}}
+const SFX={tick:()=>tone([[1200,.03]]),ok:()=>tone([[660,.07],[990,.12]]),done:()=>tone([[440,.08],[554,.08],[659,.08],[880,.22]]),rank:()=>tone([[392,.12],[523,.12],[659,.12],[784,.35]],"sawtooth"),
+  egg:()=>tone([[1568,.06],[1175,.06],[1568,.06],[2093,.2]],"triangle"),radio:()=>tone([[300,.05],[250,.05],[320,.05]],"sawtooth")};
+// ---------- sprite ----------
+const HAIR=["#3b2618","#1d1a1c","#6b4a2b","#b08a52","#8a5a3a"],SKIN=["#ffdcc0","#f1c08f","#d79a6b","#a8693f","#7a4a2a"],JACKET=["#55663c","#3c4a5a","#5a4a3a","#2e2e2e","#6b2f2f"];
+const BASE=["...HHHHHH...","..HHHHHHHH..",".HHHHHHHHHH.",".HSSSSSSSSH.","..SSSSSSSS..","..SESSSSES..","..SSSSSSSS..","..SSSMMSSS..","...SSSSSS...","..JJJJJJJJ..",".JJJJJJJJJJ.",".SJJJJJJJJS.","..JJJJJJJJ..","..PPP..PPP..","..PPP..PPP..","..BBB..BBB.."];
+function grid(){const lv=levelInfo().lv;return BASE.map((row,r)=>row.split("").map((ch,c)=>{
+  if(r===1&&c>=2&&c<=9)return "G";                       // comms headband
+  if((r===4||r===5)&&(c===1||c===10))return "G";          // ear cups
+  if(r===6&&c===10)return "G";if(r===7&&c===9)return "G";  // mic boom
+  if(S.path==="med"&&((r===9&&(c===4||c===7))||(r===10&&(c===4||c===7))||(r===11&&c===6)))return "K";
+  if(S.path==="law"&&(r>=9&&r<=11)&&(c===5||c===6))return r===9?"W":"R";
+  if(lv>=3&&r===10&&c===3)return "Y";
+  if(lv>=2&&r===15)return ch==="B"?"D":ch;
+  return ch;}).join(""));}
+function pal(){return {H:HAIR[S.me.hair]||HAIR[0],S:SKIN[S.me.skin]||SKIN[1],E:"#111",M:"#9a4f4f",J:JACKET[S.me.jacket]||JACKET[0],P:"#2b2f26",B:"#1a1a14",D:"#4a3a22",G:"#2a2a2a",K:"#8fb8c8",R:"#7a1f2a",W:"#e8e8e8",Y:"#f0b43c"};}
+function pix(g,p,x=0,y=0,s=1){let o="";g.forEach((row,r)=>{for(let c=0;c<row.length;c++){const ch=row[c];if(ch==="."||!p[ch])continue;o+=`<rect x="${x+c*s}" y="${y+r*s}" width="${s}" height="${s}" fill="${p[ch]}"/>`;}});return o;}
+function sprite(){return `<svg viewBox="-1 -1 14 18" shape-rendering="crispEdges">${pix(grid(),pal())}</svg>`;}
+const COG=["..GGGGGGGG..",".GGGGGGGGGG.","GGGGGGGGGGGG","..SSSSSSSS..",".SSSSSSSSSS.",".SEESSSSEES.",".SSSSSSSSSS.",".SSSSHHSSSS.",".SSHHHHHHSS.","..SSSSSSSS..","JJJJJJJJJJJJ","JJJYJJJJYJJJ"];
+function coSprite(){return `<svg viewBox="-1 -1 14 13" shape-rendering="crispEdges">${pix(COG,{G:"#3d4a2c",S:"#c79a72",E:"#111",H:"#7a7a7a",J:"#3d4a2c",Y:"#f0b43c"})}</svg>`;}
+// ---------- progress ----------
+const LV=[0,100,250,450,700,1000,1350,1750,2200,2700,3300,4000];
+const RANKS=["RECRUIT","PRIVATE","PFC","SPECIALIST","CORPORAL","SERGEANT","STAFF SGT","LIEUTENANT","CAPTAIN","MAJOR","COLONEL","COMMANDER"];
+const isDone=id=>!!(S.m[id]&&S.m[id].d);
+const mst=id=>S.m[id]||(S.m[id]={d:0,s:[],n:""});
+function hrs(f){return S.logs.filter(f).reduce((a,l)=>a+(+l.hrs||0),0);}
+const GP={"A":4,"A-":3.7,"B+":3.3,"B":3,"B-":2.7,"C+":2.3,"C":2,"C-":1.7,"D+":1.3,"D":1,"F":0};
+function gpa(sci){let p=0,c=0;S.courses.forEach(k=>{if(k.status!=="done"||!(k.grade in GP))return;if(sci&&k.cat==="O")return;p+=GP[k.grade]*(+k.cr||0);c+=+k.cr||0;});return c?p/c:null;}
+const intelFound=()=>Object.keys(S.intel).length;
+function xp(){let x=0;MISSIONS.forEach(m=>{const s=S.m[m.id];if(!s)return;if(s.d)x+=100;x+=(s.s||[]).filter(Boolean).length*10;});
+  x+=S.aars.length*25+S.rh.length*15+Math.min(hrs(()=>true),1000)*2+S.courses.filter(c=>c.status==="done").length*40+intelFound()*50+(S.values?50:0);return Math.round(x);}
+function levelInfo(){const x=xp();let lv=1;LV.forEach((t,i)=>{if(x>=t)lv=i+1;});return {x,lv,cur:LV[lv-1],nxt:LV[lv]??null,rank:RANKS[lv-1]};}
+// mission visibility
+function mState(m){ // 'open' | 'locked' | 'hidden' | 'optional'
+  if(!m.path)return "open";
+  if(m.p<4)return "open"; // early path recon visible to all
+  if(!S.path)return "locked";
+  if(m.path===S.path)return "open";
+  return "hidden";}
+function required(m){const s=mState(m);return s==="open";}
+function phaseProg(p){const ms=MISSIONS.filter(m=>m.p===p&&mState(m)!=="hidden");const req=ms.filter(required);return {d:req.filter(m=>isDone(m.id)).length,t:req.length,all:ms};}
+function curPhase(){for(let i=0;i<PHASES.length;i++){const p=phaseProg(i);if(p.d<p.t)return i;}return PHASES.length-1;}
+function nextMission(){const p=curPhase();return MISSIONS.find(m=>m.p===p&&required(m)&&!isDone(m.id))||null;}
+// ---------- signal ----------
+function signal(){const out={med:{n:0,e:0,c:0,score:0},law:{n:0,e:0,c:0,score:0},wild:{n:0,e:0,c:0,score:0}};
+  S.aars.forEach(a=>{if(!out[a.path])return;const o=out[a.path];o.n++;o.e+=a.energy;o.c+=a.cur;o.score+=a.energy*a.cur;});
+  if(S.values){S.values.forEach(i=>{const v=VALUES[i];out.med.score+=v[1]*1.5;out.law.score+=v[2]*1.5;out.wild.score+=v[3]*1.5;});}
+  const max=Math.max(1,...Object.values(out).map(o=>o.score));Object.values(out).forEach(o=>o.pct=o.score/max*100);return out;}
+function sigHTML(full){const s=signal();return ["med","law","wild"].map(k=>{const o=s[k],P=PATHS[k];
+  return `<div class="sig"><div class="row"><span style="color:${P.color}">${P.icon} ${P.name}</span><span>${o.n} report${o.n===1?"":"s"}</span></div>
+   <div class="bar"><i style="width:${o.pct}%;background:${P.color}"></i></div>${full&&o.n?`<small>Avg energy ${(o.e/o.n).toFixed(1)}/3 · avg curiosity ${(o.c/o.n).toFixed(1)}/5</small>`:""}</div>`;}).join("");}
+function insight(){const s=signal(),k=["med","law","wild"].sort((a,b)=>s[b].score-s[a].score);const tot=S.aars.length;
+  if(tot<3)return `Not enough data yet. File at least 3 after-action reports and the pattern starts showing.`;
+  const a=s[k[0]],b=s[k[1]];if(a.score-b.score<a.score*.15)return `Close race between ${PATHS[k[0]].name} and ${PATHS[k[1]].name}. Run more recon on both. Pay attention to which one you'd do for free.`;
+  return `Strongest signal: <b style="color:${PATHS[k[0]].color}">${PATHS[k[0]].name}</b>. It's leading on energy × curiosity. Data, not destiny. But don't ignore it.`;}
+// ---------- intel / eggs ----------
+function unlock(id,silent){if(S.intel[id])return false;S.intel[id]=today();save();const it=INTEL.find(i=>i.id===id);SFX.egg();toast(`🔓 INTEL RECOVERED: ${esc(it.title)}`,"g");if(!silent)setTimeout(()=>openIntel(id),350);renderAll();return true;}
+function openIntel(id){const it=INTEL.find(i=>i.id===id);
+  openModal(`<button class="btn ghost sm x" onclick="closeModal()">✕</button><div class="lbl">INTEL CACHE · ${esc(it.tag)}</div><h2 class="sten">${esc(it.title)}</h2>
+   <div class="brief">${esc(it.body)}</div>
+   <h3 class="raj">Dig deeper</h3><div class="co" style="border-left-color:var(--green)"><div>🔎 ${esc(it.dig)}</div></div>
+   ${it.hint?`<h3 class="raj">Transmission</h3><div class="brief" style="font-family:&quot;Courier New&quot;,monospace;color:var(--green)">${esc(it.hint)}</div>`:""}
+   <div class="foot"><span class="muted raj">${intelFound()}/${INTEL.length} CACHES RECOVERED</span><span><button class="btn ghost" id="toRh">Log a rabbit hole</button> <button class="btn" onclick="closeModal()">Copy that</button></span></div>`);
+  $("#toRh").addEventListener("click",()=>{closeModal();go("intel");$("#rhForm textarea").value="After '"+it.title+"': ";$("#rhForm textarea").focus();});}
+// konami
+const KON=["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","b","a"];let kp=0;
+document.addEventListener("keydown",e=>{const k=e.key.length===1?e.key.toLowerCase():e.key;if(k===KON[kp]){kp++;if(kp===KON.length){kp=0;unlock("i_konami");}}else kp=k===KON[0]?1:0;});
+let rankTaps=0,rankT=null;
+$("#rank").addEventListener("click",()=>{rankTaps++;clearTimeout(rankT);rankT=setTimeout(()=>rankTaps=0,1500);if(rankTaps>=7){rankTaps=0;unlock("i_konami");}});
+function checkConditional(){if(S.aars.length>=5)unlock("i_aar",true);const h=new Date().getHours();if(h>=0&&h<4)unlock("i_midnight",true);}
+// ---------- ui helpers ----------
+function toast(t,c=""){const e=document.createElement("div");e.className="toast "+c;e.innerHTML=t;const b=$("#toasts");b.appendChild(e);while(b.children.length>3)b.firstChild.remove();setTimeout(()=>{e.style.transition="opacity .4s";e.style.opacity=0;setTimeout(()=>e.remove(),450);},3600);}
+function openModal(h){$("#modal").innerHTML=h;$("#scrim").classList.add("on");$("#scrim").scrollTop=0;}
+function closeModal(){$("#scrim").classList.remove("on");}
+$("#scrim").addEventListener("click",e=>{if(e.target.id==="scrim")closeModal();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
+let lastLv=null;
+function changed(){const b=lastLv;checkConditional();save();const li=levelInfo();if(b!==null&&li.lv>b)setTimeout(()=>{toast(`▲ PROMOTED: ${li.rank}`,"g");SFX.rank();},250);renderAll();}
+function go(v){$$(".tab").forEach(t=>t.classList.toggle("on",t.dataset.v===v));$$(".view").forEach(x=>x.classList.toggle("on",x.id==="v-"+v));SFX.tick();try{history.replaceState(null,"","#"+v);}catch(e){}}
+$$(".tab").forEach(t=>t.addEventListener("click",()=>go(t.dataset.v)));
+// ---------- HUD ----------
+function renderTop(){const li=levelInfo();$("#port").innerHTML=sprite();$("#callsign").textContent=S.cs||"LUKE";$("#rank").textContent=li.rank;
+  $("#xpbar").style.width=(li.nxt?Math.max(2,(li.x-li.cur)/(li.nxt-li.cur)*100):100)+"%";$("#xpt").textContent=li.nxt?`${li.x} XP · ${li.nxt-li.x} to ${RANKS[li.lv]}`:`${li.x} XP · MAX RANK`;
+  if(!$("#ticker").textContent)$("#ticker").textContent="COMMAND: "+pick(CO_LINES);lastLv=li.lv;}
+setInterval(()=>{if(!document.hidden)$("#ticker").textContent="COMMAND: "+pick(CO_LINES);},40000);
+function renderBanner(){const el=$("#bkBanner"),now=Date.now();const has=S.logs.length||S.aars.length||Object.values(S.m).some(m=>m&&m.d);if(has&&!S.startAt){S.startAt=now;save();}
+  const due=has&&(S.lastBackup?now-S.lastBackup>7*864e5:now-(S.startAt||now)>7*864e5)&&!(S.snooze&&now<S.snooze);
+  el.innerHTML=due?`<div class="panel pad" style="margin-top:10px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;border-color:var(--amber)"><span class="lbl">⚠ SECURE YOUR DATA</span><span style="flex:1;min-width:200px">${S.lastBackup?"A week since your last backup.":"No backup on file yet."} One tap. Don't lose your logs.</span><button class="btn" id="bkNow">Back up</button><button class="btn ghost sm" id="bkLater">Tomorrow</button></div>`:"";
+  if(due){$("#bkNow").addEventListener("click",openSettings);$("#bkLater").addEventListener("click",()=>{S.snooze=now+864e5;save();renderBanner();});}}
+// ---------- map ----------
+function renderMap(){let o=`<rect width="400" height="260" fill="#1a2118"/><g pointer-events="none">`;
+  for(let x=0;x<=400;x+=20)o+=`<line x1="${x}" y1="0" x2="${x}" y2="260" stroke="#ffffff08"/>`;for(let y=0;y<=260;y+=20)o+=`<line x1="0" y1="${y}" x2="400" y2="${y}" stroke="#ffffff08"/>`;
+  [[60,"M0 60 Q80 30 160 70 T400 50"],[0,"M0 120 Q100 90 190 130 T400 110"],[0,"M0 200 Q120 170 210 210 T400 190"],[0,"M30 260 Q90 220 60 160 T120 0"]].forEach(([_,d],i)=>o+=`<path d="${d}" fill="none" stroke="#6b7d4a" stroke-opacity=".25" stroke-width="1.2" stroke-dasharray="${i%2?"4 3":"0"}"/>`);
+  o+=`<path d="M200 130 L90 72 M200 130 L310 70 M200 130 L320 196 M200 130 L82 200 M200 130 L200 40 M200 130 L132 160" stroke="#f0b43c" stroke-opacity=".25" stroke-dasharray="3 4"/>`;
+  o+=`</g><g class="sweep" pointer-events="none"><path d="M200 130 L200 20 A110 110 0 0 1 280 55 Z" fill="#7bd36b" opacity=".05"/></g>`;
+  const zone=(id,x,y,inner,label,col)=>`<g class="zone" data-z="${id}" tabindex="0" role="button" aria-label="${label}"><rect x="${x-36}" y="${y-30}" width="72" height="60" fill="transparent"/>${inner}<rect x="${x-34}" y="${y+16}" width="68" height="13" rx="2" fill="#0b0f0a" stroke="${col}" stroke-opacity=".6"/><text class="zl" x="${x}" y="${y+26}" text-anchor="middle" font-family="Rajdhani, sans-serif" font-weight="700" font-size="9" letter-spacing="1" fill="#e6ead9">${label}</text></g>`;
+  o+=zone("hq",200,124,`<path d="M184 128 L200 108 L216 128 Z" fill="#55663c" stroke="#8da062"/><rect x="197" y="118" width="6" height="10" fill="#1a2118"/><circle cx="200" cy="104" r="2" fill="#f0b43c" class="blink"/>`,"HQ · MISSIONS","#f0b43c");
+  o+=zone("training",90,62,`<rect x="74" y="50" width="32" height="20" fill="#2e3a28" stroke="#8da062"/><circle cx="82" cy="60" r="4" fill="none" stroke="#e6ead9"/><circle cx="82" cy="60" r="1.5" fill="#e0605a"/><circle cx="98" cy="60" r="4" fill="none" stroke="#e6ead9"/>`,"RANGE · TRAINING","#8da062");
+  o+=zone("med",310,60,`<rect x="294" y="46" width="32" height="24" fill="#3a2422" stroke="#e0605a"/><path d="M298 60 h6 l3 -6 l4 12 l3 -6 h8" stroke="#e0605a" stroke-width="1.6" fill="none"/>`,"MED OUTPOST","#e0605a");
+  o+=zone("law",320,186,`<path d="M302 178 L320 166 L338 178 Z" fill="#22303a" stroke="#5aa0e0"/>${[306,314,322,330].map(x=>`<rect x="${x}" y="179" width="3" height="16" fill="#5aa0e0"/>`).join("")}<rect x="302" y="195" width="36" height="3" fill="#5aa0e0"/>`,"COURTHOUSE","#5aa0e0");
+  o+=zone("wild",82,192,`<circle cx="82" cy="188" r="18" fill="#e0b25a" fill-opacity=".06" stroke="#e0b25a" stroke-dasharray="3 3"/><text x="82" y="195" text-anchor="middle" font-family="Saira Stencil One, sans-serif" font-size="18" fill="#e0b25a">?</text>`,"UNKNOWN TERRITORY","#e0b25a");
+  o+=zone("field",200,30,`<path d="M194 40 L200 6 L206 40 Z M196 28 h8 M197 20 h6" stroke="#9aa88f" fill="none" stroke-width="1.4"/><circle cx="200" cy="6" r="2" fill="#e0605a" class="blink"/>`,"TOWER · FIELD LOG","#9aa88f");
+  o+=zone("intel",132,152,`<path d="M116 160 Q132 140 148 160 Z" fill="#2a2a22" stroke="#9aa88f"/><rect x="128" y="152" width="8" height="8" fill="#0b0f0a"/>`,"BUNKER · INTEL","#9aa88f");
+  // hidden eggs
+  const eggs={i_bulb:`<circle cx="150" cy="150" r="2.2" fill="#ffe27a"/><line x1="150" y1="140" x2="150" y2="148" stroke="#777" stroke-width=".6"/>`,
+   i_crate:`<rect x="56" y="88" width="7" height="6" fill="#7a5a32" stroke="#3a2a14" stroke-width=".6"/><line x1="56" y1="88" x2="63" y2="94" stroke="#3a2a14" stroke-width=".5"/>`,
+   i_tags:`<path d="M356 214 h20" stroke="#777" stroke-width=".6" stroke-dasharray="1 1"/><rect x="363" y="214" width="3" height="5" rx="1" fill="#c9c9c9"/>`,
+   i_radio:`<rect x="222" y="36" width="7" height="5" fill="#556" stroke="#223" stroke-width=".5"/><line x1="228" y1="36" x2="231" y2="31" stroke="#889" stroke-width=".6"/>`,
+   i_symbol:`<path d="M28 236 l5 -8 l5 8 z M33 231 v2" fill="none" stroke="#e0b25a" stroke-width=".7"/>`};
+  const hit={i_bulb:[142,136,16,20],i_crate:[51,83,17,16],i_tags:[354,207,24,16],i_radio:[217,27,18,18],i_symbol:[23,223,20,18]};
+  Object.entries(eggs).forEach(([id,g])=>{const h=hit[id];o+=`<g class="egg ${S.intel[id]?"found":""}" data-egg="${id}">${g}<rect x="${h[0]}" y="${h[1]}" width="${h[2]}" height="${h[3]}" fill="transparent"/></g>`;});
+  $("#map").innerHTML=o;
+  // enlarge hit areas
+  $$("#map .egg").forEach(g=>{g.addEventListener("click",()=>{const id=g.dataset.egg;if(S.intel[id]){openIntel(id);return;}unlock(id);});});
+  $$("#map .zone").forEach(z=>{const f=()=>{const id=z.dataset.z;if(["med","law","wild"].includes(id))openDossier(id);else go({hq:"missions",training:"training",field:"field",intel:"intel"}[id]);};
+    z.addEventListener("click",f);z.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();f();}});});}
+function openDossier(k){const P=PATHS[k],s=signal()[k],recon=MISSIONS.filter(m=>m.path===k);
+  openModal(`<button class="btn ghost sm x" onclick="closeModal()">✕</button><div class="lbl">PATH DOSSIER</div><h2 class="sten" style="color:${P.color}">${P.icon} ${P.name}</h2>
+   <div class="brief">${esc(P.dossier)}</div>
+   <h3 class="raj">Your data</h3>${sigHTML(true).split('<div class="sig">').filter(x=>x.includes(P.name)).map(x=>'<div class="sig">'+x).join("")}
+   <h3 class="raj">Path missions</h3><ul class="ml">${recon.map(m=>`<li class="mi ${isDone(m.id)?"done":""} ${mState(m)!=="open"?"lock":""}" data-m="${m.id}"><span class="st">${isDone(m.id)?"✓":mState(m)==="open"?"":"🔒"}</span><span class="t">${esc(m.title)}<small>${esc(PHASES[m.p].name)} · ${esc(m.when)}</small></span></li>`).join("")}</ul>
+   <div class="foot"><span class="muted raj">${S.path===k?"YOUR CHOSEN PATH":""}</span><button class="btn" onclick="closeModal()">Close</button></div>`);
+  $$("#modal .mi:not(.lock)").forEach(li=>li.addEventListener("click",()=>openMission(li.dataset.m)));}
+function renderObjective(){const m=nextMission(),p=PHASES[curPhase()];
+  $("#objective").innerHTML=`<div class="lbl">Phase ${curPhase()+1}: ${esc(p.name)} · ${esc(p.when)}</div>
+   ${m?`<h2 class="sten" style="margin:6px 0">${esc(m.title)}</h2><div class="muted" style="font-size:14px;margin-bottom:8px">${esc(m.brief.slice(0,140))}${m.brief.length>140?"…":""}</div>
+   <button class="btn" id="goM" style="width:100%">▶ Accept mission</button>`:`<h2 class="sten">ALL MISSIONS COMPLETE</h2>`}
+   <div class="co" style="margin-top:10px"><span id="coFace" role="button" tabindex="0" aria-label="Command">${coSprite()}</span><div><div class="who">COMMAND</div>${esc(p.brief)}</div></div>`;
+  const g=$("#goM");if(g)g.addEventListener("click",()=>openMission(m.id));
+  $("#coFace").addEventListener("click",()=>{S.coClicks=(S.coClicks||0)+1;SFX.tick();if(S.coClicks>=5&&!S.intel.i_co){unlock("i_co");}else if(S.coClicks<5)toast(pick(["COMMAND: Eyes on the mission.","COMMAND: You poking me, soldier?","COMMAND: Persistent. Good.","COMMAND: One more and I'll tell you something."]));});
+  $("#miniSig").innerHTML=sigHTML(false);
+  const t=today();$("#dates").innerHTML=KEY_DATES.map(k=>`<li class="${k.d<t?"past":""}"><b>${k.est?"≈ ":""}${new Date(k.d+"T12:00").toLocaleDateString("en-US",{month:"short",year:"numeric"})}</b><span>${esc(k.t)}</span></li>`).join("");}
+// ---------- missions ----------
+function renderMissions(){const cur=curPhase();
+  $("#missionList").innerHTML=`<h2 class="sten" style="margin-top:0">MISSIONS</h2>${S.path?`<div class="chip ${S.path}">Chosen path: ${S.path==="recon"?"EXTENDED RECON":PATHS[S.path].name}</div>`:""}`+PHASES.map((ph,i)=>{const pr=phaseProg(i);
+    return `<div class="ph"><div class="phh"><span class="sten">P${i+1} · ${esc(ph.name)}</span><span class="chip">${esc(ph.when)}</span>${i===cur?'<span class="chip" style="border-color:var(--amber);color:var(--amber)">● ACTIVE</span>':""}<div class="prog"><i style="width:${pr.t?pr.d/pr.t*100:0}%"></i></div><span class="raj">${pr.d}/${pr.t}</span></div>
+     <ul class="ml">${pr.all.map(m=>{const s=mState(m),d=isDone(m.id);return `<li class="mi ${d?"done":""} ${s==="locked"?"lock":""}" data-m="${m.id}" tabindex="0"><span class="st">${d?"✓":s==="locked"?"🔒":""}</span>
+       <span class="t">${esc(m.title)}<small>${esc(m.when)}${s==="locked"?" · unlocks after THE CALL":""}</small></span>${m.path?`<span class="chip ${m.path}">${m.path==="recon"?"RECON":PATHS[m.path].name}</span>`:""}</li>`;}).join("")}</ul></div>`;}).join("");
+  $$("#missionList .mi:not(.lock)").forEach(li=>{const f=()=>openMission(li.dataset.m);li.addEventListener("click",f);li.addEventListener("keydown",e=>{if(e.key==="Enter")f();});});}
+function openMission(id){const m=MMAP[id],s=mst(id);if(!Array.isArray(s.s))s.s=[];const d=!!s.d;
+  openModal(`<button class="btn ghost sm x" onclick="closeModal()">✕</button>
+   <div class="lbl">MISSION BRIEF · PHASE ${m.p+1}: ${esc(PHASES[m.p].name)}</div><h2 class="sten" style="font-size:26px">${d?"✓ ":""}${esc(m.title)}</h2>
+   <span class="chip">${esc(m.when)}</span>${m.path?`<span class="chip ${m.path}">${m.path==="recon"?"RECON":PATHS[m.path].name}</span>`:""}<span class="chip" style="color:var(--green)">+100 XP</span>
+   <div class="brief" style="margin-top:8px">${esc(m.brief)}</div>
+   <h3 class="raj">Why it matters</h3><div>${esc(m.why)}</div>
+   <h3 class="raj">Objectives</h3><ul class="obj">${m.obj.map((o,i)=>`<li class="${s.s[i]?"ok":""}" data-i="${i}" tabindex="0"><span class="cb">${s.s[i]?"✓":""}</span><span class="tx">${esc(o)}</span><span class="xpv">+10</span></li>`).join("")}</ul>
+   ${m.decision?`<h3 class="raj">Make the call</h3><div class="choice" id="callBox">${[["med","✚","MEDICAL"],["law","⚖","LEGAL"],["wild","?","WILDCARD"],["recon","🔭","EXTEND RECON"]].map(([k,i,l])=>`<button data-k="${k}" class="${S.path===k?"on":""}"><span>${i}</span>${l}</button>`).join("")}</div>`:""}
+   <div class="co" style="margin-top:12px">${coSprite()}<div><div class="who">COMMAND</div>${esc(m.co)}</div></div>
+   <label class="f" for="mn">Mission notes</label><textarea id="mn" rows="2" placeholder="Names, dates, what you noticed">${esc(s.n||"")}</textarea>
+   <div class="foot"><span class="muted raj">${d?"COMPLETED "+esc(s.at||""):"COMPLETE → THEN DEBRIEF"}</span>${d?`<span><button class="btn ghost sm" id="mu">Mark incomplete</button> <button class="btn ghost" id="mdb">File debrief</button></span>`:`<button class="btn green" id="mc">Mission complete</button>`}</div>`);
+  $$("#modal .obj li").forEach(li=>{const t=()=>{const i=+li.dataset.i;s.s[i]=!s.s[i];SFX.tick();li.classList.toggle("ok",s.s[i]);li.querySelector(".cb").textContent=s.s[i]?"✓":"";if(s.s[i])toast("+10 XP");changed();};
+    li.addEventListener("click",t);li.addEventListener("keydown",e=>{if(e.key===" "||e.key==="Enter"){e.preventDefault();t();}});});
+  $$("#callBox button").forEach(b=>b.addEventListener("click",()=>{S.path=b.dataset.k;$$("#callBox button").forEach(x=>x.classList.toggle("on",x===b));SFX.ok();toast(`PATH LOCKED: ${S.path==="recon"?"EXTENDED RECON":PATHS[S.path].name}`,"g");changed();}));
+  $("#mn").addEventListener("input",e=>{s.n=e.target.value;save();});
+  const c=$("#mc");if(c)c.addEventListener("click",()=>{if(m.decision&&!S.path){toast("Make the call first, soldier.");return;}s.d=1;s.at=today();SFX.done();toast(`MISSION COMPLETE: ${esc(m.title)} · +100 XP`,"g");changed();openAar(m);});
+  const u=$("#mu");if(u)u.addEventListener("click",()=>{s.d=0;closeModal();changed();});
+  const db=$("#mdb");if(db)db.addEventListener("click",()=>openAar(m));}
+// ---------- AAR ----------
+function openAar(m){let en=2,cu=3,pa=m&&m.path&&m.path!=="recon"?m.path:"none";
+  openModal(`<button class="btn ghost sm x" onclick="closeModal()">✕</button><div class="lbl">AFTER-ACTION REPORT</div><h2 class="sten">${m?esc(m.title):"FIELD DEBRIEF"}</h2>
+   ${m?"":`<label class="f" for="an">What did you do?</label><input id="an" placeholder="Shadowed ER doctor / Torts class sit-in / Orgo exam / Lab meeting">`}
+   <label class="f">Energy after</label><div class="choice" id="en">${[[1,"🪫","DRAINED"],[2,"➖","NEUTRAL"],[3,"⚡","CHARGED"]].map(([v,i,l])=>`<button data-v="${v}" class="${v===en?"on":""}"><span>${i}</span>${l}</button>`).join("")}</div>
+   <label class="f">Curiosity: how much did you want to know more?</label><div class="scale" id="cu">${[1,2,3,4,5].map(v=>`<button data-v="${v}" class="${v===cu?"on":""}">${v}</button>`).join("")}</div>
+   <label class="f">Which direction did this point you?</label><div class="choice" id="pa">${[["med","✚","MEDICAL"],["law","⚖","LEGAL"],["wild","?","WILDCARD"],["none","○","NOWHERE"]].map(([k,i,l])=>`<button data-v="${k}" class="${k===pa?"on":""}"><span>${i}</span>${l}</button>`).join("")}</div>
+   <label class="f" for="aq">${m?esc(m.q):"What did you notice about yourself?"}</label><textarea id="aq" rows="3" placeholder="Be honest. Nobody grades this."></textarea>
+   <div class="foot"><span class="muted raj">+25 XP</span><button class="btn green" id="as">File report</button></div>`);
+  const grp=(sel,set)=>$$(sel+" button").forEach(b=>b.addEventListener("click",()=>{$$(sel+" button").forEach(x=>x.classList.toggle("on",x===b));set(b.dataset.v);SFX.tick();}));
+  grp("#en",v=>en=+v);grp("#cu",v=>cu=+v);grp("#pa",v=>pa=v);
+  $("#as").addEventListener("click",()=>{const name=m?m.title:($("#an").value.trim()||"Field debrief");
+    S.aars.push({id:uid(),date:today(),name,mid:m?m.id:null,energy:en,cur:cu,path:pa,q:m?m.q:"What did you notice about yourself?",a:$("#aq").value.trim()});
+    SFX.ok();closeModal();toast("REPORT FILED · +25 XP","g");changed();});}
+function renderDebrief(){$("#board").innerHTML=sigHTML(true)+`<div class="co" style="margin-top:10px">${coSprite()}<div><div class="who">ANALYSIS</div>${insight()}</div></div>`;
+  $("#aars").innerHTML=S.aars.length?[...S.aars].reverse().map(a=>`<div class="card"><div class="h"><b>${esc(a.name)}</b><span class="m">${esc(a.date)}</span></div>
+   <div class="m">Energy ${["","🪫","➖","⚡"][a.energy]} · Curiosity ${a.cur}/5 · ${a.path==="none"?"○ Nowhere":PATHS[a.path]?`<span style="color:${PATHS[a.path].color}">${PATHS[a.path].icon} ${PATHS[a.path].name}</span>`:""}</div>
+   ${a.a?`<p><span class="muted">${esc(a.q)}</span><br>${esc(a.a)}</p>`:""}<div style="text-align:right"><button class="btn ghost sm" data-del="${a.id}">Delete</button></div></div>`).join(""):`<div class="muted">No reports filed. Finish a mission, or file one after any class, shadow day or event.</div>`;
+  $$("#aars [data-del]").forEach(b=>b.addEventListener("click",()=>{if(b.dataset.c){S.aars=S.aars.filter(a=>a.id!==b.dataset.del);changed();}else{b.dataset.c=1;b.textContent="Confirm";}}));
+  const v=S.values;$("#valuesBox").innerHTML=`<h3 class="raj" style="margin-top:0">Values recon</h3>${v?`<p style="margin-top:0">Your top 5:</p><ol>${v.map(i=>`<li>${esc(VALUES[i][0])}</li>`).join("")}</ol>
+   <div class="muted" style="font-size:13px">These feed your signal strength. Med, law and wildcard each score differently on what you picked.</div><button class="btn ghost sm" id="vr" style="margin-top:8px">Re-run recon</button>`:
+   `<p class="muted" style="margin-top:0">Pick the 5 things that matter most to you in a career. Quick, honest, no wrong answers.</p><button class="btn" id="vr">Start values recon</button>`}`;
+  $("#vr").addEventListener("click",openValues);}
+function openValues(){let sel=new Set(S.values||[]);
+  const draw=()=>{openModal(`<button class="btn ghost sm x" onclick="closeModal()">✕</button><div class="lbl">VALUES RECON</div><h2 class="sten">PICK YOUR TOP 5</h2>
+   <p class="muted">Gut picks. What would you actually want in your workday?</p><div class="vals">${VALUES.map((v,i)=>`<button data-i="${i}" class="${sel.has(i)?"on":""}">${sel.has(i)?"✓ ":""}${esc(v[0])}</button>`).join("")}</div>
+   <div class="foot"><span class="raj">${sel.size}/5 SELECTED</span><button class="btn green" id="vs" ${sel.size===5?"":"disabled style='opacity:.5'"}>Lock it in</button></div>`);
+   $$("#modal .vals button").forEach(b=>b.addEventListener("click",()=>{const i=+b.dataset.i;if(sel.has(i))sel.delete(i);else if(sel.size<5)sel.add(i);SFX.tick();draw();}));
+   $("#vs").addEventListener("click",()=>{if(sel.size!==5)return;S.values=[...sel];closeModal();SFX.done();toast("VALUES RECON COMPLETE · +50 XP","g");changed();});};draw();}
+$("#newAar").addEventListener("click",()=>openAar(null));
+// ---------- field log ----------
+$("#catSel").innerHTML=HOUR_CATS.map(c=>`<option value="${c.id}">${esc(c.label)}</option>`).join("");$("#logForm").date.value=today();
+function renderField(){$("#fieldTiles").innerHTML=HOUR_CATS.map(c=>`<div class="tile" style="border-color:${c.color}55"><div class="n" style="color:${c.color}">${+hrs(l=>l.cat===c.id).toFixed(1)}</div><small>${esc(c.short)} hrs</small></div>`).join("");
+  const L=[...S.logs].sort((a,b)=>(b.date||"").localeCompare(a.date||""));
+  $("#logTable").innerHTML=L.length?`<table><tr><th>Date</th><th>Type</th><th>Hrs</th><th>Where</th><th>Contact</th><th>Note</th><th></th></tr>${L.map(l=>{const c=HOUR_CATS.find(x=>x.id===l.cat)||{label:l.cat,color:"#888"};
+    return `<tr><td style="white-space:nowrap">${esc(l.date)}</td><td><span style="color:${c.color}">■</span> ${esc(c.label)}</td><td>${esc(l.hrs)}</td><td>${esc(l.place)}</td><td>${esc(l.contact)}</td><td style="min-width:160px">${esc(l.note)}</td><td><button class="btn ghost sm" data-del="${l.id}">✕</button></td></tr>`;}).join("")}</table>`:`<div class="muted">No entries yet.</div>`;
+  $$("#logTable [data-del]").forEach(b=>b.addEventListener("click",()=>{if(b.dataset.c){S.logs=S.logs.filter(l=>l.id!==b.dataset.del);changed();}else{b.dataset.c=1;b.textContent="Sure?";}}));}
+$("#logForm").addEventListener("submit",e=>{e.preventDefault();const f=e.target,h=parseFloat(f.hrs.value);if(!(h>0))return;
+  S.logs.push({id:uid(),date:f.date.value,cat:f.cat.value,hrs:h,place:f.place.value.trim(),contact:f.contact.value.trim(),note:f.note.value.trim()});SFX.ok();toast(`LOGGED ${h} HRS · +${Math.round(h*2)} XP`,"g");f.hrs.value="";f.note.value="";changed();
+  setTimeout(()=>{if(confirmDebriefAsk)openAar(null);},50);});
+let confirmDebriefAsk=false;
+// ---------- training ----------
+function renderTraining(){const g=gpa(false),s=gpa(true),d=S.courses.filter(c=>c.prereq&&c.status==="done").length,t=S.courses.filter(c=>c.prereq).length;
+  $("#gpaTiles").innerHTML=`<div class="tile"><div class="n">${g===null?"–":g.toFixed(2)}</div><small>Cumulative GPA (est.)</small></div><div class="tile"><div class="n">${s===null?"–":s.toFixed(2)}</div><small>Science GPA (est.)</small></div><div class="tile"><div class="n">${d}/${t}</div><small>Pre-med core done</small></div>`;
+  const opts=v=>`<option value=""${v?"":" selected"}>–</option>`+Object.keys(GP).map(x=>`<option${x===v?" selected":""}>${x}</option>`).join("")+`<option value="W"${v==="W"?" selected":""}>W</option>`;
+  $("#crs").innerHTML=`<tr><th>Class</th><th>Cr</th><th>Status</th><th>Grade</th><th></th></tr>`+S.courses.map(c=>`<tr class="st-${c.status}" data-id="${c.id}"><td style="font-weight:600">${esc(c.name)}</td>
+   <td><input type="number" data-f="cr" value="${esc(c.cr)}" min="0" step=".5" style="width:60px;padding:4px"></td>
+   <td><select data-f="status" style="padding:4px"><option value="todo"${c.status==="todo"?" selected":""}>Not yet</option><option value="doing"${c.status==="doing"?" selected":""}>In progress</option><option value="done"${c.status==="done"?" selected":""}>✓ Done</option></select></td>
+   <td><select data-f="grade" style="padding:4px;width:70px">${opts(c.grade)}</select></td><td>${c.prereq?"":`<button class="btn ghost sm" data-rm="${c.id}">✕</button>`}</td></tr>`).join("");
+  $$("#crs [data-f]").forEach(el=>el.addEventListener("change",()=>{const c=S.courses.find(x=>x.id===el.closest("tr").dataset.id),f=el.dataset.f;c[f]=f==="cr"?(+el.value||0):el.value;if(f==="grade"&&el.value)c.status="done";if(c.status==="done"&&f!=="cr"){SFX.ok();}changed();}));
+  $$("#crs [data-rm]").forEach(b=>b.addEventListener("click",()=>{S.courses=S.courses.filter(c=>c.id!==b.dataset.rm);changed();}));}
+$("#crsForm").addEventListener("submit",e=>{e.preventDefault();const f=e.target;S.courses.push({id:uid(),name:f.name.value.trim(),cat:f.cat.value,cr:+f.cr.value||0,status:"todo",grade:"",prereq:false});f.name.value="";changed();});
+// ---------- intel tab ----------
+function howLabel(h){if(h==="map")return "LOCATION: HQ MAP";if(h.startsWith("radio"))return "FREQUENCY: UNKNOWN";if(h==="konami")return "ACCESS: CLASSIC CODE · OR TAP SOMETHING 7×";if(h==="co5")return "ACCESS: ANNOY COMMAND";if(h==="aar5")return "ACCESS: 5 DEBRIEFS";if(h==="midnight")return "ACCESS: AFTER MIDNIGHT";return "???";}
+function renderIntel(){const n=intelFound();$("#cacheCount").textContent=`${n}/${INTEL.length}`;
+  $("#caches").innerHTML=INTEL.map(it=>S.intel[it.id]?`<div class="cache" data-i="${it.id}" tabindex="0"><b>🔓 ${esc(it.title)}</b><div class="m">${esc(it.tag)} · recovered ${esc(S.intel[it.id])}</div></div>`
+    :`<div class="cache lock"><b>🔒 <span class="redacted">CLASSIFIED</span></b><div class="m">${howLabel(it.how)}</div></div>`).join("");
+  $$("#caches .cache[data-i]").forEach(c=>c.addEventListener("click",()=>openIntel(c.dataset.i)));
+  $("#classified").innerHTML=n===INTEL.length?`<button class="btn red" id="cls" style="width:100%">📁 OPEN CLASSIFIED FILE</button>`:`<div class="muted raj" style="font-size:13px">RECOVER ALL ${INTEL.length} CACHES TO OPEN THE CLASSIFIED FILE.</div>`;
+  const c=$("#cls");if(c)c.addEventListener("click",()=>{SFX.egg();openModal(`<button class="btn ghost sm x" onclick="closeModal()">✕</button><div class="stamp">CLASSIFIED</div><div class="letter">${esc(CLASSIFIED)}</div><div class="foot"><span class="raj" style="color:var(--amber)">COMMENDATION: RABBIT HOLE SPECIALIST</span><button class="btn" onclick="closeModal()">Copy that</button></div>`);});
+  $("#rh").innerHTML=S.rh.length?[...S.rh].reverse().map(r=>`<div class="card"><div class="h"><span class="chip">${esc(r.tag)}</span><span class="m">${esc(r.date)}${r.looked?" · 🔎 looked it up":""}</span></div><p>${esc(r.q)}</p></div>`).join(""):`<div class="muted">Nothing logged yet. What have you been wondering about?</div>`;}
+$("#tune").addEventListener("click",tune);$("#freq").addEventListener("keydown",e=>{if(e.key==="Enter")tune();});
+function tune(){const v=$("#freq").value.trim();SFX.radio();const it=INTEL.find(i=>i.how==="radio:"+v);
+  if(it){if(S.intel[it.id]){$("#radioMsg").textContent="Already decoded.";openIntel(it.id);}else{$("#radioMsg").textContent="SIGNAL ACQUIRED";unlock(it.id);}}
+  else{$("#radioMsg").textContent=pick(["…static…","No signal on that frequency.","…kshhh… nothing.","Dead air. Keep digging."]);}}
+$("#rhForm").addEventListener("submit",e=>{e.preventDefault();const f=e.target;const q=f.q.value.trim();if(!q)return;S.rh.push({id:uid(),date:today(),q,tag:f.tag.value,looked:f.looked.checked});f.q.value="";f.looked.checked=false;SFX.ok();toast("RABBIT HOLE LOGGED · +15 XP","g");changed();});
+// ---------- loadout ----------
+function renderLoadout(){$("#bigSprite").innerHTML=sprite();$("#csIn").value=S.cs;
+  const sw=(el,arr,key)=>{$(el).innerHTML=arr.map((c,i)=>`<button class="sw ${S.me[key]===i?"on":""}" style="background:${c}" data-i="${i}" aria-label="${key} ${i+1}"></button>`).join("");
+    $$(el+" .sw").forEach(b=>b.addEventListener("click",()=>{S.me[key]=+b.dataset.i;SFX.tick();save();renderTop();renderLoadout();}));};
+  sw("#swH",HAIR,"hair");sw("#swS",SKIN,"skin");sw("#swJ",JACKET,"jacket");
+  const lv=levelInfo().lv,ph=PHASES.map((_,i)=>{const p=phaseProg(i);return p.t&&p.d===p.t;});
+  const G=[
+   ["🎧","COMMS HEADSET",true,"Standard issue. Always equipped. Operators who hear the whole field make the best calls. Never deploy without your comms."],
+   ["📓","FIELD NOTEBOOK",S.aars.length>0,"Unlock: file your first debrief. If you didn't write it down, it didn't happen."],
+   ["🥾","COMBAT BOOTS",lv>=2,"Unlock: reach PRIVATE. Discipline is boots on the ground, every day."],
+   ["⌚","TACTICAL WATCH",lv>=4,"Unlock: reach SPECIALIST. Own your time or someone else will."],
+   ["🔦","FLASHLIGHT",S.rh.length>=5,"Unlock: log 5 rabbit holes. For the dark corners curiosity takes you."],
+   ["🏷️","DOG TAGS",intelFound()>0,"Unlock: recover an intel cache. Who you are, not who they expect."],
+   ["🧭","COMPASS",!!S.values,"Unlock: complete values recon. Your values point north."],
+   [S.path==="med"?"🩺":S.path==="law"?"💼":S.path==="wild"?"🛠️":"🔭",S.path==="med"?"STETHOSCOPE":S.path==="law"?"BRIEFCASE":S.path==="wild"?"MULTI-TOOL":"BINOCULARS",!!S.path,"Unlock: make THE CALL. Path-specific gear."],
+   ["🎖️","RABBIT HOLE SPECIALIST",intelFound()===INTEL.length,"Unlock: recover every intel cache."]];
+  $("#gear").innerHTML=G.map(([i,n,on,d])=>`<div class="gi ${on?"":"lock"}"><b>${i} ${n}</b><p>${esc(d)}</p></div>`).join("")+
+   `<div class="gi" style="grid-column:1/-1"><b>🎗️ CAMPAIGN RIBBONS</b><p>${PHASES.map((p,i)=>`<span class="chip" style="${ph[i]?"border-color:var(--green);color:var(--green)":"opacity:.4"}">${esc(p.name)}</span>`).join("")}</p></div>`;}
+$("#csIn").addEventListener("input",e=>{S.cs=(e.target.value||"LUKE").toUpperCase().slice(0,16);save();renderTop();});
+$("#port").addEventListener("click",()=>go("loadout"));$("#port").addEventListener("keydown",e=>{if(e.key==="Enter")go("loadout");});
+// ---------- exports ----------
+async function download(name,text,type){if(dlCap){try{await dlCap.save({filename:name,data:text});return true;}catch(e){if(e&&e.code!=="declined")toast("Download failed. Use Copy.");return false;}}
+  try{const b=new Blob([text],{type});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);return true;}catch(e){return false;}}
+const ce=v=>`"${String(v??"").replace(/"/g,'""')}"`,toCSV=(h,r)=>"﻿"+[h,...r].map(x=>x.map(ce).join(",")).join("\r\n"),toTSV=(h,r)=>[h,...r].map(x=>x.map(v=>String(v??"").replace(/[\t\r\n]+/g," ").trim()).join("\t")).join("\n");
+async function copyText(t,l){try{await navigator.clipboard.writeText(t);toast(`COPIED: ${esc(l)}`,"g");}catch(e){openModal(`<button class="btn ghost sm x" onclick="closeModal()">✕</button><h2 class="sten">Copy this</h2><textarea style="height:240px">${esc(t)}</textarea>`);}}
+const LH=["Date","Type","Hours","Where","Contact","Note"],lr=()=>S.logs.slice().sort((a,b)=>(a.date||"").localeCompare(b.date||"")).map(l=>[l.date,(HOUR_CATS.find(c=>c.id===l.cat)||{}).label,l.hrs,l.place,l.contact,l.note]);
+const CH=["Class","Type","Credits","Status","Grade"],cr=()=>S.courses.map(c=>[c.name,{B:"Biology",C:"Chemistry",P:"Physics",M:"Math",O:"Non-science"}[c.cat],c.cr,{todo:"Not yet",doing:"In progress",done:"Done"}[c.status],c.grade]);
+const AH=["Date","Activity","Energy (1-3)","Curiosity (1-5)","Points toward","Question","Answer"],ar=()=>S.aars.map(a=>[a.date,a.name,a.energy,a.cur,a.path,a.q,a.a]);
+$("#cpLog").addEventListener("click",()=>copyText(toTSV(LH,lr()),"field log"));$("#dlLog").addEventListener("click",async()=>{if(await download(`field-log-${today()}.csv`,toCSV(LH,lr()),"text/csv"))toast("⬇ Field log downloaded","g");});
+$("#cpCrs").addEventListener("click",()=>copyText(toTSV(CH,cr()),"training record"));$("#dlCrs").addEventListener("click",async()=>{if(await download(`training-record-${today()}.csv`,toCSV(CH,cr()),"text/csv"))toast("⬇ Training record downloaded","g");});
+$("#cpAar").addEventListener("click",()=>copyText(toTSV(AH,ar()),"debriefs"));$("#dlAar").addEventListener("click",async()=>{if(await download(`debriefs-${today()}.csv`,toCSV(AH,ar()),"text/csv"))toast("⬇ Debriefs downloaded","g");});
+// ---------- settings ----------
+function restoreText(t){try{const d=JSON.parse(t);if(!d||!d.m)throw 0;S=Object.assign(fresh(),d);closeModal();changed();toast("SAVE RESTORED","g");}catch(e){toast("That backup didn't work.");}}
+function openSettings(){openModal(`<button class="btn ghost sm x" onclick="closeModal()">✕</button><h2 class="sten">SYSTEM</h2>
+  <label class="raj" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="snd" style="width:auto" ${S.sound?"checked":""}> SOUND EFFECTS</label>
+  <h3 class="raj">Secure your data</h3><p class="muted" style="margin-top:0">Progress saves on this device. Back up weekly so you never lose your logs. Last backup: <b>${S.lastBackup?new Date(S.lastBackup).toLocaleDateString():"never"}</b></p>
+  <button class="btn dl" id="bkD">⬇ Download backup</button> <button class="btn ghost" id="bkC">Copy backup code</button>
+  <label class="f dl">Restore from file</label><input type="file" class="dl" id="bkF" accept=".json,application/json">
+  <label class="f" for="bkT">Or paste backup code</label><textarea id="bkT" rows="2"></textarea><button class="btn ghost sm" id="bkR" style="margin-top:6px">Restore</button>
+  <h3 class="raj">Other</h3><button class="btn ghost sm" id="rb">Replay briefing</button> <button class="btn ghost sm" id="rs">Reset everything</button>`);
+  $("#snd").addEventListener("change",e=>{S.sound=e.target.checked;save();});
+  const mark=()=>{S.lastBackup=Date.now();S.snooze=0;changed();};
+  $("#bkD").addEventListener("click",async()=>{if(await download(`open-field-backup-${today()}.json`,JSON.stringify(S,null,1),"application/json")){toast("BACKUP SAVED","g");mark();}});
+  $("#bkC").addEventListener("click",async()=>{await copyText(JSON.stringify(S),"backup code");mark();});
+  $("#bkF").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>restoreText(r.result);r.readAsText(f);});
+  $("#bkR").addEventListener("click",()=>restoreText($("#bkT").value));
+  $("#rb").addEventListener("click",()=>{closeModal();intro(0);});
+  $("#rs").addEventListener("click",e=>{const b=e.target;if(b.dataset.c){S=fresh();S.seenIntro=true;save();closeModal();renderAll();}else{b.dataset.c=1;b.textContent="Click again to erase everything";}});}
+$("#setBtn").addEventListener("click",openSettings);
+// ---------- intro ----------
+const BRIEF=[
+ ()=>`<div class="lbl">INCOMING TRANSMISSION</div><h2 class="sten" style="font-size:28px">OPERATION: OPEN FIELD</h2><div class="brief">Listen up. You're a sophomore at LSU with a biology major and a lot of people's opinions about your future. This operation isn't about their opinions. It's about finding out what's actually yours.</div>`,
+ ()=>`<div class="lbl">IDENTIFY YOURSELF</div><h2 class="sten">CALLSIGN?</h2><input id="icsn" maxlength="16" value="${esc(S.cs)}" style="font-family:Rajdhani,system-ui,sans-serif;font-size:22px;letter-spacing:3px;text-transform:uppercase">`,
+ ()=>`<div class="lbl">THE MISSION</div><div class="brief">Three paths: <b style="color:#e0605a">MEDICAL</b>, <b style="color:#5aa0e0">LEGAL</b>, and <b style="color:#e0b25a">WILDCARD</b>, meaning anything else that grabs you. You'll run recon on all three. After every mission you file a short <b>after-action report</b>: your energy, your curiosity, which way it pointed. The Intel Board turns that into a signal.</div>`,
+ ()=>`<div class="lbl">RULES OF ENGAGEMENT</div><div class="brief">1. Tell the truth in your debriefs.<br>2. Curiosity is not just allowed. It's required.<br>3. Being unsure is fine. Staying uninformed isn't.<br>4. Your path doesn't have to match anyone's. Including family.<br>5. Something is hidden on this map. Several somethings. Find them.</div>`,
+ ()=>`<div class="lbl">DEPLOY</div><div class="co">${coSprite()}<div><div class="who">COMMAND</div>First mission's waiting. Move out, ${esc(S.cs)}.</div></div>`
+];
+function intro(i){openModal(`${BRIEF[i]()}<div class="foot"><span class="raj muted">${i+1}/${BRIEF.length}</span><span>${i>0?`<button class="btn ghost" id="ib">Back</button> `:""}${i<BRIEF.length-1?`<button class="btn" id="in">Continue</button>`:`<button class="btn green" id="ig">Deploy</button>`}</span></div>`);SFX.radio();
+  const c=$("#icsn");const keep=()=>{if(c&&c.value.trim()){S.cs=c.value.trim().toUpperCase().slice(0,16);save();renderTop();}};
+  const b=$("#ib");if(b)b.addEventListener("click",()=>{keep();intro(i-1);});const n=$("#in");if(n)n.addEventListener("click",()=>{keep();intro(i+1);});
+  const g=$("#ig");if(g)g.addEventListener("click",()=>{S.seenIntro=true;save();closeModal();renderAll();openMission("o0_1");});}
+// ---------- boot ----------
+function renderAll(){renderTop();renderBanner();renderMap();renderObjective();renderMissions();renderDebrief();renderField();renderTraining();renderIntel();renderLoadout();
+  try{if(navigator.storage&&navigator.storage.persist&&S.logs.length)navigator.storage.persist().catch(()=>{});}catch(e){}}
+checkConditional();renderAll();
+const hh=(location.hash||"").slice(1);if($(`.tab[data-v="${hh}"]`))go(hh);
+if(!S.seenIntro)setTimeout(()=>intro(0),400);
+initClaude();
+</script>
+</body>
+</html>
