@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>The Pot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Pixelify+Sans:wght@500&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#150f1b;--panel:#231a2d;--panel2:#1b1423;--edge:#45354f;--ink:#f4ead9;--dim:#b7a6c2;--gold:#e8c66a;--rose:#e7a3c9;--cyan:#5ee6ff;--green:#8fd19a;--red:#e05a6a;--orange:#e8743b;--sky:#8fb4e0;
+ --pot-ink:var(--ink);--pot-dim:var(--dim);--pot-panel:var(--panel);--pot-panel2:var(--panel2);--pot-edge:var(--edge);--pot-accent:var(--gold);--pot-font:Nunito,system-ui,sans-serif;--pot-head-font:"Cormorant Garamond",Georgia,serif}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Nunito,system-ui,sans-serif;line-height:1.5}
+body{background:radial-gradient(ellipse at 15% -10%,#3a1f3e 0,transparent 50%),radial-gradient(ellipse at 90% 0,#1f2a44 0,transparent 45%),var(--bg);min-height:100vh}
+.wrap{max-width:1150px;margin:0 auto;padding:14px}
+.head{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.logo{font-family:"Cormorant Garamond",serif;font-size:34px;font-weight:700;line-height:1}
+.logo small{display:block;font-family:Nunito;font-size:13px;color:var(--dim);font-weight:600}
+.cauldron{width:52px;height:52px}
+.who{display:flex;gap:6px;margin-left:auto;align-items:center}
+.who span{background:var(--panel);border:1px solid var(--edge);border-radius:999px;padding:4px 10px;font-weight:700;font-size:13px}
+.grid{display:grid;gap:14px;margin-top:14px}
+.g2{grid-template-columns:minmax(0,1.35fr) minmax(280px,1fr)}@media(max-width:880px){.g2{grid-template-columns:1fr}}
+.card{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--edge);border-radius:18px;padding:14px 16px;box-shadow:0 10px 30px #0006}
+.card h2{font-family:"Cormorant Garamond",serif;font-size:24px;margin:0 0 6px}
+.hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(165px,1fr));gap:10px}
+.tile{background:var(--panel2);border:1px solid var(--edge);border-radius:14px;padding:12px;text-align:center}
+.tile .big{font-family:"Cormorant Garamond",serif;font-size:36px;font-weight:700;line-height:1.05}
+.tile small{display:block;color:var(--dim);font-size:12px;line-height:1.35}
+.ok{color:var(--green)}.bad{color:var(--red)}.warn{color:var(--orange)}.muted{color:var(--dim)}
+.btn{font:inherit;font-weight:800;font-size:14px;border:1px solid var(--edge);border-radius:999px;padding:7px 14px;cursor:pointer;background:var(--panel2);color:var(--ink)}
+.btn.main{background:var(--gold);color:#1a1320;border-color:var(--gold)}.btn.sm{font-size:12px;padding:4px 10px}
+.btn:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.sp{justify-content:space-between}
+.item{display:flex;gap:10px;align-items:center;padding:8px 10px;border:1px solid var(--edge);border-radius:12px;margin-bottom:6px;background:var(--panel2)}
+.item .d{width:46px;text-align:center;flex:none;line-height:1.05}.item .d b{display:block;font-family:"Cormorant Garamond",serif;font-size:22px}.item .d small{font-size:11px;color:var(--dim);text-transform:uppercase}
+.item .t{flex:1;min-width:0}.item .t b{display:block;line-height:1.25}.item .t small{color:var(--dim)}
+.item.paid{opacity:.6}.item.late{border-color:var(--red)}.item.done .t b{text-decoration:line-through;color:var(--dim)}
+.ck{width:28px;height:28px;border-radius:50%;border:2px solid var(--edge);background:transparent;color:var(--ink);cursor:pointer;flex:none;font-weight:900}
+.ck.on{background:var(--green);border-color:var(--green);color:#14261a}
+/* calendar */
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.cal .dow{font-size:11px;color:var(--dim);text-align:center;font-weight:800;text-transform:uppercase}
+.cal .day{min-height:74px;background:var(--panel2);border:1px solid var(--edge);border-radius:10px;padding:4px;cursor:pointer;overflow:hidden;font-size:11px}
+.cal .day.out{opacity:.35}.cal .day.today{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset}
+.cal .day .n{font-weight:800;font-size:12px}
+.ev{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-radius:5px;padding:0 4px;margin-top:2px;font-weight:700;color:#1a1320}
+.ev.g{background:var(--sky)}.ev.bill{background:var(--gold)}.ev.a{background:var(--rose)}.ev.d{background:var(--cyan)}.ev.both{background:#c8b8e8}.ev.done{opacity:.45;text-decoration:line-through}
+@media(max-width:600px){.cal .day{min-height:52px}.ev{font-size:0;height:6px;padding:0}.cal .day .n{font-size:11px}}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--dim);margin-top:8px}.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.score{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.foot{text-align:center;color:var(--dim);font-family:"Cormorant Garamond",serif;font-size:17px;margin:24px 0 6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <svg class="cauldron" viewBox="0 0 64 64" aria-hidden="true"><ellipse cx="32" cy="22" rx="20" ry="5" fill="#8fd19a" opacity=".85"/><circle cx="26" cy="15" r="3" fill="#8fd19a" opacity=".7"/><circle cx="37" cy="11" r="2.4" fill="#8fd19a" opacity=".55"/><path d="M10 24 Q8 50 32 54 Q56 50 54 24 Z" fill="#2a2236" stroke="#e8c66a" stroke-width="2"/><circle cx="22" cy="38" r="4" fill="#e8c66a"/><circle cx="32" cy="42" r="4" fill="#e8c66a"/><circle cx="42" cy="38" r="4" fill="#e8c66a"/><path d="M16 56 l-3 5 M48 56 l3 5" stroke="#e8c66a" stroke-width="3" stroke-linecap="round"/></svg>
+    <div class="logo">The Pot<small>one money pot, two adventurers</small></div>
+    <div class="who" id="who"></div>
+    <button class="btn sm" id="setBtn" aria-label="Settings">⚙ Settings</button>
+  </div>
+
+  <div class="card" style="margin-top:14px"><div class="hero" id="hero"><div class="tile"><div class="big">…</div><small>Loading the pot</small></div></div></div>
+
+  <div class="grid g2">
+    <div class="card"><div class="row sp"><h2>Coming up</h2><span class="muted" style="font-size:13px">next 5 weeks</span></div><div id="soon"></div></div>
+    <div class="card"><div class="row sp"><h2>Accountability</h2><button class="btn sm" id="addEv2">+ Deadline</button></div><div id="acct"></div></div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <div class="row sp"><h2 id="calLabel">Calendar</h2>
+      <div class="row"><button class="btn sm" id="cPrev" aria-label="Previous month">‹</button><button class="btn sm" id="cToday">Today</button><button class="btn sm" id="cNext" aria-label="Next month">›</button></div></div>
+    <div class="row" style="margin:6px 0 10px"><button class="btn sm main" id="gBtn">Connect Google Calendar</button><button class="btn sm" id="addEv">+ Add event</button><button class="btn sm" id="impEv">📚 Import class dates</button><span class="muted" id="gStat" style="font-size:13px"></span></div>
+    <div class="cal" id="cal"></div>
+    <div class="legend" id="legend"></div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card"><div class="row sp"><h2>Subscriptions</h2><button class="btn sm" id="subEdit">Edit</button></div><div id="subs"></div></div>
+    <div class="card"><h2>Runway</h2><div id="run"></div></div>
+  </div>
+
+  <div class="card" style="margin-top:14px"><h2>The ledger</h2><div id="ledger"></div></div>
+  <div class="foot">Separate accounts. One pot. Zero surprises.</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="pot.js"></script>
+<script>
+"use strict";
+const P = window.Pot, D = P.D, { esc, money, today, monthKey, shiftMonth, monthLabel, iso, pad } = P;
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const TZ = Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York';
+let calMonth = monthKey(), ledger = null;
+const KIND_ICON = { exam: '📝', quiz: '❓', assignment: '📄', lab: '🧪', reading: '📖', class: '🏫', deadline: '⏰', money: '🪙', life: '💞', other: '•' };
+
+/* ---------------- Google Calendar (two-way) ---------------- */
+const G = { token: null, exp: 0, events: [], cals: [], loadedFor: null };
+try { const s = JSON.parse(sessionStorage.getItem('pot-gtok') || 'null'); if (s && s.exp > Date.now()) Object.assign(G, s); } catch (e) {}
+const gOn = () => !!(G.token && G.exp > Date.now() + 30000);
+function loadGIS() { return new Promise((res, rej) => { if (window.google && google.accounts) return res(); const s = document.createElement('script'); s.src = 'https://accounts.google.com/gsi/client'; s.onload = res; s.onerror = () => rej(new Error('Google sign-in script blocked')); document.head.appendChild(s); }); }
+async function gConnect() {
+  const cid = D.house && D.house.gclient_id; if (!cid) return openGoogleSetup();
+  await loadGIS();
+  return new Promise((res, rej) => {
+    const c = google.accounts.oauth2.initTokenClient({ client_id: cid, scope: 'https://www.googleapis.com/auth/calendar.events https://www.googleapis.com/auth/calendar.calendarlist.readonly',
+      callback: r => { if (r.error) return rej(new Error(r.error)); G.token = r.access_token; G.exp = Date.now() + (r.expires_in - 60) * 1000; sessionStorage.setItem('pot-gtok', JSON.stringify({ token: G.token, exp: G.exp })); res(); },
+      error_callback: e => rej(new Error(e.message || e.type || 'Google sign-in closed')) });
+    c.requestAccessToken({ prompt: '' });
+  });
+}
+async function gapi(path, opt = {}) {
+  if (!gOn()) throw new Error('Google not connected');
+  const r = await fetch('https://www.googleapis.com/calendar/v3' + path, Object.assign({}, opt, { headers: Object.assign({ Authorization: 'Bearer ' + G.token, 'Content-Type': 'application/json' }, opt.headers || {}) }));
+  if (r.status === 401) { G.token = null; sessionStorage.removeItem('pot-gtok'); renderGStat(); throw new Error('Google session expired. Tap Connect again.'); }
+  if (r.status === 204) return null; const j = await r.json(); if (!r.ok) throw new Error((j.error && j.error.message) || 'Google error'); return j;
+}
+const calId = () => D.house && D.house.gcal_id;
+async function gLoad(force) {
+  if (!gOn() || !calId()) return;
+  const from = shiftMonth(calMonth, -1) + '-01', to = shiftMonth(calMonth, 2) + '-01', key = calId() + from;
+  if (!force && G.loadedFor === key) return;
+  try {
+    const j = await gapi(`/calendars/${encodeURIComponent(calId())}/events?singleEvents=true&orderBy=startTime&maxResults=500&timeMin=${from}T00:00:00Z&timeMax=${to}T00:00:00Z`);
+    G.events = (j.items || []).filter(e => e.status !== 'cancelled' && !(e.extendedProperties && e.extendedProperties.private && e.extendedProperties.private.potId));
+    G.loadedFor = key; renderCal(); renderSoon();
+  } catch (e) { P.toast(e.message); }
+}
+function gBody(ev) {
+  const who = ev.owner ? P.memberOf(ev.owner).display_name : 'Both';
+  const b = { summary: `${KIND_ICON[ev.kind] || ''} ${ev.course ? ev.course + ': ' : ''}${ev.title}`.trim(), description: `${ev.notes || ''}\n\nFrom The Pot · for ${who}`.trim(), extendedProperties: { private: { potId: ev.id } } };
+  if (ev.start_time) { const end = ev.end_time || addHour(ev.start_time); b.start = { dateTime: `${ev.date}T${ev.start_time.slice(0, 5)}:00`, timeZone: TZ }; b.end = { dateTime: `${ev.date}T${end.slice(0, 5)}:00`, timeZone: TZ }; }
+  else { b.start = { date: ev.date }; b.end = { date: iso(new Date(new Date(ev.date + 'T12:00').getTime() + 864e5)) }; }
+  return b;
+}
+const addHour = t => { const [h, m] = t.split(':').map(Number); return `${pad(Math.min(23, h + 1))}:${pad(m)}`; };
+async function gPush(ev) {
+  if (!gOn() || !calId()) return false;
+  const c = encodeURIComponent(calId());
+  try {
+    let r;
+    if (ev.gcal_id) { try { r = await gapi(`/calendars/${c}/events/${encodeURIComponent(ev.gcal_id)}`, { method: 'PATCH', body: JSON.stringify(gBody(ev)) }); } catch (e) { r = null; } }
+    if (!r) r = await gapi(`/calendars/${c}/events`, { method: 'POST', body: JSON.stringify(gBody(ev)) });
+    if (r && r.id !== ev.gcal_id) { await P.q(P.client().from('pot_events').update({ gcal_id: r.id }).eq('id', ev.id)); ev.gcal_id = r.id; }
+    return true;
+  } catch (e) { P.toast('Google: ' + e.message); return false; }
+}
+async function gDelete(gid) { if (!gOn() || !calId() || !gid) return; try { await gapi(`/calendars/${encodeURIComponent(calId())}/events/${encodeURIComponent(gid)}`, { method: 'DELETE' }); } catch (e) {} }
+async function syncAll() {
+  if (!gOn() || !calId()) return;
+  const todo = D.events.filter(e => !e.gcal_id && e.date >= today()); let n = 0;
+  for (const e of todo) if (await gPush(e)) n++;
+  if (n) P.toast(`📅 ${n} date${n > 1 ? 's' : ''} sent to Google Calendar`);
+}
+async function pickCalendar() {
+  try {
+    const j = await gapi('/users/me/calendarList?minAccessRole=writer'); G.cals = j.items || [];
+    const m = P.modal(`<h2>Which calendar is your joint one?</h2><p class="pmuted" style="margin-top:0">Pick the shared calendar you both already use. Class dates and deadlines get added there, and its events show up here.</p>
+      ${G.cals.map(c => `<button class="pbtn" style="display:block;width:100%;text-align:left;margin-bottom:6px" data-cal="${esc(c.id)}"><span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:${esc(c.backgroundColor || '#8fb4e0')};margin-right:8px"></span>${esc(c.summaryOverride || c.summary)}${c.primary ? ' <span class="pmuted">(your main one)</span>' : ''}</button>`).join('')}`);
+    $$('[data-cal]').forEach(b => b.addEventListener('click', async () => { await P.updateHouse({ gcal_id: b.dataset.cal }); P.close(); G.loadedFor = null; await gLoad(true); await syncAll(); renderGStat(); }));
+  } catch (e) { P.toast(e.message); }
+}
+function openGoogleSetup() {
+  const m = P.modal(`<h2>Connect Google Calendar</h2>
+   <p class="pmuted" style="margin-top:0">One-time setup (about 20 minutes, once for both of you). Google needs to know this page is allowed to read and add events. The full click-by-click guide is in <b>pot/SETUP.md</b> on your site. When you have the <b>Client ID</b>, paste it here.</p>
+   <label class="pl" for="gcid">OAuth Client ID (ends in .apps.googleusercontent.com)</label><input id="gcid" value="${esc((D.house && D.house.gclient_id) || '')}" placeholder="1234-abc.apps.googleusercontent.com">
+   <p class="pmuted" style="font-size:13px">A Client ID is not a password; it's fine to store. Each of you signs in with your own Google account, and only calendars you can already edit are available.</p>
+   <div class="prow psp" style="margin-top:12px"><span></span><button class="pbtn main" id="gsave">Save & connect</button></div>`);
+  $('#gsave').addEventListener('click', async () => {
+    const v = $('#gcid').value.trim(); if (!/\.apps\.googleusercontent\.com$/.test(v)) return P.toast("That doesn't look like a Client ID yet.");
+    await P.updateHouse({ gclient_id: v }); P.close(); doConnect();
+  });
+}
+async function doConnect() {
+  try { await gConnect(); renderGStat(); if (!calId()) await pickCalendar(); else { await gLoad(true); await syncAll(); } }
+  catch (e) { P.toast(e.message.includes('popup') ? 'Allow pop-ups for this site, then try again.' : e.message); }
+}
+function renderGStat() {
+  const b = $('#gBtn'), s = $('#gStat');
+  if (!D.house || !D.house.gclient_id) { b.textContent = 'Connect Google Calendar'; s.textContent = 'Not set up yet'; return; }
+  if (gOn()) { b.textContent = '🔄 Refresh Google'; const c = G.cals.find(c => c.id === calId()); s.textContent = calId() ? `Synced with ${c ? (c.summaryOverride || c.summary) : 'your joint calendar'}` : 'Pick your joint calendar'; }
+  else { b.textContent = 'Connect Google Calendar'; s.textContent = 'Tap to show your Google events (stays connected about an hour)'; }
+}
+$('#gBtn').addEventListener('click', () => gOn() ? (calId() ? gLoad(true).then(syncAll) : pickCalendar()) : doConnect());
+
+/* ---------------- pot events (deadlines) ---------------- */
+function openEvent(ev, presetDate) {
+  const isNew = !ev; ev = ev || { title: '', date: presetDate || today(), kind: 'deadline', owner: D.user.id, course: '', start_time: '', end_time: '', notes: '' };
+  const m = P.modal(`<h2>${isNew ? 'Add a date' : 'Edit date'}</h2><div class="pf2">
+   <label class="pl full">What<input id="et" value="${esc(ev.title)}" placeholder="Exam 1, Lab report, Rent…"></label>
+   <label class="pl">Date<input id="ed" type="date" value="${esc(ev.date)}"></label><label class="pl">Kind<select id="ek">${Object.keys(KIND_ICON).map(k => `<option value="${k}" ${k === ev.kind ? 'selected' : ''}>${KIND_ICON[k]} ${k}</option>`).join('')}</select></label>
+   <label class="pl">Start time (optional)<input id="es" type="time" value="${esc((ev.start_time || '').slice(0, 5))}"></label><label class="pl">End time<input id="ee" type="time" value="${esc((ev.end_time || '').slice(0, 5))}"></label>
+   <label class="pl">Whose is it?<select id="eo">${D.members.map(x => `<option value="${x.user_id}" ${x.user_id === ev.owner ? 'selected' : ''}>${esc(x.emoji)} ${esc(x.display_name)}</option>`).join('')}<option value="" ${!ev.owner ? 'selected' : ''}>💞 Both of us</option></select></label>
+   <label class="pl">Course (optional)<input id="ec" value="${esc(ev.course || '')}" placeholder="BIO 201"></label>
+   <label class="pl full">Notes<textarea id="en" rows="2">${esc(ev.notes || '')}</textarea></label></div>
+   <div class="prow psp" style="margin-top:14px">${isNew ? '<span></span>' : '<button class="pbtn sm" id="edel">Delete</button>'}<button class="pbtn main" id="esave">${gOn() && calId() ? 'Save + add to Google' : 'Save'}</button></div>`);
+  $('#esave').addEventListener('click', async () => {
+    const rec = { title: $('#et').value.trim(), date: $('#ed').value, kind: $('#ek').value, start_time: $('#es').value || null, end_time: $('#ee').value || null, owner: $('#eo').value || null, course: $('#ec').value.trim() || null, notes: $('#en').value.trim() || null };
+    if (!rec.title || !rec.date) return P.toast('A name and a date, please.');
+    try {
+      let saved;
+      if (isNew) saved = (await P.q(P.client().from('pot_events').insert(Object.assign({ household_id: D.me.household_id }, rec)).select().single()));
+      else { saved = (await P.q(P.client().from('pot_events').update(rec).eq('id', ev.id).select().single())); }
+      P.close(); await gPush(saved); await P.loadAll(); P.toast('Saved');
+    } catch (e) { P.toast(e.message); }
+  });
+  const del = $('#edel'); if (del) del.addEventListener('click', async () => { if (!del.dataset.c) { del.dataset.c = 1; del.textContent = 'Tap again to delete'; return; } await gDelete(ev.gcal_id); await P.q(P.client().from('pot_events').delete().eq('id', ev.id)); P.close(); P.loadAll(); });
+}
+function openGoogleEvent(g) {
+  const allDay = !!g.start.date, d = (g.start.date || g.start.dateTime).slice(0, 10), st = allDay ? '' : g.start.dateTime.slice(11, 16), et = allDay ? '' : (g.end.dateTime || '').slice(11, 16);
+  const m = P.modal(`<h2>📅 ${esc(g.summary || '(no title)')}</h2><p class="pmuted" style="margin-top:0">From your Google Calendar. Changes here save straight to Google.</p><div class="pf2">
+   <label class="pl full">Title<input id="gt" value="${esc(g.summary || '')}"></label><label class="pl">Date<input id="gd" type="date" value="${d}"></label><span></span>
+   <label class="pl">Start (blank = all day)<input id="gs" type="time" value="${st}"></label><label class="pl">End<input id="ge" type="time" value="${et}"></label>
+   <label class="pl full">Notes<textarea id="gn" rows="2">${esc(g.description || '')}</textarea></label></div>
+   ${g.htmlLink ? `<a class="pmuted" href="${esc(g.htmlLink)}" target="_blank" rel="noopener" style="font-size:13px">Open in Google Calendar ↗</a>` : ''}
+   <div class="prow psp" style="margin-top:14px"><button class="pbtn sm" id="gdel">Delete</button><button class="pbtn main" id="gsv">Save to Google</button></div>`);
+  $('#gsv').addEventListener('click', async () => {
+    const date = $('#gd').value, s = $('#gs').value, e = $('#ge').value || (s ? addHour(s) : ''), body = { summary: $('#gt').value, description: $('#gn').value };
+    if (s) { body.start = { dateTime: `${date}T${s}:00`, timeZone: TZ, date: null }; body.end = { dateTime: `${date}T${e}:00`, timeZone: TZ, date: null }; }
+    else { body.start = { date, dateTime: null }; body.end = { date: iso(new Date(new Date(date + 'T12:00').getTime() + 864e5)), dateTime: null }; }
+    try { await gapi(`/calendars/${encodeURIComponent(calId())}/events/${encodeURIComponent(g.id)}`, { method: 'PATCH', body: JSON.stringify(body) }); P.close(); P.toast('Saved to Google'); gLoad(true); } catch (err) { P.toast(err.message); }
+  });
+  $('#gdel').addEventListener('click', async e => { const b = e.target; if (!b.dataset.c) { b.dataset.c = 1; b.textContent = 'Tap again to delete from Google'; return; } await gDelete(g.id); P.close(); gLoad(true); });
+}
+function openGoogleAdd(date) {
+  const m = P.modal(`<h2>Add to the joint calendar</h2><div class="pf2"><label class="pl full">What<input id="nt" placeholder="Dinner with the Kerhonkson crew"></label><label class="pl">Date<input id="nd" type="date" value="${esc(date)}"></label><span></span>
+   <label class="pl">Start (blank = all day)<input id="ns" type="time"></label><label class="pl">End<input id="ne" type="time"></label></div>
+   <p class="pmuted" style="font-size:13px">For school deadlines you want to check off, use "+ Deadline" instead.</p>
+   <div class="prow psp" style="margin-top:14px"><span></span><button class="pbtn main" id="nsv">Add to Google</button></div>`);
+  $('#nsv').addEventListener('click', async () => {
+    const t = $('#nt').value.trim(), d = $('#nd').value, s = $('#ns').value, e = $('#ne').value || (s ? addHour(s) : ''); if (!t || !d) return;
+    const body = { summary: t }; if (s) { body.start = { dateTime: `${d}T${s}:00`, timeZone: TZ }; body.end = { dateTime: `${d}T${e}:00`, timeZone: TZ }; } else { body.start = { date: d }; body.end = { date: iso(new Date(new Date(d + 'T12:00').getTime() + 864e5)) }; }
+    try { await gapi(`/calendars/${encodeURIComponent(calId())}/events`, { method: 'POST', body: JSON.stringify(body) }); P.close(); P.toast('Added to Google'); gLoad(true); } catch (err) { P.toast(err.message); }
+  });
+}
+function openDay(d) {
+  const evs = D.events.filter(e => e.date === d), gs = G.events.filter(g => (g.start.date || g.start.dateTime).slice(0, 10) === d), bills = billsOn(d);
+  const m = P.modal(`<h2>${new Date(d + 'T12:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</h2>
+   ${bills.map(x => `<div class="pmuted">🪙 ${esc(x.b.name)} · ${money(x.b.amount)} ${x.paid ? '✓ paid' : ''}</div>`).join('')}
+   ${evs.map(e => `<button class="pbtn" style="display:block;width:100%;text-align:left;margin:6px 0" data-pe="${e.id}">${e.done ? '✓ ' : ''}${KIND_ICON[e.kind] || ''} ${esc(e.course ? e.course + ': ' : '')}${esc(e.title)} <span class="pmuted">· ${esc(e.owner ? P.memberOf(e.owner).display_name : 'Both')}</span></button>`).join('')}
+   ${gs.map((g, i) => `<button class="pbtn" style="display:block;width:100%;text-align:left;margin:6px 0" data-ge="${i}">📅 ${g.start.dateTime ? esc(new Date(g.start.dateTime).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })) + ' · ' : ''}${esc(g.summary || '(no title)')}</button>`).join('')}
+   ${!evs.length && !gs.length && !bills.length ? '<p class="pmuted">Nothing yet.</p>' : ''}
+   <div class="prow" style="margin-top:12px"><button class="pbtn main" id="dAddDl">+ Deadline</button>${gOn() && calId() ? '<button class="pbtn" id="dAddG">+ Event in Google</button>' : ''}</div>`);
+  $$('[data-pe]').forEach(b => b.addEventListener('click', () => openEvent(D.events.find(e => e.id === b.dataset.pe))));
+  $$('[data-ge]').forEach(b => b.addEventListener('click', () => openGoogleEvent(gs[+b.dataset.ge])));
+  $('#dAddDl').addEventListener('click', () => openEvent(null, d)); const ag = $('#dAddG'); if (ag) ag.addEventListener('click', () => openGoogleAdd(d));
+}
+async function toggleDone(id) {
+  const e = D.events.find(x => x.id === id); if (!e) return;
+  await P.q(P.client().from('pot_events').update({ done: !e.done, done_at: e.done ? null : new Date().toISOString() }).eq('id', id));
+  if (!e.done) P.toast(e.owner && e.owner !== D.user.id ? `Marked done for ${P.memberOf(e.owner).display_name}` : '✓ Done. Proud of you.');
+  await P.loadAll();
+}
+
+/* syllabus / class-date import: a JSON file Claude makes from your syllabuses */
+function openImportEvents() {
+  const m = P.modal(`<h2>📚 Import class dates</h2>
+   <p class="pmuted" style="margin-top:0">Send your syllabuses to Claude in chat and ask for a <b>"Pot class-dates file"</b>. Claude pulls out every exam, quiz, lab and due date and gives you a file. Upload it here and every date lands on the calendar (and in Google, if connected).</p>
+   <label class="pl" for="ief">Class-dates file (.json)</label><input type="file" id="ief" accept=".json,application/json">
+   <label class="pl" for="iep">Or paste it</label><textarea id="iep" rows="3" placeholder='[{"date":"2027-02-10","title":"Exam 1","course":"BIO 201","kind":"exam","who":"Bailey"}]'></textarea>
+   <div class="prow psp" style="margin-top:14px"><span></span><button class="pbtn main" id="iego">Preview</button></div>`);
+  $('#iego').addEventListener('click', async () => {
+    let txt = $('#iep').value.trim(); const f = $('#ief').files[0]; if (f) txt = await f.text();
+    let arr; try { arr = JSON.parse(txt); if (!Array.isArray(arr)) arr = arr.events; if (!Array.isArray(arr)) throw 0; } catch (e) { return P.toast("That file didn't read as class dates."); }
+    const byName = n => { if (!n || /both|us|we/i.test(n)) return null; const x = D.members.find(m => m.display_name.toLowerCase() === String(n).toLowerCase() || m.display_name.toLowerCase().startsWith(String(n).toLowerCase().slice(0, 3))); return x ? x.user_id : null; };
+    const kinds = Object.keys(KIND_ICON);
+    const rows = arr.filter(x => x && x.date && x.title).map(x => ({ household_id: D.me.household_id, title: String(x.title).slice(0, 120), date: String(x.date).slice(0, 10), start_time: x.start || x.start_time || null, end_time: x.end || x.end_time || null, course: x.course ? String(x.course).slice(0, 40) : null, kind: kinds.includes(x.kind) ? x.kind : 'deadline', notes: x.notes ? String(x.notes).slice(0, 500) : null, owner: byName(x.who) }));
+    const dupe = r => D.events.some(e => e.date === r.date && e.title === r.title && (e.course || null) === r.course);
+    const fresh = rows.filter(r => !dupe(r));
+    const mm = P.modal(`<h2>📚 ${fresh.length} new date${fresh.length === 1 ? '' : 's'}</h2>${rows.length - fresh.length ? `<p class="pmuted">${rows.length - fresh.length} already on the calendar (skipped).</p>` : ''}
+      <div class="ptbl" style="max-height:320px">${fresh.map(r => `<div class="prow psp" style="padding:4px 0;border-bottom:1px dashed var(--pe)"><span>${KIND_ICON[r.kind]} ${esc(r.date)} · ${esc(r.course ? r.course + ': ' : '')}${esc(r.title)}</span><span class="pmuted">${esc(r.owner ? P.memberOf(r.owner).display_name : 'Both')}</span></div>`).join('')}</div>
+      <div class="prow psp" style="margin-top:14px"><button class="pbtn" data-pclose>Cancel</button><button class="pbtn main" id="iesv" ${fresh.length ? '' : 'disabled'}>Add them${gOn() && calId() ? ' + send to Google' : ''}</button></div>`);
+    $$('[data-pclose]').forEach(b => b.addEventListener('click', P.close));
+    const sv = $('#iesv'); if (sv) sv.addEventListener('click', async () => {
+      sv.disabled = true; sv.textContent = 'Adding…';
+      try { const saved = await P.q(P.client().from('pot_events').insert(fresh).select()); P.close(); let n = 0; for (const e of saved) if (await gPush(e)) n++; await P.loadAll(); P.toast(`📚 ${saved.length} dates added${n ? `, ${n} sent to Google` : ''}`); }
+      catch (e) { sv.disabled = false; sv.textContent = 'Try again'; P.toast(e.message); }
+    });
+  });
+}
+
+/* ---------------- render ---------------- */
+function billsOn(d) {
+  const out = []; const dt = new Date(d + 'T12:00'), m = d.slice(0, 7), last = new Date(dt.getFullYear(), dt.getMonth() + 1, 0).getDate();
+  D.bills.filter(b => b.active).forEach(b => {
+    if (b.kind === 'oneoff') { if (b.due_date === d) out.push({ b, paid: P.billPaid(b, m) }); }
+    else if (b.due_day && Math.min(b.due_day, last) === dt.getDate()) out.push({ b, paid: P.billPaid(b, m) });
+  });
+  return out;
+}
+function renderHead() {
+  $('#who').innerHTML = D.members.map(m => `<span>${esc(m.emoji)} ${esc(m.display_name)}</span>`).join('') + (D.members.length < 2 ? '<span class="muted">waiting for partner</span>' : '');
+}
+function renderHero() {
+  const pc = P.potCash(), rw = P.runway(), m = monthKey(), T = P.monthTx(m), spent = T.filter(t => t.type === 'expense').reduce((s, t) => s + +t.out_amt, 0), bud = P.totalBudget();
+  const soon = P.upcoming(7).filter(x => !x.paid), soonAmt = soon.reduce((s, x) => s + +x.b.amount, 0);
+  const late = P.upcoming(35).filter(x => x.late);
+  $('#hero').innerHTML = `
+   <div class="tile"><div class="big ${pc.net < 0 ? 'bad' : ''}">${money(pc.net)}</div><small>in the pot right now<br>${money(pc.cash)} cash · ${money(pc.debt)} on cards</small></div>
+   <div class="tile"><div class="big ${rw.out && rw.months < 3 ? 'bad' : rw.months < 6 ? 'warn' : 'ok'}">${rw.out ? rw.months + ' mo' : '6+ mo'}</div><small>runway after this month${rw.out ? `<br>cash runs short in <b>${esc(monthLabel(rw.out))}</b>` : ''}</small></div>
+   <div class="tile"><div class="big">${money(spent)}</div><small>spent this month of ${money(bud)} budget (both)</small></div>
+   <div class="tile"><div class="big ${late.length ? 'bad' : soon.length ? 'warn' : 'ok'}">${late.length ? late.length + ' late' : soon.length || '✓'}</div><small>${late.length ? 'bills past due' : soon.length ? `bill${soon.length > 1 ? 's' : ''} due this week · ${money(soonAmt)}` : 'nothing due this week'}</small></div>`;
+}
+function renderSoon() {
+  const items = P.upcoming(35);
+  const g = gOn() ? G.events.filter(e => { const d = (e.start.date || e.start.dateTime).slice(0, 10); return d >= today() && d <= iso(new Date(Date.now() + 14 * 864e5)); }).slice(0, 6) : [];
+  const evs = D.events.filter(e => !e.done && e.date >= today() && e.date <= iso(new Date(Date.now() + 14 * 864e5)));
+  const rows = [
+    ...items.map(x => ({ d: iso(x.d), html: `<div class="item ${x.paid ? 'paid' : ''} ${x.late ? 'late' : ''}">${dateBox(iso(x.d))}<div class="t"><b>${x.b.kind === 'subscription' ? '🔁' : x.b.kind === 'oneoff' ? '⚔️' : '🪙'} ${esc(x.b.name)} · ${money(x.b.amount)}</b><small>${x.paid ? (x.paid === 'matched' ? 'paid (found the charge)' : 'marked paid') : x.late ? 'past due' : x.b.autopay ? 'autopay' : 'pay manually'} · ${esc(P.memberOf(x.b.owner).emoji)}</small></div>${x.paid === 'matched' ? '' : `<button class="ck ${x.paid ? 'on' : ''}" data-bp="${x.b.id}" data-m="${x.m}" aria-label="Mark paid">✓</button>`}</div>` })),
+    ...evs.map(e => ({ d: e.date, html: `<div class="item">${dateBox(e.date)}<div class="t"><b>${KIND_ICON[e.kind] || ''} ${esc(e.course ? e.course + ': ' : '')}${esc(e.title)}</b><small>${esc(e.owner ? P.memberOf(e.owner).display_name : 'Both of us')}${e.start_time ? ' · ' + esc(e.start_time.slice(0, 5)) : ''}</small></div><button class="ck" data-done="${e.id}" aria-label="Mark done">✓</button></div>` })),
+    ...g.map(e => { const d = (e.start.date || e.start.dateTime).slice(0, 10); return { d, html: `<div class="item">${dateBox(d)}<div class="t"><b>📅 ${esc(e.summary || '(no title)')}</b><small>Google${e.start.dateTime ? ' · ' + esc(new Date(e.start.dateTime).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })) : ''}</small></div></div>` }; }),
+  ].sort((a, b) => a.d.localeCompare(b.d));
+  $('#soon').innerHTML = rows.length ? rows.map(r => r.html).join('') : '<p class="muted">Nothing coming up. Add your bills in ⚙ Settings → Bills.</p>';
+  $$('#soon [data-bp]').forEach(b => b.addEventListener('click', () => P.togglePaid(b.dataset.bp, b.dataset.m).catch(e => P.toast(e.message))));
+  $$('#soon [data-done]').forEach(b => b.addEventListener('click', () => toggleDone(b.dataset.done)));
+}
+const dateBox = d => { const x = new Date(d + 'T12:00'); return `<div class="d"><b>${x.getDate()}</b><small>${x.toLocaleDateString('en-US', { month: 'short' })}</small></div>`; };
+function renderAcct() {
+  const wk0 = iso(new Date(Date.now() - 6 * 864e5)), wk1 = iso(new Date(Date.now() + 7 * 864e5));
+  const score = D.members.map(m => { const L = D.events.filter(e => e.owner === m.user_id && e.date >= wk0 && e.date <= wk1); const done = L.filter(e => e.done).length; const over = D.events.filter(e => e.owner === m.user_id && !e.done && e.date < today()).length; return { m, done, all: L.length, over }; });
+  const overdue = D.events.filter(e => !e.done && e.date < today()).slice(-8);
+  $('#acct').innerHTML = `<div class="score">${score.map(s => `<div class="tile"><div class="big">${s.done}/${s.all}</div><small>${esc(s.m.emoji)} ${esc(s.m.display_name)}: done this week${s.over ? `<br><span class="bad">${s.over} overdue</span>` : ''}</small></div>`).join('')}</div>
+   ${overdue.length ? `<h3 style="font-family:'Cormorant Garamond',serif;color:var(--red);margin:12px 0 6px">Overdue, no judgment</h3>${overdue.map(e => `<div class="item late">${dateBox(e.date)}<div class="t"><b>${KIND_ICON[e.kind] || ''} ${esc(e.course ? e.course + ': ' : '')}${esc(e.title)}</b><small>${esc(e.owner ? P.memberOf(e.owner).display_name : 'Both')}</small></div><button class="ck" data-done="${e.id}" aria-label="Mark done">✓</button></div>`).join('')}`
+     : `<p class="muted" style="margin-bottom:0">${D.events.length ? 'Nothing overdue. Look at you two.' : 'Once you have syllabuses, import your class dates and they show up here, so you can see each other\'s deadlines and check them off.'}</p>`}`;
+  $$('#acct [data-done]').forEach(b => b.addEventListener('click', () => toggleDone(b.dataset.done)));
+}
+function renderCal() {
+  const [y, mo] = calMonth.split('-').map(Number), first = new Date(y, mo - 1, 1), start = new Date(first); start.setDate(1 - first.getDay());
+  $('#calLabel').textContent = monthLabel(calMonth);
+  const cls = e => e.done ? 'done ' : '';
+  const own = e => !e.owner ? 'both' : P.memberOf(e.owner).theme === 'dungeon' ? 'd' : 'a';
+  let h = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => `<div class="dow">${d}</div>`).join('');
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(start); d.setDate(start.getDate() + i); const k = iso(d);
+    const evs = D.events.filter(e => e.date === k), gs = gOn() ? G.events.filter(g => (g.start.date || g.start.dateTime).slice(0, 10) === k) : [], bs = billsOn(k);
+    h += `<div class="day ${d.getMonth() !== mo - 1 ? 'out' : ''} ${k === today() ? 'today' : ''}" data-day="${k}" tabindex="0" aria-label="${esc(d.toDateString())}"><span class="n">${d.getDate()}</span>
+      ${bs.map(x => `<span class="ev bill ${x.paid ? 'done' : ''}">${esc(x.b.name)}</span>`).join('')}${evs.map(e => `<span class="ev ${own(e)} ${cls(e)}">${KIND_ICON[e.kind] || ''}${esc(e.title)}</span>`).join('')}${gs.map(g => `<span class="ev g">${esc(g.summary || '•')}</span>`).join('')}</div>`;
+    if (i === 34 && d.getMonth() !== mo - 1) break;
+  }
+  $('#cal').innerHTML = h;
+  $$('#cal [data-day]').forEach(c => { c.addEventListener('click', () => openDay(c.dataset.day)); c.addEventListener('keydown', e => { if (e.key === 'Enter') openDay(c.dataset.day); }); });
+  const a = D.members.find(m => m.theme === 'apothecary'), dd = D.members.find(m => m.theme === 'dungeon');
+  $('#legend').innerHTML = `<span><i style="background:var(--gold)"></i>Bills</span>${a ? `<span><i style="background:var(--rose)"></i>${esc(a.display_name)}</span>` : ''}${dd ? `<span><i style="background:var(--cyan)"></i>${esc(dd.display_name)}</span>` : ''}<span><i style="background:#c8b8e8"></i>Both</span><span><i style="background:var(--sky)"></i>Google</span>`;
+}
+function renderSubs() {
+  const subs = D.bills.filter(b => b.active && b.kind === 'subscription'), tot = subs.reduce((s, b) => s + +b.amount, 0), hints = P.subscriptionHints();
+  $('#subs').innerHTML = `<div class="tile" style="margin-bottom:8px"><div class="big">${money(tot, 1)}</div><small>a month in subscriptions · ${money(tot * 12)} a year</small></div>
+   ${subs.map(b => `<div class="row sp" style="padding:4px 0;border-bottom:1px dashed var(--edge)"><span>${esc(P.memberOf(b.owner).emoji)} ${esc(b.name)}</span><b>${money(b.amount, 1)}</b></div>`).join('') || '<p class="muted">None listed yet.</p>'}
+   ${hints.length ? `<p class="warn" style="font-size:13px;margin-bottom:0">🔎 ${hints.length} charge${hints.length > 1 ? 's look' : ' looks'} like a subscription you haven't listed: ${hints.slice(0, 3).map(h => esc(h.key)).join(', ')}. Tap Edit to add.</p>` : ''}`;
+}
+function renderRun() {
+  const rw = P.runway();
+  $('#run').innerHTML = `<p style="margin-top:0">${rw.out ? `With what's in the pot, your joint budget of <b>${money(rw.burn)}/mo</b>${rw.inc ? `, and <b>${money(rw.inc)}/mo</b> coming in` : ' and no income counted yet'}, cash covers about <b>${rw.months} full month${rw.months === 1 ? '' : 's'}</b> after this one and runs short in <b>${esc(monthLabel(rw.out))}</b>.` : `The pot covers more than 6 months at your current budget${rw.inc ? ' and income' : ''}.`}</p>
+   ${rw.oneoffs.length ? `<p class="muted" style="font-size:13px">Counting big one-time costs: ${rw.oneoffs.map(b => `${esc(b.name)} (${money(b.amount)}, ${esc(b.due_date)})`).join(', ')}.</p>` : ''}
+   <label class="pl" style="display:block;font-weight:800;font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--dim);margin:8px 0 4px" for="incIn">Money coming in each month (both of you)</label>
+   <div class="row"><input id="incIn" type="number" step="1" value="${+D.settings.income_monthly || 0}" style="max-width:160px;font:inherit;background:var(--panel2);color:var(--ink);border:1px solid var(--edge);border-radius:10px;padding:8px 10px"><button class="btn sm" id="incSv">Update</button></div>
+   <p class="muted" style="font-size:12px">Part-time pay, aid refunds spread out, contract work. Only count money you're fairly sure of.</p>`;
+  $('#incSv').addEventListener('click', () => P.setIncome(+$('#incIn').value || 0).then(() => P.toast('Runway updated')).catch(e => P.toast(e.message)));
+}
+function renderAll() {
+  if (!D.me) return; renderHead(); renderHero(); renderSoon(); renderAcct(); renderCal(); renderSubs(); renderRun(); renderGStat();
+}
+
+/* ---------------- settings ---------------- */
+function openSettings() {
+  const last = +localStorage.getItem('pot-last-backup') || 0, rules = Object.entries(D.rules);
+  const m = P.modal(`<h2>⚙ Settings</h2>
+   <div class="prow"><button class="pbtn" id="s1">🏦 Accounts & balances</button><button class="pbtn" id="s2">🧾 My budget</button><button class="pbtn" id="s3">📅 Bills & subscriptions</button></div>
+   <h3>💾 Backups</h3><p class="pmuted" style="margin-top:0;font-size:13px">Supabase's free plan doesn't back up for you, so download one now and then (weekly is perfect). Last: ${last ? new Date(last).toLocaleDateString() : 'never'}.</p>
+   <div class="prow"><button class="pbtn main" id="s4">⬇ Full backup (.json)</button><button class="pbtn" id="s5">⬇ All transactions (.csv)</button></div>
+   <h3>📅 Google Calendar</h3><div class="prow"><button class="pbtn" id="s6">Client ID</button>${gOn() ? '<button class="pbtn" id="s7">Change joint calendar</button><button class="pbtn" id="s7b">Send all dates to Google</button>' : ''}</div>
+   ${D.members.length < 2 ? `<h3>💞 Invite your partner</h3><p class="pmuted" style="margin-top:0;font-size:13px">Lost the code? Make a new one (the old one stops working).</p><button class="pbtn" id="s8">New invite code</button><div id="s8out"></div>` : ''}
+   <h3>🧾 Sorting rules I've learned (yours)</h3>${rules.length ? rules.map(([k, v]) => `<div class="prow psp" style="padding:3px 0;border-bottom:1px dashed var(--pe)"><span style="font-size:13px">${esc(k)} → <b>${esc(P.labelOf(v))}</b></span><button class="pbtn sm" data-rr="${esc(k)}">✕</button></div>`).join('') : '<p class="pmuted" style="font-size:13px">None yet.</p>'}
+   <div class="prow psp" style="margin-top:16px"><span class="pmuted" style="font-size:12px">Signed in as ${esc(D.user.email)}</span><button class="pbtn sm" id="s9">Sign out</button></div>`);
+  $('#s1').addEventListener('click', () => P.openAccounts()); $('#s2').addEventListener('click', () => P.openBudgets()); $('#s3').addEventListener('click', () => P.openBills());
+  $('#s4').addEventListener('click', () => P.exportAll().catch(e => P.toast(e.message))); $('#s5').addEventListener('click', P.exportCSV);
+  $('#s6').addEventListener('click', openGoogleSetup); const s7 = $('#s7'); if (s7) s7.addEventListener('click', pickCalendar); const s7b = $('#s7b'); if (s7b) s7b.addEventListener('click', () => { P.close(); syncAll(); });
+  const s8 = $('#s8'); if (s8) s8.addEventListener('click', async () => { try { const c = await P.q(P.client().rpc('pot_new_code')); $('#s8out').innerHTML = `<div class="ptile" style="margin-top:8px"><div class="big" style="letter-spacing:6px">${esc(c)}</div><small>shown once</small></div>`; } catch (e) { P.toast(e.message); } });
+  $$('[data-rr]').forEach(b => b.addEventListener('click', () => { P.removeRule(b.dataset.rr); b.parentElement.remove(); }));
+  $('#s9').addEventListener('click', () => P.signOut());
+}
+
+/* ---------------- boot ---------------- */
+$('#setBtn').addEventListener('click', () => D.me ? openSettings() : P.start({ prompt: true }));
+$('#cPrev').addEventListener('click', () => { calMonth = shiftMonth(calMonth, -1); renderCal(); gLoad(); });
+$('#cNext').addEventListener('click', () => { calMonth = shiftMonth(calMonth, 1); renderCal(); gLoad(); });
+$('#cToday').addEventListener('click', () => { calMonth = monthKey(); renderCal(); gLoad(); });
+$('#addEv').addEventListener('click', () => gOn() && calId() ? openDay(today()) : openEvent(null));
+$('#addEv2').addEventListener('click', () => openEvent(null));
+$('#impEv').addEventListener('click', openImportEvents);
+$('#subEdit').addEventListener('click', () => P.openBills());
+P.on(() => { renderAll(); });
+P.start({ prompt: true, skin: 'neutral' }).then(() => { ledger = P.renderLedger($('#ledger'), { owner: 'all' }); renderAll(); if (gOn()) gLoad(true); });
+</script>
+</body>
+</html>
