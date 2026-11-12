@@ -28,6 +28,38 @@ const TABS = [
 const RESERVED = { '👑': 'is_admin', '🍯': 'is_honey' };
 const canWear = (face, m) => !RESERVED[face] || !!(m && m[RESERVED[face]]);
 const OLD_FOLKS_BONUS = 1.25;
+/* backhanded congrats for every award: {n} = winner, {v} = their number */
+const SASS = {
+  'Most Ws': ['{v} Ws. Okay, we get it, you\'re thriving. Calm down.', '{v} Ws this month. Leave some success for the rest of us, {n}.', 'Congrats on {v} Ws. Your humility, sadly, did not make the list.'],
+  'Longest Streak': ['{v} days in a row. Do you... have a life outside this app?', 'A {v}-day streak. Impressive. Concerning. Mostly impressive.', '{v} straight days. The village is honored. Please go outside.'],
+  'The Grinder': ['{v} hours logged. You grind so hard your shadow filed for overtime.', '{v} hours. Congrats, {n}. Your bed has forgotten your face.', '{v} hours. Legendary. Also, drink some water.'],
+  'Trivia Champion': ['{v} right answers. Insufferable. Nobody is inviting you to game night.', '{v} correct. Big brain, bigger ego. We\'ll allow it this month.', 'Trivia champ with {v} right. Please stop explaining things at dinner.'],
+  'Wordle Wizard': ['Averaging {v}. Congrats on being elite at the one thing that doesn\'t pay.', 'A {v} average. Five letters, zero chill.', '{v} average. Your vocabulary is thriving. Your sleep schedule is not.'],
+  'Most Roasts Given': ['{v} roasts given. The family\'s most dangerous mouth. We love you. We\'re scared.', '{v} roasts. Somebody take this person\'s phone away.', '{v} roasts. You are the reason Honey-proofing exists.'],
+  'Most Roasted': ['Roasted {v} times. A true community service. Thank you for your sacrifice.', '{v} roasts survived. Built different. Or just an easy target.', 'The family dragged you {v} times. That\'s love. Probably.'],
+  'Crowd Favorite': ['{v} reactions. The people have spoken. They mostly rolled their eyes, but still.', '{v} reactions. Fame has changed you, {n}. We miss the old you.', 'Crowd favorite with {v} reactions. Don\'t let it go to your head. Too late.'],
+  'Quote of the Month': ['You said it, we wrote it down, and now it lives on the wall forever.', 'Quote of the Month. Think before you speak? Never heard of her.', 'Immortalized. Your words will haunt every family gathering from now on.'],
+  'Meme of the Month': ['Meme of the Month. Somebody is getting a very awkward phone call about this photo.', 'The family voted. That photo is now legally family history.', 'Meme of the Month. No take-backs, no deletions, no mercy.'],
+  'Best Roast': ['Best roast of the month. Brutal. Effective. The victim is still recovering.', 'Best Roast. Your mouth should be registered as a weapon.', 'The family voted this the meanest thing said all month. Proud of you. Kind of.'],
+  'Biggest W': ['The family voted this the biggest W. Frame it. Nobody is saying it twice.', 'Biggest W of the month. We are reluctantly, quietly proud.', 'Biggest W. Enjoy it. The roasting resumes tomorrow.'],
+  'Most Dramatic': ['Most Dramatic. Please accept with a tearful 45-minute speech, as is tradition.', 'Most Dramatic. Shocking to absolutely no one.', 'The family voted. You are the main character. Exhausting, but true.'],
+  'Scholar of the Month': ['{v} study hours. Congrats, nerd. The library is charging you rent.', '{v} hours with the books. Your social life sends its regards.', '{v} study hours. Future doctor energy. Current hermit energy.'],
+  'Library Rat': ['{v} days of studying in a row. Go outside. The sun misses you.', 'A {v}-day study streak. The librarians know your name. That\'s not a compliment.', '{v} days straight. Your textbook has seen you more than your family has.'],
+  'Science Brain': ['{v} science questions right. Show-off. We get it, you know what mitochondria do.', '{v} right. Big science brain. Tiny humility.', 'Science Brain with {v} right. Please stop correcting everyone\'s pronunciation.'],
+  'Valedictorian': ['{v} study hours this year. Future doctor, current menace.', '{v} hours this year. Somebody hand this person a white coat and a nap.', 'Valedictorian. The family is proud, and slightly worried about your posture.'],
+  'Workhorse of the Month': ['{v} work hours. Congrats, {n}. Your wife misses you.', '{v} hours on the clock. Your family has filed a missing persons report.', '{v} work hours this month. We\'re proud. We also forgot what you look like.'],
+  'Never Clocks Out': ['{v} straight days of work. The clock is begging you to leave.', 'A {v}-day work streak. HR has questions. So does your couch.', '{v} days in a row. Your recliner is filing for abandonment.'],
+  'Workhorse of the Year': ['{v} hours this year. Retirement called. You let it go to voicemail.', '{v} hours. Absolute machine. Please remember to eat a vegetable.', 'Workhorse of the Year with {v} hours. Your wife says hi. She\'s been waiting.'],
+  'Quote of the Year': ['Quote of the Year. Generations will quote this. Generations will cringe.', 'The best thing anyone said all year. Somehow, it was this.', 'Quote of the Year. Get it engraved. Then hide it from your boss.'],
+  'Scholar of the Year': ['Scholar of the Year. Smartest in the family. Don\'t make it weird.', 'Scholar of the Year. The family is proud and a little intimidated.', 'Scholar of the Year. Your future patients thank you. Your friends miss you.'],
+  'MVP of the Year': ['MVP of the Year. A full year of Ws. Honestly? Annoying. Congrats.', 'MVP. You carried this family all year. Your back must hurt.', 'MVP of the Year. Please do not bring this up at every holiday. You will.'],
+  'Clown of the Year': ['Clown of the Year. The family voted, and the family was right.', 'Clown of the Year. A role you were born to play.', 'Clown of the Year. Wear the red nose with pride.'],
+  'Old Heads Showdown': ['The Old Heads win. The youngins have been sent to bed early.', 'Old Heads take it. Experience beats energy. Again.', 'Old Heads win. Respect your elders. Also, call them more.'],
+  'Youngins Showdown': ['The Youngins win. The old heads are calling it a "participation trophy."', 'Youngins take it. The old heads demand a recount.', 'Youngins win. Somebody check on the old heads. They are FURIOUS.'],
+  _: ['Congrats, {n}. The family has spoken. No take-backs.', 'You won. Try to be humble about it. (You won\'t.)', 'Winner. Enjoy your one month of glory.'],
+};
+const sass = (catName, n, v, seed) => pick(SASS[catName] || SASS._, catName + n + seed).replace(/\{n\}/g, n).replace(/\{v\}/g, v);
+
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 /* what Honey sees instead of Not-Safe-For-Honey content */
@@ -78,7 +110,7 @@ const prevMonth = pk => { let [y, m] = pk.split('-').map(Number); m--; if (m < 1
 const range = pk => pk.length === 7 ? [`${pk}-01`, `${nextMonth(pk)}-01`] : [`${pk}-01-01`, `${+pk + 1}-01-01`];
 const imgUrl = path => `${CFG.url}/storage/v1/object/public/reactions/${path}`;
 const hrs = m => Math.round((m || 0) / 6) / 10;
-const isHoney = () => !!(S.me && S.me.is_honey);
+const isHoney = () => !!(S.me && (S.me.is_honey || S.honeyVision));
 const hideIt = item => isHoney() && item && item.nsfh;
 const nameOf = id => (S.byId[id] && S.byId[id].display_name) || 'Someone';
 const avOf = id => (S.byId[id] && S.byId[id].avatar) || '👤';
@@ -277,8 +309,10 @@ function renderShell() {
     <div class="panel top">
       <span style="font-size:26px">🏡</span>
       <h1 class="px">${esc(CFG.name)}</h1>
+      <button class="me-btn help" data-a="guide" title="Village Guide">❓</button>
       <button class="me-btn" data-a="profile" title="You">${esc(S.me.avatar)}</button>
     </div>
+    <div id="hv"></div>
     <div id="main"></div>
   </div>
   <nav class="tabs">${TABS.map(([k, ic, lb]) => `<button data-a="tab" data-t="${k}" id="tab-${k}"><span>${ic}</span>${lb}</button>`).join('')}</nav>
@@ -290,6 +324,7 @@ async function go(tab, silent) {
   S.tab = tab;
   if (location.hash !== '#' + tab) history.replaceState(null, '', '#' + tab);
   document.querySelectorAll('nav.tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === tab));
+  const hv = $('#hv'); if (hv) hv.innerHTML = S.honeyVision ? `<div class="banner hv-banner" style="margin-top:10px">👀 <b>Honey Vision is ON.</b> This is exactly what Honey sees. <button class="chip" data-a="honeyVision">turn off</button></div>` : '';
   if (!silent) $('#main').innerHTML = `<div class="loading">…</div>`;
   try {
     if (!silent) { await loadCore(); sb.rpc('log_visit', { p_tab: tab }).then(() => {}, () => {}); }
@@ -385,8 +420,9 @@ const Home = {
       q(sb.rpc('period_stats', { p_from: range(monthKey())[0], p_to: range(monthKey())[1] })),
     ]);
     S.data.home = { roasts, newWins, kitchen, love, trivia, stats };
-    if (!S.trophies) computeTrophies().then(() => { if (S.tab === 'home' && !busyTyping()) $('#main').innerHTML = Home.render(); }).catch(console.error);
+    if (!S.trophies) computeTrophies().then(() => { if (S.tab === 'home' && !busyTyping()) { $('#main').innerHTML = Home.render(); Home.after(); } }).catch(console.error);
   },
+  after() { resultsNight(); maybeTour(); },
   render() {
     const d = S.data.home, mk = monthKey();
     const pool = S.members.filter(m => !m.is_honey).sort((a, b) => a.id.localeCompare(b.id));
@@ -416,6 +452,20 @@ const Home = {
     </div>`;
   },
 };
+
+function resultsNight() {
+  if (!S.trophies || $('#modal')) return;
+  const pm = prevMonth(monthKey()), key = 'village-rn-' + pm + '-' + S.myId;
+  const mine = (S.trophies[S.myId] || []).filter(t => t.period === pm);
+  if (!mine.length || localStorage.getItem(key)) return;
+  localStorage.setItem(key, '1');
+  confetti(40, ['🏆', '🎉', '✨', '👑']);
+  modal(`<div class="center"><div style="font-size:60px">🏆</div><h2 class="px">Results Night: ${esc(monthName(pm))}</h2>
+    <p class="muted">You won ${mine.length === 1 ? 'something' : mine.length + ' things'}. The family is proud. They will never say it out loud.</p></div>
+    ${mine.map(t => `<div class="panel award" style="margin-top:10px"><div class="ah"><span class="em">${esc(t.emoji)}</span>${esc(t.name)}</div>
+      <div class="sass">🏘️ ${esc(sass(t.name, S.me.display_name, t.value, pm))}</div></div>`).join('')}
+    <button class="btn big" style="margin-top:14px" data-a="tab" data-t="awards">See everyone's results →</button>`);
+}
 
 function house(m) {
   const st = S.streaks[m.id] || {};
@@ -821,7 +871,8 @@ async function computeTrophies() {
   for (const pk of [...pastYears(), ...pastMonths()]) {
     const res = await periodResults(pk);
     res.forEach(({ cat, winners }) => winners.forEach(w => {
-      if (w.owner) (t[w.owner] = t[w.owner] || []).push({ emoji: cat.emoji, name: cat.name, period: pk });
+      if (w.owner) (t[w.owner] = t[w.owner] || []).push({ emoji: cat.emoji, name: cat.name, period: pk,
+        value: cat.kind === 'auto' ? METRIC[cat.metric].fmt(w.value) : w.value });
       if (cat.nominee_type === 'quote') hof.push({ emoji: cat.emoji, period: pk, label: w.label, id: w.id });
     }));
   }
@@ -903,7 +954,8 @@ const Awards = {
       <h2 class="title px">📜 Past results</h2>
       ${pastOptions.length ? `<select id="res-pick" data-change="resultsPick">${pastOptions.map(([v, l]) => `<option value="${v}" ${v === S.resultsView ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>
         ${past.map(({ cat, winners }) => `<div class="panel award"><div class="ah"><span class="em">${esc(cat.emoji)}</span>${esc(cat.name)}</div>
-          ${winners.length ? winners.map(w => `<div class="rank">🏆 <b>${esc(w.label)}</b>${cat.kind === 'auto' ? ` <span class="muted">· ${METRIC[cat.metric].fmt(w.value)} ${METRIC[cat.metric].label}</span>` : cat.kind === 'vote' ? ` <span class="muted">· ${w.value} vote${w.value > 1 ? 's' : ''}</span>` : ''}</div>`).join('') : '<div class="muted tiny">No winner. Shameful.</div>'}</div>`).join('')}`
+          ${winners.length ? winners.map(w => `<div class="rank">🏆 <b>${esc(w.label)}</b>${cat.kind === 'auto' ? ` <span class="muted">· ${METRIC[cat.metric].fmt(w.value)} ${METRIC[cat.metric].label}</span>` : cat.kind === 'vote' ? ` <span class="muted">· ${w.value} vote${w.value > 1 ? 's' : ''}</span>` : ''}</div>`).join('') : '<div class="muted tiny">No winner. Shameful.</div>'}
+          ${winners.length ? `<div class="sass">🏘️ ${esc(sass(cat.name, cat.kind === 'team' ? (cat.name.startsWith('Old') ? 'the Old Heads' : 'the Youngins') : (winners[0].owner ? nameOf(winners[0].owner) : winners[0].label), cat.kind === 'auto' ? METRIC[cat.metric].fmt(winners[0].value) : winners[0].value, S.resultsView))}</div>` : ''}</div>`).join('')}`
         : '<div class="panel pad muted">The first results unlock when this month ends. The tension is unbearable.</div>'}
       <h2 class="title px">💡 Proposed categories <small>3 seconds = official</small></h2>
       ${proposals.map(c => {
@@ -1136,11 +1188,96 @@ async function openStats(days) {
     <p class="tiny muted" style="margin-top:14px">Only admins can see this. It counts visits, never what anyone types.</p>`);
 }
 
+
+/* =====================================================================
+   FIRST-TIME TOUR & VILLAGE GUIDE
+   ===================================================================== */
+function tourCards() {
+  const realHoney = S.me && S.me.is_honey;
+  const cards = [
+    ['🏡', `Welcome home, ${esc(S.me.display_name)}!`, `This is where the family brags, roasts, and secretly cheers each other on. Quick tour? It takes 30 seconds.`],
+    ['🏘️', 'The Street', `Everyone gets a house. 🏮 lanterns glow when someone's been around today, 🔥 is their streak, 🏆 is their trophy count. Badges: 🎓 Scholar, 🧓 Old Head, 👑 Admin. Tap any house to snoop. Check the <b>Hot Seat</b> daily: that person is fair game.`],
+    ['💪', 'Ws', `Post a W (brag) or a check-in. Log your hours as 📚 Study or 💼 Work. Then the family gets to react: 🙄 🤡 👑 "who asked", roasts in the comments, and photo reactions from the 🖼️ Meme Vault. The village adds its own commentary, free of charge.`],
+    ['🎲', 'Daily', `One trivia question a day (🔊 reads it out loud). You can't see anyone's answers until you answer. Add your own family-lore questions. Paste your Wordle, Connections, Strands, or Mini share text to get on the board.`],
+    ['💬', 'Quotes & the Kitchen', `The <b>Quotes Wall</b> keeps the unhinged things this family says, forever. Vote Quote of the Month. The <b>🍽️ Kitchen Table</b> is the group chat. Tap ⋯ on any roast to send it to the wall.`],
+    ['🏆', 'Awards', `Monthly standings, secret ballots, the ⚔️ Old Heads vs Youngins showdown, the 📚 Scholar League and 💼 Workhorse League. Results drop on the 1st (winners get roasted, lovingly). Yearly awards in December. Propose your own award: 3 seconds makes it official.`],
+  ];
+  if (!realHoney) cards.push(['🍯', 'The Honey Rule (shh)', `Honey's account has a filter. Anything marked <b>🍯 Not Safe For Honey</b> shows her something sweet instead, like "So proud of you! 🥰". Tap 🍯 before posting anything spicy. Forgot? Tap ⋯ → "Honey-proof this". <b>Never tell Honey.</b> Want to see her version? Open ❓ and turn on 👀 Honey Vision.`]);
+  cards.push(['🫶', 'One last secret', `See the tiny 🫶 in the bottom corner? It sends someone an anonymous "lowkey proud of you." Nobody will ever know it was you. Tap ❓ anytime for the full Village Guide. Welcome home.`]);
+  return cards;
+}
+
+function showTour(i) {
+  const cards = tourCards(); const [ic, title, body] = cards[i]; const last = i === cards.length - 1;
+  modal(`<div class="center" style="padding:6px 4px">
+    <div style="font-size:64px">${ic}</div>
+    <h2 class="px" style="margin:6px 0">${title}</h2>
+    <p style="font-size:17px;line-height:1.45">${body}</p>
+    <div class="dots">${cards.map((_, j) => `<span class="${j === i ? 'on' : ''}"></span>`).join('')}</div>
+    <div class="row" style="margin-top:10px">
+      ${i ? `<button class="btn plain grow" data-a="tourGo" data-i="${i - 1}">← Back</button>` : `<button class="btn plain grow" data-a="tourDone">Skip</button>`}
+      <button class="btn grow" data-a="${last ? 'tourDone' : 'tourGo'}" data-i="${i + 1}">${last ? "Let's go 🏡" : 'Next →'}</button>
+    </div></div>`);
+}
+
+function maybeTour() {
+  if ($('#modal') || !S.me) return;
+  const key = 'village-toured-' + S.myId;
+  if (localStorage.getItem(key)) return;
+  localStorage.setItem(key, '1');
+  showTour(0);
+}
+
+function openGuide() {
+  const realHoney = S.me.is_honey;
+  const group = (title, list) => list.length ? `<div class="gsec"><b>${title}</b><div>${list.map(c => `${esc(c.emoji)} ${esc(c.name)}`).join(' · ')}</div></div>` : '';
+  const approved = S.categories.filter(c => c.approved);
+  modal(`<h2 class="px">❓ The Village Guide</h2>
+    <p class="muted">Everything in the village, in one place.</p>
+    <button class="btn plain" style="width:100%;margin:6px 0" data-a="tourGo" data-i="0">▶ Replay the welcome tour</button>
+    ${realHoney ? '' : `<div class="panel pad" style="background:#fff3d6">
+      <h3 class="px">🍯 The Honey Rule</h3>
+      <p>Honey's account has a filter. Anything tagged <b>🍯 Not Safe For Honey</b> shows her a sweet decoy instead. Replies under a tagged W are hidden from her too, and tagged memes turn into 🌸.</p>
+      <p><b>How:</b> tap the 🍯 button before you post. Forgot? Tap ⋯ → "Honey-proof this." Anyone can do it to anything.</p>
+      <p><b>Rule #1:</b> nobody tells Honey.</p>
+      <button class="btn ${S.honeyVision ? 'pink' : ''}" style="width:100%" data-a="honeyVision">${S.honeyVision ? '👀 Turn Honey Vision OFF' : '👀 Turn on Honey Vision (see what she sees)'}</button>
+    </div>`}
+    <h3 class="px stat-h">🗺️ The tabs</h3>
+    <div class="gsec"><b>🏡 Village</b><div>The Street of houses, today's Hot Seat, what happened since you left, this month's leaderboard, and the 🖼️ Meme Vault.</div></div>
+    <div class="gsec"><b>💪 Ws</b><div>Post a W or a check-in, with 📚 study or 💼 work hours. Everyone can react, roast, and reply with photos. ⋯ on a roast → send it to the Quotes Wall.</div></div>
+    <div class="gsec"><b>🎲 Daily</b><div>Daily trivia (answers stay hidden until you answer), add your own family-lore questions, and paste word-game scores for the daily leaderboard.</div></div>
+    <div class="gsec"><b>💬 Quotes</b><div>The Quotes Wall, Quote of the Month voting, and the 👑 Hall of Fame.</div></div>
+    <div class="gsec"><b>🍽️ Kitchen</b><div>The family group chat. Tap a message for options.</div></div>
+    <div class="gsec"><b>🏆 Awards</b><div>Live standings, secret ballots, past results, and proposed awards (3 seconds = official).</div></div>
+    <h3 class="px stat-h">🏆 Every award</h3>
+    ${group('⚔️ Monthly showdown', [{ emoji: '🧓', name: 'Old Heads vs 🐣 Youngins: average hours per person, Old Heads get a 25% bonus' }])}
+    ${group('📊 Monthly, everyone', approved.filter(c => c.period === 'month' && c.kind === 'auto' && !c.league))}
+    ${group('🗳️ Monthly votes (secret)', approved.filter(c => c.period === 'month' && c.kind === 'vote'))}
+    ${group('📚 Scholar League (scholars only)', approved.filter(c => c.league === 'scholar'))}
+    ${group('💼 Workhorse League (log 💼 hours)', approved.filter(c => c.league === 'work'))}
+    ${group('👑 Yearly (December)', approved.filter(c => c.period === 'year' && !c.league))}
+    <h3 class="px stat-h">🏷️ Badges</h3>
+    <div class="gsec"><div>👑 Admin · 🎓 Scholar · 🧓 Old Head · 🏮 active today · 🔥 streak · 🏆 trophies. Only the admin hands out badges.</div></div>
+    <h3 class="px stat-h">🆘 Help</h3>
+    <div class="gsec"><b>New phone?</b><div>Tap "I've been here before" and use your name + PIN. No PIN? Ask the admin for a fresh invite link.</div></div>
+    <div class="gsec"><b>Forgot your PIN?</b><div>The admin can reset it.</div></div>
+    <div class="gsec"><b>Make it an app</b><div>iPhone: Share → "Add to Home Screen." Android: ⋮ → "Add to Home screen."</div></div>
+    <div class="gsec"><b>The 🫶 button</b><div>Bottom corner. Sends an anonymous "lowkey proud of you." Totally secret.</div></div>`);
+}
+
 /* =====================================================================
    ACTIONS
    ===================================================================== */
 const A = {
   closeModal,
+  guide: () => openGuide(),
+  tourGo: b => showTour(+b.dataset.i),
+  tourDone: () => { closeModal(); if (S.tab === 'home') resultsNight(); },
+  honeyVision() {
+    S.honeyVision = !S.honeyVision; closeModal();
+    toast(S.honeyVision ? '👀 Honey Vision ON. Welcome to the wholesome timeline.' : '👀 Honey Vision OFF. Back to reality.');
+    go(S.tab, true);
+  },
   stats: b => openStats(+b.dataset.days),
   tip(b) {
     const chart = b.parentElement; chart.querySelectorAll('.bar').forEach(x => x.classList.toggle('sel', x === b));
