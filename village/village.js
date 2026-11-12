@@ -419,7 +419,8 @@ const Home = {
       q(sb.rpc('todays_trivia'), true).catch(() => null),
       q(sb.rpc('period_stats', { p_from: range(monthKey())[0], p_to: range(monthKey())[1] })),
     ]);
-    S.data.home = { roasts, newWins, kitchen, love, trivia, stats };
+    const vault = S.me.is_admin ? await q(sb.rpc('trivia_vault_status'), true).catch(() => null) : null;
+    S.data.home = { roasts, newWins, kitchen, love, trivia, stats, vault };
     if (!S.trophies) computeTrophies().then(() => { if (S.tab === 'home' && !busyTyping()) { $('#main').innerHTML = Home.render(); Home.after(); } }).catch(console.error);
   },
   after() { resultsNight(); maybeTour(); },
@@ -435,6 +436,7 @@ const Home = {
     const dayOfMonth = +today().slice(8, 10);
     const top = [...(d.stats || [])].sort((a, b) => b.wins - a.wins).filter(s => s.wins > 0).slice(0, 3);
     return `<div class="stack">
+      ${adminNudges(d)}
       ${d.love && d.love.length ? `<div class="banner love" data-a="seenLove">🫶 Someone in the family is lowkey proud of you${d.love.length > 1 ? ` (×${d.love.length})` : ''}. We'll never tell who. <span class="tiny muted">tap to tuck it away</span></div>` : ''}
       ${dayOfMonth <= 7 && pastMonths().includes(prevMonth(mk)) ? `<div class="banner" data-a="tab" data-t="awards">🎉 ${MONTHS[+prevMonth(mk).slice(5) - 1]} results are in! See who won →</div>` : ''}
       ${lines.length ? `<div class="panel pad">${lines.map(l => `<div>${l}</div>`).join('')}</div>` : ''}
@@ -465,6 +467,24 @@ function resultsNight() {
     ${mine.map(t => `<div class="panel award" style="margin-top:10px"><div class="ah"><span class="em">${esc(t.emoji)}</span>${esc(t.name)}</div>
       <div class="sass">🏘️ ${esc(sass(t.name, S.me.display_name, t.value, pm))}</div></div>`).join('')}
     <button class="btn big" style="margin-top:14px" data-a="tab" data-t="awards">See everyone's results →</button>`);
+}
+
+// 👑 admin-only reminders: low trivia vault, new residents who may need a status
+function adminNudges(d) {
+  if (!S.me.is_admin) return '';
+  const out = [];
+  const v = d.vault;
+  if (v && v.unplayed < 10) {
+    out.push(`<div class="banner">👑 <b>Trivia vault: ${v.unplayed === 0 ? 'empty' : `only ${v.unplayed} left`}.</b> ${v.unplayed === 0 ? 'Old questions are recycling as ♻️ Throwbacks.' : 'When it runs out, old questions start recycling as ♻️ Throwbacks.'} Nudge the family to add family lore, or ask Claude for a fresh batch.</div>`);
+  }
+  const weekAgo = Date.now() - 7 * 86400000;
+  const fresh = S.members.filter(m => m.id !== S.myId && new Date(m.created_at).getTime() > weekAgo
+    && !m.is_honey && !m.is_scholar && !m.is_elder && !localStorage.getItem('village-reviewed-' + m.id));
+  if (fresh.length) {
+    out.push(`<div class="banner">👑 <b>New in the village:</b> ${fresh.map(m => esc(m.avatar + ' ' + m.display_name)).join(', ')}. Do they need a 🍯 / 🎓 / 🧓 status?
+      <div class="row" style="margin-top:6px"><button class="chip" data-a="profile">Open admin panel</button><button class="chip" data-a="reviewed" data-ids="${fresh.map(m => m.id).join(',')}">They're fine as-is</button></div></div>`);
+  }
+  return out.join('');
 }
 
 function house(m) {
@@ -635,7 +655,7 @@ const Daily = {
         return `<button class="choice ${cls}" ${answered || mine ? 'disabled' : `data-a="answer" data-q="${t.id}" data-i="${i}"`}>${'ABCD'[i]}. ${esc(c)}</button>`;
       }).join('');
       tri = `<div class="panel pad">
-        <div class="row"><span class="chip">${t.category === 'family' ? '🏠 family lore' : t.category === 'science' ? '🧪 science' : '🌎 general'}</span>
+        <div class="row"><span class="chip">${t.category === 'family' ? '🏠 family lore' : t.category === 'science' ? '🧪 science' : '🌎 general'}</span>${t.throwback ? '<span class="chip">♻️ Throwback</span>' : ''}
           ${t.submitted_by ? `<span class="tiny muted">from ${esc(nameOf(t.submitted_by))}</span>` : ''}<span class="grow"></span>
           <button class="iconbtn" data-a="readAloud" title="Read it to me">🔊</button></div>
         <p class="big-q" style="margin:10px 0 4px">${esc(t.question)}</p>
@@ -1290,6 +1310,7 @@ const A = {
   login: doLogin,
   member: b => showMember(b.dataset.id),
   profile: () => openProfile(),
+  reviewed(b) { b.dataset.ids.split(',').forEach(id => localStorage.setItem('village-reviewed-' + id, '1')); go('home', true); },
   profAv: b => { S.form.avatar = b.dataset.v; document.querySelectorAll('.avgrid button').forEach(x => x.classList.toggle('on', x === b)); },
   profColor: b => { S.form.color = b.dataset.v; b.parentElement.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); },
   async saveProfile() {
@@ -1330,6 +1351,7 @@ const A = {
     args['p_is_' + f] = val;
     const box = $('#modal .modal'), scroll = box ? box.scrollTop : 0;
     await q(sb.rpc('admin_set_member', args));
+    localStorage.setItem('village-reviewed-' + x.id, '1');
     await loadCore(); openProfile();
     const nb = $('#modal .modal'); if (nb) nb.scrollTop = scroll;
     const label = { honey: '🍯 Honey filter', scholar: '🎓 Scholar', admin: '👑 Admin', elder: '🧓 Old Head' }[f];
