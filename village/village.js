@@ -25,6 +25,9 @@ const TABS = [
   ['home', '🏡', 'Village'], ['ws', '💪', 'Ws'], ['daily', '🎲', 'Daily'],
   ['quotes', '💬', 'Quotes'], ['kitchen', '🍽️', 'Kitchen'], ['awards', '🏆', 'Awards'],
 ];
+const RESERVED = { '👑': 'is_admin', '🍯': 'is_honey' };
+const canWear = (face, m) => !RESERVED[face] || !!(m && m[RESERVED[face]]);
+const OLD_FOLKS_BONUS = 1.25;
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 /* what Honey sees instead of Not-Safe-For-Honey content */
@@ -46,6 +49,7 @@ const VILLAGER = {
             'Showing up is half the battle. The other half is still waiting.', 'A check-in. Riveting.'],
   short: ['{m} minutes? Cute.', '{m} whole minutes. Somebody call the newspaper.', 'A {m}-minute grind. Legends speak of it.'],
   long: ['{h} hours?? Okay nerd 🤓', 'Touch grass after this, {n}.', '{h} hours. Who are you trying to impress?'],
+  work: ['{h} hours on the clock. The old heads are watching.', 'Clocked in. Clocked out. Clocked everyone.', '{h} hours of work. Somebody tell the youngins.'],
   win: ['Okay and? 🙄', "We'll see if it lasts.", 'Screenshot taken. For evidence.', 'Noted. Grudgingly.',
         'Bold of you to post this.', 'The bar has been raised. Slightly.'],
 };
@@ -73,6 +77,7 @@ const nextMonth = pk => { let [y, m] = pk.split('-').map(Number); m++; if (m > 1
 const prevMonth = pk => { let [y, m] = pk.split('-').map(Number); m--; if (m < 1) { m = 12; y--; } return `${y}-${String(m).padStart(2, '0')}`; };
 const range = pk => pk.length === 7 ? [`${pk}-01`, `${nextMonth(pk)}-01`] : [`${pk}-01-01`, `${+pk + 1}-01-01`];
 const imgUrl = path => `${CFG.url}/storage/v1/object/public/reactions/${path}`;
+const hrs = m => Math.round((m || 0) / 6) / 10;
 const isHoney = () => !!(S.me && S.me.is_honey);
 const hideIt = item => isHoney() && item && item.nsfh;
 const nameOf = id => (S.byId[id] && S.byId[id].display_name) || 'Someone';
@@ -141,6 +146,16 @@ async function boot() {
       session = data.session;
     }
     S.uid = session.user.id;
+    const inv = location.hash.match(/^#invite=([0-9a-f]+)/);
+    if (inv) {
+      const { data: res } = await sb.rpc('redeem_invite', { p_token: inv[1] });
+      history.replaceState(null, '', location.pathname);
+      if (res !== 'ok') {
+        S.form = { avatar: '🙂' };
+        return renderWelcome('pick', { used: 'That invite link was already used. Ask for a fresh one!', expired: 'That invite link expired. Ask for a fresh one!' }[res] || "That invite link didn't work. Ask for a fresh one!");
+      }
+      S.justInvited = true;
+    }
     const { data: dev, error } = await sb.from('member_devices').select('member_id').maybeSingle();
     if (error) throw error;
     if (!dev) return renderWelcome('pick');
@@ -152,8 +167,15 @@ async function boot() {
   }
 }
 
+function avatarGrid(action, current, member) {
+  return `<div class="avgrid">${AVATARS.map(a => {
+    const ok = canWear(a, member);
+    return `<button data-a="${action}" data-v="${a}" class="${current === a ? 'on' : ''}" ${ok ? '' : 'disabled title="Reserved"'}>${a}</button>`;
+  }).join('')}</div>`;
+}
+
 function renderWelcome(mode, err = '') {
-  const f = S.form || (S.form = { avatar: '🙂', honey: null });
+  const f = S.form || (S.form = { avatar: '🙂' });
   let body = '';
   if (mode === 'pick') {
     body = `<div class="center stack">
@@ -162,18 +184,14 @@ function renderWelcome(mode, err = '') {
       <p class="muted">Where this family brags, roasts, and secretly cheers each other on.</p>
       <button class="btn big" data-a="welcome" data-m="join">🔑 I'm new here</button>
       <button class="btn big plain" data-a="welcome" data-m="login">👋 I've been here before</button>
+      ${err ? `<p class="err">${esc(err)}</p>` : ''}
     </div>`;
   } else if (mode === 'join') {
     body = `<h2 class="px">🔑 Move into the village</h2>
       <label class="lbl">Family code</label><input id="f-code" autocomplete="off" placeholder="the secret phrase">
       <label class="lbl">Your name (what the family calls you)</label><input id="f-name" maxlength="30" autocomplete="off">
-      <label class="lbl">Are you Honey?</label>
-      <div class="honeychoice">
-        <button data-a="honeyPick" data-v="1" class="${f.honey === true ? 'on' : ''}">🍯 Yup, I'm Honey</button>
-        <button data-a="honeyPick" data-v="0" class="${f.honey === false ? 'on' : ''}">😈 No, I'm a menace</button>
-      </div>
       <label class="lbl">Pick your face</label>
-      <div class="avgrid">${AVATARS.map(a => `<button data-a="avPick" data-v="${a}" class="${f.avatar === a ? 'on' : ''}">${a}</button>`).join('')}</div>
+      ${avatarGrid('avPick', f.avatar, null)}
       <label class="lbl">Make a 4-digit PIN</label><input id="f-pin" class="pinbox" inputmode="numeric" maxlength="4" type="password" autocomplete="off">
       <label class="lbl">Type it again</label><input id="f-pin2" class="pinbox" inputmode="numeric" maxlength="4" type="password" autocomplete="off">
       <p class="err" id="f-err">${esc(err)}</p>
@@ -201,10 +219,9 @@ async function doJoin() {
   const pin = $('#f-pin').value.trim(), pin2 = $('#f-pin2').value.trim();
   const err = m => { $('#f-err').textContent = m; };
   if (!code || !name) return err('Fill in the family code and your name.');
-  if (S.form.honey === null) return err('Tell us: are you Honey?');
   if (!/^\d{4}$/.test(pin)) return err('Your PIN needs exactly 4 numbers.');
   if (pin !== pin2) return err("The PINs don't match.");
-  const { data, error } = await sb.rpc('join_village', { p_code: code, p_name: name, p_pin: pin, p_avatar: S.form.avatar, p_is_honey: S.form.honey });
+  const { data, error } = await sb.rpc('join_village', { p_code: code, p_name: name, p_pin: pin, p_avatar: S.form.avatar });
   if (error) return err(error.message);
   confetti();
   await enter(data);
@@ -234,6 +251,7 @@ async function enter(memberId) {
   renderShell();
   go(location.hash.replace('#', '') || 'home');
   startTimers();
+  if (S.justInvited) { S.justInvited = false; confetti(); toast(`Welcome home, ${S.me.display_name} ${S.me.avatar}`, 4000); }
 }
 
 async function loadCore() {
@@ -274,6 +292,7 @@ async function go(tab, silent) {
   document.querySelectorAll('nav.tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === tab));
   if (!silent) $('#main').innerHTML = `<div class="loading">…</div>`;
   try {
+    if (!silent) { await loadCore(); sb.rpc('log_visit', { p_tab: tab }).then(() => {}, () => {}); }
     await VIEWS[tab].load();
     if (S.tab === tab) $('#main').innerHTML = VIEWS[tab].render();
     if (VIEWS[tab].after) VIEWS[tab].after();
@@ -344,7 +363,7 @@ function villagerLine(w) {
   let t;
   if (w.kind === 'checkin') t = pick(VILLAGER.checkin, seed);
   else if (w.minutes && w.minutes < 30) t = pick(VILLAGER.short, seed);
-  else if (w.minutes && w.minutes >= 180) t = pick(VILLAGER.long, seed);
+  else if (w.minutes && w.minutes >= 180) t = pick(w.hours_type === 'work' ? VILLAGER.work : VILLAGER.long, seed);
   else t = pick(VILLAGER.win, seed);
   return t.replace('{m}', w.minutes).replace('{h}', Math.round((w.minutes || 0) / 6) / 10).replace('{n}', n);
 }
@@ -379,7 +398,6 @@ const Home = {
     const triviaDone = d.trivia && d.trivia.my_choice !== null && d.trivia.my_choice !== undefined;
     const dayOfMonth = +today().slice(8, 10);
     const top = [...(d.stats || [])].sort((a, b) => b.wins - a.wins).filter(s => s.wins > 0).slice(0, 3);
-    const scholars = S.members.filter(m => m.is_scholar), others = S.members.filter(m => !m.is_scholar);
     return `<div class="stack">
       ${d.love && d.love.length ? `<div class="banner love" data-a="seenLove">🫶 Someone in the family is lowkey proud of you${d.love.length > 1 ? ` (×${d.love.length})` : ''}. We'll never tell who. <span class="tiny muted">tap to tuck it away</span></div>` : ''}
       ${dayOfMonth <= 7 && pastMonths().includes(prevMonth(mk)) ? `<div class="banner" data-a="tab" data-t="awards">🎉 ${MONTHS[+prevMonth(mk).slice(5) - 1]} results are in! See who won →</div>` : ''}
@@ -390,9 +408,8 @@ const Home = {
         <button class="btn grow" data-a="tab" data-t="daily">${triviaDone ? '✅ Trivia done' : '🧠 Today\'s trivia'}</button>
         <button class="btn pink grow" data-a="tab" data-t="ws">💪 Post a W</button>
       </div>
-      ${scholars.length ? `<h2 class="title px">🎓 The Scholars</h2><div class="street">${scholars.map(house).join('')}</div>` : ''}
-      <h2 class="title px">🏘️ ${scholars.length ? 'The Rest of the Street' : 'The Street'}</h2>
-      <div class="street">${others.map(house).join('') || '<p class="muted">Everyone here is a scholar. Overachievers.</p>'}</div>
+      <h2 class="title px">🏘️ The Street</h2>
+      <div class="street">${S.members.map(house).join('')}</div>
       <h2 class="title px">📈 ${MONTHS[+mk.slice(5) - 1]} so far <small>most Ws</small></h2>
       <div class="panel pad">${top.length ? top.map((s, i) => `<div class="rank">${['🥇', '🥈', '🥉'][i]} ${esc(avOf(s.member_id))} <b>${esc(nameOf(s.member_id))}</b> <span class="muted">· ${s.wins} W${s.wins > 1 ? 's' : ''}</span></div>`).join('') : '<span class="muted">Nobody has posted a W this month. Embarrassing for everyone.</span>'}</div>
       <div class="row"><button class="btn plain grow" data-a="memeVault">🖼️ Meme Vault (${S.memes.length})</button></div>
@@ -407,6 +424,7 @@ function house(m) {
   return `<button class="house" data-a="member" data-id="${m.id}" style="--hc:${esc(m.color)}">
     <div class="roof"></div><span class="lantern ${lit ? 'lit' : ''}">🏮</span>
     <div class="av">${esc(m.avatar)}</div><div class="nm">${esc(m.display_name)}</div>
+    <div class="tags">${m.is_scholar ? '<span title="Scholar">🎓</span>' : ''}${m.is_elder ? '<span title="Old Head">🧓</span>' : ''}</div>
     <div class="badges">${st.current_streak ? `🔥${st.current_streak}` : ''} ${tro ? `🏆${tro}` : ''}</div>
   </button>`;
 }
@@ -424,10 +442,11 @@ async function showMember(id) {
   modal(`<div class="center"><div style="font-size:64px">${esc(m.avatar)}</div>
     <h2 class="px">${esc(m.display_name)}</h2>
     ${m.journey ? `<div class="muted">${esc(m.journey)}</div>` : ''}
-    ${m.is_scholar ? '<span class="scholar-tag">🎓 SCHOLAR</span>' : ''}</div>
+    <div class="row" style="justify-content:center;margin-top:4px">${m.is_scholar ? '<span class="scholar-tag">🎓 SCHOLAR</span>' : ''}${m.is_elder ? '<span class="scholar-tag">🧓 OLD HEAD</span>' : ''}${m.is_admin ? '<span class="scholar-tag">👑 ADMIN</span>' : ''}</div></div>
     <div class="panel pad" style="margin-top:12px">
       <div>🔥 Streak: <b>${st.current_streak || 0}</b> days <span class="muted">(best ${st.best_streak || 0})</span></div>
-      <div>💪 This month: <b>${s.wins || 0}</b> Ws · ${s.checkins || 0} check-ins · ${Math.round((s.minutes || 0) / 6) / 10} hrs</div>
+      <div>💪 This month: <b>${s.wins || 0}</b> Ws · ${s.checkins || 0} check-ins</div>
+      <div>📚 Study: <b>${hrs(s.study_minutes)}</b> hrs · 💼 Work: <b>${hrs(s.work_minutes)}</b> hrs</div>
       <div>🗡️ Roasts given: <b>${s.roasts_given || 0}</b> · 🎯 times roasted: <b>${s.times_roasted || 0}</b></div>
       <div>🧠 Trivia right: <b>${s.trivia_correct || 0}</b>/${s.trivia_played || 0}${s.wordle_avg ? ` · 🟩 Wordle avg ${s.wordle_avg}` : ''}</div>
     </div>
@@ -441,6 +460,7 @@ async function showMember(id) {
 /* =====================================================================
    VIEW: Ws & ROASTS
    ===================================================================== */
+const htype = () => S.draft.htype || (S.me && S.me.is_scholar ? 'study' : 'work');
 const Ws = {
   async load() {
     const wins = await q(sb.from('wins').select('*').order('created_at', { ascending: false }).limit(60));
@@ -461,8 +481,12 @@ const Ws = {
           <button class="chip ${d.kind === 'checkin' ? 'on' : ''}" data-a="wkind" data-k="checkin">✅ Check-in</button>
         </div>
         <textarea id="w-body" maxlength="500" style="margin-top:8px" placeholder="${d.kind === 'win' ? 'What did you do? Brag. Go ahead.' : 'What did you work on today?'}"></textarea>
-        <div class="row" style="margin-top:8px">⏱️
-          ${[15, 30, 60, 120, 180].map(m => `<button class="chip" data-a="wmin" data-m="${m}">${m < 60 ? m + 'm' : m / 60 + 'h'}</button>`).join('')}
+        <div class="row" style="margin-top:8px">⏱️ hours were
+          <button class="chip ${htype() === 'study' ? 'on' : ''}" data-a="htype" data-h="study">📚 Study</button>
+          <button class="chip ${htype() === 'work' ? 'on' : ''}" data-a="htype" data-h="work">💼 Work</button>
+        </div>
+        <div class="row" style="margin-top:6px">
+          ${[15, 30, 60, 120, 240, 480].map(m => `<button class="chip" data-a="wmin" data-m="${m}">${m < 60 ? m + 'm' : m / 60 + 'h'}</button>`).join('')}
           <input id="w-min" type="number" min="0" max="1440" placeholder="min" style="width:80px;padding:6px">
         </div>
         <div class="row" style="margin-top:10px">${nsfhToggle('ns-win')}<span class="grow"></span><button class="btn" data-a="postWin">Post it</button></div>
@@ -479,7 +503,7 @@ function winCard(w, cmts, ems) {
   return `<div class="panel post" id="win-${w.id}">
     <div class="head"><div class="av">${esc(avOf(w.member_id))}</div>
       <div><div class="who">${esc(n)}</div><div class="when">${ago(w.created_at)}</div></div>
-      <span class="kind chip">${w.kind === 'win' ? '💪 W' : '✅ check-in'}${w.minutes ? ` · ${w.minutes >= 60 ? Math.round(w.minutes / 6) / 10 + 'h' : w.minutes + 'm'}` : ''}</span>
+      <span class="kind chip">${w.kind === 'win' ? '💪 W' : '✅ check-in'}${w.minutes ? ` · ${w.hours_type === 'work' ? '💼' : '📚'} ${w.minutes >= 60 ? hrs(w.minutes) + 'h' : w.minutes + 'm'}` : ''}</span>
       <button class="more" data-a="itemMenu" data-kind="win" data-id="${w.id}" data-owner="${w.member_id}">⋯</button>
     </div>
     <div class="body">${esc(hiddenPost ? decoy('win', w.id, n) : w.body)}</div>
@@ -669,7 +693,7 @@ async function pollKitchen() {
   if (S.tab !== 'kitchen') return;
   const { data } = await sb.from('kitchen_messages').select('*').gt('id', S.kitchenLastId).order('id');
   if (!data || !data.length) return;
-  if (data.some(k => k.reaction_image_id && !S.memeById[k.reaction_image_id])) await loadCore();
+  if (data.some(k => (k.reaction_image_id && !S.memeById[k.reaction_image_id]) || !S.byId[k.member_id])) await loadCore();
   const box = $('#kbox'); if (!box) return;
   const nearBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 80;
   if (!S.data.kitchen.length) box.innerHTML = '';
@@ -690,11 +714,30 @@ const METRIC = {
   roasts_given: { label: 'roasts', fmt: v => v },
   times_roasted: { label: 'times', fmt: v => v },
   reactions_received: { label: 'reactions', fmt: v => v },
+  study_minutes: { label: 'study hrs', fmt: v => hrs(v) },
+  work_minutes: { label: 'work hrs', fmt: v => hrs(v) },
+  study_streak: { label: 'day study streak', fmt: v => v },
+  work_streak: { label: 'day work streak', fmt: v => v },
+  science_correct: { label: 'science right', fmt: v => v },
 };
+
+// 🧓 Old Heads vs 🐣 Youngins: average logged hours per active person; old heads get the bonus
+function showdown(stats) {
+  const team = elder => {
+    const rows = (stats || []).filter(s => S.byId[s.member_id] && !!S.byId[s.member_id].is_elder === elder && (s.study_minutes + s.work_minutes) > 0);
+    const total = rows.reduce((a, s) => a + s.study_minutes + s.work_minutes, 0);
+    const avg = rows.length ? total / rows.length : 0;
+    return { n: rows.length, raw: avg, score: elder ? avg * OLD_FOLKS_BONUS : avg, members: rows.map(r => r.member_id) };
+  };
+  const old = team(true), young = team(false);
+  const winner = !old.n && !young.n ? null : old.score === young.score ? null : (old.score > young.score ? 'old' : 'young');
+  return { old, young, winner };
+}
 
 function rankAuto(cat, stats, official) {
   const M = METRIC[cat.metric]; if (!M) return [];
   let rows = (stats || []).filter(s => s[cat.metric] !== null && s[cat.metric] !== undefined && +s[cat.metric] > 0);
+  if (cat.league === 'scholar') rows = rows.filter(s => S.byId[s.member_id] && S.byId[s.member_id].is_scholar);
   if (M.min) rows = rows.filter(s => s[M.min] >= (official ? M.minN : 1));
   rows.sort((a, b) => M.low ? a[cat.metric] - b[cat.metric] : b[cat.metric] - a[cat.metric]);
   return rows.map(s => ({ member_id: s.member_id, value: +s[cat.metric] }));
@@ -749,6 +792,11 @@ async function periodResults(pk) {
       const items = await lookupItems(cat.nominee_type, top.map(r => r.nominee_id));
       out.push({ cat, winners: top.map(r => ({ owner: nomineeOwner(cat.nominee_type, r.nominee_id, items), label: nomineeLabel(cat.nominee_type, r.nominee_id, items), value: r.votes, id: r.nominee_id })) });
     }
+  }
+  if (period === 'month') {
+    const sd = showdown(stats);
+    if (sd.winner) out.push({ cat: { id: 'showdown', emoji: sd.winner === 'old' ? '🧓' : '🐣', name: sd.winner === 'old' ? 'Old Heads Showdown' : 'Youngins Showdown', kind: 'team' },
+      winners: sd[sd.winner].members.map(id => ({ owner: id, label: nameOf(id), value: 0 })) });
   }
   return (S.results[pk] = out);
 }
@@ -828,10 +876,24 @@ const Awards = {
         <button class="chip" data-a="vote" data-c="${cat.id}" data-p="${pk}">🗳️ ${v ? 'change vote' : 'vote'}</button></div>`;
     };
     const proposals = S.categories.filter(c => !c.approved);
+    const main = (period, kind) => catsFor(period).filter(c => c.kind === kind && !c.league);
+    const league = (lg, period) => catsFor(period).filter(c => c.league === lg);
+    const sd = showdown(monthStats);
+    const sdRow = (t, label, emoji) => `<div class="rank">${emoji} <b>${label}</b> <span class="muted">· ${t.n ? `${hrs(t.raw)} hrs/person${t === sd.old ? ` × ${OLD_FOLKS_BONUS} bonus = <b>${hrs(t.score)}</b>` : ''}` : 'nobody logged hours yet'}</span></div>`;
+    const showdownCard = `<div class="panel award"><div class="ah"><span class="em">⚔️</span>Old Heads vs Youngins</div>
+      ${sdRow(sd.old, 'Old Heads', '🧓')}${sdRow(sd.young, 'Youngins', '🐣')}
+      <div style="margin-top:6px;font-weight:800">${sd.winner ? (sd.winner === 'old' ? '🧓 The Old Heads are winning. Respect your elders.' : '🐣 The Youngins are winning. The old heads are FURIOUS.') : 'Dead even. Somebody log some hours.'}</div>
+      <div class="tiny muted">Average study + work hours per person who logged any. Old Heads get the ${Math.round((OLD_FOLKS_BONUS - 1) * 100)}% Old Folks Bonus. Winning team takes a trophy each.</div></div>`;
     const pastOptions = [...pastMonths().map(p => [p, monthName(p)]), ...pastYears().map(y => [y, `${y} (year)`])];
     return `<div class="stack">
-      <h2 class="title px">📊 ${MONTHS[+mk.slice(5) - 1]} standings <small>live</small></h2>
-      ${catsFor('month').filter(c => c.kind === 'auto').map(c => live(c, monthStats)).join('')}
+      <h2 class="title px">⚔️ The Showdown <small>${MONTHS[+mk.slice(5) - 1]}</small></h2>
+      ${showdownCard}
+      <h2 class="title px">📊 ${MONTHS[+mk.slice(5) - 1]} standings <small>live · everyone</small></h2>
+      ${main('month', 'auto').map(c => live(c, monthStats)).join('')}
+      <h2 class="title px">📚 Scholar League <small>scholars only</small></h2>
+      ${league('scholar', 'month').map(c => live(c, monthStats)).join('')}
+      <h2 class="title px">💼 Workhorse League <small>log 💼 work hours</small></h2>
+      ${league('work', 'month').map(c => live(c, monthStats)).join('')}
       <h2 class="title px">🗳️ ${MONTHS[+mk.slice(5) - 1]} votes <small>secret ballot · results on the 1st</small></h2>
       ${catsFor('month').filter(c => c.kind === 'vote').map(c => voteCard(c, mk)).join('')}
       <h2 class="title px">👑 ${yk} Yearly Awards</h2>
@@ -841,7 +903,7 @@ const Awards = {
       <h2 class="title px">📜 Past results</h2>
       ${pastOptions.length ? `<select id="res-pick" data-change="resultsPick">${pastOptions.map(([v, l]) => `<option value="${v}" ${v === S.resultsView ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>
         ${past.map(({ cat, winners }) => `<div class="panel award"><div class="ah"><span class="em">${esc(cat.emoji)}</span>${esc(cat.name)}</div>
-          ${winners.length ? winners.map(w => `<div class="rank">🏆 <b>${esc(w.label)}</b>${cat.kind === 'auto' ? ` <span class="muted">· ${METRIC[cat.metric].fmt(w.value)} ${METRIC[cat.metric].label}</span>` : ` <span class="muted">· ${w.value} vote${w.value > 1 ? 's' : ''}</span>`}</div>`).join('') : '<div class="muted tiny">No winner. Shameful.</div>'}</div>`).join('')}`
+          ${winners.length ? winners.map(w => `<div class="rank">🏆 <b>${esc(w.label)}</b>${cat.kind === 'auto' ? ` <span class="muted">· ${METRIC[cat.metric].fmt(w.value)} ${METRIC[cat.metric].label}</span>` : cat.kind === 'vote' ? ` <span class="muted">· ${w.value} vote${w.value > 1 ? 's' : ''}</span>` : ''}</div>`).join('') : '<div class="muted tiny">No winner. Shameful.</div>'}</div>`).join('')}`
         : '<div class="panel pad muted">The first results unlock when this month ends. The tension is unbearable.</div>'}
       <h2 class="title px">💡 Proposed categories <small>3 seconds = official</small></h2>
       ${proposals.map(c => {
@@ -898,7 +960,9 @@ function memeGrid(target) {
     ${list.length ? '' : '<p class="muted center">No memes yet. This family is sitting on a goldmine of photos. Upload one.</p>'}`;
 }
 
-function openMemeVault(target) {
+async function openMemeVault(target) {
+  const fresh = await q(sb.from('reaction_images').select('*').order('created_at', { ascending: false }), true).catch(() => null);
+  if (fresh) { S.memes = fresh; S.memeById = Object.fromEntries(fresh.map(m => [m.id, m])); }
   modal(`<h2 class="px">🖼️ ${target ? 'Pick a reaction' : 'The Meme Vault'}</h2>
     <p class="muted tiny">Family photos only. The more unflattering, the better.</p>
     <button class="btn" style="width:100%;margin:8px 0" data-a="uploadMeme" data-target="${target || ''}">📸 Upload a new one</button>
@@ -955,31 +1019,121 @@ function setPick(target, id) {
    ===================================================================== */
 function openProfile() {
   const m = S.me;
-  S.form = { avatar: m.avatar, color: m.color, scholar: m.is_scholar };
+  S.form = { avatar: m.avatar, color: m.color };
   modal(`<h2 class="px">${esc(m.avatar)} ${esc(m.display_name)}'s house</h2>
+    <div class="row" style="margin:6px 0">${m.is_admin ? '<span class="scholar-tag">👑 ADMIN</span>' : ''}${m.is_scholar ? '<span class="scholar-tag">🎓 SCHOLAR</span>' : ''}${m.is_elder ? '<span class="scholar-tag">🧓 OLD HEAD</span>' : ''}</div>
     <label class="lbl">Your face</label>
-    <div class="avgrid">${AVATARS.map(a => `<button data-a="profAv" data-v="${a}" class="${m.avatar === a ? 'on' : ''}">${a}</button>`).join('')}</div>
+    ${avatarGrid('profAv', m.avatar, m)}
+    <p class="tiny muted">👑 and 🍯 are reserved for the admin and Honey.</p>
     <label class="lbl">Roof color</label>
     <div class="row">${COLORS.map(c => `<button data-a="profColor" data-v="${c}" class="iconbtn ${m.color === c ? 'on' : ''}" style="background:${c};width:36px;height:36px"></button>`).join('')}</div>
     <label class="lbl">Your journey (shows on your house)</label><input id="p-journey" maxlength="80" value="${esc(m.journey || '')}" placeholder="e.g. Pre-med @ SUNY New Paltz">
-    <label class="row" style="margin-top:10px"><input type="checkbox" id="p-scholar" style="width:auto" ${m.is_scholar ? 'checked' : ''}> 🎓 I'm one of the scholars</label>
     <button class="btn big" style="margin-top:12px" data-a="saveProfile">Save my house</button>
-    <h3 class="px" style="margin-top:18px">🔢 Change PIN</h3>
-    <div class="row"><input id="p-old" class="grow" type="password" inputmode="numeric" maxlength="4" placeholder="old" style="width:30%">
-      <input id="p-new" class="grow" type="password" inputmode="numeric" maxlength="4" placeholder="new" style="width:30%">
-      <button class="btn plain" data-a="changePin">Change</button></div>
+    <div id="pin-box"></div>
     <h3 class="px" style="margin-top:18px">📲 Make it an app</h3>
     <p class="muted tiny">iPhone: tap Share → "Add to Home Screen". Android: tap ⋮ → "Add to Home screen".</p>
-    ${m.is_admin ? `<h3 class="px" style="margin-top:18px">👑 Admin: the residents</h3>
+    ${m.is_admin ? `<button class="btn purple big" style="margin-top:18px" data-a="stats" data-days="30">📊 Village Stats</button>
+      <h3 class="px" style="margin-top:18px">👑 Admin: the residents</h3>
+      <button class="btn pink big" style="margin-top:6px" data-a="newResident">➕ Add a resident (sends an invite link)</button>
       ${S.members.map(x => `<div class="panel pad" style="margin-top:8px">
         <b>${esc(x.avatar)} ${esc(x.display_name)}</b>
         <div class="row" style="margin-top:6px">
           <button class="chip ${x.is_honey ? 'on' : ''}" data-a="adminSet" data-id="${x.id}" data-f="honey">🍯 Honey filter</button>
-          <button class="chip ${x.is_scholar ? 'on' : ''}" data-a="adminSet" data-id="${x.id}" data-f="scholar">🎓 scholar</button>
-          <button class="chip ${x.is_admin ? 'on' : ''}" data-a="adminSet" data-id="${x.id}" data-f="admin">👑 admin</button>
-          <button class="chip" data-a="adminPin" data-id="${x.id}">🔢 reset PIN</button>
+          <button class="chip ${x.is_scholar ? 'on' : ''}" data-a="adminSet" data-id="${x.id}" data-f="scholar">🎓 Scholar</button>
+          <button class="chip ${x.is_elder ? 'on' : ''}" data-a="adminSet" data-id="${x.id}" data-f="elder">🧓 Old Head</button>
+          <button class="chip ${x.is_admin ? 'on' : ''}" data-a="adminSet" data-id="${x.id}" data-f="admin">👑 Admin</button>
+          <button class="chip" data-a="adminPin" data-id="${x.id}">🔢 Reset PIN</button>
+          <button class="chip" data-a="invite" data-id="${x.id}">📨 Invite link</button>
         </div></div>`).join('')}` : ''}
     <button class="btn plain" style="margin-top:18px;width:100%" data-a="logout">🚪 Log out on this device</button>`);
+  sb.rpc('my_pin_is_set').then(({ data }) => {
+    const box = $('#pin-box'); if (!box) return;
+    box.innerHTML = data === false
+      ? `<h3 class="px" style="margin-top:18px">🔢 Set a PIN</h3><p class="tiny muted">You came in with an invite link. Set a PIN so you can log in on another phone later.</p>
+         <div class="row"><input id="p-new" class="grow" type="password" inputmode="numeric" maxlength="4" placeholder="4 numbers" style="width:50%"><button class="btn plain" data-a="changePin">Set PIN</button></div>`
+      : `<h3 class="px" style="margin-top:18px">🔢 Change PIN</h3>
+         <div class="row"><input id="p-old" class="grow" type="password" inputmode="numeric" maxlength="4" placeholder="old" style="width:30%">
+         <input id="p-new" class="grow" type="password" inputmode="numeric" maxlength="4" placeholder="new" style="width:30%">
+         <button class="btn plain" data-a="changePin">Change</button></div>`;
+  });
+}
+
+function openNewResident() {
+  S.form = { avatar: '🙂', honey: false, scholar: false, elder: false };
+  modal(`<h2 class="px">➕ Add a resident</h2>
+    <p class="muted tiny">Build their house, then text them the invite link. They tap it and they're home: no code, no PIN.</p>
+    <label class="lbl">Their name</label><input id="r-name" maxlength="30" placeholder="Honey">
+    <label class="lbl">Status</label>
+    <div class="row">
+      <button class="chip" data-a="resFlag" data-f="honey">🍯 Honey filter</button>
+      <button class="chip" data-a="resFlag" data-f="scholar">🎓 Scholar</button>
+      <button class="chip" data-a="resFlag" data-f="elder">🧓 Old Head</button>
+    </div>
+    <label class="lbl">Their face</label><div id="r-faces">${avatarGrid('resAv', '🙂', { is_honey: false })}</div>
+    <p class="err" id="r-err"></p>
+    <button class="btn big" data-a="createResident">Build the house + get the link</button>`);
+}
+
+async function showInvite(memberId) {
+  const token = await q(sb.rpc('admin_make_invite', { p_member: memberId }));
+  const m = S.byId[memberId];
+  const link = `${location.origin}${location.pathname}#invite=${token}`;
+  S.inviteLink = link; S.inviteName = m ? m.display_name : '';
+  modal(`<h2 class="px">📨 Invite for ${esc(S.inviteName)}</h2>
+    <p class="muted">Send this to ${esc(S.inviteName)}. Tapping it opens the village already logged in as them.</p>
+    <div class="panel pad tiny" style="word-break:break-all;margin:10px 0">${esc(link)}</div>
+    <div class="row">
+      ${navigator.share ? '<button class="btn grow" data-a="shareInvite">📤 Share</button>' : ''}
+      <button class="btn plain grow" data-a="copyInvite">📋 Copy</button>
+    </div>
+    <p class="tiny muted" style="margin-top:10px">Works once and expires in 14 days. Making a new link cancels the old one. Lost phone? Just send a fresh link.</p>`);
+}
+
+/* =====================================================================
+   VILLAGE STATS (admin only)
+   ===================================================================== */
+const TAB_LABEL = Object.fromEntries(TABS.map(([k, ic, lb]) => [k, `${ic} ${lb}`]));
+const hourLabel = h => `${(h % 12) || 12}${h < 12 ? 'a' : 'p'}`;
+
+async function openStats(days) {
+  const { data, error } = await sb.rpc('admin_traffic', { p_days: days });
+  if (error) {
+    return modal(`<h2 class="px">📊 Village Stats</h2><p class="muted">${/admin_traffic|function|schema cache/i.test(error.message)
+      ? 'Almost there: run <b>village/setup/03_village_stats.sql</b> in Supabase to switch stats on.' : esc(error.message)}</p>`);
+  }
+  const d = data;
+  const maxDay = Math.max(1, ...d.daily.map(x => x.people));
+  const tabs = Object.entries(d.tabs || {}).sort((a, b) => b[1] - a[1]);
+  const maxTab = Math.max(1, ...tabs.map(t => t[1]));
+  const maxHr = Math.max(1, ...d.hours);
+  const peak = d.hours.indexOf(Math.max(...d.hours));
+  const people = [...d.members].sort((a, b) => (b.last_seen || '').localeCompare(a.last_seen || ''));
+  const short = iso => new Date(iso + 'T12:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  modal(`<h2 class="px">📊 Village Stats</h2>
+    <div class="row" style="margin:8px 0">${[7, 30, 90].map(n => `<button class="chip ${n === days ? 'on' : ''}" data-a="stats" data-days="${n}">${n} days</button>`).join('')}</div>
+    <div class="tiles">
+      <div class="tile"><div class="tv">${d.today}</div><div class="tl">here today</div></div>
+      <div class="tile"><div class="tv">${d.week}</div><div class="tl">this week</div></div>
+      <div class="tile"><div class="tv">${d.residents}</div><div class="tl">residents</div></div>
+      <div class="tile"><div class="tv">${d.visits}</div><div class="tl">visits · ${days}d</div></div>
+    </div>
+    <h3 class="px stat-h">Family members visiting per day</h3>
+    <div class="bars" data-chart="daily">${d.daily.map(x => `<button class="bar" style="height:${Math.max(2, x.people / maxDay * 100)}%" data-a="tip" data-tip="${esc(short(x.d))}: ${x.people} ${x.people === 1 ? 'person' : 'people'}, ${x.visits} visits"></button>`).join('')}</div>
+    <div class="axis"><span>${esc(short(d.from))}</span><span>today</span></div>
+    <p class="readout tiny muted" data-for="daily">Tap a bar for details.</p>
+    <h3 class="px stat-h">Who's showing up</h3>
+    <table class="lb">${people.map(p => `<tr>
+      <td>${esc(avOf(p.id))} <b>${esc(nameOf(p.id))}</b>${p.fav ? `<div class="tiny muted">mostly ${esc(TAB_LABEL[p.fav] || p.fav)}</div>` : ''}</td>
+      <td class="tiny">${p.last_seen ? ago(p.last_seen) : '<span class="muted">never</span>'}</td>
+      <td class="tiny" style="text-align:right">${p.days}/${days} days${p.streak > 1 ? ` · 🔥${p.streak}` : ''}</td></tr>`).join('')}</table>
+    <h3 class="px stat-h">Most-used spots</h3>
+    ${tabs.length ? tabs.map(([t, n]) => `<div class="hrow"><span class="hl">${esc(TAB_LABEL[t] || t)}</span>
+      <span class="htrack"><span class="hfill" style="width:${n / maxTab * 100}%"></span></span><span class="hv">${n}</span></div>`).join('') : '<p class="muted tiny">No visits yet.</p>'}
+    <h3 class="px stat-h">When the family shows up</h3>
+    <div class="bars short" data-chart="hours">${d.hours.map((n, h) => `<button class="bar" style="height:${Math.max(2, n / maxHr * 100)}%" data-a="tip" data-tip="${hourLabel(h)}–${hourLabel((h + 1) % 24)}: ${n} visits"></button>`).join('')}</div>
+    <div class="axis"><span>12a</span><span>6a</span><span>12p</span><span>6p</span><span>11p</span></div>
+    <p class="readout tiny muted" data-for="hours">${d.visits ? `Peak: around ${hourLabel(peak)} (Central). Tap a bar for details.` : 'Tap a bar for details.'}</p>
+    <p class="tiny muted" style="margin-top:14px">Only admins can see this. It counts visits, never what anyone types.</p>`);
 }
 
 /* =====================================================================
@@ -987,9 +1141,13 @@ function openProfile() {
    ===================================================================== */
 const A = {
   closeModal,
+  stats: b => openStats(+b.dataset.days),
+  tip(b) {
+    const chart = b.parentElement; chart.querySelectorAll('.bar').forEach(x => x.classList.toggle('sel', x === b));
+    const r = document.querySelector(`.readout[data-for="${chart.dataset.chart}"]`); if (r) r.textContent = b.dataset.tip;
+  },
   tab: b => { closeModal(); go(b.dataset.t); },
   welcome: b => { keepForm(); renderWelcome(b.dataset.m); restoreForm(); },
-  honeyPick: b => { keepForm(); S.form.honey = b.dataset.v === '1'; renderWelcome('join'); restoreForm(); },
   avPick: b => { S.form.avatar = b.dataset.v; document.querySelectorAll('.avgrid button').forEach(x => x.classList.toggle('on', x === b)); },
   join: doJoin,
   login: doLogin,
@@ -998,19 +1156,48 @@ const A = {
   profAv: b => { S.form.avatar = b.dataset.v; document.querySelectorAll('.avgrid button').forEach(x => x.classList.toggle('on', x === b)); },
   profColor: b => { S.form.color = b.dataset.v; b.parentElement.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b)); },
   async saveProfile() {
-    await q(sb.from('members').update({ avatar: S.form.avatar, color: S.form.color, journey: $('#p-journey').value.trim() || null, is_scholar: $('#p-scholar').checked }).eq('id', S.myId));
+    await q(sb.from('members').update({ avatar: S.form.avatar, color: S.form.color, journey: $('#p-journey').value.trim() || null }).eq('id', S.myId));
     await loadCore(); closeModal(); renderShell(); go(S.tab); toast('House updated 🏡');
   },
   async changePin() {
-    const ok = await q(sb.rpc('change_my_pin', { p_old: $('#p-old').value, p_new: $('#p-new').value }));
-    toast(ok ? 'PIN changed 🔢' : "Didn't work. Check your old PIN, and the new one needs 4 numbers.");
+    const old = $('#p-old');
+    const ok = await q(sb.rpc('change_my_pin', { p_old: old ? old.value : null, p_new: $('#p-new').value }));
+    toast(ok ? 'PIN saved 🔢' : "Didn't work. The PIN needs exactly 4 numbers (and your old one has to match).");
+    if (ok) openProfile();
   },
+  newResident: () => openNewResident(),
+  resFlag(b) {
+    const f = b.dataset.f; S.form[f] = !S.form[f]; b.classList.toggle('on', S.form[f]);
+    if (f === 'honey') { if (S.form.honey) S.form.avatar = '🍯'; else if (S.form.avatar === '🍯') S.form.avatar = '🙂';
+      $('#r-faces').innerHTML = avatarGrid('resAv', S.form.avatar, { is_honey: S.form.honey }); }
+  },
+  resAv: b => { S.form.avatar = b.dataset.v; document.querySelectorAll('#r-faces button').forEach(x => x.classList.toggle('on', x === b)); },
+  async createResident() {
+    const name = $('#r-name').value.trim();
+    if (!name) return ($('#r-err').textContent = 'Give them a name.');
+    const { data, error } = await sb.rpc('admin_create_resident', { p_name: name, p_avatar: S.form.avatar, p_is_honey: S.form.honey, p_is_scholar: S.form.scholar, p_is_elder: S.form.elder });
+    if (error) return ($('#r-err').textContent = error.message);
+    await loadCore(); confetti(16, ['🏡', '✨']); await showInvite(data);
+  },
+  invite: b => showInvite(b.dataset.id),
+  async copyInvite() {
+    try { await navigator.clipboard.writeText(S.inviteLink); toast('📋 Copied! Paste it in a text.'); }
+    catch (e) { toast('Copy blocked here. Press and hold the link to copy it.'); }
+  },
+  shareInvite() { navigator.share({ title: 'The Family Village', text: `${S.inviteName}, tap this to move into the family village 🏡`, url: S.inviteLink }).catch(() => {}); },
   async adminSet(b) {
     const x = S.byId[b.dataset.id], f = b.dataset.f;
-    const args = { p_member: x.id, p_is_honey: null, p_is_scholar: null, p_is_admin: null };
-    args['p_is_' + f] = !(f === 'honey' ? x.is_honey : f === 'scholar' ? x.is_scholar : x.is_admin);
+    if (f === 'admin' && x.id === S.myId) return toast("You can't un-crown yourself. The village needs its mayor 👑");
+    const args = { p_member: x.id, p_is_honey: null, p_is_scholar: null, p_is_admin: null, p_is_elder: null };
+    const val = !x['is_' + f];
+    args['p_is_' + f] = val;
+    const box = $('#modal .modal'), scroll = box ? box.scrollTop : 0;
     await q(sb.rpc('admin_set_member', args));
     await loadCore(); openProfile();
+    const nb = $('#modal .modal'); if (nb) nb.scrollTop = scroll;
+    const label = { honey: '🍯 Honey filter', scholar: '🎓 Scholar', admin: '👑 Admin', elder: '🧓 Old Head' }[f];
+    toast(`${label} ${val ? 'ON' : 'OFF'} for ${x.display_name}`);
+    if (x.id === S.myId) { renderShell(); go(S.tab, true); openProfile(); const nb2 = $('#modal .modal'); if (nb2) nb2.scrollTop = scroll; }
   },
   async adminPin(b) {
     const pin = prompt(`New 4-digit PIN for ${nameOf(b.dataset.id)}:`);
@@ -1027,13 +1214,15 @@ const A = {
   wkind: b => { S.draft.kind = b.dataset.k; b.parentElement.querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x === b));
     $('#w-body').placeholder = S.draft.kind === 'win' ? 'What did you do? Brag. Go ahead.' : 'What did you work on today?'; },
   wmin: b => { $('#w-min').value = b.dataset.m; },
+  htype: b => { S.draft.htype = b.dataset.h; b.parentElement.querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x === b)); },
   toggleNsfh: b => { b.classList.toggle('on'); if (b.classList.contains('on')) toast('🍯 Marked Not Safe For Honey. Grandma will see something sweet instead.'); },
   async postWin() {
     const body = $('#w-body').value.trim();
     if (!body) return toast('Type something first. Even a small W counts.');
     const min = parseInt($('#w-min').value, 10);
     const ns = $('#ns-win');
-    await q(sb.from('wins').insert({ kind: S.draft.kind, body, minutes: isNaN(min) ? null : min, nsfh: !!(ns && ns.classList.contains('on')), member_id: S.myId }));
+    const minutes = isNaN(min) ? null : min;
+    await q(sb.from('wins').insert({ kind: S.draft.kind, body, minutes, hours_type: minutes || S.draft.kind === 'checkin' ? htype() : null, nsfh: !!(ns && ns.classList.contains('on')), member_id: S.myId }));
     confetti(); $('#w-body').value = ''; $('#w-min').value = '';
     await loadCore(); go('ws', true);
   },
