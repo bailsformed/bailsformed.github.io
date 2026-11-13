@@ -655,6 +655,12 @@ function save(){S.updatedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringi
 async function push(){if(!cloud.ref)return;if(cloud.w){cloud.p=true;return;}cloud.w=true;try{await cloud.ref.set({state:JSON.stringify(S),updatedAt:S.updatedAt});}catch(e){}cloud.w=false;if(cloud.p){cloud.p=false;push();}}
 const IN_CLAUDE=!!(window.claude&&typeof window.claude.use==="function");if(IN_CLAUDE)document.body.classList.add("inclaude");
 let dlCap=null;
+// on the website: save to Luke's Family Village account (shared/cloudsave.js)
+async function initWebSave(){if(IN_CLAUDE||!window.CloudSave)return;
+  const ref=await CloudSave.connect({game:"luke",localKey:KEY,getState:()=>S,
+    setState:d=>{S=Object.assign(fresh(),d);localStorage.setItem(KEY,JSON.stringify(S));renderAll();}});
+  if(!ref)return;cloud.ref=ref;push();
+  if(!localStorage.getItem("open_field_cloud_hello")){localStorage.setItem("open_field_cloud_hello","1");toast("☁ PROGRESS NOW BACKED UP TO YOUR VILLAGE ACCOUNT","g");}}
 async function initClaude(){if(!IN_CLAUDE)return;try{window.claude.use("downloads").then(d=>{dlCap=d;if(d)document.body.classList.remove("inclaude");}).catch(()=>{});}catch(e){}
   try{const [db,user]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);if(!db||!user)return;const id=await user.id();if(!id)return;const ref=db.collection("data/users/"+id).doc("save");
     let s=await ref.get();let r=s&&typeof s.data==="function"?s.data():s;if(r&&r.data&&r.state===undefined)r=r.data;cloud.ref=ref;
@@ -919,7 +925,7 @@ $("#cpAar").addEventListener("click",()=>copyText(toTSV(AH,ar()),"debriefs"));$(
 function restoreText(t){try{const d=JSON.parse(t);if(!d||!d.m)throw 0;S=Object.assign(fresh(),d);closeModal();changed();toast("SAVE RESTORED","g");}catch(e){toast("That backup didn't work.");}}
 function openSettings(){openModal(`<button class="btn ghost sm x" onclick="closeModal()">✕</button><h2 class="sten">SYSTEM</h2>
   <label class="raj" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="snd" style="width:auto" ${S.sound?"checked":""}> SOUND EFFECTS</label>
-  <h3 class="raj">Secure your data</h3><p class="muted" style="margin-top:0">Progress saves on this device. Back up weekly so you never lose your logs. Last backup: <b>${S.lastBackup?new Date(S.lastBackup).toLocaleDateString():"never"}</b></p>
+  <h3 class="raj">Secure your data</h3><p class="muted" style="margin-top:0">Progress saves on this device, and to your Village account when you're logged in to the Family Village on this browser. Back up weekly anyway. Last backup: <b>${S.lastBackup?new Date(S.lastBackup).toLocaleDateString():"never"}</b></p>
   <button class="btn dl" id="bkD">⬇ Download backup</button> <button class="btn ghost" id="bkC">Copy backup code</button>
   <label class="f dl">Restore from file</label><input type="file" class="dl" id="bkF" accept=".json,application/json">
   <label class="f" for="bkT">Or paste backup code</label><textarea id="bkT" rows="2"></textarea><button class="btn ghost sm" id="bkR" style="margin-top:6px">Restore</button>
@@ -952,7 +958,10 @@ checkConditional();renderAll();
 const hh=(location.hash||"").slice(1);if($(`.tab[data-v="${hh}"]`))go(hh);
 if(!S.seenIntro)setTimeout(()=>intro(0),400);
 initClaude();
+window.addEventListener("load",initWebSave);   // waits for the cloud-save scripts below
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
+<script src="../shared/cloudsave.js"></script>
 <script data-goatcounter="https://bailsformed.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

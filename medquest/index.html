@@ -726,14 +726,21 @@ async function pushCloud(){
   if(!cloud.ref) return;
   if(cloud.writing){cloud.pending=true;return;}
   cloud.writing=true;
-  try{ await cloud.ref.set({state:JSON.stringify(S),updatedAt:S.updatedAt}); setSaveStat("☁ Saved to your account"); }
+  try{ await cloud.ref.set({state:JSON.stringify(S),updatedAt:S.updatedAt}); setSaveStat("☁ Saved to "+(cloud.ref.where||"your account")); }
   catch(e){ setSaveStat("Saved in this browser only"); }
   cloud.writing=false;
   if(cloud.pending){cloud.pending=false;pushCloud();}
 }
 function setSaveStat(t){const el=$("#savestat"); if(el) el.textContent=t;}
 async function initCloud(){
-  if(!(window.claude&&typeof window.claude.use==="function")){setSaveStat("Saved in this browser");return;}
+  if(!(window.claude&&typeof window.claude.use==="function")){
+    // on the website: save to the Family Village account (shared/cloudsave.js)
+    if(!window.CloudSave){setSaveStat("Saved in this browser");return;}
+    const ref=await CloudSave.connect({game:"medquest",localKey:KEY,getState:()=>S,status:setSaveStat,
+      setState:d=>{S=Object.assign(freshState(),d);localStorage.setItem(KEY,JSON.stringify(S));renderAll();}});
+    if(ref){cloud.ref=ref;await pushCloud();}
+    return;
+  }
   try{
     const [db,user]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);
     if(!db||!user){setSaveStat("Saved in this browser");return;}
@@ -1249,8 +1256,10 @@ checkAch();
 renderAll();
 const h=(location.hash||"").slice(1);const tb=$(`.tab[data-v="${h}"]`);if(tb)tb.click();
 if(!S.seenIntro) setTimeout(()=>intro(0),400);
-initCloud();
+window.addEventListener("load",initCloud);   // waits for the cloud-save scripts below
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
+<script src="../shared/cloudsave.js"></script>
 <script data-goatcounter="https://bailsformed.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>

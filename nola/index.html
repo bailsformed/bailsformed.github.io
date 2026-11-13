@@ -676,6 +676,12 @@ async function push(){if(!cloud.ref)return;if(cloud.w){cloud.p=true;return;}clou
 const IN_CLAUDE=!!(window.claude&&typeof window.claude.use==="function");
 if(IN_CLAUDE)document.body.classList.add("inclaude");
 let dlCap=null;
+// on the website: save the island to Nola's Family Village account (shared/cloudsave.js)
+async function initWebSave(){if(IN_CLAUDE||!window.CloudSave)return;
+  const ref=await CloudSave.connect({game:"nola",localKey:KEY,getState:()=>S,
+    setState:d=>{S=Object.assign(fresh(),d);localStorage.setItem(KEY,JSON.stringify(S));applyComfort();renderAll();}});
+  if(!ref)return;cloud.ref=ref;push();
+  if(!localStorage.getItem("magnolia_cloud_hello")){localStorage.setItem("magnolia_cloud_hello","1");toast("☁ Your island now saves to your Village account too 🌸");}}
 async function initClaude(){if(!IN_CLAUDE)return;
   try{window.claude.use("downloads").then(d=>{dlCap=d;if(d)document.body.classList.remove("inclaude");}).catch(()=>{});}catch(e){}
   try{const [db,user]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);if(!db||!user)return;const id=await user.id();if(!id)return;
@@ -1006,7 +1012,7 @@ function openSettings(){const sw=(arr,key)=>arr.map((c,i)=>`<button class="sw ${
      <label class="f">Skin</label><div class="row">${sw(SKIN,"skin")}</div><label class="f">Outfit</label><div class="row">${sw(OUTFIT,"outfit")}</div></div></div>
    <p class="muted" style="font-size:.85rem">As you grow you'll unlock a bow (level 3), a stethoscope (level 5), and your white coat at the very end. 🥼</p>
    <h3>💾 Keep your island safe</h3>
-   <p style="margin-top:0">Your island saves on this device. Make a backup once a week so you never lose your hours. Last backup: <b>${S.lastBackup?new Date(S.lastBackup).toLocaleDateString():"not yet"}</b></p>
+   <p style="margin-top:0">Your island saves on this device, and to your Village account when you're logged in to the Family Village on this browser. A weekly backup is still a good idea. Last backup: <b>${S.lastBackup?new Date(S.lastBackup).toLocaleDateString():"not yet"}</b></p>
    <div class="row"><button class="btn sky dl" id="bkDl">⬇ Download backup</button><button class="btn ghost" id="bkCp">📋 Copy backup code</button></div>
    <label class="f dl">Restore from a backup file</label><input class="dl" type="file" id="bkF" accept=".json,application/json">
    <label class="f" for="bkT">Or paste a backup code</label><textarea id="bkT" rows="2"></textarea><button class="btn sm ghost" id="bkR" style="margin-top:6px">Restore</button>
@@ -1052,7 +1058,10 @@ if(canSpeak)try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>
 const h=(location.hash||"").slice(1);if(["journey","garden","books","mail","stickers"].includes(h))go(h);
 if(!S.seenIntro)setTimeout(()=>intro(0),450);
 initClaude();
+window.addEventListener("load",initWebSave);   // waits for the cloud-save scripts below
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
+<script src="../shared/cloudsave.js"></script>
 <script data-goatcounter="https://bailsformed.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
