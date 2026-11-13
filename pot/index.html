@@ -86,7 +86,7 @@ body{background:radial-gradient(ellipse at 15% -10%,#3a1f3e 0,transparent 50%),r
   <div class="foot">Separate accounts. One pot. Zero surprises.</div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script src="pot.js"></script>
 <script>
 "use strict";
@@ -147,9 +147,27 @@ async function gPush(ev) {
     return true;
   } catch (e) { P.toast('Google: ' + e.message); return false; }
 }
-async function gDelete(gid) { if (!gOn() || !calId() || !gid) return; try { await gapi(`/calendars/${encodeURIComponent(calId())}/events/${encodeURIComponent(gid)}`, { method: 'DELETE' }); } catch (e) {} }
+// deletes made while Google is disconnected wait in this list and run on the next connect
+const GDEL = 'pot-gcal-deletes';
+const gdelList = () => { try { return JSON.parse(localStorage.getItem(GDEL) || '[]'); } catch (e) { return []; } };
+const gdelSave = L => { try { localStorage.setItem(GDEL, JSON.stringify(L)); } catch (e) {} };
+async function gDelete(gid) {
+  if (!gid) return;
+  if (!gOn() || !calId()) { const L = gdelList(); if (!L.includes(gid)) { L.push(gid); gdelSave(L); } return; }
+  try { await gapi(`/calendars/${encodeURIComponent(calId())}/events/${encodeURIComponent(gid)}`, { method: 'DELETE' }); } catch (e) {}
+}
+async function flushDeletes() {
+  const L = gdelList(); if (!L.length || !gOn() || !calId()) return;
+  const left = [];
+  for (const gid of L) {
+    try { await gapi(`/calendars/${encodeURIComponent(calId())}/events/${encodeURIComponent(gid)}`, { method: 'DELETE' }); }
+    catch (e) { if (!gOn()) left.push(gid); }   // already gone from Google = done; lost the connection = try next time
+  }
+  gdelSave(left);
+}
 async function syncAll() {
   if (!gOn() || !calId()) return;
+  await flushDeletes();
   const todo = D.events.filter(e => !e.gcal_id && e.date >= today()); let n = 0;
   for (const e of todo) if (await gPush(e)) n++;
   if (n) P.toast(`📅 ${n} date${n > 1 ? 's' : ''} sent to Google Calendar`);
