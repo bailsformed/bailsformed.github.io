@@ -31,6 +31,17 @@ async function tryAccount(client, game) {
   return { client, remote: data };
 }
 
+// "Bails's Village account", so it's clear WHOSE account this browser saves to
+// (whoever is logged in to the Village here, which may not be the player).
+async function villageName(client, fallback) {
+  try {
+    const { data: id } = await client.rpc('my_member_id');
+    if (!id) return fallback;
+    const { data } = await client.from('members').select('display_name').eq('id', id).single();
+    return data && data.display_name ? data.display_name + "'s Village account" : fallback;
+  } catch (e) { return fallback; }
+}
+
 const read = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
 const write = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
 
@@ -42,10 +53,10 @@ async function connect(opts) {
   let hit = null, where = '';
   const tries = [];
   if (opts.potClient) tries.push(['your Pot login', opts.potClient]);
-  tries.push(['your Village account', villageClient]);
-  for (const [label, get] of tries) {
+  tries.push(['your Village account', villageClient, true]);
+  for (const [label, get, isVillage] of tries) {
     try { hit = await tryAccount(get(), opts.game); } catch (e) { hit = null; }
-    if (hit) { where = label; break; }
+    if (hit) { where = isVillage ? await villageName(hit.client, label) : label; break; }
   }
   if (!hit) { say('Saved on this device · log in to the Village to back it up'); return null; }
 
@@ -60,15 +71,39 @@ async function connect(opts) {
     if (takeRemote) {
       write(opts.localKey + '_before_sync', localText);   // just in case
       try { opts.setState(JSON.parse(remote.state)); } catch (e) {}
+    } else if (!read(linkKey)) {
+      // first sync, keeping this device's bigger save: make it the newest,
+      // so the cloud accepts it instead of loading the smaller one over it
+      local.updatedAt = Date.now();
     }
   }
   write(linkKey, '1');
   say('☁ Saved to ' + where);
+
+  // The cloud save this device last saw. If another device saved after that
+  // (the game was open on a phone AND a laptop), load that newer progress
+  // instead of overwriting it with this device's older game.
+  let seen = remote.updated_ms || 0;
+  async function takeNewer() {
+    const { data, error } = await hit.client.rpc('game_save_get', { p_game: opts.game });
+    if (error || !data || !data.account || !data.state) return false;
+    write(opts.localKey + '_before_sync', JSON.stringify(opts.getState()));   // just in case
+    seen = data.updated_ms || 0;
+    try { opts.setState(JSON.parse(data.state)); } catch (e) { return false; }
+    say('☁ Loaded newer progress from your other device');
+    return true;
+  }
   return {
     where,
     async set(p) {
-      const { data, error } = await hit.client.rpc('game_save_put', { p_game: opts.game, p_state: p.state, p_updated: Math.round(p.updatedAt || 0) });
+      const check = await hit.client.rpc('game_save_get', { p_game: opts.game });
+      if (!check.error && check.data && check.data.account && (check.data.updated_ms || 0) > seen && await takeNewer()) return check.data;
+      const updated = Math.round(p.updatedAt || 0);
+      const { data, error } = await hit.client.rpc('game_save_put', { p_game: opts.game, p_state: p.state, p_updated: updated });
       if (error || !data || !data.account) throw error || new Error('Not signed in');
+      // the cloud refused it because it already has something newer: load that
+      if ((data.updated_ms || 0) > updated) { await takeNewer(); return data; }
+      seen = data.updated_ms || updated;
       return data;
     },
   };

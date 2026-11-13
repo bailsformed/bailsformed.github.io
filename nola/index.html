@@ -265,7 +265,7 @@ h2.title{font-size:1.5rem;margin:.2em 0 .4em;display:flex;align-items:center;gap
     <p class="muted" style="margin-top:0">Earn stickers as you grow. Faded ones are still waiting for you.</p>
     <div class="stickers" id="stickers"></div>
   </section>
-  <p class="muted" style="text-align:center;font-size:.8rem;margin:22px 0">Magnolia Isle · made with love by your cousin Bailey 💛 · saves on this device</p>
+  <p class="muted" style="text-align:center;font-size:.8rem;margin:22px 0">Magnolia Isle · made with love by your cousin Bailey 💛 · <span id="footSave">saves on this device</span></p>
 </div>
 
 <nav class="nav" aria-label="Places">
@@ -680,7 +680,7 @@ let dlCap=null;
 async function initWebSave(){if(IN_CLAUDE||!window.CloudSave)return;
   const ref=await CloudSave.connect({game:"nola",localKey:KEY,getState:()=>S,
     setState:d=>{S=Object.assign(fresh(),d);localStorage.setItem(KEY,JSON.stringify(S));applyComfort();renderAll();}});
-  if(!ref)return;cloud.ref=ref;push();
+  if(!ref)return;cloud.ref=ref;$("#footSave").textContent="saves on this device + "+ref.where;push();
   if(!localStorage.getItem("magnolia_cloud_hello")){localStorage.setItem("magnolia_cloud_hello","1");toast("☁ Your island now saves to your Village account too 🌸");}}
 async function initClaude(){if(!IN_CLAUDE)return;
   try{window.claude.use("downloads").then(d=>{dlCap=d;if(d)document.body.classList.remove("inclaude");}).catch(()=>{});}catch(e){}
@@ -987,7 +987,7 @@ const LH=["Date","Type","Hours","Place","Contact","Memory","Honors"];
 const logRows=()=>S.logs.slice().sort((a,b)=>(a.date||"").localeCompare(b.date||"")).map(l=>[l.date,(HOUR_CATS.find(c=>c.id===l.cat)||{}).label||l.cat,l.hrs,l.place,l.contact,l.note,l.honors?"Yes":"No"]);
 const CH=["Class","Type","Credits","Status","Grade","School / note"];
 const courseRows=()=>S.courses.map(c=>[c.name,{B:"Biology",C:"Chemistry",P:"Physics",M:"Math",O:"Non-science"}[c.cat]||c.cat,c.cr,{todo:"Not yet",doing:"Taking now",done:"Done"}[c.status],c.grade,c.school]);
-async function copyText(t,label){try{await navigator.clipboard.writeText(t);toast(`📋 ${esc(label)} copied!`);return true;}catch(e){openModal(`<div class="mhead"><h2 style="margin:0;flex:1">Copy this</h2><button class="iconbtn" style="width:40px;height:40px" onclick="closeModal()">✕</button></div><p class="muted">Press and hold (or select all), then copy.</p><textarea style="height:240px">${esc(t)}</textarea>`);return false;}}
+async function copyText(t,label,done){try{await navigator.clipboard.writeText(t);toast(`📋 ${esc(label)} copied!`);if(done)done();return true;}catch(e){openModal(`<div class="mhead"><h2 style="margin:0;flex:1">Copy this</h2><button class="iconbtn" style="width:40px;height:40px" onclick="closeModal()">✕</button></div><p class="muted">Press and hold (or select all), then copy.</p><textarea style="height:240px">${esc(t)}</textarea>${done?`<button class="btn" id="cpDone" style="margin-top:8px">✓ I copied it</button>`:""}`);if(done){const d=document.getElementById("cpDone");if(d)d.addEventListener("click",()=>{closeModal();done();});}return false;}}
 $("#copyLogs").addEventListener("click",()=>{if(!S.logs.length)return toast("Log some hours first 🌱");copyText(toTSV(LH,logRows()),"Hours (paste in cell A1)");});
 $("#dlLogs").addEventListener("click",async()=>{if(!S.logs.length)return toast("Log some hours first 🌱");if(await download(`magnolia-hours-${today()}.csv`,toCSV(LH,logRows()),"text/csv;charset=utf-8"))toast("⬇ Hours downloaded");});
 $("#copyCourses").addEventListener("click",()=>copyText(toTSV(CH,courseRows()),"Classes (paste in cell A1)"));
@@ -1024,7 +1024,7 @@ function openSettings(){const sw=(arr,key)=>arr.map((c,i)=>`<button class="sw ${
   $("#nm").addEventListener("input",e=>{S.me.name=e.target.value||"Nola";save();renderTop();});
   $$("#modal .sw").forEach(b=>b.addEventListener("click",()=>{S.me[b.dataset.k]=+b.dataset.i;$$(`#modal .sw[data-k="${b.dataset.k}"]`).forEach(x=>x.classList.toggle("on",x===b));$("#avPrev").innerHTML=avatar();save();renderTop();renderIsland();SFX.tap();}));
   $("#bkDl").addEventListener("click",async()=>{if(await download(`magnolia-backup-${today()}.json`,JSON.stringify(S,null,1),"application/json")){toast("💾 Backup saved!");backedUp();}});
-  $("#bkCp").addEventListener("click",async()=>{await copyText(JSON.stringify(S),"Backup code");backedUp();});
+  $("#bkCp").addEventListener("click",()=>copyText(JSON.stringify(S),"Backup code",backedUp));
   $("#bkF").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>restoreText(r.result);r.readAsText(f);});
   $("#bkR").addEventListener("click",()=>restoreText($("#bkT").value));
   $("#intro2").addEventListener("click",()=>{closeModal();intro(0);});

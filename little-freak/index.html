@@ -115,8 +115,8 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--pink)}
 .lock{opacity:.5}
 pre.prompt{white-space:pre-wrap;word-break:break-word;background:#0d0810;border:2px solid var(--edge);border-radius:6px;padding:12px;font-size:14px;max-height:340px;overflow:auto;margin:0}
 /* toasts + modal */
-#toasts{position:fixed;left:50%;transform:translateX(-50%);bottom:max(16px,env(safe-area-inset-bottom,0px));z-index:50;display:flex;flex-direction:column;gap:8px;align-items:center;width:min(560px,92vw)}
-.toast{background:#0c1a17;border:2px solid var(--teal);color:#bff7ee;font-family:var(--px);padding:10px 14px;border-radius:6px;box-shadow:0 8px 30px #000;width:100%;animation:pop .3s}
+#toasts{position:fixed;left:50%;transform:translateX(-50%);top:max(12px,env(safe-area-inset-top,0px));z-index:50;display:flex;flex-direction:column;gap:8px;align-items:center;width:min(560px,92vw)}
+.toast{background:#0c1a17;border:2px solid var(--teal);color:#bff7ee;font-family:var(--px);padding:10px 14px;border-radius:6px;box-shadow:0 8px 30px #000;width:100%;animation:pop .3s;cursor:pointer}
 .toast.gold{border-color:var(--gold);color:var(--gold);background:#22180a}
 .modal-bg{position:fixed;inset:0;background:#000b;z-index:40;display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:24px 16px}
 .modal{width:min(680px,100%)}
@@ -551,9 +551,12 @@ function showNext() {
   const c = $("#ctrl");
   c.innerHTML = `<button class="btn next" id="nextBtn">Continue ▸</button>`;
   const btn = $("#nextBtn"); btn.onclick = advance; btn.focus({ preventScroll: true });
+  // a double-tap on an answer shouldn't also skip the next line: ignore Continue for a moment
+  btn.disabled = true; setTimeout(() => { btn.disabled = false; }, 300);
 }
 function answer(b, value, opt) {
   const st = roomState(R.id);
+  if (ROOMS[R.id].script[st.i] !== b) return;   // already answered (a second tap): never skip the next question
   st.a[b.key] = value;
   if (b.key === "name" && R.id === "intro") S.name = String(value).trim().slice(0, 30);
   addLine({ w: "me", t: Array.isArray(value) ? value.join(" · ") : String(value) });
@@ -674,7 +677,10 @@ const VIEWS = {
       $("#startBtn").onclick = () => openRoom("intro"); return;
     }
     const done = ORDER.filter(id => S.rooms[id] && S.rooms[id].done).length;
+    // the finale waits here if she tapped away before it played
+    const finaleWaiting = S.archiveDone && !(S.rooms.finale && S.rooms.finale.done);
     $("#main").innerHTML = `<section style="display:grid;gap:14px">
+      ${finaleWaiting ? `<button class="btn pink next" id="toFinaleMap">Something is happening in the Archive… ▸</button>` : ""}
       <div class="panel pad row"><div class="face">${face("v")}</div><div class="grow"><b class="disp" style="font-size:22px">The Lost Archive of Self</b>
         <div class="dim small">${done}/6 rooms restored. ${done === 6 ? "The Forge is open. Go make something weird." : tpl(pick(["Pick a door, {p}. I'll go first. Mostly so I can hold it open and watch you walk through.", "Six rooms. One of you. Zero chance any of this stays beige.", "Any room you want. I'm just here for moral support and, frankly, the view."]))}</div></div></div>
       <div class="rooms">${ORDER.map(id => { const r = ROOMS[id], s = S.rooms[id]; const status = s && s.done ? "✔ RESTORED (tap to replay)" : s && s.i > 0 ? "◐ IN PROGRESS" : "SEALED";
@@ -682,6 +688,7 @@ const VIEWS = {
         <button class="room forge ${S.archiveDone ? "" : "locked"}" data-r="forge" ${S.archiveDone ? "" : "disabled"}><span class="ic">🔥</span><h3>The Mashup Forge</h3><p>Smash two things you love onto something you can make.</p><span class="st">${S.archiveDone ? `${S.ideas.length} idea${S.ideas.length === 1 ? "" : "s"} forged` : "🔒 Restore all six rooms first"}</span></button>
       </div></section>`;
     $$(".room[data-r]").forEach(b => b.onclick = () => b.dataset.r === "forge" ? go("forge") : openRoom(b.dataset.r));
+    if ($("#toFinaleMap")) $("#toFinaleMap").onclick = () => openRoom("finale");
   },
 
   profile() {
@@ -802,7 +809,7 @@ const VIEWS = {
         <div><button class="btn ghost" id="reset">Erase everything</button></div></div></section>`;
     const data = () => JSON.stringify(S);
     $("#bkDl").onclick = () => { download(`little-freak-backup-${new Date().toISOString().slice(0, 10)}.json`, data(), "application/json"); backedUp(); };
-    $("#bkCp").onclick = () => { copyText(data(), "Backup code"); backedUp(); };
+    $("#bkCp").onclick = () => copyText(data(), "Backup code", backedUp);
     $("#bkGo").onclick = () => restore($("#bkIn").value);
     $("#bkFile").onchange = async e => { const f = e.target.files[0]; if (f) restore(await f.text()); };
     $("#nmGo").onclick = () => { S.name = $("#nmIn").value.trim().slice(0, 30); save(); renderHUD(); toast(`Name updated. Varrick is practicing saying it in the mirror.`); };
@@ -927,15 +934,15 @@ function openScene(id) {
 
 /* ---------- helpers: toast, copy, download, backup ---------- */
 function toast(t, cls = "") {
-  const e = document.createElement("div"); e.className = "toast " + cls; e.textContent = t;
+  const e = document.createElement("div"); e.className = "toast " + cls; e.textContent = t; e.title = "Tap to close"; e.onclick = () => e.remove();
   const b = $("#toasts"); b.appendChild(e); while (b.children.length > 3) b.firstChild.remove(); setTimeout(() => e.remove(), 5200);
 }
-async function copyText(t, label) {
-  try { await navigator.clipboard.writeText(t); toast(`📋 ${label} copied.`); return true; }
+async function copyText(t, label, done) {
+  try { await navigator.clipboard.writeText(t); toast(`📋 ${label} copied.`); if (done) done(); return true; }
   catch (e) {
     const bg = document.createElement("div"); bg.className = "modal-bg";
-    bg.innerHTML = `<div class="modal panel pad" style="display:grid;gap:10px"><b>Copy this</b><p class="dim small" style="margin:0">Your browser blocked the copy button. Select all of it and copy.</p><textarea style="min-height:260px">${esc(t)}</textarea><button class="btn" data-close>Done</button></div>`;
-    bg.onclick = ev => { if (ev.target === bg || ev.target.closest("[data-close]")) bg.remove(); };
+    bg.innerHTML = `<div class="modal panel pad" style="display:grid;gap:10px"><b>Copy this</b><p class="dim small" style="margin:0">Your browser blocked the copy button. Select all of it and copy.</p><textarea style="min-height:260px">${esc(t)}</textarea>${done ? `<button class="btn" data-copied>✓ I copied it</button>` : ""}<button class="btn" data-close>Done</button></div>`;
+    bg.onclick = ev => { if (ev.target.closest("[data-copied]")) { bg.remove(); done(); } else if (ev.target === bg || ev.target.closest("[data-close]")) bg.remove(); };
     document.body.appendChild(bg); bg.querySelector("textarea").select(); return false;
   }
 }
@@ -962,7 +969,7 @@ function renderAll() { renderHUD(); if (view !== "scene") VIEWS[view] ? VIEWS[vi
 
 $("#herFace").innerHTML = face("me");
 $$("#tabs button").forEach(b => b.onclick = () => go(b.dataset.v));
-if (new Date().getHours() >= 23) setTimeout(() => award("night"), 2000);
+{ const h = new Date().getHours(); if (h >= 23 || h < 4) setTimeout(() => award("night"), 2000); }   // 11 p.m. to 4 a.m.
 renderHUD(); VIEWS.map();
 window.addEventListener("load", initWebSave);   // waits for the cloud-save scripts below
 </script>

@@ -180,7 +180,8 @@ async function boot() {
     }
     S.uid = session.user.id;
     const inv = location.hash.match(/^#invite=([0-9a-f]+)/);
-    if (inv) {
+    if (inv && !(await okToSwitch(inv[1]))) history.replaceState(null, '', location.pathname);
+    else if (inv) {
       const { data: res } = await sb.rpc('redeem_invite', { p_token: inv[1] });
       history.replaceState(null, '', location.pathname);
       if (res !== 'ok') {
@@ -198,6 +199,30 @@ async function boot() {
     $('#app').innerHTML = `<div class="wrap"><div class="panel pad center stack"><h2 class="px">🚧 The village gates are stuck</h2>
       <p class="muted">${esc(e.message || e)}</p><button class="btn" onclick="location.reload()">Try again</button></div></div>`;
   }
+}
+
+/* An invite link moves THIS phone to the invited person. If the phone already belongs to
+   someone (say the admin tapped Grandma's link to test it), ask first. true = go ahead. */
+async function okToSwitch(token) {
+  const { data: dev } = await sb.from('member_devices').select('member_id').maybeSingle();
+  if (!dev) return true;
+  const { data: me } = await sb.from('members').select('display_name').eq('id', dev.member_id).maybeSingle();
+  const { data: them, error } = await sb.rpc('invite_for_whom', { p_token: token });   // needs village/setup/09
+  const mine = me ? me.display_name : 'someone in the village';
+  if (!error && !them) return true;                       // link is used/expired: let redeem_invite explain
+  if (!error && me && them === me.display_name) return true;
+  const who = !error && them ? them : 'someone else';
+  return new Promise(res => {
+    $('#app').innerHTML = `<div class="wrap"><div class="panel pad center stack">
+      <div style="font-size:56px">📱</div>
+      <h2 class="px">This phone is already ${esc(mine)}'s</h2>
+      <p class="muted">This invite link is for <b>${esc(who)}</b>. Using it here switches this phone to ${esc(who)}, and you'd stop being ${esc(mine)} on it (getting back takes the family code + PIN).</p>
+      <p class="muted tiny">Meant to send it to them? Copy the link and text it instead.</p>
+      <button class="btn" id="inv-stay">Stay ${esc(mine)}</button>
+      <button class="btn plain" id="inv-switch">Switch this phone to ${esc(who)}</button></div></div>`;
+    $('#inv-stay').addEventListener('click', () => res(false));
+    $('#inv-switch').addEventListener('click', () => res(true));
+  });
 }
 
 function avatarGrid(action, current, member) {
@@ -332,8 +357,12 @@ async function go(tab, silent) {
   try {
     if (!silent) { await loadCore(); sb.rpc('log_visit', { p_tab: tab }).then(() => {}, () => {}); }
     await VIEWS[tab].load();
-    if (S.tab === tab) $('#main').innerHTML = VIEWS[tab].render();
-    if (VIEWS[tab].after) VIEWS[tab].after();
+    const html = VIEWS[tab].render();
+    // a background refresh only redraws when something actually changed, so taps aren't swallowed
+    if (S.tab === tab && !(silent && html === S.shownHtml)) {
+      $('#main').innerHTML = html; S.shownHtml = html;
+      if (VIEWS[tab].after) VIEWS[tab].after();
+    }
   } catch (e) { console.error(e); if (!silent) $('#main').innerHTML = `<div class="panel pad">😬 ${esc(e.message || e)}</div>`; }
   if (!silent) window.scrollTo(0, 0);
 }
@@ -350,7 +379,7 @@ function startTimers() {
   S.timers = [
     setInterval(() => { if (!document.hidden && S.tab === 'kitchen') pollKitchen(); }, 6000),
     setInterval(async () => {
-      if (document.hidden || S.tab === 'kitchen' || busyTyping()) return;
+      if (document.hidden || S.tab === 'kitchen' || busyTyping() || Date.now() - (S.lastTap || 0) < 2500) return;
       try { await loadCore(); } catch (e) { return; }
       go(S.tab, true);
     }, 30000),
@@ -724,7 +753,7 @@ const Quotes = {
         <div class="q">${esc(hidden ? decoy('quote', x.id) : x.body)}</div>
         <div class="by">— ${esc(x.said_by)}</div>
         ${x.context && !hidden ? `<div class="ctx">${esc(x.context)}</div>` : ''}
-        ${pk === mk && qom ? `<div style="margin-top:8px"><button class="chip ${voted ? 'on' : ''}" data-a="voteQuote" data-id="${x.id}">${voted ? '✅ your Quote of the Month vote' : '🗳️ vote Quote of the Month'}</button></div>` : ''}
+        ${pk === mk && qom ? `<div style="margin-top:8px"><button class="chip ${voted ? 'on' : ''}" data-a="voteQuote" data-id="${x.id}">${voted ? '✅ your Quote of the Month vote (tap to take back)' : '🗳️ vote Quote of the Month'}</button></div>` : ''}
       </div>`;
     }).join('');
     return `<div class="stack">
@@ -863,10 +892,12 @@ async function periodResults(pk) {
       const best = ranked.length ? ranked[0].value : null;
       out.push({ cat, winners: ranked.filter(r => r.value === best).map(r => ({ owner: r.member_id, label: nameOf(r.member_id), value: r.value })) });
     } else {
-      const rows = (tally || []).filter(t => t.category_id === cat.id);
+      let rows = (tally || []).filter(t => t.category_id === cat.id);
+      const items = await lookupItems(cat.nominee_type, rows.map(r => r.nominee_id));
+      // votes for a quote/meme/roast/W that was deleted don't count (it can't win)
+      if (cat.nominee_type !== 'member') rows = rows.filter(r => items[String(r.nominee_id)]);
       const max = Math.max(0, ...rows.map(r => r.votes));
       const top = rows.filter(r => r.votes === max && max > 0);
-      const items = await lookupItems(cat.nominee_type, top.map(r => r.nominee_id));
       out.push({ cat, winners: top.map(r => ({ owner: nomineeOwner(cat.nominee_type, r.nominee_id, items), label: nomineeLabel(cat.nominee_type, r.nominee_id, items), value: r.votes, id: r.nominee_id })) });
     }
   }
@@ -950,8 +981,8 @@ const Awards = {
     const voteCard = (cat, pk) => {
       const v = myVotes.find(x => x.category_id === cat.id && x.period_key === pk);
       return `<div class="panel award"><div class="ah"><span class="em">${esc(cat.emoji)}</span>${esc(cat.name)}</div>
-        <div class="muted tiny" style="margin:4px 0">${v ? `Your secret vote: <b>${esc(labels[cat.id + pk] || '…')}</b>` : 'You have not voted yet.'}</div>
-        <button class="chip" data-a="vote" data-c="${cat.id}" data-p="${pk}">🗳️ ${v ? 'change vote' : 'vote'}</button></div>`;
+        <div class="muted tiny" style="margin:4px 0">${!v ? 'You have not voted yet.' : labels[cat.id + pk] === '(deleted)' ? 'You voted for something that got deleted, so it doesn\'t count. Vote again!' : `Your secret vote: <b>${esc(labels[cat.id + pk] || '…')}</b>`}</div>
+        <button class="chip" data-a="vote" data-c="${cat.id}" data-p="${pk}">🗳️ ${v ? 'change vote' : 'vote'}</button>${v ? ` <button class="chip" data-a="unvote" data-c="${cat.id}" data-p="${pk}">↩ take back my vote</button>` : ''}</div>`;
     };
     const proposals = S.categories.filter(c => !c.approved);
     const main = (period, kind) => catsFor(period).filter(c => c.kind === kind && !c.league);
@@ -1523,12 +1554,19 @@ const A = {
     closeModal(); toast('💬 On the wall forever'); go('quotes', true);
   },
   async voteQuote(b) {
-    const cat = S.data.quotes.qom;
+    const cat = S.data.quotes.qom, mine = S.data.quotes.myVote;
+    if (mine && mine.nominee_id === String(b.dataset.id)) return A.unvote({ dataset: { c: cat.id, p: monthKey(), back: 'quotes' } });
     await q(sb.from('award_votes').upsert({ category_id: cat.id, period_key: monthKey(), voter: S.myId, nominee_id: String(b.dataset.id) }, { onConflict: 'category_id,period_key,voter' }));
     toast('🗳️ Vote cast. Secret ballot, very official.'); go('quotes', true);
   },
   // awards
   vote: b => openVote(+b.dataset.c, b.dataset.p),
+  async unvote(b) {
+    const gone = await q(sb.from('award_votes').delete().eq('category_id', +b.dataset.c).eq('period_key', b.dataset.p).eq('voter', S.myId).select());
+    // before village/setup/09_vote_cleanup.sql is run, the database quietly refuses to delete votes
+    if (!gone || !gone.length) return toast("Couldn't take the vote back yet (the database needs a small update).");
+    toast('↩ Vote taken back'); go(b.dataset.back || 'awards', true);
+  },
   async castVote(b) {
     await q(sb.from('award_votes').upsert({ category_id: +b.dataset.c, period_key: b.dataset.p, voter: S.myId, nominee_id: b.dataset.n }, { onConflict: 'category_id,period_key,voter' }));
     closeModal(); toast('🗳️ Vote locked in (until you change it)'); go('awards', true);
@@ -1561,6 +1599,7 @@ const A = {
   resultsPick: el => { S.resultsView = el.value; go('awards', true); },
 };
 
+document.addEventListener('pointerdown', () => { S.lastTap = Date.now(); }, true);
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-a]');
   if (!b || b.disabled) return;
