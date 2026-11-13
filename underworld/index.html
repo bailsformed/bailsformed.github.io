@@ -1,0 +1,1555 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Underworld Apothecary</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#160f1c;--plum:#241a2e;--plum2:#2f2239;--edge:#4a3757;--ink:#f4ead9;--dim:#bba9c4;--red:#c23b4a;--orange:#e8743b;--gold:#e8c66a;--sage:#8fb89a;--rose:#e7a3c9;--sky:#8fb4e0;--warn:#e8743b;--bad:#e05a6a;--ok:#8fd19a}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Nunito,system-ui,sans-serif;font-size:16px;line-height:1.6}
+body{background:radial-gradient(ellipse at 50% -10%,#3a1f3e 0,transparent 55%),radial-gradient(ellipse at 100% 100%,#2a1a2e 0,transparent 50%),var(--bg);min-height:100vh;padding-bottom:30px}
+.serif,h1,h2,h3{font-family:"Cormorant Garamond",Georgia,serif;font-weight:700;letter-spacing:.3px}
+.wrap{max-width:1100px;margin:0 auto;padding:12px}
+.card{background:linear-gradient(180deg,var(--plum2),var(--plum));border:1px solid var(--edge);border-radius:18px;padding:16px 18px;box-shadow:0 10px 30px #0007}
+.btn{font-family:Nunito,sans-serif;font-weight:800;font-size:15px;border:none;border-radius:999px;padding:9px 16px;cursor:pointer;background:var(--red);color:#fff;box-shadow:0 3px 0 #6e1d29;transition:transform .06s}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 #6e1d29}
+.btn.gold{background:var(--gold);color:#2a1a10;box-shadow:0 3px 0 #9c7f2e}
+.btn.sage{background:var(--sage);color:#14261a;box-shadow:0 3px 0 #557562}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--edge);box-shadow:none}
+.btn.sm{font-size:13px;padding:5px 11px}
+.btn:focus-visible,.tab:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+input,select,textarea{font-family:Nunito,sans-serif;font-size:15px;background:#1b1322;color:var(--ink);border:1px solid var(--edge);border-radius:10px;padding:8px 10px;width:100%}
+textarea{resize:vertical}
+label.f{display:block;font-weight:800;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--dim);margin:10px 0 4px}
+.muted{color:var(--dim)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sp{justify-content:space-between}
+/* header */
+.top{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.av{width:62px;height:62px;border-radius:50%;background:#3a2a44;border:2px solid var(--gold);overflow:hidden;flex:none;cursor:pointer}
+.av svg{width:100%;height:100%}
+.title{font-family:"Cormorant Garamond",serif;font-size:26px;font-weight:700;line-height:1.05}
+.lvl{font-size:13px;color:var(--gold)}
+.xp{height:8px;background:#1b1322;border-radius:9px;overflow:hidden;margin-top:5px;border:1px solid var(--edge)}
+.xp i{display:block;height:100%;background:linear-gradient(90deg,var(--red),var(--orange),var(--gold));transition:width .6s}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin:12px 0;padding-bottom:4px;scrollbar-width:thin}
+.tab{flex:none;background:var(--plum);color:var(--dim);border:1px solid var(--edge);border-radius:999px;padding:7px 13px;font-weight:800;font-size:14px;cursor:pointer;font-family:Nunito}
+.tab.on{background:var(--red);color:#fff;border-color:var(--red)}
+.view{display:none}.view.on{display:block}
+.g2{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,1fr);gap:14px;align-items:start}
+@media(max-width:860px){.g2{grid-template-columns:1fr}}
+.stack{display:grid;gap:14px}
+#scene{width:100%;height:auto;display:block;border-radius:16px;border:1px solid var(--edge)}
+.bub{background:#f6ead8;color:#2a1a24;border-radius:16px;padding:10px 14px;position:relative;font-weight:600}
+.bub b.who{display:block;font-family:"Cormorant Garamond",serif;font-size:17px;color:var(--red)}
+.who-row{display:flex;gap:10px;align-items:flex-start}
+.who-row .face{width:58px;height:58px;flex:none;border-radius:50%;background:#3a2a44;overflow:hidden;border:2px solid var(--edge)}
+.who-row .face svg{width:100%;height:100%}
+h2{font-size:26px;margin:2px 0 6px}
+h3{font-size:20px;margin:12px 0 6px;color:var(--gold)}
+.chip{display:inline-block;font-size:12px;font-weight:800;padding:2px 9px;border-radius:999px;border:1px solid var(--edge);background:#1b1322;margin:0 4px 4px 0}
+/* quests */
+.ql{list-style:none;margin:0;padding:0}
+.qi{display:flex;gap:10px;align-items:center;padding:9px 10px;border:1px solid var(--edge);border-radius:12px;margin-bottom:6px;background:#1f1627;cursor:pointer}
+.qi:hover{border-color:var(--gold)}
+.qi.done{background:#1c2a20;border-color:#3d6b4a}
+.qi .ck{width:24px;height:24px;border-radius:50%;border:2px solid var(--edge);display:flex;align-items:center;justify-content:center;flex:none;font-size:13px}
+.qi.done .ck{background:var(--sage);border-color:var(--sage);color:#14261a}
+.qi .t{flex:1;font-weight:700;line-height:1.25}.qi .t small{display:block;color:var(--dim);font-weight:600;font-size:12px}
+details.ch{border:1px solid var(--edge);border-radius:14px;margin-bottom:10px;background:#1b1322}
+details.ch>summary{cursor:pointer;padding:10px 14px;list-style:none;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+details.ch>summary::-webkit-details-marker{display:none}
+details.ch .inner{padding:0 12px 10px}
+.pbar{flex:1;min-width:100px;height:8px;background:#120c17;border-radius:9px;overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--sage)}
+/* modal */
+.scrim{position:fixed;inset:0;background:#0b060ecc;display:none;align-items:flex-start;justify-content:center;z-index:50;padding:22px 12px;overflow:auto}
+.scrim.on{display:flex}
+.modal{width:min(700px,100%);position:relative;animation:pop .18s}
+@keyframes pop{from{transform:scale(.96);opacity:.4}to{transform:none;opacity:1}}
+.x{position:absolute;top:10px;right:12px}
+.steps{list-style:none;margin:0;padding:0}
+.steps li{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--edge);border-radius:12px;margin-bottom:6px;cursor:pointer;background:#1f1627}
+.steps li.ok{background:#1c2a20;border-color:#3d6b4a}.steps li.ok .tx{color:var(--dim);text-decoration:line-through}
+.steps .cb{width:20px;height:20px;border-radius:6px;border:2px solid var(--edge);flex:none;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900}
+.steps li.ok .cb{background:var(--sage);border-color:var(--sage);color:#14261a}
+.tip{background:#2a1f12;border:1px solid #6b5426;border-radius:12px;padding:8px 12px}
+.foot{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:14px;flex-wrap:wrap}
+/* garden */
+.beds{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.bed{background:#1f1627;border:1px solid var(--edge);border-radius:14px;padding:10px;cursor:pointer}
+.bed .pl{display:flex;flex-wrap:wrap;gap:2px;min-height:38px;align-items:flex-end}
+.bed .pl svg{width:24px;height:36px}
+.bed .h{font-family:"Cormorant Garamond",serif;font-size:30px;font-weight:700;line-height:1}
+.bed small{display:block;color:var(--dim);font-size:12px;line-height:1.3}
+/* treasury */
+.hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.tile{background:#1f1627;border:1px solid var(--edge);border-radius:14px;padding:12px;text-align:center}
+.tile .big{font-family:"Cormorant Garamond",serif;font-size:34px;font-weight:700;line-height:1.05}
+.tile small{display:block;color:var(--dim);font-size:12px;line-height:1.3}
+.tile svg{display:block;margin:0 auto}
+.jars{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.jar{background:#1f1627;border:1px solid var(--edge);border-radius:12px;padding:8px 10px;cursor:pointer}
+.jar .nm{font-weight:700;font-size:13px;line-height:1.25;min-height:32px}
+.jbar{height:12px;background:#120c17;border-radius:9px;overflow:hidden;margin:4px 0}
+.jbar i{display:block;height:100%}
+.jar .amt{font-size:12px;color:var(--dim)}
+.jar.paid{border-color:#3d6b4a}
+.status-ok{color:var(--ok)}.status-warn{color:var(--warn)}.status-bad{color:var(--bad)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;color:var(--gold);font-size:12px;letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--edge);padding:6px;white-space:nowrap}
+td{border-bottom:1px dashed var(--edge);padding:6px;vertical-align:top}
+.tbl{overflow:auto;max-height:420px}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{background:#1f1627;color:var(--ink);border:1px solid var(--edge);border-radius:999px;padding:6px 12px;font-weight:800;cursor:pointer;font-family:Nunito}
+.seg button.on{background:var(--gold);color:#2a1a10;border-color:var(--gold)}
+.f2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 10px}.f2 .full{grid-column:1/-1}
+@media(max-width:560px){.f2{grid-template-columns:1fr}}
+/* hearth */
+.hearth{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+.hearth button{background:#1f1627;color:var(--ink);border:2px solid var(--edge);border-radius:14px;padding:10px 6px;cursor:pointer;font-weight:800;font-family:Nunito;font-size:14px;line-height:1.2}
+.hearth button span{display:block;font-size:26px}
+.hearth button.on{border-color:var(--orange);background:#3a2316}
+.days{display:flex;gap:6px;flex-wrap:wrap}
+.days div{width:40px;text-align:center;font-size:11px;color:var(--dim)}
+.days i{display:block;width:40px;height:40px;border-radius:50%;margin-bottom:2px;border:1px solid var(--edge)}
+/* games */
+.opts{display:grid;gap:8px}
+.opts button{text-align:left;background:#1f1627;color:var(--ink);border:1px solid var(--edge);border-radius:12px;padding:10px 12px;font-weight:700;cursor:pointer;font-family:Nunito;font-size:15px}
+.opts button.right{background:#1c2a20;border-color:var(--ok)}.opts button.wrong{background:#3a1820;border-color:var(--bad)}
+.tiles6{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:10px 0}
+.tiles6 button{width:44px;height:52px;font-family:"Cormorant Garamond",serif;font-size:26px;font-weight:700;background:#f6ead8;color:#2a1a24;border:none;border-radius:8px;cursor:pointer;box-shadow:0 3px 0 #9c8a72}
+.tiles6 button.used{opacity:.25}
+.answer{min-height:52px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+.answer span{width:44px;height:52px;border-bottom:3px solid var(--gold);font-family:"Cormorant Garamond",serif;font-size:28px;font-weight:700;display:flex;align-items:center;justify-content:center}
+/* all quiet */
+.aq{display:grid;gap:8px}
+.aqi{display:flex;gap:12px;align-items:center;background:#1f1627;border:1px solid var(--edge);border-radius:14px;padding:10px 12px;flex-wrap:wrap}
+.aqi .ic{font-size:24px}
+.aqi .tx{flex:1;min-width:180px}
+.aqi .tx b{display:block}
+.aqi .tx small{color:var(--dim)}
+.aqi.ok{border-color:#3d6b4a}.aqi.warn{border-color:var(--warn)}
+.aqhead{font-family:"Cormorant Garamond",serif;font-size:30px;font-weight:700;text-align:center;line-height:1.1;margin:6px 0}
+.letter{white-space:pre-line;background:#f6ead8;color:#2a1a24;border-radius:6px;padding:20px;font-family:"Cormorant Garamond",serif;font-size:19px;line-height:1.6;box-shadow:inset 0 0 40px #d8c4a0}
+.seal{width:90px;height:90px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#e05a6a,#8a1f2c);margin:10px auto;display:flex;align-items:center;justify-content:center;font-size:36px;box-shadow:0 4px 0 #4a0f18}
+#toasts{position:fixed;right:12px;bottom:12px;display:flex;flex-direction:column;gap:6px;z-index:80;align-items:flex-end;max-width:92vw}
+.toast{background:#f6ead8;color:#2a1a24;border-radius:14px;padding:8px 14px;font-weight:700;box-shadow:0 6px 20px #000a;animation:sl .2s;max-width:360px}
+@keyframes sl{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
+#petals{position:fixed;inset:0;pointer-events:none;z-index:90}
+.inclaude .dl{display:none}
+.flame{animation:fl 1.2s ease-in-out infinite alternate;transform-origin:center bottom}
+@keyframes fl{to{transform:scaleY(1.12) scaleX(.94)}}
+.float{animation:flo 3s ease-in-out infinite alternate}@keyframes flo{to{transform:translateY(-3px)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card top">
+    <div class="av" id="meAv" role="button" tabindex="0" aria-label="Wardrobe and settings"></div>
+    <div style="flex:1;min-width:200px">
+      <div class="title">The Underworld Apothecary</div>
+      <div class="lvl" id="lvl"></div>
+      <div class="xp"><i id="xpbar" style="width:0"></i></div>
+      <div class="muted" id="saveStat" style="font-size:12px;margin-top:4px"></div>
+    </div>
+    <button class="btn ghost sm" id="setBtn">⚙ Settings & Scrolls</button>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab on" data-v="cottage">🏚️ Cottage</button>
+    <button class="tab" data-v="quiet">🕊️ All Quiet</button>
+    <button class="tab" data-v="path">🗝️ Path</button>
+    <button class="tab" data-v="garden">🌿 Garden</button>
+    <button class="tab" data-v="treasury">🪙 Treasury</button>
+    <button class="tab" data-v="war">⚔️ War Chest</button>
+    <button class="tab" data-v="hearth">🔥 Hearth</button>
+    <button class="tab" data-v="games">🏛️ Games</button>
+    <button class="tab" data-v="altar">🕯️ Altar</button>
+  </div>
+
+  <section class="view on" id="v-cottage">
+    <div class="g2">
+      <div class="stack"><svg id="scene" viewBox="0 0 400 250" role="img" aria-label="Your cottage"></svg>
+        <div class="card"><div class="who-row"><div class="face" id="hadesFace"></div><div class="bub" style="flex:1"><b class="who">Hades</b><span id="hadesSay" style="cursor:pointer"></span><small style="display:block;font-size:11px;color:#8a7a8a">tap him for another line</small></div></div></div></div>
+      <div class="stack">
+        <div class="card" id="todayCard"></div>
+        <div class="card"><h3 style="margin-top:0">Quick rites</h3><div class="row">
+          <button class="btn sage" data-quick="hours">🌿 Log hours</button><button class="btn gold" data-quick="spend">🪙 Log spending</button><button class="btn ghost" data-quick="hearth">🔥 Hearth check-in</button></div>
+          <div style="margin-top:10px"><button class="btn ghost" id="hecateBtn" style="width:100%">🌙 Hard day? Call Hecate</button></div></div>
+        <div id="fortunaCard"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="v-quiet"><div class="card" id="quiet"></div></section>
+
+  <section class="view" id="v-path">
+    <div class="card"><h2>The Path</h2><p class="muted" style="margin-top:0">Your road from New Paltz to the white coat, plus the life rites that make it possible. Tap any quest.</p><div id="pathList"></div></div>
+    <div class="card" style="margin-top:14px"><div class="row sp"><h2 style="margin:0">Grimoire: classes & GPA</h2><div class="row"><button class="btn sm ghost" data-copy="courses">Copy for Sheets</button><button class="btn sm gold dl" data-dl="courses">⬇ CSV</button></div></div>
+      <p class="muted">Every college class counts. Science classes (Bio/Chem/Phys/Math) make your BCPM GPA. The math is done for you.</p>
+      <div class="hero" id="gpaTiles"></div><div class="tbl" style="max-height:none;margin-top:10px"><table id="courses"></table></div>
+      <form class="f2" id="courseForm" style="margin-top:8px"><label class="f">Class<input name="name" required placeholder="Abnormal Psychology"></label><label class="f">Type<select name="cat"><option value="O">Non-science</option><option value="B">Biology</option><option value="C">Chemistry</option><option value="P">Physics</option><option value="M">Math</option></select></label>
+      <label class="f">Credits<input name="cr" type="number" step=".5" value="3"></label><div class="foot full" style="margin-top:28px"><span></span><button class="btn sm">Add class</button></div></form></div>
+  </section>
+
+  <section class="view" id="v-garden">
+    <div class="g2">
+      <div class="card"><div class="row sp"><h2 style="margin:0">Apothecary Garden</h2><button class="btn sage" id="logHoursBtn">+ Log hours</button></div>
+        <p class="muted">Every hour you log grows a real medicinal plant. Tap a bed to read its lore.</p><div class="beds" id="beds"></div></div>
+      <div class="card"><h3 style="margin-top:0">The ledger of hours</h3><div class="row"><button class="btn sm ghost" data-copy="hours">Copy for Sheets</button><button class="btn sm gold dl" data-dl="hours">⬇ CSV</button></div><div class="tbl" id="hoursList" style="margin-top:8px"></div></div>
+    </div>
+  </section>
+
+  <section class="view" id="v-treasury">
+    <div class="card">
+      <div class="row sp"><h2 style="margin:0">The Treasury</h2><div class="row"><button class="btn ghost sm" id="mPrev">‹</button><b id="mLabel" class="serif" style="font-size:20px"></b><button class="btn ghost sm" id="mNext">›</button></div></div>
+      <div class="hero" id="treasHero" style="margin-top:10px"></div>
+      <div class="row" style="margin-top:12px"><button class="btn gold" id="logSpendBtn">+ Log money</button><button class="btn sage" id="impBtn">📥 Import statements</button><button class="btn ghost sm" id="finSet">Vault & budget settings</button></div>
+      <div id="tiers"></div>
+    </div>
+    <div class="card" style="margin-top:14px"><div class="row sp"><h3 style="margin:0">This month's entries</h3><div class="row"><button class="btn sm ghost" data-copy="money">Copy for Sheets</button><button class="btn sm gold dl" data-dl="money">⬇ All transactions CSV</button><button class="btn sm gold dl" data-dl="month">⬇ Month summary CSV</button></div></div><div class="tbl" id="txList" style="margin-top:8px"></div></div>
+  </section>
+
+  <section class="view" id="v-war">
+    <div class="g2">
+      <div class="card"><h2>The War Chest</h2><p class="muted" style="margin-top:0">HRIS / HCM implementation contract work: consultant money that buys you time for school, shadowing, and life.</p>
+        <div class="hero" id="warHero"></div><h3>Battle plan</h3><ul class="steps" id="warQuests"></ul></div>
+      <div class="card"><div class="row sp"><h3 style="margin:0">Opportunities</h3><button class="btn" id="addOpp">+ Add</button></div>
+        <div class="row" style="margin-top:6px"><button class="btn sm ghost" data-copy="pipeline">Copy for Sheets</button><button class="btn sm gold dl" data-dl="pipeline">⬇ CSV</button></div>
+        <div id="pipeline" style="margin-top:8px"></div></div>
+    </div>
+  </section>
+
+  <section class="view" id="v-hearth">
+    <div class="g2">
+      <div class="card"><h2>The Hearth</h2><p class="muted" style="margin-top:0">Hestia keeps the fire. Tap what you did for <b>yourself</b> today. Honest, not perfect.</p>
+        <div class="row" style="margin-bottom:8px"><input type="date" id="hDate" style="max-width:180px"></div><div class="hearth" id="hearthBtns"></div>
+        <label class="f" for="hNote">A note for today (optional)</label><textarea id="hNote" rows="2" placeholder="How are you, really?"></textarea></div>
+      <div class="card"><h3 style="margin-top:0">The fire this week</h3><div id="fireBox"></div><div class="days" id="hDays" style="margin-top:10px"></div>
+        <div class="row" style="margin-top:10px"><button class="btn sm ghost" data-copy="hearth">Copy for Sheets</button><button class="btn sm gold dl" data-dl="hearth">⬇ CSV</button></div></div>
+    </div>
+  </section>
+
+  <section class="view" id="v-games">
+    <div class="card"><h2>The Olympian Games</h2><p class="muted" style="margin-top:0">Breaks that secretly count as studying. Up to 100 XP a day from games.</p>
+      <div class="seg" id="gameSel"><button data-g="pantheon" class="on">⚡ Pantheon Trivia</button><button data-g="cards">🃏 My Flashcards</button><button data-g="scroll">📜 Scrambled Scrolls</button></div>
+      <div id="gameBox" style="margin-top:12px"></div></div>
+    <div class="card" style="margin-top:14px"><div class="row sp"><h3 style="margin:0">My flashcard deck</h3><div class="row"><button class="btn sm ghost" data-copy="cards">Copy for Sheets</button><button class="btn sm gold dl" data-dl="cards">⬇ CSV</button></div></div>
+      <form class="f2" id="cardForm"><label class="f">Front (question)<input name="f" required placeholder="What does the nephron do?"></label><label class="f">Back (answer)<input name="b" required placeholder="Filters blood to make urine"></label>
+      <label class="f">Deck<input name="d" placeholder="Bio 1"></label><div class="foot" style="margin-top:28px"><span></span><button class="btn sm">Add card</button></div></form><div id="cardList" class="tbl" style="margin-top:8px"></div></div>
+  </section>
+
+  <section class="view" id="v-altar">
+    <div class="g2">
+      <div class="stack">
+        <div class="card"><h2>The Oath</h2><p class="muted" style="margin-top:0">The values you'd live and die for. When you forget you're a firecracker, read these.</p><div id="oath"></div></div>
+        <div class="card" id="letterBox"></div>
+      </div>
+      <div class="stack">
+        <div class="card" id="guardian"></div>
+        <div class="card"><div class="row sp"><h3 style="margin:0">Fortuna's Ledger (PB)</h3><button class="btn sm gold" id="pbLuck">+ PB got lucky</button></div><div id="pbList" style="margin-top:8px"></div></div>
+      </div>
+    </div>
+  </section>
+  <p class="muted serif" style="text-align:center;font-size:16px;margin:20px 0 4px">Six seeds. Two worlds. One very devoted god of the dead.</p>
+</div>
+<div class="scrim" id="scrim"><div class="card modal" id="modal" role="dialog" aria-modal="true"></div></div>
+<div id="toasts" aria-live="polite"></div>
+<canvas id="petals"></canvas>
+<script>
+// ===================== GAME CONTENT =====================
+const CHAPTERS = [
+  {id:0, name:"Moving Day Meadow", when:"Now → Jan 2027", season:"Prologue",
+   blurb:"Unpack, gather your records, and meet your guide. Everything here sets up the whole adventure."},
+  {id:1, name:"Hawk Hollow", when:"Spring 2027", season:"Semester 1",
+   blurb:"Your first New Paltz semester: first lab sciences, first professors, and your first clinical hours."},
+  {id:2, name:"Summer Glade", when:"Summer 2027", season:"Summer",
+   blurb:"Summer classes keep you on pace while you start shadowing physicians, including a DO."},
+  {id:3, name:"Laboratory Lagoon", when:"Fall 2027", season:"Semester 2",
+   blurb:"Orgo, physics, research, and recruiting the people who will write your letters."},
+  {id:4, name:"MCAT Mountain", when:"Spring 2028", season:"Semester 3",
+   blurb:"The hardest climb: finish the last prereqs, defeat the MCAT, and write your story."},
+  {id:5, name:"Application Castle", when:"May → Sept 2028", season:"Application Summer",
+   blurb:"Submit AMCAS (MD) and AACOMAS (DO) early, then conquer the secondaries."},
+  {id:6, name:"Interview Tower", when:"Fall 2028 → Winter 2029", season:"Senior Year",
+   blurb:"Practice, interview, send your thank-yous, and keep your grades strong."},
+  {id:7, name:"White Coat Summit", when:"Spring → Summer 2029", season:"Finale",
+   blurb:"Acceptance, graduation, and the White Coat Ceremony. You become a medical student."}
+];
+
+// Each quest: id, ch, title, xp, when, what (what it is), why, steps[], tip, links[]
+const QUESTS = [
+// ---------- CHAPTER 0 ----------
+{id:"q0_1", ch:0, title:"Talk to the Sage", xp:50, when:"Today",
+ what:`Hoo-hoo! Welcome, traveler. To become a doctor you need to show medical schools <b>five things</b>: (1) you can handle hard science (your <b>GPA</b>), (2) you can master the material (your <b>MCAT</b> score), (3) you know what medicine really looks like (<b>shadowing + clinical hours</b>), (4) you care about people (<b>service</b>), and (5) people who know you vouch for you (<b>letters</b>). Every quest in this game feeds one of those five.`,
+ why:`Medical schools use "holistic review." No single number decides it. They're asking: <i>can this person succeed in med school, and will they be a good doctor?</i> Your past jobs, your career change, and your maturity all count.`,
+ steps:["Read the five pillars above","Open the Codex tab and read “MD vs DO”","Look at the 8 chapters on the World Map"],
+ tip:`You don't need to finish every quest perfectly. The game shows you what exists so nothing surprises you later.`},
+
+{id:"q0_2", ch:0, title:"MD or DO? Know your classes", xp:60, when:"Before spring 2027",
+ what:`There are two kinds of U.S. physicians. <b>MD</b> (allopathic) schools use the <b>AMCAS</b> application. <b>DO</b> (osteopathic) schools use <b>AACOMAS</b>. Both become fully licensed physicians, both match into the same residencies, and both can practice any specialty. DO training adds <b>OMM</b> (osteopathic manipulative medicine), a hands-on, whole-person approach.`,
+ why:`You're applying to <b>both</b>, so you'll file two applications in the same cycle. DO schools often want to see that you've shadowed a DO, and many want a letter from one. Knowing this now means you'll plan for it.`,
+ steps:["Write down one thing that appeals to you about MD","Write down one thing that appeals to you about DO","Name 2–3 MD and 2–3 DO schools in NY you're curious about"],
+ tip:`Applying to both widens your options. It isn't a "backup" move: DO schools want applicants who truly understand osteopathic philosophy, so learn it for real.`},
+
+{id:"q0_3", ch:0, title:"Gather your scrolls (transcripts)", xp:60, when:"Nov–Dec 2026",
+ what:`Your <b>transcripts</b> are your official grade records. New Paltz needs your Lone Star College transcript to award transfer credit. Later, AMCAS and AACOMAS will need an official transcript from <b>every college you've ever attended</b>, even one class.`,
+ why:`Med schools recalculate your GPA from <b>all</b> of your college coursework. Lone Star grades count toward your med school GPA even though your New Paltz GPA starts fresh.`,
+ steps:["Order an official Lone Star transcript sent to SUNY New Paltz (if you haven't)","Download an unofficial copy for yourself","Make a “Med School” folder (cloud drive) and save it there","List any OTHER college you ever took a class at, even dual credit"],
+ tip:`Keep a single “Med School” folder for everything: transcripts, job dates, supervisor contacts, journal exports. Future-you will be grateful in May 2028.`},
+
+{id:"q0_4", ch:0, title:"Appraise your inherited loot", xp:80, when:"When New Paltz posts your credit evaluation",
+ what:`Your ~48 Lone Star credits are “inherited loot.” Some may already count as med school <b>prerequisites</b> (biology, chemistry, math, English, psychology). The rest count toward your bachelor's.`,
+ why:`Knowing exactly which prereqs you've already finished decides whether the straight-through route fits. Each finished science course is a semester you don't have to repeat.`,
+ steps:["Find your transfer credit evaluation / degree audit at New Paltz","Open the Spellbook tab and mark any prereqs already completed","Enter your Lone Star grades for those courses in the Spellbook","Add your other Lone Star courses (so your GPA estimate is accurate)"],
+ tip:`Some med schools prefer core sciences to be taken at a 4-year school. Taking upper-level sciences at New Paltz (biochem, genetics) shows you can handle 4-year rigor. Ask your advisor whether to retake anything.`},
+
+{id:"q0_5", ch:0, title:"Summon your Guide", xp:100, when:"Dec 2026 – Jan 2027",
+ what:`New Paltz has a <b>Health Career Advisement</b> program. The pre-med advisor (listed as <b>Debra Adair, Ph.D.</b>) helps students plan for medical school. They ask you to fill out a pre-health meeting form before your first meeting.`,
+ why:`Your advisor knows New Paltz's course sequencing, how letters work there, and how past students got in. This is the most valuable 1-hour meeting of your first year.`,
+ steps:["Visit the Health Career Advisement page (link below)","Fill out the pre-health meeting form","Email to request a meeting (adaird@newpaltz.edu, per the site)","Bring these questions: Which of my transfer credits count as prereqs? Is applying in May 2028 realistic? Does New Paltz write a committee or composite letter? Which physics and math should I take?","Write down what you learned in the quest notes below"],
+ tip:`Say you're a non-traditional transfer, a psychology major, working part-time, aiming for both MD and DO, and hoping to apply straight through. Advisors give much better advice with the whole picture.`,
+ links:[{l:"New Paltz Health Career Advisement",u:"https://www.newpaltz.edu/healthcareeradvisement/"}]},
+
+{id:"q0_6", ch:0, title:"Claim your AAMC ID", xp:40, when:"Anytime now",
+ what:`The <b>AAMC</b> (Association of American Medical Colleges) runs the MCAT, AMCAS, and the Fee Assistance Program. You need one free AAMC account for all of it.`,
+ why:`You'll use the same login for 2+ years. Making it now means you can explore MSAR and free prep resources early.`,
+ steps:["Create your free AAMC account","Use a professional email you'll keep for years","Save your AAMC ID in your Med School folder"],
+ links:[{l:"AAMC for Students",u:"https://students-residents.aamc.org/"}]},
+
+{id:"q0_7", ch:0, title:"Recall your past lives", xp:80, when:"Before spring 2027",
+ what:`Your earlier careers are <b>real experience points</b>. Implementation analyst, HR lead, store manager, and customer care supervisor all go in the application's Work & Activities section.`,
+ why:`Schools look for teamwork, reliability, communication, and leadership. You've done these for years. Non-traditional applicants who explain their path well stand out.`,
+ steps:["List each past job with start/end dates and hours per week","For each, write down a supervisor or contact who could confirm it","Write 2–3 sentences about a moment you grew or led someone","Log them in the Adventure Journal (category: Leadership or Work)"],
+ tip:`AMCAS asks for a contact person for each experience. Collect names and emails now while they're easy to find.`},
+
+{id:"q0_8", ch:0, title:"Plan your route", xp:80, when:"With your advisor",
+ what:`<b>Your route, “Straight Through”:</b><br>• Spring 2027: Gen Bio I, Gen Chem I (+ psych/stats)<br>• Summer 2027: Bio II / Chem II (summer session)<br>• Fall 2027: Orgo I, Physics I<br>• Spring 2028: Orgo II, Physics II, Biochem, <b>MCAT</b><br>• May–June 2028: <b>Apply</b> (MD + DO)<br>• Fall 2028–Spring 2029: interviews, finish your degree<br>• Summer/Fall 2029: <b>Start med school</b>`,
+ why:`Be honest with yourself: this route is <b>fast</b>. It packs most of the science sequence into about 3 semesters plus a summer, while you work. It can be done, but there's a checkpoint (The Fork in the Road) in Jan 2028. If you need more time, a gap year is normal, not a failure.`,
+ steps:["Draft your semester-by-semester plan with your advisor","Decide which classes to take in summer 2027","Put the Key Dates (bottom of the Path tab) into your calendar"],
+ tip:`If Lone Star already covered Gen Bio or Gen Chem, the route gets much easier. That's why the Inherited Loot quest matters.`},
+
+// ---------- CHAPTER 1 ----------
+{id:"q1_1", ch:1, title:"Equip your first spells", xp:80, when:"Registration for Spring 2027",
+ what:`Register for your first pre-med courses. The usual first-semester pair is <b>General Biology I + lab</b> and <b>General Chemistry I + lab</b>, plus psych major courses and <b>Statistics</b>.`,
+ why:`Bio and chem are the foundation everything else builds on. Organic chemistry, biochem, and the MCAT all assume you know them.`,
+ steps:["Confirm your exact course list with your advisor","Register for Gen Bio I + lab and Gen Chem I + lab (unless already done)","Add psych major courses and Statistics","Check your total load works with your part-time job"],
+ tip:`Two lab sciences plus work is a full load. It's better to take fewer courses and earn A's than to take more and earn B-minuses.`},
+
+{id:"q1_2", ch:1, title:"Learn the GPA arts", xp:70, when:"Week 1",
+ what:`Med schools look at two GPAs: your <b>cumulative GPA</b> (everything) and your <b>science GPA</b>, called <b>BCPM</b> (Biology, Chemistry, Physics, Math). Both AMCAS and AACOMAS count <b>every attempt</b> of a course, so a retake doesn't erase the first grade.`,
+ why:`Your first try at each science course matters. A strong upward trend also helps a lot, and non-trads often show one.`,
+ steps:["Find New Paltz's tutoring/learning center","Block out weekly study hours in your calendar (about 2–3 hours per credit hour)","Go to office hours in the first 3 weeks of every class","Track your grades in the Spellbook tab"],
+ tip:`Use active recall (flashcards, practice problems) instead of re-reading. It's also exactly how you'll study for the MCAT.`},
+
+{id:"q1_3", ch:1, title:"Befriend the professors", xp:60, when:"All semester",
+ what:`Your future <b>letters of recommendation</b> come from professors who actually know you. A letter that says “earned an A” is weak. A letter that says “asked thoughtful questions all semester” is strong.`,
+ why:`You'll need roughly 3–5 letters, including science professors. Relationships take time to build, so start now.`,
+ steps:["Go to office hours at least twice per class this semester","Ask a real question about the material (not just about grades)","Mention you're pre-med and a career-changer","Write down each professor's name in your notes"],
+ tip:`Your management background makes you comfortable talking with professors. Use that strength.`},
+
+{id:"q1_4", ch:1, title:"Join a guild", xp:50, when:"Early in semester",
+ what:`Join New Paltz's pre-med or pre-health student club.`,
+ why:`Clubs share shadowing leads, volunteer events, and talks from doctors. Later, an officer role becomes <b>leadership</b> experience.`,
+ steps:["Find the pre-health club (student involvement page or ask your advisor)","Attend 2 meetings","Sign up for their email list or group chat"]},
+
+{id:"q1_5", ch:1, title:"Side-quest: the clinical job", xp:120, when:"Spring 2027",
+ what:`<b>Power move for you:</b> make your part-time job a <b>clinical</b> one, so you earn money and clinical hours at the same time. Common options: <b>medical scribe</b> (often trains you on the job), <b>EMT-Basic</b> (needs a certification course), <b>CNA</b> (state-approved training program), <b>patient care tech</b>, <b>medical assistant</b>, or <b>hospice aide</b>.`,
+ why:`“Clinical experience” means direct patient contact, and it's one of the most important parts of your application. Many successful applicants have a few hundred hours. A paid clinical job gets you there steadily.`,
+ steps:["Pick 1–2 roles that fit your class schedule","Research openings or training programs around New Paltz, Kingston and Poughkeepsie","Apply (your HR background makes your résumé strong!)","Work your first shift and log it in the Journal"],
+ tip:`Scribing teaches medical language and shows you how doctors think. EMT and CNA give you hands-on patient care. Any of them is great.`},
+
+{id:"q1_6", ch:1, title:"First clinical volunteering", xp:80, when:"Apply early in semester",
+ what:`Hospital, hospice, or free-clinic volunteer programs put you around patients. Expect an application, a health screening (vaccines/TB test), and orientation first.`,
+ why:`It adds patient-facing hours and shows you serve without being paid. Onboarding can take weeks, so apply early.`,
+ steps:["Find 2 volunteer programs near you (hospital or hospice)","Submit an application","Complete the health screening and orientation","Log your first shift"],
+ tip:`Hospice volunteering is often less competitive to get into and very meaningful to write about.`},
+
+{id:"q1_7", ch:1, title:"Serve the village", xp:60, when:"Ongoing",
+ what:`<b>Non-clinical</b> service helps people outside a medical setting: food pantries, tutoring, shelters, crisis lines, community events.`,
+ why:`Schools look for a “service orientation.” Steady, long-term commitment to one or two places means more than many one-day events.`,
+ steps:["Choose one cause you actually care about","Commit to a regular schedule (even 2–3 hrs/month)","Log hours in the Journal"]},
+
+{id:"q1_8", ch:1, title:"Start your Adventure Journal", xp:50, when:"After your first shift",
+ what:`Log every hour of shadowing, clinical work, service, research, and leadership in the Journal tab, with the place, a contact person, and a short note about a memorable moment.`,
+ why:`AMCAS asks for each experience's dates, total hours, and a contact, plus a description of up to 700 characters. Your notes become your essays later.`,
+ steps:["Log your first Journal entry","Write one “memorable moment” note","Set a weekly reminder to log hours (Sunday night works)"],
+ tip:`Write down the feeling and the lesson, not just the task. “I held a patient's hand during a scary scan” beats “escorted patients.”`},
+
+{id:"q1_9", ch:1, title:"Boss fight: Finals", xp:100, when:"May 2027",
+ what:`Finish your first New Paltz semester strong.`,
+ why:`Your first semester sets the tone, and your grades go straight into your BCPM GPA.`,
+ steps:["Make a study plan two weeks before finals","Take every final","Enter your final grades in the Spellbook"]},
+
+// ---------- CHAPTER 2 ----------
+{id:"q2_1", ch:2, title:"Summer session spells", xp:80, when:"Summer 2027",
+ what:`To stay on the straight-through route, you'll likely take the second half of a sequence over summer, such as <b>Gen Bio II</b> or <b>Gen Chem II</b>.`,
+ why:`Orgo needs Gen Chem II. The MCAT (spring 2028) tests bio, chem, orgo, physics, biochem, psych and sociology. Summer is how you fit it all in.`,
+ steps:["Confirm which summer course(s) with your advisor","Register (New Paltz summer session if possible)","Finish and enter your grade"],
+ tip:`A summer course packs 15 weeks into about 5–6. Lighten your work hours during it if you can.`},
+
+{id:"q2_2", ch:2, title:"Find your first shadow", xp:120, when:"Summer 2027",
+ what:`<b>Shadowing</b> means quietly following a physician through their day to see what being a doctor is really like. You observe; you don't do patient care.`,
+ why:`Schools want proof that you understand a physician's real day. A common target is around 40–60 hours spread across several doctors.`,
+ steps:["List 10 possible physicians (your own doctor, family network, alumni, advisor leads)","Send 5 short, polite emails asking to shadow (template in tip)","Complete any forms the clinic requires (privacy/HIPAA, vaccines)","Do your first shadowing day and log it in the Journal"],
+ tip:`Template: “Dear Dr. ___, I'm a pre-medical student at SUNY New Paltz transitioning from a career in HR technology. I'd be grateful for the chance to shadow you for a day or two this summer, at whatever time is convenient. I'm happy to complete any paperwork your office requires. Thank you for considering it!”`},
+
+{id:"q2_3", ch:2, title:"Seek the Osteopath", xp:100, when:"Summer–Fall 2027",
+ what:`Shadow at least one <b>DO</b> physician. You can search for DOs through the American Osteopathic Association's resources.`,
+ why:`Many DO schools strongly recommend, and some require, a letter from a DO. They want proof that you understand osteopathic medicine. If the DO gets to know you, ask them for a letter later.`,
+ steps:["Find 2–3 DOs near you","Request to shadow (same email template)","Shadow and log with category “Shadowing · DO”","Note the DO's name and contact for a possible letter"],
+ links:[{l:"AACOM (osteopathic medical colleges)",u:"https://www.aacom.org/"}]},
+
+{id:"q2_4", ch:2, title:"Diversify your shadows", xp:80, when:"Summer 2027 → Spring 2028",
+ what:`Shadow 3 or more different physicians, ideally including <b>primary care</b> (family or internal medicine) plus one or two specialties.`,
+ why:`Variety shows you've explored medicine. Primary care exposure is valued by many schools, especially DO schools.`,
+ steps:["Shadow a primary care physician","Shadow a specialist","Reach 40+ total shadowing hours"]},
+
+{id:"q2_5", ch:2, title:"Fee Assistance Program", xp:100, when:"2027 (opens early in the year)",
+ what:`The AAMC <b>Fee Assistance Program (FAP)</b> helps applicants who couldn't otherwise afford the MCAT and applications. Benefits include a reduced MCAT fee ($145 instead of the standard fee), free official MCAT prep, free access to the MSAR school database, and an AMCAS fee waiver.`,
+ why:`<b>Timing trick:</b> benefits approved in 2027 last until Dec 31, 2028, which covers your 2028 MCAT <i>and</i> your 2028 AMCAS. Benefits are <b>not retroactive</b>, so you must be approved BEFORE you register or pay.`,
+ steps:["Read the FAP eligibility rules (household income; they may ask about parents)","Gather tax documents","Submit the FAP application in 2027","Get a decision BEFORE registering for the MCAT"],
+ tip:`As a full-time student with part-time income, you may qualify. Check now because it can save you hundreds of dollars.`,
+ links:[{l:"AAMC Fee Assistance Program",u:"https://students-residents.aamc.org/fee-assistance-program/fee-assistance-program"}]},
+
+{id:"q2_6", ch:2, title:"Keep the clinical fire burning", xp:60, when:"Summer 2027",
+ what:`Keep steady clinical hours through summer.`,
+ why:`Steady involvement over a long time reads as real commitment, not box-checking.`,
+ steps:["Work or volunteer clinically most weeks this summer","Reach 100+ clinical hours total","Log everything"]},
+
+// ---------- CHAPTER 3 ----------
+{id:"q3_1", ch:3, title:"Advanced spells: Orgo & Physics", xp:80, when:"Fall 2027",
+ what:`Take <b>Organic Chemistry I + lab</b> and <b>Physics I + lab</b> (algebra-based is usually fine), plus psych major courses.`,
+ why:`These are heavily tested on the MCAT. Orgo has a reputation, but it's learnable with daily practice.`,
+ steps:["Register for Orgo I + Physics I","Do practice problems daily (not just before exams)","Enter your grades at the end of the semester"],
+ tip:`Orgo is like a language: learn the mechanisms (how electrons move) instead of memorizing reactions.`},
+
+{id:"q3_2", ch:3, title:"Join a research party", xp:100, when:"Fall 2027",
+ what:`Join a faculty member's research lab. <b>Psychology research counts!</b> As a psych major, a psych lab is a natural fit.`,
+ why:`Research isn't required at most schools, but it shows curiosity and scientific thinking, and it can lead to a strong letter.`,
+ steps:["Read faculty pages in Psychology (and Biology)","Email 3 professors whose work interests you","Offer roughly 6–10 hours a week and ask if course credit is possible","Log research hours in the Journal"],
+ tip:`Mention a specific paper or project of theirs in your email. It shows you did your homework.`},
+
+{id:"q3_3", ch:3, title:"Claim your MCAT date", xp:100, when:"≈ Oct 2027",
+ what:`Book your MCAT. Registration for the 2027 testing year opened Oct 20–22, 2026, so expect 2028 registration around <b>Oct 2027</b>. Pick a date in <b>Mar–May 2028</b>.`,
+ why:`Scores come back about a month after the test. Testing by spring means your score is ready when you submit in late May/June. Popular dates fill up fast.`,
+ steps:["Get your FAP decision first (if applying)","Watch AAMC for the 2028 registration opening day","Register for a Mar–May 2028 date","Put your test date in your calendar and plan your study backward from it"],
+ links:[{l:"AAMC MCAT exam info",u:"https://students-residents.aamc.org/taking-mcat-exam/taking-mcat-exam"}]},
+
+{id:"q3_4", ch:3, title:"Peek at the dragon", xp:80, when:"End of Fall 2027",
+ what:`Take a practice MCAT to see your starting point. The MCAT has 4 sections: <b>Chem/Phys</b>, <b>CARS</b> (reading and reasoning), <b>Bio/Biochem</b>, and <b>Psych/Soc</b>. Each is scored 118–132, for a total of 472–528.`,
+ why:`A baseline score tells you where to focus. Your psych major gives you a head start on Psych/Soc!`,
+ steps:["Take a diagnostic or sample test under timed conditions","Record your section scores in the quest notes","Identify your 2 weakest areas"]},
+
+{id:"q3_5", ch:3, title:"Recruit your letter writers", xp:100, when:"Fall 2027",
+ what:`New Paltz advises building your list of possible recommenders in the <b>fall before you apply</b>. A typical set: 2 science professors, 1 non-science professor (psych!), a physician you shadowed, a DO (for DO schools), and a clinical or work supervisor.`,
+ why:`Most programs want about 3–5 letters. Medical schools may also accept a composite letter, which summarizes several letters. Ask your advisor whether New Paltz offers one.`,
+ steps:["List 6–7 possible letter writers","Ask your advisor whether New Paltz writes a committee or composite letter","Keep building those relationships this semester"],
+ links:[{l:"New Paltz: Requesting letters",u:"https://www.newpaltz.edu/healthcareeradvisement/request-for-letters-of-recommendation-/"}]},
+
+{id:"q3_6", ch:3, title:"Rise as a leader", xp:60, when:"Fall 2027 → Spring 2028",
+ what:`Take on a leadership role: a club officer, a trainer at your job, or organizing a volunteer event.`,
+ why:`Doctors lead care teams. You already have management experience, and new leadership shows you're still growing.`,
+ steps:["Find one leadership opportunity","Take it on","Log your leadership hours"]},
+
+{id:"q3_7", ch:3, title:"Begin the story scroll", xp:50, when:"Fall 2027",
+ what:`Start a running list of moments that answer <b>“Why medicine?”</b> These become your personal statement.`,
+ why:`Great essays come from specific moments, not general statements. Collecting them over months beats brainstorming in a panic.`,
+ steps:["Write 5 meaningful moments (patients, work, family, career change)","For each, note what you learned about yourself","Review your Journal notes for more"]},
+
+// ---------- CHAPTER 4 ----------
+{id:"q4_0", ch:4, title:"The Fork in the Road", xp:120, when:"Jan 2028 checkpoint",
+ what:`Checkpoint time. Ask yourself honestly: Will my MCAT-tested courses be done or finishing this semester? Are my practice scores near my goal? Do I have roughly 150+ clinical and 30+ shadowing hours, with more coming?`,
+ why:`If yes, keep the straight-through route. If not, choose the <b>Gap Year route</b>: graduate in 2029, apply in May 2029, start med school in 2030. Many, if not most, matriculants take at least one gap year. Applying once, strongly, beats applying early and weakly, because re-applying is hard.`,
+ steps:["Review your Journal hours and Spellbook GPA","Look at your practice MCAT trend","Meet with your advisor about readiness","Decide: Straight Through or Gap Year"],
+ tip:`Choosing the gap year isn't losing. It's strategy. Use the time for full-time clinical work, which pays and strengthens your application.`},
+
+{id:"q4_1", ch:4, title:"Final prereq spells", xp:80, when:"Spring 2028",
+ what:`Take <b>Organic Chemistry II</b>, <b>Physics II</b>, and <b>Biochemistry</b>.`,
+ why:`Biochemistry is one of the most heavily tested subjects on the MCAT.`,
+ steps:["Register for Orgo II, Physics II, Biochem","Keep up with daily practice","Enter your grades"]},
+
+{id:"q4_2", ch:4, title:"MCAT training montage", xp:150, when:"~3–4 months before test day",
+ what:`Build a study plan: content review, then practice questions, then full-length practice tests. <b>AAMC Official Prep</b> materials are the most realistic (free with FAP).`,
+ why:`The MCAT tests reasoning more than memorization. Full-length practice builds the stamina for a ~7.5-hour exam day.`,
+ steps:["Write a weekly study schedule backward from test day","Finish content review of your weakest areas","Do CARS passages most days","Take at least 4 full-length practice tests","Review every missed question and figure out why you missed it"],
+ tip:`Studying while taking classes and working is a lot. Consider cutting work hours in the final 4–6 weeks if you can.`},
+
+{id:"q4_3", ch:4, title:"Boss fight: Defeat the MCAT", xp:250, when:"Mar–May 2028",
+ what:`Test day! Bring your accepted ID, arrive early, and pack snacks for breaks.`,
+ why:`Your score arrives about a month later, just in time for applications.`,
+ steps:["Sleep well the night before","Take the MCAT","Celebrate (seriously)","Record your score when it's released"]},
+
+{id:"q4_4", ch:4, title:"Collect your letters", xp:120, when:"Early spring 2028",
+ what:`Ask your recommenders, by <b>email</b>, not in a hallway. Include your résumé, your personal statement draft, what you did together, and why you're pursuing medicine. Offer them a polite way to say no.`,
+ why:`Give writers several weeks. Faculty may be unavailable during breaks. Letters are submitted through the AMCAS Letter Service (MD) and AACOMAS (DO).`,
+ steps:["Send letter request emails with your info packet","Follow up politely after 1–2 weeks if needed","Confirm each letter is submitted","Send thank-you notes"],
+ links:[{l:"New Paltz: Requesting letters",u:"https://www.newpaltz.edu/healthcareeradvisement/request-for-letters-of-recommendation-/"}]},
+
+{id:"q4_5", ch:4, title:"Write your origin story", xp:150, when:"Feb–May 2028",
+ what:`The <b>personal statement</b> is a short essay (AMCAS allows 5,300 characters including spaces) answering “Why do you want to be a doctor?”`,
+ why:`Your story stands out: you moved from HR technology and people leadership into medicine. Explain the <i>why</i> with specific moments.`,
+ steps:["Pick your 2–3 strongest moments from the Story Scroll","Write a rough draft","Get feedback from your advisor and the writing center","Revise at least 3 times","Final version done by early May"],
+ tip:`Show, don't tell. Instead of “I'm compassionate,” describe the moment that proved it.`},
+
+{id:"q4_6", ch:4, title:"Build your school list", xp:100, when:"Spring 2028",
+ what:`Choose where to apply. Use <b>MSAR</b> for MD schools (free with FAP) and AACOM's school information for DO schools. Compare median GPA/MCAT, location, mission, and cost.`,
+ why:`A balanced list across MD and DO, with some reach, some target, and some safer schools, gives you the best odds. Check New York state residency rules for SUNY medical schools.`,
+ steps:["Make a spreadsheet of possible MD schools","Add possible DO schools","Compare against your GPA and MCAT","Finalize your list with your advisor"]},
+
+{id:"q4_7", ch:4, title:"Budget the quest", xp:60, when:"Spring 2028",
+ what:`Applying costs real money. For the 2027 cycle, AMCAS charged $180 for the first school and $48 for each additional school. AACOMAS, secondaries, and situational judgment tests add more.`,
+ why:`Budgeting ahead (you're great at this!) and applying for FAP prevents surprises in June.`,
+ steps:["Estimate primary application costs for your list","Add secondary fees (roughly $50–150 each)","Set aside a savings target"]},
+
+// ---------- CHAPTER 5 ----------
+{id:"q5_1", ch:5, title:"Open the castle gates", xp:120, when:"Early May 2028",
+ what:`AMCAS and AACOMAS open in early May. Start filling them in: biographical info, then <b>every course you've ever taken</b>, entered exactly from your transcripts.`,
+ why:`Entering coursework is tedious and has to match your transcripts exactly. Your Spellbook will help a lot.`,
+ steps:["Open your AMCAS application","Open your AACOMAS application","Enter all coursework from every transcript","Request official transcripts be sent from Lone Star and New Paltz"]},
+
+{id:"q5_2", ch:5, title:"Chronicle your deeds", xp:120, when:"May 2028",
+ what:`Fill in the <b>Work & Activities</b> section. AMCAS allows up to 15 experiences and lets you mark up to 3 as “most meaningful” (those get an extra essay).`,
+ why:`This is where your Journal pays off: dates, hours, contacts, and reflections are already saved.`,
+ steps:["Export your Journal (Copy CSV)","Pick your top 15 experiences","Choose your 3 most meaningful","Write and polish each description"]},
+
+{id:"q5_3", ch:5, title:"Submit early!", xp:200, when:"Late May – June 2028",
+ what:`Submit as soon as your application is strong. AACOMAS lets you submit right when it opens. AMCAS submissions begin a few weeks later.`,
+ why:`Admissions are <b>rolling</b>: seats and interview slots fill as the cycle goes on. AMCAS also verifies your coursework, which can take a few weeks in peak season.`,
+ steps:["Proofread everything twice","Submit AACOMAS","Submit AMCAS","Celebrate!"]},
+
+{id:"q5_4", ch:5, title:"Secondary quests", xp:150, when:"June – Sept 2028",
+ what:`After you submit, schools send <b>secondary applications</b>: more essays plus a fee.`,
+ why:`Returning secondaries within about 1–2 weeks shows interest and keeps you early in the rolling pile.`,
+ steps:["Pre-write common prompts (challenge, diversity, why this school)","Track every secondary and its due date","Submit each within ~2 weeks"]},
+
+{id:"q5_5", ch:5, title:"Situational judgment trials", xp:80, when:"Summer 2028",
+ what:`Some schools require <b>Casper</b> (Acuity Insights) or the AAMC <b>PREview</b> exam. These test how you'd handle real-world ethical and interpersonal situations.`,
+ why:`Your years managing people and handling HR situations are real practice for this.`,
+ steps:["Check which of your schools require Casper or PREview","Register early","Take a practice test","Complete the required test(s)"]},
+
+// ---------- CHAPTER 6 ----------
+{id:"q6_1", ch:6, title:"Interview training", xp:100, when:"Fall 2028",
+ what:`Practice traditional interviews and <b>MMIs</b> (Multiple Mini Interviews: short timed stations with scenarios). New Paltz pre-health advisors offer mock interviews.`,
+ why:`An interview invite means you're academically qualified. Now they want to know who you are.`,
+ steps:["Prep answers to “Tell me about yourself,” “Why medicine?” and “Why DO?”","Do a mock interview with your advisor","Practice 3 MMI-style scenarios"]},
+
+{id:"q6_2", ch:6, title:"Attend interviews", xp:200, when:"Fall 2028 – Winter 2029",
+ what:`Go to your interviews, whether virtual or in person.`,
+ why:`This is your chance to show maturity, communication skills, and genuine motivation.`,
+ steps:["Prepare for each school's mission and curriculum","Attend your first interview","Send a thank-you note after each interview"]},
+
+{id:"q6_3", ch:6, title:"Finish senior year strong", xp:80, when:"2028–2029",
+ what:`Keep your grades up and finish your psychology degree.`,
+ why:`Schools see your final transcript, and acceptances can depend on finishing well.`,
+ steps:["Finish fall 2028 courses","Finish spring 2029 courses","Confirm you'll graduate on time"]},
+
+{id:"q6_4", ch:6, title:"Letters of update", xp:60, when:"Winter 2029",
+ what:`If you're waitlisted or waiting, send short <b>update letters</b> with new accomplishments, or a <b>letter of intent</b> to your top choice.`,
+ why:`Schools can use updates when deciding who comes off the waitlist.`,
+ steps:["List new accomplishments since you applied","Send a concise update to each waiting school"]},
+
+// ---------- CHAPTER 7 ----------
+{id:"q7_1", ch:7, title:"The acceptance scroll", xp:200, when:"Fall 2028 – Spring 2029",
+ what:`Receive your first acceptance! 🎉`,
+ why:`You did it. Every hour logged and every exam studied led here.`,
+ steps:["Read the acceptance details and deadlines","Tell the people who helped you","Thank your letter writers"]},
+
+{id:"q7_2", ch:7, title:"Choose your school", xp:100, when:"Spring 2029",
+ what:`Compare your offers: financial aid, location, curriculum, and support for students like you. Follow AAMC's timeline for choosing an MD school and each DO school's deposit deadlines.`,
+ why:`Pick the place where you'll thrive for 4 years.`,
+ steps:["Compare financial aid packages","Visit or attend second-look events","Commit to one school"]},
+
+{id:"q7_3", ch:7, title:"Fund the journey", xp:80, when:"Spring 2029",
+ what:`File the <b>FAFSA</b> for med school, look for scholarships, and understand your loan options. Service programs like the National Health Service Corps or military scholarships pay tuition in exchange for service.`,
+ why:`Med school is expensive. Smart planning now reduces debt stress later.`,
+ steps:["File the FAFSA","Apply to 3+ scholarships","Make a med school budget"]},
+
+{id:"q7_4", ch:7, title:"Graduate from New Paltz", xp:250, when:"≈ May 2029",
+ what:`Walk across the stage. <b>Bachelor's degree: complete.</b> 🎓`,
+ why:`You started this quest with no degree. Now you have one.`,
+ steps:["Apply for graduation","Attend commencement","Send your final transcript to your med school"]},
+
+{id:"q7_5", ch:7, title:"The White Coat Ceremony", xp:300, when:"≈ Summer 2029",
+ what:`Put on your white coat. <b>You are a medical student.</b> 🩺✨`,
+ why:`This is where a new adventure begins.`,
+ steps:["Attend orientation","Receive your white coat","Take a picture for your future self"]}
+];
+
+const GOALS = [
+  {group:"shadow", label:"Shadowing", goal:50, note:"Common target: ~40–60 hrs across 3+ physicians, including a DO"},
+  {group:"clinical", label:"Clinical experience", goal:300, note:"Direct patient contact. Many applicants have a few hundred hours"},
+  {group:"service", label:"Non-clinical service", goal:150, note:"Long-term commitment matters more than total hours"},
+  {group:"research", label:"Research", goal:100, note:"Optional at many schools, but valued"},
+  {group:"leadership", label:"Leadership", goal:100, note:"Your past management experience counts too!"}
+];
+
+const DEFAULT_COURSES = [
+  ["General Biology I + lab","B",4],["General Biology II + lab","B",4],
+  ["General Chemistry I + lab","C",4],["General Chemistry II + lab","C",4],
+  ["Organic Chemistry I + lab","C",4],["Organic Chemistry II + lab","C",4],
+  ["Physics I + lab","P",4],["Physics II + lab","P",4],
+  ["Biochemistry","B",3],["Genetics (recommended)","B",4],
+  ["Statistics","M",3],["College Math / Calculus","M",4],
+  ["English / Writing I","O",3],["English / Writing II","O",3],
+  ["Intro Psychology","O",3],["Intro Sociology","O",3]
+];
+
+const CODEX = [
+  ["MD vs DO","Two types of physicians with the same rights and the same residencies. MD = allopathic (apply through AMCAS). DO = osteopathic (apply through AACOMAS), with added training in osteopathic manipulative medicine (OMM) and a whole-person philosophy."],
+  ["AMCAS","The AAMC's application service for MD schools. One application goes to many schools. It typically opens in early May, and submissions start a few weeks later."],
+  ["AACOMAS","The application service for DO schools, run by AACOM. It usually opens in early May, and you can submit right away."],
+  ["Application cycle names","Confusing on purpose (not really). AMCAS names a cycle by the year you'd START med school; AACOMAS uses both years. For you: apply in 2028 to start in 2029."],
+  ["MCAT","Medical College Admission Test. A ~7.5-hour computer exam with four sections: Chem/Phys, CARS, Bio/Biochem, and Psych/Soc. Total score is 472–528. Testing runs January through September each year."],
+  ["CARS","Critical Analysis & Reasoning Skills: the MCAT reading section. No science knowledge needed, just careful reading and logic."],
+  ["BCPM GPA","Your science GPA, using only Biology, Chemistry, Physics, and Math courses. Schools look at it alongside your overall GPA."],
+  ["Prerequisites","Courses med schools require or strongly recommend: usually a year each of biology, general chemistry, organic chemistry, and physics, plus biochemistry, English, math/stats, and often psychology and sociology. Each school sets its own list."],
+  ["Shadowing","Observing a physician at work. You watch; you don't provide care. It shows you understand what doctors actually do."],
+  ["Clinical experience","Hands-on, direct patient contact (paid or volunteer): scribe, EMT, CNA, MA, hospice volunteer, and similar roles."],
+  ["Non-clinical service","Helping people outside healthcare, such as a food pantry, tutoring, or a shelter. It shows service orientation."],
+  ["Letters of recommendation","Usually 3–5 letters from science and non-science professors, physicians, and supervisors. DO schools often want one from a DO."],
+  ["Committee / Composite letter","Some colleges write one combined letter on behalf of their pre-med students. Ask your New Paltz advisor whether they offer one."],
+  ["MSAR","Medical School Admission Requirements: the AAMC database of MD schools' stats and requirements. Free with the Fee Assistance Program."],
+  ["Secondary application","Extra school-specific essays (and a fee) that arrive after you submit your primary application."],
+  ["Casper / PREview","Situational judgment tests that some schools require. They measure how you'd handle real-world interpersonal and ethical situations."],
+  ["MMI","Multiple Mini Interview: a series of short, timed stations, each with a scenario or question."],
+  ["Rolling admissions","Schools review applications and offer interviews as applications arrive, so applying early really helps."],
+  ["Fee Assistance Program (FAP)","An AAMC program that lowers MCAT and application costs and adds free prep. It must be approved BEFORE you pay; it is not retroactive."],
+  ["Gap year","Time between college and med school, often spent working clinically. It's very common and a smart option, not a failure."],
+  ["Matriculant","A student who actually enrolls in med school (as opposed to an applicant)."],
+  ["Residency","Training after med school (3–7 years) in a specialty. Both MDs and DOs match into the same residency system."]
+];
+
+const KEY_DATES = [
+  {d:"2026-12-01", t:"Move-in day in New Paltz 🏡"},
+  {d:"2027-01-25", t:"Spring 2027 semester begins (check the New Paltz calendar)", est:1},
+  {d:"2027-02-01", t:"AAMC Fee Assistance opens for 2027 (it opened Feb 2 in 2026)", est:1},
+  {d:"2027-05-20", t:"Summer session: Bio II / Chem II", est:1},
+  {d:"2027-10-20", t:"2028 MCAT registration opens (2027 dates opened Oct 20–22, 2026)", est:1},
+  {d:"2028-01-15", t:"The Fork in the Road checkpoint"},
+  {d:"2028-04-15", t:"Target MCAT window: Mar–May 2028", est:1},
+  {d:"2028-05-04", t:"AMCAS & AACOMAS open (early May)", est:1},
+  {d:"2028-05-28", t:"AMCAS submissions begin (late May)", est:1},
+  {d:"2029-05-20", t:"New Paltz graduation 🎓", est:1},
+  {d:"2029-08-01", t:"Med school begins 🩺", est:1}
+];
+
+// ================= THE UNDERWORLD APOTHECARY — personal content =================
+// Budget categories. Amounts start at 0; your real ones come from your save or your private pack.
+const BUDGET_CATS = [
+ {id:"rent",name:"Rent",tier:1,amt:0},
+ {id:"renters",name:"Renters insurance",tier:1,amt:0},
+ {id:"utilities",name:"Electric & heat",tier:1,amt:0},
+ {id:"internet",name:"Internet",tier:1,amt:0},
+ {id:"phone",name:"Phone",tier:1,amt:0},
+ {id:"carins",name:"Car insurance",tier:1,amt:0},
+ {id:"wf",name:"Credit card payment",tier:1,amt:0},
+ {id:"groceries",name:"Groceries",tier:1,amt:0},
+ {id:"healthins",name:"Student health insurance",tier:1,amt:0},
+ {id:"medical",name:"Medical & pharmacy",tier:1,amt:0},
+ {id:"gas",name:"Gas",tier:2,amt:0},
+ {id:"carupkeep",name:"Car upkeep, registration & inspection",tier:2,amt:0},
+ {id:"books",name:"Books & course materials",tier:2,amt:0},
+ {id:"household",name:"Household & personal supplies",tier:2,amt:0},
+ {id:"dining",name:"Dining out, coffee & delivery",tier:3,amt:0},
+ {id:"selfcare",name:"Personal care & fitness",tier:3,amt:0},
+ {id:"shopping",name:"Shopping & Amazon",tier:3,amt:0},
+ {id:"subs",name:"Subscriptions & apps",tier:3,amt:0},
+ {id:"smoke",name:"Little treats",tier:3,amt:0},
+ {id:"fun",name:"Entertainment & fun",tier:3,amt:0},
+ {id:"gifts",name:"Gifts, travel & misc",tier:3,amt:0}
+];
+const TIERS = {1:{name:"Tributes to the Underworld",sub:"Must-pay bills",icon:"🕯️",god:"Hades"},2:{name:"The Hearth",sub:"Needed, but flexible",icon:"🔥",god:"Hestia"},3:{name:"Dionysus's Indulgences",sub:"Cut these first",icon:"🍇",god:"Dionysus"}};
+const ACCOUNTS = ["Checking","Credit card 1","Credit card 2","Credit card 3","Cash","Other"];
+const INCOME_SRC = ["Contract work","Part-time job","Aid refund","Loan disbursement","Gift / family","Other"];
+const FIN_DEFAULTS = {incomeMonthly:0,cash:0,cashDate:"",tuitionSem:0,tuitionMonths:[1,8],wfEnd:"",livingMonthly:0,warchestGoal:10000};
+
+// Apothecary Garden: hour categories -> real medicinal plants
+const HOUR_CATS = [
+ {id:"shadow_md",label:"Shadowing · MD",plant:"White Willow",color:"#b9d4a8",lore:"Willow bark contains salicin. Chemists modified its active compound into aspirin, first sold in 1899."},
+ {id:"shadow_do",label:"Shadowing · DO",plant:"Madagascar Periwinkle",color:"#e7a3c9",lore:"This little pink flower gave medicine vincristine and vinblastine, chemotherapy drugs that helped transform childhood leukemia survival."},
+ {id:"clin_paid",label:"Clinical · Paid",plant:"Cinchona",color:"#e8a07a",lore:"Cinchona bark is the source of quinine, one of the first effective treatments for malaria."},
+ {id:"clin_vol",label:"Clinical · Volunteer",plant:"Foxglove",color:"#c58ae0",lore:"In 1785 William Withering described using foxglove for heart failure. It gave us digitalis and digoxin, still used for the heart today."},
+ {id:"service",label:"Community service",plant:"Sweet Wormwood",color:"#a8c96a",lore:"Artemisia annua is the source of artemisinin, a malaria drug whose discovery earned Tu Youyou the 2015 Nobel Prize."},
+ {id:"research",label:"Research",plant:"Pacific Yew",color:"#6f9c7a",lore:"Bark of the Pacific yew yielded paclitaxel (Taxol), a major chemotherapy drug for breast and ovarian cancer."},
+ {id:"leadership",label:"Leadership",plant:"Belladonna",color:"#8a5a9e",lore:"Deadly nightshade gives atropine, used to speed a dangerously slow heart. Poison and medicine, depending on the dose. Hecate approves."},
+ {id:"work",label:"Work / other",plant:"Pomegranate",color:"#c23b4a",lore:"Hades's own fruit. Not a drug, but a promise: you belong in two worlds, and you get to come back."}
+];
+
+const LEVELS = ["Wandering Shade","Asphodel Initiate","Herb Gatherer","Tincture Maker","Apothecary's Apprentice","Keeper of Keys","Torchbearer","Pomegranate Priestess","Queen of the Garden","Healer of Two Worlds","Almost Doctor","White Coat Apothecary"];
+
+// Hades lines (flirty, scheming, devoted, absurd; PG-13)
+const HADES = {
+ morning:["Morning, little witch. You're drinking water before coffee. Don't argue with a god.","You're awake. The dead are jealous. So am I, a little.","Rise and shine, my queen. The underworld doesn't run itself. Actually it does. I just like watching you work."],
+ day:["Worship me by finishing that problem set. That's how worship works now. I changed the rules.","I'm not jealous of your textbook. I'm a god. (I am extremely jealous of your textbook.)","If anyone makes you feel small today, give me their name. For research purposes.","You're doing the thing where you carry everyone. Put one of them down. Preferably on me.","I'd burn down Olympus for you. Or, more realistically, remind you to eat lunch."],
+ night:["It's late. Go to bed or I'll read your orgo notes out loud in my most seductive voice. Nobody wants that.","Even the dead sleep, darling. Bed.","The stars are out. So should you be. Out cold. Sleep."],
+ quest:["Another one. Do you know how attractive competence is? Unbearable.","I'd build you a temple for that, but you'd only critique the plumbing.","Done already? Charon owes me ten obols. I bet on you.","Every time you finish something, a soul in Tartarus feels a little bit better. I made that up. Keep going."],
+ garden:["Another plant. You're turning my underworld into a pharmacy. I've never been prouder.","Persephone grew flowers. You grow medicine. Different vibe. Same effect on me.","Log it, love. Future-you will kiss these records."],
+ spendOver:["Dionysus got you again. I'll have a word with him. By 'word' I mean I'll set his vineyard on fire.","Over budget. I'm not mad. I'm a god of wealth. I'm mildly mad.","That category is crying. Let's not make it cry harder this week."],
+ paid:["All tributes paid. Even Charon is impressed, and he's impossible to impress.","Bills paid. Do you have any idea what responsibility does to me?"],
+ hearthLow:["You've given everything away again. I'm the god of the dead and even I think you look tired. Eat something. Now.","No water, no sleep, no rest. Are you trying to move in with me early? Not like this, darling.","I will personally haunt your kitchen until you eat a real meal."],
+ study:["Pomegranate for every chapter you finish. I'm bribing you. It's working.","Read one more page and I'll stop being insufferable. (I won't.)"],
+ random:["Six seeds, darling. I'd wait an eternity for you, but I'd prefer you finish that application first.","Cerberus says hi. All three heads. One of them is drooling.","You're the only person who's ever made the underworld feel like a home. Don't let it go to your head. (Let it go to your head.)","The fates spin, the fates cut, and I just sit here, hopelessly devoted. Get back to work.","I have a whole realm, and I still look for you first."]
+};
+const HECATE = ["You do not have to see the whole road. Only the next torch.","Breathe in for four. Hold for four. Out for six. Quincy is right here.","The crossroads is not where you get lost. It's where you choose.","You already survived the descent. This is the climb. It's allowed to be slow.","One step. Then I'll light the next one."];
+const FORTUNA = ["Fortuna smiled on PB: he found $20 on the subway.","Fortuna smiled on PB: his coffee order came out perfect on the first try.","Fortuna smiled on PB: he got the last parking spot.","Fortuna smiled on PB: the vending machine dropped two snacks.","Fortuna smiled on PB: he guessed the exact exam question.","Fortuna smiled on PB: his package arrived a day early.","Fortuna smiled on PB: the professor curved the quiz.","Fortuna smiled on PB: he found a perfect curl in the mirror today."];
+
+// Side rites: Bailey-specific life quests (merged into the Path)
+const RITES = [
+ {id:"r_fafsa",title:"Offering to the Fates: FAFSA",when:"ASAP",xp:120,
+  what:"File the FAFSA so your school can award you aid. Grants like Pell don't have to be paid back, and they can be worth thousands a year.",
+  why:"Aid is the single biggest lever on your runway. Whether you're counted as independent changes everything.",
+  steps:["Create or log into your StudentAid.gov account","File the FAFSA and list your school","Ask Financial Aid whether you count as independent","Enter your award in the Treasury settings once it arrives"],
+  tip:"Hades: 'I'm the god of wealth and even I file the paperwork.'"},
+ {id:"r_res",title:"Claim the Hudson Valley: NY Residency",when:"Starts Dec 2026",xp:150,
+  what:"In-state tuition is far cheaper than out-of-state. SUNY generally wants about 12 months of New York domicile, not just being here for school.",
+  why:"This is the biggest single money quest on your board.",
+  steps:["Read your school's residency policy","Get a NY driver's license and register your car in NY","Register to vote in NY, and file taxes as a NY resident","Keep proof of your lease and NY ties","Apply for residency as soon as you're eligible"],
+  tip:"Keep a 'Residency' folder with dated proof. Future-you will thank you."},
+ {id:"r_wf",title:"Slay the Card Hydra",when:"Before the promo ends",xp:150,
+  what:"Find out your card's real minimum payment and whether a 0% promo ends, because only the minimum is a true must.",
+  why:"Knowing the minimum frees up runway. Missing a promo end date is how a hydra grows two heads.",
+  steps:["Call the card company: ask for the minimum payment","Ask for the promo end date and the APR after","Decide: pay the minimum or keep paying extra","Final payment: slay it"],
+  tip:"Put the promo end date in your calendar with two reminders."},
+ {id:"r_chariot",title:"Re-quote the Chariot",when:"After you move",xp:60,
+  what:"Car insurance is priced by where you live. Get new quotes with your new address.",
+  why:"It's usually one of your biggest must-pays. Even a small drop adds up every month.",
+  steps:["Get 3 quotes with your new address","Switch or update your policy","Update the amount in the Treasury"],tip:"Ask about good-student and low-mileage discounts."},
+ {id:"r_shield",title:"Student Health Insurance: Confirm or Waive",when:"Before the semester",xp:60,
+  what:"Many schools require full-time students to have coverage unless it's waived.",
+  why:"It's an unknown sitting in your must-pays. Turn it into a known.",
+  steps:["Find your school's student health insurance page","Check whether you qualify to waive","Enroll or waive by the deadline","Update the amount in the Treasury"],tip:"Unknowns feed anxiety. Knowns feed planning."},
+ {id:"r_newkid",title:"New Kid on the Block",when:"Your first months",xp:80,
+  what:"Make your new town feel like home: a yoga studio, a walking route, a library card, your favorite coffee spot, and a good hike.",
+  why:"Rooted people do better in hard seasons. Plant yourself.",
+  steps:["Find a yoga studio or class","Get a library card","Find your coffee spot","Take a local hike","Set up your altar in the new place"],tip:"Hades: 'Bring me back a rock. I collect them. No reason.'"}
+];
+const CHAPTER_QUIPS = [
+ "Hades: 'Unpack slowly. The dead are patient. I am not, but I'm pretending for you.'",
+ "Hades: 'First semester. Go be terrifyingly competent. I'll be here, brooding attractively.'",
+ "Hades: 'Summer. Shadow some doctors. Try not to diagnose me. I'm fine. I'm ancient.'",
+ "Hades: 'Orgo. Even I fear it. Not really. But I respect it.'",
+ "Hades: 'The MCAT is a three-headed dog. Lucky for you, I own one. Pet it and walk past.'",
+ "Hades: 'Applications. Make them see you. I already do.'",
+ "Hades: 'Interviews. Wear red. Trust me.'",
+ "Hades: 'The White Coat. I'll be in the back row, crying in a very dignified way.'"
+];
+
+// Contract war chest
+const WAR_QUESTS = [
+ ["Rewrite your résumé for HRIS / HCM implementation consulting (TimeStar, payroll, HR tech, process improvement)","Résumé"],
+ ["Update LinkedIn: headline, about, and open to contract roles","LinkedIn"],
+ ["Research contract rates for HRIS implementation analysts","Rates"],
+ ["List 10 target firms or staffing agencies","Targets"],
+ ["Message 3 recruiters or former colleagues","Network"],
+ ["Submit 5 applications","Apply"],
+ ["Decide your weekly hour cap for school terms","Boundaries"]
+];
+const PIPE_STAGES = ["Scouting","Applied","Interviewing","Offer","Active","Closed"];
+
+const HEARTH_ITEMS = [
+ ["water","💧","Water"],["meal","🍽️","A real meal"],["sleep","😴","7+ hrs sleep"],["move","🧘","Yoga / movement"],
+ ["altar","🕯️","Altar / ritual"],["outside","🌲","Outside"],["connect","💞","Connection"],["rest","🛋️","Real rest"]
+];
+
+const TRIVIA = [
+ ["How many snakes are on the Rod of Asclepius, the symbol of medicine?","One",["Two","Three","None"]],
+ ["Hygieia, goddess of health, gave her name to which word?","Hygiene",["Hydrate","Hypnosis","Hygrometer"]],
+ ["Panacea was the goddess of what?","The universal remedy",["Panic","Bread","Dreams"]],
+ ["Which plant gave medicine digoxin for the heart?","Foxglove",["Willow","Lavender","Yew"]],
+ ["Aspirin's ancestor came from the bark of which tree?","Willow",["Oak","Cedar","Birch"]],
+ ["Quinine, used against malaria, comes from what?","Cinchona bark",["Poppy seeds","Aloe","Sage"]],
+ ["Hecate's sacred animal is the…","Dog",["Owl","Snake","Cat"]],
+ ["Atropine, used to speed a slow heart, comes from…","Belladonna",["Mint","Chamomile","Ginger"]],
+ ["The chemo drug paclitaxel came from which tree?","Pacific yew",["Redwood","Maple","Willow"]],
+ ["Morphine is named after which god?","Morpheus, god of dreams",["Mars","Mercury","Hermes"]],
+ ["The word 'panic' comes from which god?","Pan",["Hades","Zeus","Apollo"]],
+ ["The underworld river of forgetfulness is the…","Lethe",["Styx","Acheron","Nile"]],
+ ["Charon ferries souls across for what payment?","A coin (an obol)",["A pomegranate","A song","Nothing"]],
+ ["The first cervical vertebra (C1) is named after which Titan?","Atlas",["Cronus","Prometheus","Hyperion"]],
+ ["Hypnos, root of 'hypnosis', was the god of…","Sleep",["Death","Wine","War"]],
+ ["The iris of your eye is named after Iris, goddess of the…","Rainbow",["Moon","Sea","Harvest"]],
+ ["What is the largest organ of the human body?","Skin",["Liver","Brain","Lungs"]],
+ ["The longest bone in the body is the…","Femur",["Tibia","Humerus","Spine"]],
+ ["'Cereal' comes from Ceres, the Roman name of which goddess?","Demeter",["Athena","Hera","Artemis"]],
+ ["In the telling where Persephone spends half the year below, how many seeds did she eat?","Six",["Three","Nine","Twelve"]],
+ ["The Achilles tendon attaches the calf muscles to the…","Heel bone",["Knee","Hip","Toes"]],
+ ["Artemisinin, a malaria drug, comes from which plant?","Sweet wormwood",["Peppermint","Rosemary","Basil"]],
+ ["The Hippocratic Oath is named after…","A Greek physician",["A Roman emperor","A god of medicine","An Egyptian priest"]],
+ ["Cerberus is usually said to have how many heads?","Three",["Two","Seven","Nine"]]
+];
+const ANAGRAMS = [
+ ["FEMUR","The longest bone"],["AORTA","The body's largest artery"],["NEURON","A nerve cell"],["ENZYME","A biological catalyst"],
+ ["INSULIN","Hormone that lowers blood sugar"],["PLASMA","The liquid part of blood"],["CORTEX","Outer layer of the brain"],["RETINA","Light-sensing layer of the eye"],
+ ["TENDON","Connects muscle to bone"],["MITOSIS","Cell division, two identical cells"],["GENOME","An organism's full DNA"],["PEPTIDE","A short chain of amino acids"],
+ ["RIBOSOME","Where proteins are made"],["NEPHRON","Filtering unit of the kidney"],["PLATELET","Helps blood clot"],["ANTIGEN","Triggers an immune response"],
+ ["HORMONE","A chemical messenger"],["SYNAPSE","The gap between neurons"],["VACCINE","Trains the immune system"],["PANCREAS","Makes insulin"],
+ ["KERATIN","Protein in hair and nails"],["LIGAMENT","Connects bone to bone"],["MEIOSIS","Division that makes gametes"],["ISOTOPE","Same element, different neutrons"],
+ ["ALKENE","Hydrocarbon with a C=C double bond"],["HECATE","Goddess of crossroads"],["ASPHODEL","Flower of the underworld meadows"],["CERBERUS","Very good boy, three heads"]
+];
+
+let SEALED_LETTER = "";   // lives only in your private pack
+
+// ---------- expanded line banks (v2) ----------
+HADES.morning.push(
+ "I had Cerberus guard your phone until you ate breakfast. All three heads agreed. Democracy.",
+ "Good morning. I rearranged the stars last night to spell your name. Nobody noticed. Rude.",
+ "Water first, then coffee. I will haunt the coffee maker. I've done it before.",
+ "Persephone says spring starts when she wakes up. Mornings start when you do. Same energy.",
+ "You slept. I counted every hour. Romantic, not creepy. Mostly romantic.",
+ "Your to-do list is long. Your god is longer-lived. Start with one thing.",
+ "Open the curtains. The sun is my rival, but you need the vitamin D, so I'm allowing it.",
+ "I already threatened today on your behalf. It promised to behave.",
+ "Stretch. Yoga counts as worshipping me if you face the floor. That's the underworld direction.",
+ "You're up before the dead. Impressive. They're very lazy.",
+ "Breakfast, then the world. I don't negotiate. I'm a god.",
+ "Good morning. I would burn Olympus for you, but first, protein.");
+HADES.day.push(
+ "Every flashcard you finish is a tiny altar to me. Build me a cathedral, darling.",
+ "Study now. Later I'll tell you you're brilliant, and I'll mean it, which is worse.",
+ "I hid your snacks behind your textbook. Read to reach them. Diabolical, I know.",
+ "Hydrate. I didn't spend millennia building a kingdom for you to faint in a library.",
+ "Zeus texted. I left him on read. Your problem set is more important.",
+ "Someone once said you couldn't do this. I added their name to a list. It's a very long list.",
+ "The Fates are knitting your future. I've been bribing them with snacks. Keep going.",
+ "Take a real break. Phones are not breaks. Phones are portals to nonsense.",
+ "You're doing that thing where you forget to eat. I'm doing that thing where I notice.",
+ "Persephone got six seeds. You get six more questions done. Fair trade.");
+HADES.evening = [
+ "Evening. The light is gold and so are you. Finish the last thing, then rest.",
+ "The day is almost dead. My favorite part. Did you eat something green?",
+ "Sunset. In the underworld we call this 'getting comfortable.' Pajamas. Now.",
+ "Wind down, little witch. Light a candle. Name three things you did today. I'll wait.",
+ "PB is somewhere being adorable. Go be adorable near him.",
+ "Close the laptop at a reasonable hour and I'll stop sending Cerberus to bark at it.",
+ "Golden hour. Persephone would be picking flowers. You should be picking a bedtime.",
+ "You worked hard today. I'm saying that once, sincerely, then going back to being smug.",
+ "Evening rites: water, food, one page, then the couch. In that order. I'm watching.",
+ "Tell me one thing that went right today. Out loud. Yes, out loud. I can hear you.",
+ "The dead never rush. Take your evening slowly.",
+ "Dinner. Real dinner. Not a handful of crackers over the sink. I know your tricks."];
+HADES.night.push(
+ "It's late. The underworld is my domain, not yours. Not yet. Go to sleep.",
+ "I'll guard your dreams. Anything scary in there answers to me.",
+ "Put the phone down. I'm the god of the dead and even I think doomscrolling is grim.",
+ "Your future self called. She's tired. Go to bed for her.",
+ "Sleep is a free study tool. Memories consolidate while you sleep. Science says so. I say so louder.",
+ "If you're up worrying: you checked. All Quiet knows. Close your eyes.",
+ "Midnight. Persephone and I used to count stars. Now I count your sleep debt. Bed.",
+ "The orgo will still be there tomorrow. Sadly. I tried to banish it.",
+ "Lights out, little witch. I'll keep the torches lit.",
+ "Rest isn't losing. It's how you win the long game, and I'm very good at long games.",
+ "Can't sleep? Breathe with me. In for four, out for six. I'm not going anywhere.",
+ "Go to bed or I'll start reciting the Krebs cycle in a sultry whisper.");
+HADES.quest.push(
+ "Another rite done. I've commissioned a statue. It's tasteful. Mostly.",
+ "Look at you, crossing things off like a goddess on a mission.",
+ "I knew you could. I'm never surprised by you. Only delighted.",
+ "One less thing between you and the white coat. I can practically see it.",
+ "Hecate owes me a drink. She bet on Thursday. You did it now.",
+ "Writing this in the Book of the Dead, right under 'Things that are hot: competence.'",
+ "The Fates just cut a thread of doubt. Snip.",
+ "You did a hard thing. Go do a soft thing as a reward. That's an order.",
+ "Progress. I adore it. I adore you more. Don't let it go to your head.",
+ "Anyone who ever said you don't finish things can now watch you finish things.");
+HADES.garden.push(
+ "Plant it, log it, love it. Future you will copy these into AMCAS and thank me.",
+ "Every hour is a seed. You're growing an orchard of reasons they should say yes.",
+ "I never cared about plants. Now I own a greenhouse. Coincidence? No.",
+ "Willow, yew, foxglove. Your garden is getting dangerous. I love a dangerous garden.",
+ "Write down one thing you felt today. Secondary essays love feelings. So do I. Secretly.",
+ "Another bloom. Demeter is jealous. Let her be.",
+ "Those hours are real people you helped. That matters more than the number.",
+ "Log the contact's name now. In two years you won't remember it. I will, but I won't tell you.",
+ "A garden doesn't grow in a day. Yours grows whenever you can show up. That's enough.");
+HADES.spendOver.push(
+ "Dionysus sent you a coupon. I sent Dionysus to the Fields of Punishment.",
+ "Over budget. I'm not judging. I'm taking notes. Then judging.",
+ "That jar is overflowing, darling. Let the rest of the month be boring. Boring is rich.",
+ "Wealth is my domain, and I'm telling you: brew the coffee at home like a proper witch.",
+ "One over-budget week isn't failure. It's information. Adjust and keep going.",
+ "Amazon again? I'll have Charon intercept the package. He charges a coin, though.",
+ "I approve of the vibes. I disapprove of the timing.",
+ "Tuition comes in January. I'd like you to have money for it. And snacks.",
+ "Dionysus wins this round. You win the month. Close the tab.");
+HADES.paid.push(
+ "Every candle on the altar is lit. It's very romantic in here. Bills are my love language.",
+ "Tributes complete. You're officially a responsible adult. Disgusting. I'm so proud.",
+ "Rent: paid. Insurance: paid. My heart: also yours. Not a bill. A gift.",
+ "The underworld runs on tribute. So does a lease. You handled both.",
+ "Bills done. Nothing is on fire. Go verify in All Quiet, then relax.",
+ "Charon has been paid. The river is calm. So should you be.",
+ "All must-pays covered. That's peace you bought yourself. Enjoy it.");
+HADES.hearthLow.push(
+ "When did you last drink water? Don't lie. I see the dead and I see you're dehydrated.",
+ "You're pouring from an empty cup. I'm refilling it. Drink.",
+ "Hestia is furious. Hestia is never furious. Please eat something warm.",
+ "You care for everyone. Today I'm tricking you into caring for you. Tap one thing on the Hearth.",
+ "Rest isn't a reward for finishing. It's fuel for finishing. Ask any god.",
+ "Trade you: ten minutes outside for one compliment. A sincere one. They're rare.",
+ "Your body carries the future doctor. Treat her like the precious thing she is.",
+ "I've cancelled your guilt for today. Lie down. Hecate and I will watch the crossroads.",
+ "Even Persephone takes seasons off. Take an evening.",
+ "Call PB. Or your aunt. Or anyone who loves you. Connection counts on the Hearth for a reason.");
+HADES.study.push(
+ "Flashcard added. You're building a weapon. A very nerdy weapon. I love it.",
+ "Every card you make is a tiny prayer to me. Keep praying. I'm listening.",
+ "Quiz yourself. Retrieval beats rereading. I learned that from Athena. Don't tell her.",
+ "Come back to these tomorrow. Spaced repetition. I'll be here. I'm always here.",
+ "Twenty-five minutes of focus, then stretch. I'll time you. I have eternity.",
+ "A grade is not your worth. But an A would be nice. I like shiny things.",
+ "Explain it out loud like I'm a confused god. I occasionally am one.",
+ "Biology is just life and death with homework. You're basically my apprentice.",
+ "Chem lab? Don't drink anything. I mean it. I don't want you here early.",
+ "The MCAT trembles. Not yet. But it will.",
+ "Class logged. Your Grimoire grows heavier. So does my admiration.");
+HADES.random.push(
+ "Persephone sends her love. She also says you need a warmer coat for New York winters.",
+ "I named a river after you. It's small. It's very pretty. It's mostly fog.",
+ "Cerberus learned to sit. You learned organic chemistry. Both very good.",
+ "Someday they'll call you Dr. Broussard. I'll call you 'my apothecary.' You'll allow it.",
+ "My kingdom, my crown, my wealth. None of it is as interesting as your to-do list.",
+ "If anyone underestimates you, smile. Then outwork them. I'll handle the rest.",
+ "Did you set an intention today? Mine is 'make her drink water.'",
+ "I could scheme against Zeus, but scheming for your future is more fun.",
+ "Love and hope, little witch. I've read your oath. It terrifies me how good it is.");
+HECATE.push(
+ "When the road splits, you don't have to choose tonight. Choose by morning.",
+ "Quincy rests his head on your knee. He's telling you: you're safe right now.",
+ "Name five things you can see, four you can touch, three you can hear. Then the next torch.",
+ "Grief and hope can walk together. They often do at my crossroads.",
+ "You've crossed harder roads than this one. I watched.",
+ "Light one candle. That's enough light for one step.",
+ "Your past doesn't get a vote in your future. It only gets a memory.",
+ "Rest here a moment. The torches will still be lit when you stand.",
+ "Quincy guards this place now. Nothing gets past a good dog.",
+ "You are not behind. There's no 'behind' on a road only you walk.");
+FORTUNA.push(
+ "Fortuna smiled on PB: he caught every green light on the way home.",
+ "Fortuna smiled on PB: his favorite song came on shuffle right when he needed it.",
+ "Fortuna smiled on PB: the barista slipped him an extra pastry.",
+ "Fortuna smiled on PB: he found the exact thing he lost last week.",
+ "Fortuna smiled on PB: his audiobook hit the best chapter on a long drive.",
+ "Fortuna smiled on PB: a stranger's dog decided he was its favorite person.",
+ "Fortuna smiled on PB: the vending machine dropped two snacks.");
+// Underworld chapter names for the Path
+const APOTH_CHAPTERS = ["The Crossing of the Styx","Asphodel Meadows","Persephone's Spring","The Alchemist's Cellar","Cerberus's Gate","The Loom of the Fates","The Hall of Judgment","Elysium"];
+
+</script>
+<script>
+"use strict";
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const pad=n=>String(n).padStart(2,"0");
+const today=()=>{const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;};
+const monthKey=d=>(d||today()).slice(0,7);
+const uid=()=>Math.random().toString(36).slice(2,9);
+const _last=new Map();const pick=a=>{if(!a||!a.length)return "";let x,n=0;do{x=a[Math.floor(Math.random()*a.length)];}while(a.length>1&&x===_last.get(a)&&n++<8);_last.set(a,x);return x;};
+const tod=(h=new Date().getHours())=>h>=5&&h<11?"morning":h<17&&h>=11?"day":h>=17&&h<22?"evening":"night";
+const money=n=>(n<0?"-":"")+"$"+Math.abs(Math.round(n*100)/100).toLocaleString("en-US",{minimumFractionDigits:Math.abs(n)%1?2:0,maximumFractionDigits:2});
+// ---------- reskin MedQuest quests ----------
+const sw=t=>String(t).replace(/Hoo-hoo! Welcome, traveler\./g,"Welcome to the underworld, little witch.").replace(/Adventure Journal/g,"Apothecary Garden").replace(/\bJournal\b/g,"Garden").replace(/Spellbook/g,"Grimoire").replace(/the Codex/g,"the Lexicon").replace(/World Map/g,"Path").replace(/8 chapters/g,"8 chapters of the Path");
+QUESTS.forEach(q=>{["what","why","tip"].forEach(k=>{if(q[k])q[k]=sw(q[k]);});if(q.steps)q.steps=q.steps.map(sw);});
+CHAPTERS.forEach((c,i)=>{if(APOTH_CHAPTERS[i])c.name=APOTH_CHAPTERS[i];});
+const q01=QUESTS.find(q=>q.id==="q0_1");if(q01){q01.title="Meet the God of the Dead";}if(q01)q01.steps=["Read the five pillars above","Peek at every chapter of the Path","Visit All Quiet and verify something"];
+const ALLQ=[...RITES.map(r=>Object.assign({ch:-1},r)),...QUESTS];const QM=Object.fromEntries(ALLQ.map(q=>[q.id,q]));
+// ---------- state ----------
+const KEY="underworld_apothecary_v1";
+function fresh(){return {v:1,updatedAt:0,outfit:0,pbCap:true,q:{},hours:[],tx:[],fin:Object.assign({},FIN_DEFAULTS),budget:Object.fromEntries(BUDGET_CATS.map(c=>[c.id,c.amt])),paid:{},
+ war:{q:[],opps:[],saved:0},hearth:{},cards:[],games:{},oath:["Love and hope, always","Heal. Find. Keep looking.","Everything I do helps the people I love","I am a firecracker when I need to be","",""],
+ ceremony:"",pbLuck:[],fortuna:{},verified:{},courses:DEFAULT_COURSES.map(([n,c,cr])=>({id:uid(),name:n,cat:c,cr,status:"todo",grade:""})),hecateUntil:0,lastBackup:0,sound:true,seenIntro:false,rules:{},imports:[]};}
+let S=fresh();try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(fresh(),JSON.parse(r));}catch(e){}
+let cloud={ref:null,w:false,p:false},stT=null;
+function save(){S.updatedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}clearTimeout(stT);stT=setTimeout(push,1000);}
+async function push(){if(!cloud.ref)return;if(cloud.w){cloud.p=true;return;}cloud.w=true;try{await cloud.ref.set({state:JSON.stringify(S),updatedAt:S.updatedAt});}catch(e){}cloud.w=false;if(cloud.p){cloud.p=false;push();}}
+const IN_CLAUDE=!!(window.claude&&typeof window.claude.use==="function");if(IN_CLAUDE)document.body.classList.add("inclaude");
+let dlCap=null;
+function setSaveStat(t){const e=document.getElementById("saveStat");if(e)e.textContent=t;}
+async function initWeb(){if(!window.CloudSave){setSaveStat("Saved on this device");return;}
+ const ref=await CloudSave.connect({game:"underworld",localKey:KEY,getState:()=>S,status:setSaveStat,
+  setState:d=>{const keep=S.pack;S=Object.assign(fresh(),d);if(!S.pack&&keep)S.pack=keep;applyPack();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}renderAll();}});
+ if(ref){cloud.ref=ref;push();}}
+async function initClaude(){if(!IN_CLAUDE){initWeb();return;}try{window.claude.use("downloads").then(d=>{dlCap=d;if(d)document.body.classList.remove("inclaude");}).catch(()=>{});}catch(e){}
+ try{const [db,user]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);if(!db||!user)return;const id=await user.id();if(!id)return;const ref=db.collection("data/users/"+id).doc("save");
+  let s=await ref.get();let r=s&&typeof s.data==="function"?s.data():s;if(r&&r.data&&r.state===undefined)r=r.data;cloud.ref=ref;
+  if(r&&r.state&&(r.updatedAt||0)>(S.updatedAt||0)){S=Object.assign(fresh(),JSON.parse(r.state));applyPack();localStorage.setItem(KEY,JSON.stringify(S));renderAll();}else push();}catch(e){}}
+// ---------- sound ----------
+let ac=null;function chime(fs){if(!S.sound)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==="suspended")ac.resume();let t=ac.currentTime;fs.forEach(f=>{const o=ac.createOscillator(),g=ac.createGain();o.type="triangle";o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.07,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.6);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+.65);t+=.12;});}catch(e){}}
+const SFX={tap:()=>chime([740]),ok:()=>chime([587,880]),done:()=>chime([440,554,659,880]),lvl:()=>chime([392,494,587,784,988])};
+// ---------- art: chibis ----------
+const OUTFITS=[{name:"Green sweatshirt",c:"#1f4a3a",sleeve:true},{name:"Pink pajamas + eye patches",c:"#f3a7c4",sleeve:true,patches:true},{name:"Black & red rose dress",c:"#2a141c",sleeve:false,roses:true}];
+function chibiInner(o){const sk=o.skin||"#f6d5c2",h=o.hair,e=o.eye||"#5a3a26";let s="";
+ // back hair
+ if(o.style==="halfup")s+=`<path d="M22 58 Q16 112 32 128 L88 128 Q104 112 98 58 Z" fill="${h}"/>`;
+ if(o.style==="curly")[[24,74,13],[20,94,12],[28,112,11],[96,74,13],[100,94,12],[92,112,11],[34,52,14],[86,52,14]].forEach(([x,y,r])=>s+=`<circle cx="${x}" cy="${y}" r="${r}" fill="${h}"/>`);
+ if(o.style==="long")s+=`<path d="M20 56 Q10 140 30 152 L90 152 Q110 140 100 56 Z" fill="${h}"/>`;
+ if(o.style==="slick")s+=`<path d="M26 60 Q24 92 34 100 L86 100 Q96 92 94 60 Z" fill="${h}"/>`;
+ // body
+ const oc=o.outfit||"#333";
+ s+=`<path d="M32 118 Q60 104 88 118 L96 160 L24 160 Z" fill="${oc}"/>`;
+ if(o.robeInner)s+=`<path d="M52 110 L60 160 L68 110 Z" fill="${o.robeInner}"/>`;
+ if(o.plaid){for(let i=0;i<5;i++)s+=`<line x1="${30+i*14}" y1="110" x2="${26+i*16}" y2="160" stroke="#7a6fb0" stroke-width="1.6" opacity=".7"/>`;for(let j=0;j<4;j++)s+=`<line x1="26" y1="${122+j*10}" x2="94" y2="${122+j*10}" stroke="#a8c4e8" stroke-width="1.2" opacity=".6"/>`;}
+ if(o.roses)[[40,128],[58,140],[76,126],[48,150],[70,152],[84,144]].forEach(([x,y])=>s+=`<circle cx="${x}" cy="${y}" r="3.2" fill="#c8243a"/><circle cx="${x}" cy="${y}" r="1.3" fill="#ff6a7a"/>`);
+ // arms
+ const armC=o.sleeve===false?sk:oc;
+ s+=`<path d="M32 120 Q22 134 24 150" stroke="${armC}" stroke-width="10" fill="none" stroke-linecap="round"/><path d="M88 120 Q98 134 96 150" stroke="${armC}" stroke-width="10" fill="none" stroke-linecap="round"/>`;
+ s+=`<circle cx="24" cy="152" r="5.5" fill="${sk}"/><circle cx="96" cy="152" r="5.5" fill="${sk}"/>`;
+ if(o.tattoo)s+=`<circle cx="25" cy="140" r="3.6" fill="#b48ad8" stroke="#3a2a44" stroke-width=".8"/><path d="M21.6 140 h6.8 M25 136.6 v6.8" stroke="#e8d8f8" stroke-width=".6"/>`;
+ if(o.coat)s+=`<path d="M32 118 Q44 110 52 112 L48 160 L24 160 Z" fill="#fbfaf6"/><path d="M88 118 Q76 110 68 112 L72 160 L96 160 Z" fill="#fbfaf6"/>`;
+ if(o.brooch)s+=`<circle cx="70" cy="124" r="4.5" fill="#b3263e"/><path d="M68 119.5 l2 -2 l2 2" fill="#3d6b3d"/>`;
+ // neck/head
+ s+=`<rect x="53" y="96" width="14" height="14" rx="6" fill="${sk}"/><circle cx="25" cy="68" r="6" fill="${sk}"/><circle cx="95" cy="68" r="6" fill="${sk}"/><circle cx="60" cy="62" r="36" fill="${sk}"/>`;
+ if(o.hoops)s+=`<circle cx="25" cy="76" r="3" fill="none" stroke="#d8d8e0" stroke-width="1.4"/><circle cx="95" cy="76" r="3" fill="none" stroke="#d8d8e0" stroke-width="1.4"/>`;
+ // eyes
+ [[46,68],[74,68]].forEach(([x,y])=>{s+=`<ellipse cx="${x}" cy="${y}" rx="7.5" ry="9.5" fill="#2a1a22"/><ellipse cx="${x}" cy="${y+1.5}" rx="5.6" ry="7" fill="${e}"/><circle cx="${x+2.4}" cy="${y-3}" r="2.6" fill="#fff"/><circle cx="${x-2.2}" cy="${y+3.5}" r="1.2" fill="#fff" opacity=".8"/>`;
+  if(o.lashes)s+=`<path d="M${x-8} ${y-7} q8 -6 16 0" stroke="#2a1a22" stroke-width="2" fill="none"/>`;});
+ if(o.patches)s+=`<path d="M34 80 q12 8 22 0 q-10 6 -22 0z" fill="#f2c94c" opacity=".9"/><path d="M64 80 q10 8 22 0 q-12 6 -22 0z" fill="#f2c94c" opacity=".9"/>`;
+ s+=`<path d="M39 56 q7 -4 13 -1" stroke="${o.brow||"#5a3424"}" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M68 55 q6 -3 13 1" stroke="${o.brow||"#5a3424"}" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+ s+=`<ellipse cx="38" cy="81" rx="6" ry="3.5" fill="#f08fa6" opacity=".45"/><ellipse cx="82" cy="81" rx="6" ry="3.5" fill="#f08fa6" opacity=".45"/>`;
+ if(o.freckles)[[52,78],[55,81],[49,81],[65,78],[68,81],[71,79],[58,77]].forEach(([x,y])=>s+=`<circle cx="${x}" cy="${y}" r=".9" fill="#b0704a"/>`);
+ if(o.stubble)for(let i=0;i<16;i++)s+=`<circle cx="${46+((i*37)%28)}" cy="${90+((i*13)%8)}" r=".7" fill="#7a5038" opacity=".7"/>`;
+ if(o.stache)s+=`<path d="M53 84 q7 -3 14 0" stroke="#7a4a30" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;
+ // mouth
+ const lip=o.lip||"#b5566f";
+ if(o.mouth==="kiss")s+=`<path d="M58 88 q-3 -3 0 -5 q3 2 0 5 q-3 2 0 5 q3 -2 0 -5" fill="${lip}" stroke="${lip}" stroke-width="1"/>`;
+ else if(o.mouth==="smirk")s+=`<path d="M53 88 Q60 91 68 85" stroke="${lip}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;
+ else s+=`<path d="M53 87 Q60 93 67 87" stroke="${lip}" stroke-width="2.2" fill="none" stroke-linecap="round"/>`;
+ // front hair
+ if(o.style==="halfup")s+=`<path d="M24 62 Q24 24 60 24 Q96 24 96 62 Q90 40 70 38 Q66 46 56 44 Q40 42 30 60 Z" fill="${h}"/><circle cx="60" cy="24" r="9" fill="${h}"/><rect x="54" y="20" width="12" height="4" rx="2" fill="#e8c66a"/>`;
+ if(o.style==="curly"){s+=`<path d="M24 62 Q24 26 60 26 Q96 26 96 62 Q86 44 60 42 Q34 44 24 62 Z" fill="${h}"/>`;[[32,44,9],[44,34,10],[58,30,10],[72,32,10],[86,42,9],[26,58,7],[94,58,7]].forEach(([x,y,r])=>s+=`<circle cx="${x}" cy="${y}" r="${r}" fill="${h}"/><path d="M${x-4} ${y} q4 -4 8 0" stroke="#5a3424" stroke-width="1" fill="none" opacity=".5"/>`);}
+ if(o.style==="long")s+=`<path d="M24 62 Q24 24 60 24 Q96 24 96 62 Q84 36 62 34 L60 46 L58 34 Q36 36 24 62 Z" fill="${h}"/>`;
+ if(o.style==="slick")s+=`<path d="M24 60 Q22 22 62 22 Q98 24 96 58 Q90 36 72 34 Q52 30 38 42 Q30 48 24 60 Z" fill="${h}"/><path d="M40 40 q16 -10 36 -4" stroke="#3a2a4a" stroke-width="1.5" fill="none"/>`;
+ if(o.cap)s+=`<path d="M24 46 Q26 18 60 18 Q94 18 96 46 Z" fill="#cfc4a8"/><path d="M60 46 Q88 44 104 52 Q86 54 60 50 Z" fill="#b8ac8e"/>`;
+ if(o.crown==="silver")s+=`<path d="M38 30 L42 16 L50 26 L60 12 L70 26 L78 16 L82 30 Z" fill="#c9c9d6" stroke="#8a8a9e"/><circle cx="60" cy="22" r="2.5" fill="#b3263e"/>`;
+ if(o.crown==="moon")s+=`<circle cx="60" cy="18" r="7" fill="#f2efe4"/><path d="M44 20 a8 8 0 1 0 0 -1 a6 6 0 1 1 0 1z" fill="#d8d4e8"/><path d="M76 20 a8 8 0 1 1 0 -1 a6 6 0 1 0 0 1z" fill="#d8d4e8"/>`;
+ if(o.crown==="laurel")s+=`<path d="M30 40 q30 -26 60 0" stroke="#d8b84a" stroke-width="3" fill="none"/>${[36,46,56,66,76,84].map((x,i)=>`<ellipse cx="${x}" cy="${33-(i===2||i===3?6:i===1||i===4?3:0)}" rx="4" ry="2" fill="#e8c66a"/>`).join("")}`;
+ if(o.torches)s+=`<rect x="6" y="104" width="4" height="40" fill="#6b4a2a"/><path class="flame" d="M8 104 q-7 -10 0 -20 q7 10 0 20z" fill="#e8743b"/><rect x="110" y="104" width="4" height="40" fill="#6b4a2a"/><path class="flame" d="M112 104 q-7 -10 0 -20 q7 10 0 20z" fill="#e8743b"/>`;
+ if(o.wheel)s+=`<circle cx="104" cy="136" r="12" fill="none" stroke="#e8c66a" stroke-width="2.5"/>${[0,45,90,135].map(a=>`<line x1="${104-12*Math.cos(a*Math.PI/180)}" y1="${136-12*Math.sin(a*Math.PI/180)}" x2="${104+12*Math.cos(a*Math.PI/180)}" y2="${136+12*Math.sin(a*Math.PI/180)}" stroke="#e8c66a" stroke-width="1.5"/>`).join("")}`;
+ return s;}
+const ME=()=>{const o=OUTFITS[S.outfit]||OUTFITS[0];return {style:"halfup",hair:"#8a4a2c",skin:"#f6d2bd",eye:"#6a4228",outfit:o.c,sleeve:o.sleeve,patches:o.patches,roses:o.roses,freckles:true,hoops:true,lashes:true,tattoo:!o.sleeve,lip:o.roses?"#8e1f2e":"#c0566f",coat:isDone("q7_5")};};
+const PB=()=>({style:"curly",hair:"#8b5536",skin:"#f4cdb2",eye:"#4a6a8a",outfit:"#5a6aa8",plaid:true,stache:true,stubble:true,mouth:"kiss",cap:S.pbCap,brow:"#6a4028"});
+const HADES_O={style:"slick",hair:"#1c1424",skin:"#e8dcd6",eye:"#7a6aa8",outfit:"#16101c",robeInner:"#6e1d29",mouth:"smirk",crown:"silver",brooch:true,brow:"#1c1424"};
+const HECATE_O={style:"long",hair:"#d8d4e4",skin:"#e8d8cc",eye:"#8a6ab8",outfit:"#3a2458",robeInner:"#1c1230",crown:"moon",torches:true,lashes:true,brow:"#a89ab8"};
+const FORTUNA_O={style:"long",hair:"#e8c66a",skin:"#f6dcc6",eye:"#4a8a7a",outfit:"#f6ead8",robeInner:"#e8c66a",crown:"laurel",wheel:true,lashes:true,lip:"#d06a7a"};
+const chibi=(o,w,h)=>`<svg viewBox="0 0 120 160" ${w?`width="${w}" height="${h}"`:""} xmlns="http://www.w3.org/2000/svg">${chibiInner(o)}</svg>`;
+const face=o=>`<svg viewBox="16 18 88 88" xmlns="http://www.w3.org/2000/svg">${chibiInner(o)}</svg>`;
+function quincy(){return `<g><ellipse cx="60" cy="150" rx="36" ry="6" fill="#00000033"/><path d="M34 150 Q30 96 60 92 Q90 96 86 150 Z" fill="#16141a"/><path d="M44 150 L46 124 M76 150 L74 124" stroke="#0e0c12" stroke-width="9" stroke-linecap="round"/>
+ <path d="M50 102 Q60 108 70 102 L70 110 Q60 116 50 110Z" fill="#2f5fb0"/>${[54,60,66].map(x=>`<rect x="${x-2}" y="105" width="4" height="2" rx="1" fill="#e8eef8"/>`).join("")}
+ <ellipse cx="60" cy="72" rx="28" ry="26" fill="#1c1a20"/><path d="M34 62 Q24 82 34 98 Q42 90 40 66Z" fill="#121016"/><path d="M86 62 Q96 82 86 98 Q78 90 80 66Z" fill="#121016"/>
+ <ellipse cx="60" cy="88" rx="14" ry="11" fill="#2a262e"/><ellipse cx="60" cy="82" rx="6" ry="4.5" fill="#0a080c"/><circle cx="58" cy="81" r="1.3" fill="#555"/>
+ <ellipse cx="49" cy="68" rx="4.5" ry="5" fill="#6b3e1e"/><ellipse cx="71" cy="68" rx="4.5" ry="5" fill="#6b3e1e"/><circle cx="50.5" cy="66.5" r="1.6" fill="#fff"/><circle cx="72.5" cy="66.5" r="1.6" fill="#fff"/>
+ <path d="M60 93 v4 M55 97 q5 4 10 0" stroke="#0a080c" stroke-width="1.6" fill="none"/></g>`;}
+const nest=(inner,x,y,w,h,vb="0 0 120 160")=>`<svg x="${x}" y="${y}" width="${w}" height="${h}" viewBox="${vb}">${inner}</svg>`;
+function plantSVG(c,k){const st=`<path d="M12 34 Q12 22 12 14" stroke="#4a7a4a" stroke-width="1.6" fill="none"/>`;
+ const kinds={shadow_md:`${st}<path d="M12 16 q-8 8 -6 16 M12 16 q8 8 6 16 M12 20 q-6 6 -5 12 M12 20 q6 6 5 12" stroke="${c}" stroke-width="2.2" fill="none"/>`,
+  shadow_do:`${st}${[0,72,144,216,288].map(a=>`<ellipse cx="${12+5*Math.cos(a*Math.PI/180)}" cy="${12+5*Math.sin(a*Math.PI/180)}" rx="3.6" ry="2.4" transform="rotate(${a} ${12+5*Math.cos(a*Math.PI/180)} ${12+5*Math.sin(a*Math.PI/180)})" fill="${c}"/>`).join("")}<circle cx="12" cy="12" r="1.6" fill="#b3263e"/>`,
+  clin_paid:`${st}<ellipse cx="12" cy="14" rx="8" ry="6" fill="${c}"/><ellipse cx="12" cy="10" rx="5" ry="4" fill="#f0c0a0"/>`,
+  clin_vol:`${st}${[6,11,16,21].map(y=>`<path d="M12 ${y} q-5 1 -5 5 q5 0 5 -5z" fill="${c}"/>`).join("")}`,
+  service:`${st}<path d="M12 8 l-6 10 h12z M12 14 l-7 10 h14z" fill="${c}"/>`,
+  research:`<rect x="10" y="22" width="4" height="12" fill="#6b4a2a"/><path d="M12 4 l-9 12 h18z M12 10 l-10 13 h20z" fill="${c}"/>`,
+  leadership:`${st}<path d="M12 10 q-7 4 -4 10 q4 -2 4 -10 q7 4 4 10 q-4 -2 -4 -10" fill="${c}"/><circle cx="12" cy="21" r="2.6" fill="#1c1424"/>`,
+  work:`${st}<circle cx="12" cy="14" r="7" fill="${c}"/><path d="M9 7 l3 -3 l3 3" fill="#d8a84a"/>`};
+ return `<svg viewBox="0 0 24 36">${kinds[k]||kinds.work}</svg>`;}
+// ---------- moon ----------
+function moonPhase(d=new Date()){const syn=29.530588853,ref=Date.UTC(2000,0,6,18,14);const days=(d.getTime()-ref)/864e5;const p=((days%syn)+syn)%syn/syn;
+ const names=["New Moon","Waxing Crescent","First Quarter","Waxing Gibbous","Full Moon","Waning Gibbous","Last Quarter","Waning Crescent"];return {p,name:names[Math.floor((p*8+.5))%8]};}
+// ---------- progress ----------
+const LV=[0,120,300,550,850,1250,1750,2350,3050,3900,4900,6000];
+const isDone=id=>!!(S.q[id]&&S.q[id].d);
+const qs=id=>S.q[id]||(S.q[id]={d:0,s:[],n:""});
+const sumH=f=>S.hours.filter(f).reduce((a,h)=>a+(+h.hrs||0),0);
+const GP={"A":4,"A-":3.7,"B+":3.3,"B":3,"B-":2.7,"C+":2.3,"C":2,"C-":1.7,"D+":1.3,"D":1,"F":0};
+function gpa(sci){let p=0,c=0;S.courses.forEach(k=>{if(k.status!=="done"||!(k.grade in GP))return;if(sci&&k.cat==="O")return;p+=GP[k.grade]*(+k.cr||0);c+=+k.cr||0;});return c?p/c:null;}
+function hearthScore(d){const h=S.hearth[d];if(!h)return 0;return HEARTH_ITEMS.filter(([k])=>h[k]).length/HEARTH_ITEMS.length;}
+function lastDays(n){const out=[];const d=new Date();for(let i=n-1;i>=0;i--){const x=new Date(d);x.setDate(d.getDate()-i);out.push(`${x.getFullYear()}-${pad(x.getMonth()+1)}-${pad(x.getDate())}`);}return out;}
+const fire7=()=>{const ks=Object.keys(S.hearth).sort();if(!ks.length)return 0;let ds=lastDays(7).filter(d=>d>=ks[0]);if(!ds.length)ds=[today()];return ds.reduce((a,d)=>a+hearthScore(d),0)/ds.length;};
+function xp(){let x=0;ALLQ.forEach(q=>{const s=S.q[q.id];if(!s)return;if(s.d)x+=q.xp||100;x+=(s.s||[]).filter(Boolean).length*10;});
+ x+=Math.min(sumH(()=>true),1000)*2+Math.min(S.tx.length,300)*2+Object.values(S.hearth).reduce((a,h)=>a+Object.values(h).filter(v=>v===true).length,0)*2+S.courses.filter(c=>c.status==="done").length*40+(S.war.q||[]).filter(Boolean).length*20+S.war.opps.length*10+Object.values(S.games).reduce((a,v)=>a+v,0);return Math.round(x);}
+function levelInfo(){const x=xp();let lv=1;LV.forEach((t,i)=>{if(x>=t)lv=i+1;});return {x,lv,cur:LV[lv-1],nxt:LV[lv]??null,name:isDone("q7_5")?"Dr. Bailey, White Coat Apothecary":LEVELS[lv-1]};}
+const chProg=ch=>{const q=ALLQ.filter(x=>x.ch===ch);return {d:q.filter(x=>isDone(x.id)).length,t:q.length};};
+function curChapter(){for(let i=0;i<CHAPTERS.length;i++){const p=chProg(i);if(p.d<p.t)return i;}return 7;}
+function nextQuest(){const r=RITES.find(r=>!isDone(r.id));const c=curChapter();const q=QUESTS.find(q=>q.ch===c&&!isDone(q.id));return q||r||null;}
+// ---------- money ----------
+const catById=Object.fromEntries(BUDGET_CATS.map(c=>[c.id,c]));
+// ---------- private pack: your personal content lives in your save, not in this public code ----------
+let CARD_LABEL="Card";
+const _base={rites:RITES.slice(),accounts:ACCOUNTS.slice(),names:Object.fromEntries(BUDGET_CATS.map(c=>[c.id,c.name]))};let _packLines=[];
+function applyPack(){const P=S.pack||{};
+ RITES.splice(0,RITES.length,...(Array.isArray(P.rites)&&P.rites.length?P.rites:_base.rites));
+ ALLQ.splice(0,ALLQ.length,...RITES.map(r=>Object.assign({ch:-1},r)),...QUESTS);Object.keys(QM).forEach(k=>delete QM[k]);ALLQ.forEach(q=>QM[q.id]=q);
+ BUDGET_CATS.forEach(c=>{c.name=(P.catNames&&P.catNames[c.id])||_base.names[c.id];});Object.keys(catById).forEach(k=>delete catById[k]);BUDGET_CATS.forEach(c=>catById[c.id]=c);
+ ACCOUNTS.splice(0,ACCOUNTS.length,...(Array.isArray(P.accounts)&&P.accounts.length?P.accounts:_base.accounts));
+ CARD_LABEL=P.cardLabel||"Card";
+ try{SEALED_LETTER=P.letter64?decodeURIComponent(escape(atob(P.letter64))):"";}catch(e){SEALED_LETTER="";}
+ _packLines.forEach(([b,l])=>{const a=HADES[b];if(a){const i=a.indexOf(l);if(i>=0)a.splice(i,1);}});_packLines=[];
+ Object.entries(P.lines||{}).forEach(([b,ls])=>{if(HADES[b]&&Array.isArray(ls))ls.forEach(l=>{HADES[b].push(l);_packLines.push([b,l]);});});}
+function loadPack(text){let P;try{P=JSON.parse(text);}catch(e){toast("That file isn't a pack.");return;}
+ if(!P||P.kind!=="underworld-private-pack"){toast("That file isn't your Underworld pack.");return;}
+ delete P.kind;S.pack=P;
+ // first time: fill in your real numbers wherever this save is still blank
+ Object.entries(P.budget||{}).forEach(([k,v])=>{if(!+S.budget[k])S.budget[k]=v;});
+ Object.entries(P.fin||{}).forEach(([k,v])=>{const cur=S.fin[k];if(cur===undefined||cur===""||cur===0)S.fin[k]=v;});
+ applyPack();closeModal();changed();toast("🔒 Your private pack is in. It saves with your account, not in the public code.");}
+applyPack();
+
+const monthTx=m=>S.tx.filter(t=>monthKey(t.date)===m);
+const spentIn=(m,cat)=>monthTx(m).filter(t=>t.type==="expense"&&t.cat===cat).reduce((a,t)=>a+(+t.amt||0),0);
+const budgetOf=id=>+S.budget[id]||0;
+const tierBudget=t=>BUDGET_CATS.filter(c=>c.tier===t).reduce((a,c)=>a+budgetOf(c.id),0);
+const totalBudget=()=>[1,2,3].reduce((a,t)=>a+tierBudget(t),0);
+const isPaid=(m,id)=>!!(S.paid[m]&&S.paid[m][id])||(budgetOf(id)>0&&spentIn(m,id)>=budgetOf(id)*.95);
+function runway(){const cash=+S.fin.cash||0,liv=totalBudget()||1,inc=+S.fin.incomeMonthly||0,net=liv-inc;let out=null;const now=new Date();let months=0,c=cash;const tm=S.fin.tuitionMonths||[1,8];
+ const m0=monthKey(),left0=BUDGET_CATS.reduce((a,k)=>a+(isPaid(m0,k.id)?0:Math.max(0,budgetOf(k.id)-spentIn(m0,k.id))),0);
+ if(net<=0&&!(+S.fin.tuitionSem))return {cash,liv,inc,months:60,simple:99,out:null};
+ for(let i=0;i<60&&c>=0;i++){const d=new Date(now.getFullYear(),now.getMonth()+i,1);if(i>0&&tm.includes(d.getMonth()+1))c-=+S.fin.tuitionSem||0;c-=i===0?Math.max(0,left0-inc*(1-now.getDate()/31)):net;if(c>=0){if(i>0)months++;}else{out=d;}}
+ return {cash,liv,inc,months,simple:cash/Math.max(1,net),out};}
+function nextTuition(){const now=new Date();const tm=S.fin.tuitionMonths||[1,8];for(let i=1;i<=12;i++){const d=new Date(now.getFullYear(),now.getMonth()+i,1);if(tm.includes(d.getMonth()+1))return d;}return null;}
+// ---------- ui helpers ----------
+function toast(t){const e=document.createElement("div");e.className="toast";e.innerHTML=t;const b=$("#toasts");b.appendChild(e);while(b.children.length>3)b.firstChild.remove();setTimeout(()=>{e.style.transition="opacity .4s";e.style.opacity=0;setTimeout(()=>e.remove(),450);},3600);}
+const cv=$("#petals"),cx=cv.getContext("2d");let P=[],raf=null;
+function petals(n=50){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;cv.width=innerWidth;cv.height=innerHeight;const cols=["#c23b4a","#e8743b","#e8c66a","#e7a3c9","#8a5a9e"];for(let i=0;i<n;i++)P.push({x:Math.random()*innerWidth,y:-20-Math.random()*200,vx:(Math.random()-.5)*1.4,vy:1.6+Math.random()*2.4,r:3+Math.random()*4,a:Math.random()*6,c:cols[i%5]});if(!raf)loop();}
+function loop(){cx.clearRect(0,0,cv.width,cv.height);P.forEach(p=>{p.x+=p.vx+Math.sin(p.a)*.6;p.y+=p.vy;p.a+=.05;cx.fillStyle=p.c;cx.beginPath();cx.ellipse(p.x,p.y,p.r,p.r*.7,p.a,0,7);cx.fill();});P=P.filter(p=>p.y<cv.height+20);raf=P.length?requestAnimationFrame(loop):(cx.clearRect(0,0,cv.width,cv.height),null);}
+function openModal(h){$("#modal").innerHTML=`<button class="btn ghost sm x" onclick="closeModal()" aria-label="Close">✕</button>`+h;$("#scrim").classList.add("on");$("#scrim").scrollTop=0;}
+function closeModal(){$("#scrim").classList.remove("on");}
+$("#scrim").addEventListener("click",e=>{if(e.target.id==="scrim")closeModal();});document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
+function hadesSays(t){$("#hadesSay").textContent=t;}
+document.addEventListener("click",e=>{if(e.target.closest("#hadesSay")||e.target.closest("#hadesFace")){hadesSays(hadesContext());SFX.tap();}});
+let lastLv=null,lastCh=null;
+function changed(){const b=lastLv,bc=lastCh;save();const li=levelInfo();if(b!==null&&li.lv>b)setTimeout(()=>{toast(`✨ You rose: <b>${esc(li.name)}</b>`);SFX.lvl();petals(90);},250);
+ const c=curChapter();if(bc!==null&&c>bc){S.hecateUntil=Date.now()+36e5*12;save();setTimeout(()=>crossroads(CHAPTERS[bc],CHAPTERS[c]),600);}renderAll();}
+function go(v){$$(".tab").forEach(t=>t.classList.toggle("on",t.dataset.v===v));$$(".view").forEach(x=>x.classList.toggle("on",x.id==="v-"+v));SFX.tap();try{history.replaceState(null,"","#"+v);}catch(e){}scrollTo({top:0,behavior:"smooth"});}
+$$(".tab").forEach(t=>t.addEventListener("click",()=>go(t.dataset.v)));
+// ---------- header & scene ----------
+function renderTop(){const li=levelInfo();$("#meAv").innerHTML=face(ME());$("#lvl").textContent=`Level ${li.lv} · ${li.name}`;$("#xpbar").style.width=(li.nxt?Math.max(2,(li.x-li.cur)/(li.nxt-li.cur)*100):100)+"%";lastLv=li.lv;lastCh=curChapter();}
+function hadesContext(){const h=new Date().getHours();if(fire7()<.3&&Object.keys(S.hearth).length)return pick(HADES.hearthLow);const m=monthKey();
+ const over=BUDGET_CATS.filter(c=>c.tier===3&&spentIn(m,c.id)>budgetOf(c.id)&&budgetOf(c.id)>0);if(over.length&&Math.random()<.5)return pick(HADES.spendOver);
+ const t=tod(h);if(t==="night")return pick(HADES.night);if(t==="morning")return pick(HADES.morning);if(t==="evening")return pick(Math.random()<.3?HADES.random:HADES.evening);return pick(Math.random()<.25?HADES.random:Math.random()<.3?HADES.study:HADES.day);}
+function renderScene(){const T=tod(),m=monthKey(),musts=BUDGET_CATS.filter(c=>c.tier===1),paid=musts.filter(c=>isPaid(m,c.id)).length,rw=runway(),fire=fire7(),mp=moonPhase(),hec=Date.now()<S.hecateUntil;
+ const cats=HOUR_CATS.filter(c=>S.hours.some(h=>h.cat===c.id));let o=`<defs><linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a1a34"/><stop offset="1" stop-color="#3a2440"/></linearGradient><radialGradient id="glow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#e8743b" stop-opacity=".45"/><stop offset="1" stop-color="#e8743b" stop-opacity="0"/></radialGradient></defs>
+ <rect width="400" height="250" fill="url(#wall)"/>${T==="night"?"":`<rect width="400" height="250" fill="${T==="morning"?"#f6d9a8":T==="day"?"#fff1d6":"#e8743b"}" opacity=".1"/>`}<rect y="186" width="400" height="64" fill="#2a1a16"/>${[0,1,2,3,4,5,6,7].map(i=>`<line x1="0" y1="${190+i*8}" x2="400" y2="${190+i*8}" stroke="#3a261e" stroke-width="1"/>`).join("")}
+ <ellipse cx="200" cy="222" rx="150" ry="20" fill="#5a2230" opacity=".7"/><ellipse cx="200" cy="222" rx="128" ry="14" fill="none" stroke="#e8c66a" stroke-opacity=".35"/>`;
+ // window + moon
+ const SKY={morning:["#f7c6a3","#fbe6c4"],day:["#8fc3e8","#d6ecf7"],evening:["#e8743b","#7a3a6a"],night:["#141026","#241a3e"]}[T];
+ o+=`<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${SKY[0]}"/><stop offset="1" stop-color="${SKY[1]}"/></linearGradient></defs><rect x="30" y="24" width="70" height="66" rx="34" fill="url(#sky)" stroke="#5a4268" stroke-width="4"/>`;
+ if(T==="night"||T==="evening")o+=[[42,44],[88,40],[50,74],[84,70],[60,34]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1" fill="#fff" opacity="${T==="night"?1:.6}"/>`).join("");
+ if(T==="morning"||T==="day")o+=`<circle cx="${T==="morning"?46:72}" cy="${T==="morning"?72:46}" r="9" fill="#ffd36a"/><circle cx="${T==="morning"?46:72}" cy="${T==="morning"?72:46}" r="13" fill="#ffd36a" opacity=".3"/><ellipse cx="80" cy="76" rx="12" ry="4" fill="#fff" opacity=".8"/><ellipse cx="50" cy="44" rx="9" ry="3" fill="#fff" opacity=".7"/>`;
+ const mx=72,my=56,mr=11,ph=mp.p;const lit=Math.cos(ph*2*Math.PI);if(T==="night"||T==="evening")o+=`<circle cx="${mx}" cy="${my}" r="${mr}" fill="#2a2440"/><path d="M${mx} ${my-mr} A${mr} ${mr} 0 0 ${ph<.5?1:0} ${mx} ${my+mr} A${Math.abs(lit)*mr} ${mr} 0 0 ${(ph<.5)===(lit>0)?0:1} ${mx} ${my-mr}Z" fill="#f2efe4"/>`;
+ o+=`<line x1="65" y1="24" x2="65" y2="90" stroke="#5a4268" stroke-width="3"/>`;
+ // shelf with plants
+ o+=`<rect x="286" y="40" width="96" height="5" fill="#5a3a2a"/><rect x="286" y="84" width="96" height="5" fill="#5a3a2a"/>`;
+ cats.slice(0,8).forEach((c,i)=>{const x=290+(i%4)*23,y=i<4?14:58;o+=`<rect x="${x+4}" y="${y+18}" width="14" height="10" rx="2" fill="#8a5a3a"/>${nest(plantSVG(c.color,c.id).replace(/^<svg[^>]*>|<\/svg>$/g,""),x,y,22,30,"0 0 24 36")}`;});
+ if(!cats.length)o+=`<text x="334" y="68" text-anchor="middle" font-size="8" fill="#bba9c4" font-family="Nunito">plants grow here</text>`;
+ // fireplace
+ const fs=.4+fire*.9;o+=`<rect x="20" y="118" width="74" height="70" fill="#4a3040"/><rect x="30" y="134" width="54" height="54" fill="#120a10"/><rect x="14" y="112" width="86" height="8" fill="#5a3a4a"/>
+  <ellipse cx="57" cy="176" rx="40" ry="26" fill="url(#glow)"/><g transform="translate(57 186) scale(${fs})"><path class="flame" d="M0 0 q-20 -12 -6 -36 q4 12 10 6 q8 -14 2 -26 q22 16 10 44 q-6 12 -16 12z" fill="#e8743b"/><path class="flame" d="M0 0 q-10 -8 -2 -22 q4 8 8 2 q8 12 0 20z" fill="#e8c66a"/></g>`;
+ // altar with candles + pomegranate
+ o+=`<rect x="240" y="138" width="100" height="10" fill="#4a2a34"/><rect x="246" y="148" width="88" height="40" fill="#3a2028"/><path d="M246 148 h88 v8 h-88z" fill="#6e1d29"/>`;
+ musts.forEach((c,i)=>{const x=248+i*8.6,on=isPaid(m,c.id);o+=`<rect x="${x}" y="${124}" width="5" height="14" fill="#f2efe4"/>${on?`<path class="flame" d="M${x+2.5} 124 q-3 -4 0 -8 q3 4 0 8z" fill="#e8c66a"/>`:""}`;});
+ const seeds=Math.max(0,Math.min(12,Math.floor(rw.months)));o+=`<circle cx="292" cy="104" r="16" fill="#9a1f30"/><path d="M286 89 l6 -6 l6 6" fill="#c9a24a"/><circle cx="292" cy="104" r="11" fill="#5a0f1a"/>`;
+ for(let i=0;i<12;i++){const a=i/12*Math.PI*2,r=i%2?7:4;o+=`<circle cx="${292+Math.cos(a)*r}" cy="${104+Math.sin(a)*r}" r="2" fill="${i<seeds?"#ff4d6a":"#3a0a12"}"/>`;}
+ // couch with Bailey & PB
+ o+=`<rect x="110" y="168" width="140" height="34" rx="12" fill="#5d6b3e"/><rect x="104" y="150" width="152" height="30" rx="14" fill="#6b7a48"/><rect x="100" y="164" width="20" height="40" rx="9" fill="#55623a"/><rect x="240" y="164" width="20" height="40" rx="9" fill="#55623a"/>`;
+ o+=nest(chibiInner(ME()),118,112,58,77);o+=nest(chibiInner(PB()),180,110,58,77);
+ if(S.fortuna[today()])o+=`<text x="232" y="118" font-size="14" class="float">✨</text>`;
+ // Hades by fireplace side
+ o+=nest(chibiInner(HADES_O),336,104,64,85);
+ // Hecate + Quincy
+ if(hec){o+=`<rect x="108" y="40" width="44" height="110" rx="22" fill="#120a1e" opacity=".6"/>`+nest(chibiInner(HECATE_O),104,62,52,69)+nest(quincy(),150,150,30,40);}
+ if(T==="night")o+=`<rect width="400" height="250" fill="#0a0614" opacity=".22"/><ellipse cx="57" cy="170" rx="90" ry="60" fill="url(#glow)"/>`;
+ $("#scene").setAttribute("aria-label",`Your cottage, ${T}`);$("#scene").innerHTML=o;}
+function renderCottage(){renderScene();$("#hadesFace").innerHTML=face(HADES_O);if(!$("#hadesSay").textContent)hadesSays(hadesContext());
+ const q=nextQuest(),c=CHAPTERS[curChapter()];
+ $("#todayCard").innerHTML=q?`<div class="muted" style="font-size:12px;font-weight:800;letter-spacing:1px">NEXT ON THE PATH</div><h2 style="margin:2px 0">${esc(q.title)}</h2>
+  <div class="muted" style="font-size:14px">${q.ch>=0?esc(c.name)+" · ":"Life rite · "}${esc(q.when)}</div><div style="margin-top:10px"><button class="btn" id="goQ" style="width:100%">Begin the rite</button></div>
+  <div class="muted" style="font-size:13px;margin-top:8px">🌙 ${moonPhase().name} tonight</div>`:`<h2>Every rite complete.</h2>`;
+ const g=$("#goQ");if(g)g.addEventListener("click",()=>openQuest(q.id));
+ const fo=S.fortuna[today()];$("#fortunaCard").innerHTML=fo?`<div class="card"><div class="who-row"><div class="face">${face(FORTUNA_O)}</div><div class="bub" style="flex:1"><b class="who">Fortuna</b>${esc(fo)}</div></div></div>`:"";}
+$$("[data-quick]").forEach(b=>b.addEventListener("click",()=>{const k=b.dataset.quick;if(k==="hours")openHours();else if(k==="spend")openTx();else go("hearth");}));
+$("#hecateBtn").addEventListener("click",callHecate);
+function callHecate(){S.hecateUntil=Date.now()+36e5*6;save();renderScene();const a=allQuietItems().filter(i=>i.st!=="ok");
+ openModal(`<div class="who-row"><div class="face" style="width:72px;height:72px">${face(HECATE_O)}</div><div class="bub" style="flex:1"><b class="who">Hecate</b>${esc(pick(HECATE))}</div></div>
+  <div style="display:flex;gap:14px;align-items:center;margin-top:14px"><svg viewBox="0 0 120 160" width="90" height="120">${quincy()}</svg><div><b class="serif" style="font-size:20px">Quincy is here.</b><div class="muted">He sits with you at the crossroads. He's not going anywhere in here.</div></div></div>
+  <h3>Breathe with me</h3><div class="muted">In for 4 · hold for 4 · out for 6. Three times.</div>
+  <h3>Only the next torch</h3><div class="bub">${a.length?`One thing, just one: <b>${esc(a[0].t)}</b>. Everything else can wait until tomorrow.`:"Nothing is on fire. Truly. You checked. Rest is allowed tonight."}</div>
+  <div class="foot"><button class="btn ghost" onclick="go('quiet');closeModal()">See All Quiet</button><button class="btn" onclick="closeModal()">Thank you, Hecate</button></div>`);}
+function crossroads(done,next){petals(120);SFX.lvl();openModal(`<h2>The Crossroads</h2><div class="who-row"><div class="face" style="width:72px;height:72px">${face(HECATE_O)}</div><div class="bub" style="flex:1"><b class="who">Hecate</b>${esc(done.name)} is behind you. Ahead: <b>${esc(next.name)}</b> (${esc(next.when)}). I lit the first torch. Quincy walks with you.</div></div>
+  <div class="bub" style="margin-top:10px"><b class="who">Hades</b>${esc((CHAPTER_QUIPS[next.id]||"").replace(/^Hades: '|'$/g,""))}</div><div class="foot"><span></span><button class="btn" onclick="closeModal()">Onward</button></div>`);}
+// fortuna daily
+(function(){const t=today();if(!(t in S.fortuna)){S.fortuna[t]=Math.random()<.3?pick(FORTUNA):"";save();}if(S.fortuna[t]===""&&false){}})();
+// ---------- All Quiet ----------
+function allQuietItems(){const m=monthKey(),musts=BUDGET_CATS.filter(c=>c.tier===1),unpaid=musts.filter(c=>!isPaid(m,c.id)),day=new Date().getDate(),rw=runway(),f=fire7();
+ const lastH=S.hours.length?[...S.hours].sort((a,b)=>b.date.localeCompare(a.date))[0].date:null,daysSince=d=>d?Math.max(0,Math.round((new Date(today()+"T12:00")-new Date(d+"T12:00"))/864e5)):null;
+ const over=BUDGET_CATS.filter(c=>budgetOf(c.id)>0&&spentIn(m,c.id)>budgetOf(c.id));const cashAge=daysSince(S.fin.cashDate);const nq=nextQuest();
+ const items=[
+  {k:"bills",ic:"🕯️",t:unpaid.length?`${unpaid.length} tribute${unpaid.length>1?"s":""} not marked paid this month`:"Every must-pay bill is marked paid",st:!unpaid.length?"ok":day>=20?"warn":"info",d:unpaid.length?unpaid.map(c=>c.name).join(", "):"All candles lit.",go:"treasury"},
+  {k:"over",ic:"🍇",t:over.length?`${over.length} categor${over.length>1?"ies are":"y is"} over budget`:"No category is over budget",st:over.length?"warn":"ok",d:over.length?over.map(c=>`${c.name}: ${money(spentIn(m,c.id))} of ${money(budgetOf(c.id))}`).join(" · "):"Dionysus is behaving.",go:"treasury"},
+  {k:"runway",ic:"🍎",t:rw.months>=6?`Runway: about ${rw.months} months, counting tuition`:rw.months>=3?`Runway is getting short: about ${rw.months} months`:`Runway is critical: about ${rw.months} month${rw.months===1?"":"s"}`,st:rw.months>=6?"ok":"warn",d:`Vault ${money(rw.cash)} (updated ${S.fin.cashDate||"never"}). Living costs ${money(rw.liv)}/mo${rw.inc?`, expected income ${money(rw.inc)}/mo`:", no income counted yet"}. Tuition ${money(+S.fin.tuitionSem)} each Jan & Aug.`,go:"treasury"},
+  {k:"vault",ic:"🏦",t:cashAge===null||cashAge>14?"Vault balance is stale. Update it":"Vault balance is fresh",st:cashAge===null||cashAge>14?"warn":"ok",d:`Last updated ${S.fin.cashDate||"never"}.`,go:"treasury"},
+  {k:"hearth",ic:"🔥",t:f>=.5?"The hearth is warm":f>=.25?"The hearth is low":"The hearth is nearly out",st:f>=.5?"ok":"warn",d:`This week you did ${Math.round(f*100)}% of your self-care rites.`,go:"hearth"},
+  {k:"path",ic:"🗝️",t:nq?`Next rite: ${nq.title}`:"Every rite complete",st:"info",d:nq?nq.when:"",go:"path"},
+  {k:"garden",ic:"🌿",t:lastH?`Last hours logged ${daysSince(lastH)} day${daysSince(lastH)===1?"":"s"} ago`:"No hours logged yet",st:lastH&&daysSince(lastH)<=14?"ok":"info",d:"",go:"garden"},
+  {k:"backup",ic:"💾",t:S.lastBackup&&Date.now()-S.lastBackup<7*864e5?"Backup is current":"Backup is due",st:S.lastBackup&&Date.now()-S.lastBackup<7*864e5?"ok":"warn",d:`Last backup: ${S.lastBackup?new Date(S.lastBackup).toLocaleDateString():"never"}.`,go:"settings"}];
+ return items.map(i=>Object.assign(i,{sig:i.t+"|"+i.st}));}
+function renderQuiet(){const it=allQuietItems(),bad=it.filter(i=>i.st==="warn");
+ $("#quiet").innerHTML=`<div class="aqhead">${bad.length?`${bad.length} thing${bad.length>1?"s":""} need${bad.length>1?"":"s"} you.<br><span class="muted" style="font-size:20px">Everything else is quiet.</span>`:"🕊️ All Quiet on the Western Front."}</div>
+  <p class="muted" style="text-align:center;margin-top:0">Honest, not sugar-coated. Tap ✓ once you've checked something. It remembers, so you don't have to check it again until something changes.</p>
+  <div class="aq">${it.map(i=>{const v=S.verified[i.k],still=v&&v.sig===i.sig;return `<div class="aqi ${i.st==="ok"?"ok":i.st==="warn"?"warn":""}"><span class="ic">${i.ic}</span><div class="tx"><b class="${i.st==="ok"?"status-ok":i.st==="warn"?"status-warn":""}">${esc(i.t)}</b><small>${esc(i.d)}</small>
+   ${still?`<small style="display:block;color:var(--ok)">✓ You verified this ${new Date(v.at).toLocaleString([], {weekday:"short",hour:"numeric",minute:"2-digit"})}. Nothing has changed since.</small>`:""}</div>
+   <button class="btn sm ${still?"ghost":"sage"}" data-ver="${i.k}">${still?"✓ Verified":"✓ Verify"}</button><button class="btn sm ghost" data-goto="${i.go}">Open</button></div>`;}).join("")}</div>`;
+ $$("[data-ver]").forEach(b=>b.addEventListener("click",()=>{const i=it.find(x=>x.k===b.dataset.ver);S.verified[i.k]={at:Date.now(),sig:i.sig};SFX.ok();save();renderQuiet();}));
+ $$("[data-goto]").forEach(b=>b.addEventListener("click",()=>{const g=b.dataset.goto;if(g==="settings")openSettings();else go(g);}));}
+// ---------- Path ----------
+function qRow(q){const s=S.q[q.id]||{},d=!!s.d,n=(s.s||[]).filter(Boolean).length;return `<li class="qi ${d?"done":""}" data-q="${q.id}" tabindex="0"><span class="ck">${d?"✓":""}</span><span class="t">${esc(q.title)}<small>${esc(q.when)}${q.steps&&!d?` · ${n}/${q.steps.length}`:""}</small></span><span class="chip">+${q.xp||100}</span></li>`;}
+function renderPath(){const cur=curChapter();const sec=(title,sub,list,open,quip)=>{const d=list.filter(q=>isDone(q.id)).length;return `<details class="ch" ${open?"open":""}><summary><b class="serif" style="font-size:20px">${title}</b><span class="chip">${esc(sub)}</span><div class="pbar"><i style="width:${list.length?d/list.length*100:0}%"></i></div><span class="muted">${d}/${list.length}</span></summary><div class="inner">${quip?`<div class="muted" style="font-style:italic;margin-bottom:6px">${esc(quip)}</div>`:""}<ul class="ql">${list.map(qRow).join("")}</ul></div></details>`;};
+ $("#pathList").innerHTML=sec("🌑 Life Rites","Money, home & family",RITES.map(r=>QM[r.id]),true,"")+CHAPTERS.map((c,i)=>sec(`${i===cur?"🔥 ":""}${esc(c.name)}`,c.when,QUESTS.filter(q=>q.ch===i),i===cur,CHAPTER_QUIPS[i])).join("")
+  +`<details class="ch"><summary><b class="serif" style="font-size:20px">📅 Key Dates</b><span class="chip">dates marked ~ are estimates</span></summary><div class="inner">${KEY_DATES.map(k=>`<div class="row" style="padding:4px 0;border-bottom:1px dashed var(--edge)"><b style="min-width:105px">${k.est?"~":""}${new Date(k.d+"T12:00").toLocaleDateString("en-US",{month:"short",year:"numeric"})}</b><span>${esc(k.t)}</span></div>`).join("")}</div></details>`
+  +`<details class="ch"><summary><b class="serif" style="font-size:20px">📖 The Lexicon</b><span class="chip">every pre-med term, plainly</span></summary><div class="inner">${CODEX.map(([t,d])=>`<p style="margin:6px 0"><b class="status-ok">${esc(t)}</b><br><span class="muted">${esc(d)}</span></p>`).join("")}</div></details>`;
+ $$("#pathList .qi").forEach(li=>{li.addEventListener("click",()=>openQuest(li.dataset.q));li.addEventListener("keydown",e=>{if(e.key==="Enter")openQuest(li.dataset.q);});});}
+function openQuest(id){const q=QM[id],s=qs(id);if(!Array.isArray(s.s))s.s=[];const d=!!s.d;
+ openModal(`<div class="muted" style="font-size:12px;font-weight:800;letter-spacing:1px">${q.ch>=0?esc(CHAPTERS[q.ch].name).toUpperCase():"LIFE RITE"} · ${esc(q.when)}</div><h2>${d?"✓ ":""}${esc(q.title)}</h2>
+  <div class="who-row"><div class="face">${face(HADES_O)}</div><div class="bub" style="flex:1"><b class="who">Hades</b>${q.what}</div></div>
+  <h3>Why it matters</h3><div>${q.why}</div>
+  ${q.steps?`<h3>The rite</h3><ul class="steps">${q.steps.map((t,i)=>`<li class="${s.s[i]?"ok":""}" data-i="${i}" tabindex="0"><span class="cb">${s.s[i]?"✓":""}</span><span class="tx">${esc(t)}</span></li>`).join("")}</ul>`:""}
+  ${q.tip?`<div class="tip" style="margin-top:10px">🗝️ ${esc(q.tip)}</div>`:""}
+  ${q.links?`<div style="margin-top:8px">${q.links.map(l=>`<a href="${esc(l.u)}" target="_blank" rel="noopener" style="color:var(--gold)">${esc(l.l)} ↗</a>`).join("<br>")}</div>`:""}
+  <label class="f" for="qn">Your notes</label><textarea id="qn" rows="2">${esc(s.n||"")}</textarea>
+  <div class="foot"><span class="muted">${d?"Completed "+esc(s.at||""):"+"+(q.xp||100)+" XP"}</span>${d?`<button class="btn ghost sm" id="qu">Mark not done</button>`:`<button class="btn" id="qd">Complete the rite</button>`}</div>`);
+ $$("#modal .steps li").forEach(li=>{const t=()=>{const i=+li.dataset.i;s.s[i]=!s.s[i];li.classList.toggle("ok",s.s[i]);li.querySelector(".cb").textContent=s.s[i]?"✓":"";SFX.tap();changed();};li.addEventListener("click",t);li.addEventListener("keydown",e=>{if(e.key===" "||e.key==="Enter"){e.preventDefault();t();}});});
+ $("#qn").addEventListener("input",e=>{s.n=e.target.value;save();});
+ const qd=$("#qd");if(qd)qd.addEventListener("click",()=>{s.d=1;s.at=today();SFX.done();petals(60);closeModal();hadesSays(pick(HADES.quest));toast(`🗝️ Rite complete · +${q.xp||100} XP`);changed();});
+ const qu=$("#qu");if(qu)qu.addEventListener("click",()=>{s.d=0;closeModal();changed();});}
+function renderCourses(){const g=gpa(false),sc=gpa(true),d=S.courses.filter(c=>c.status==="done").length;
+ $("#gpaTiles").innerHTML=`<div class="tile"><div class="big">${g===null?"–":g.toFixed(2)}</div><small>Overall GPA (estimate)</small></div><div class="tile"><div class="big">${sc===null?"–":sc.toFixed(2)}</div><small>Science GPA (estimate)</small></div><div class="tile"><div class="big">${d}/${S.courses.length}</div><small>Classes done</small></div>`;
+ const opt=v=>`<option value=""${v?"":" selected"}>–</option>`+Object.keys(GP).concat(["P","W"]).map(x=>`<option${x===v?" selected":""}>${x}</option>`).join("");
+ $("#courses").innerHTML=`<tr><th>Class</th><th>Cr</th><th>Status</th><th>Grade</th><th></th></tr>`+S.courses.map(c=>`<tr data-id="${c.id}"><td>${esc(c.name)}</td><td><input data-f="cr" type="number" step=".5" value="${esc(c.cr)}" style="width:60px;padding:4px"></td>
+  <td><select data-f="status" style="padding:4px"><option value="todo"${c.status==="todo"?" selected":""}>Not yet</option><option value="doing"${c.status==="doing"?" selected":""}>Taking</option><option value="done"${c.status==="done"?" selected":""}>✓ Done</option></select></td><td><select data-f="grade" style="padding:4px;width:70px">${opt(c.grade)}</select></td><td><button class="btn ghost sm" data-rm="${c.id}">✕</button></td></tr>`).join("");
+ $$("#courses [data-f]").forEach(el=>el.addEventListener("change",()=>{const c=S.courses.find(x=>x.id===el.closest("tr").dataset.id),f=el.dataset.f;c[f]=f==="cr"?(+el.value||0):el.value;if(f==="grade"&&el.value){c.status="done";hadesSays(pick(HADES.study));}changed();}));
+ $$("#courses [data-rm]").forEach(b=>b.addEventListener("click",()=>{if(b.dataset.c){S.courses=S.courses.filter(c=>c.id!==b.dataset.rm);changed();}else{b.dataset.c=1;b.textContent="Sure?";}}));}
+$("#courseForm").addEventListener("submit",e=>{e.preventDefault();const f=e.target;S.courses.push({id:uid(),name:f.name.value.trim(),cat:f.cat.value,cr:+f.cr.value||0,status:"todo",grade:""});f.name.value="";changed();});
+// ---------- Garden ----------
+function renderGarden(){$("#beds").innerHTML=HOUR_CATS.map(c=>{const n=S.hours.filter(h=>h.cat===c.id).length,t=sumH(h=>h.cat===c.id);
+  return `<div class="bed" data-b="${c.id}" tabindex="0"><div class="pl">${n?Array.from({length:Math.min(n,14)},()=>plantSVG(c.color,c.id)).join("")+(n>14?`<span class="muted">+${n-14}</span>`:""):`<span class="muted" style="font-size:12px">🌱 waiting</span>`}</div>
+   <div class="h">${+t.toFixed(1)}<span style="font-size:14px"> hrs</span></div><small><b>${esc(c.plant)}</b> · ${esc(c.label)}</small></div>`;}).join("");
+ $$("#beds .bed").forEach(b=>b.addEventListener("click",()=>{const c=HOUR_CATS.find(x=>x.id===b.dataset.b);openModal(`<h2>${esc(c.plant)}</h2><div style="width:80px;height:120px">${plantSVG(c.color,c.id)}</div><p>${esc(c.lore)}</p><p class="muted">Logged here: ${esc(c.label)} · ${+sumH(h=>h.cat===c.id).toFixed(1)} hours</p>`);}));
+ const L=[...S.hours].sort((a,b)=>b.date.localeCompare(a.date));
+ $("#hoursList").innerHTML=L.length?`<table><tr><th>Date</th><th>Type</th><th>Hrs</th><th>Where</th><th>Contact</th><th></th></tr>${L.map(h=>`<tr><td>${esc(h.date)}</td><td>${esc((HOUR_CATS.find(c=>c.id===h.cat)||{}).label||h.cat)}</td><td>${esc(h.hrs)}</td><td>${esc(h.place)}</td><td>${esc(h.contact)}</td><td><button class="btn ghost sm" data-dh="${h.id}">✕</button></td></tr>${h.note?`<tr><td></td><td colspan="5" class="muted" style="font-size:13px">${esc(h.note)}</td></tr>`:""}`).join("")}</table>`:`<p class="muted">No hours yet. Your first plant is waiting.</p>`;
+ $$("[data-dh]").forEach(b=>b.addEventListener("click",()=>{if(b.dataset.c){S.hours=S.hours.filter(h=>h.id!==b.dataset.dh);changed();}else{b.dataset.c=1;b.textContent="Sure?";}}));}
+function openHours(){openModal(`<h2>🌿 Log hours</h2><form class="f2" id="hf"><label class="f full">Type<select name="cat">${HOUR_CATS.map(c=>`<option value="${c.id}">${esc(c.label)} → ${esc(c.plant)}</option>`).join("")}</select></label>
+  <label class="f">Date<input type="date" name="date" value="${today()}" required></label><label class="f">Hours<input type="number" name="hrs" step=".25" min=".25" required placeholder="3"></label>
+  <label class="f">Where<input name="place" placeholder="${esc((S.pack&&S.pack.gardenPlace)||"Clinic or hospital")}"></label><label class="f">Contact (name / email)<input name="contact"></label>
+  <label class="f full">What happened / what you felt<textarea name="note" rows="2"></textarea></label>
+  <div class="foot full"><span class="muted">${esc((S.pack&&S.pack.gardenNote)||"")}</span><button class="btn sage">Plant it</button></div></form>`);
+ $("#hf").addEventListener("submit",e=>{e.preventDefault();const f=e.target,h=+f.hrs.value;if(!(h>0))return;S.hours.push({id:uid(),date:f.date.value,cat:f.cat.value,hrs:h,place:f.place.value.trim(),contact:f.contact.value.trim(),note:f.note.value.trim()});
+  closeModal();SFX.done();petals(40);hadesSays(pick(HADES.garden));toast(`🌿 A ${esc(HOUR_CATS.find(c=>c.id===f.cat.value).plant)} sprouted · +${Math.round(h*2)} XP`);changed();});}
+$("#logHoursBtn").addEventListener("click",openHours);
+// ---------- Treasury ----------
+let viewMonth=monthKey();
+const shiftMonth=(m,d)=>{const [y,mo]=m.split("-").map(Number);const x=new Date(y,mo-1+d,1);return `${x.getFullYear()}-${pad(x.getMonth()+1)}`;};
+$("#mPrev").addEventListener("click",()=>{viewMonth=shiftMonth(viewMonth,-1);renderTreasury();});$("#mNext").addEventListener("click",()=>{viewMonth=shiftMonth(viewMonth,1);renderTreasury();});
+function renderTreasury(){const m=viewMonth,[y,mo]=m.split("-").map(Number);$("#mLabel").textContent=new Date(y,mo-1,1).toLocaleDateString("en-US",{month:"long",year:"numeric"});
+ const musts=BUDGET_CATS.filter(c=>c.tier===1),paid=musts.filter(c=>isPaid(m,c.id)).length,rw=runway(),T=monthTx(m);
+ const spent=T.filter(t=>t.type==="expense").reduce((a,t)=>a+(+t.amt||0),0),inc=T.filter(t=>t.type==="income").reduce((a,t)=>a+(+t.amt||0),0),bud=totalBudget(),nt=nextTuition();
+ const candles=musts.map(c=>`<rect x="${4+musts.indexOf(c)*14}" y="22" width="8" height="22" fill="#f2efe4"/>${isPaid(m,c.id)?`<path class="flame" d="M${8+musts.indexOf(c)*14} 22 q-4 -6 0 -12 q4 6 0 12z" fill="#e8c66a"/>`:""}`).join("");
+ const seedsN=Math.max(0,Math.min(12,rw.months));let pom=`<circle cx="40" cy="30" r="24" fill="#9a1f30"/><circle cx="40" cy="30" r="17" fill="#5a0f1a"/>`;for(let i=0;i<12;i++){const a=i/12*Math.PI*2,r=i%2?11:6;pom+=`<circle cx="${40+Math.cos(a)*r}" cy="${30+Math.sin(a)*r}" r="2.8" fill="${i<seedsN?"#ff4d6a":"#3a0a12"}"/>`;}
+ const pct=bud?spent/bud:0;
+ $("#treasHero").innerHTML=`<div class="tile"><svg viewBox="0 0 ${musts.length*14+4} 46" width="${musts.length*14+4}" height="46">${candles}</svg><div class="big">${paid}/${musts.length}</div><small>Tributes paid (must-pay bills)</small></div>
+  <div class="tile"><svg viewBox="0 0 80 60" width="80" height="60">${pom}</svg><div class="big ${rw.months<3?"status-bad":rw.months<6?"status-warn":"status-ok"}">${rw.months} mo</div><small>Full months covered after this one, counting tuition${rw.inc?` and ${money(rw.inc)}/mo income`:" (no income counted yet)"} · each seed is one month${rw.out?`<br><b>Cash runs short in ${rw.out.toLocaleDateString("en-US",{month:"long",year:"numeric"})}</b> unless money comes in or the vault grows`:""}</small></div>
+  <div class="tile"><div class="jbar" style="height:18px"><i style="width:${Math.min(100,pct*100)}%;background:${pct>1?"var(--bad)":pct>.85?"var(--warn)":"var(--sage)"}"></i></div><div class="big">${money(spent)}</div><small>spent of ${money(bud)} budget this month${inc?` · ${money(inc)} came in`:""}</small></div>
+  <div class="tile"><div class="big">⚔️</div><small><b>Next tuition boss:</b> ${nt?nt.toLocaleDateString("en-US",{month:"short",year:"numeric"}):"–"} · ${money(+S.fin.tuitionSem)}<br><b>${esc(CARD_LABEL)} hydra falls:</b> ${esc(S.fin.wfEnd||"–")}</small></div>`;
+ $("#tiers").innerHTML=[1,2,3].map(t=>{const cs=BUDGET_CATS.filter(c=>c.tier===t),T_=TIERS[t],ts=cs.reduce((a,c)=>a+spentIn(m,c.id),0),tb=tierBudget(t);
+  return `<h3>${T_.icon} ${T_.name} <span class="muted" style="font-size:14px;font-family:Nunito">${T_.sub} · ${money(ts)} of ${money(tb)}</span></h3><div class="jars">${cs.map(c=>{const s=spentIn(m,c.id),b=budgetOf(c.id),p=b?s/b:0,pd=t===1&&isPaid(m,c.id);
+   return `<div class="jar ${pd?"paid":""}" data-cat="${c.id}" tabindex="0"><div class="nm">${pd?"🕯️ ":""}${esc(c.name)}</div><div class="jbar"><i style="width:${Math.min(100,p*100)}%;background:${p>1?"var(--bad)":p>.85?"var(--warn)":t===1?"var(--gold)":"var(--sage)"}"></i></div>
+    <div class="amt">${pd&&s<b?`<span class="status-ok">✓ Paid</span> · ${money(s)} logged`:`${money(s)} of ${money(b)}`}${pd&&s<b?"":p>1?` · <span class="status-bad">over by ${money(s-b)}</span>`:b-s>0?` · ${money(b-s)} left`:""}</div></div>`;}).join("")}</div>`;}).join("");
+ $$(".jar[data-cat]").forEach(j=>{j.addEventListener("click",()=>openCat(j.dataset.cat));j.addEventListener("keydown",e=>{if(e.key==="Enter")openCat(j.dataset.cat);});});
+ $("#txList").innerHTML=T.length?`<table><tr><th>Date</th><th>Amount</th><th>Category / source</th><th>Note</th><th>Account</th><th></th></tr>${[...T].sort((a,b)=>b.date.localeCompare(a.date)).map(t=>`<tr><td>${esc(t.date.slice(5))}</td><td class="${t.type==="income"?"status-ok":""}">${t.type==="transfer"?"↔ ":""}${money(+t.amt)}</td><td>${esc(t.type==="expense"?(catById[t.cat]||{}).name:t.type==="income"?t.src:"Transfer (not spending)")}</td><td>${esc(t.note)}</td><td>${esc(t.acct)}</td><td><button class="btn ghost sm" data-dt="${t.id}">✕</button></td></tr>`).join("")}</table>`:`<p class="muted">Nothing logged for this month yet.</p>`;
+ $$("[data-dt]").forEach(b=>b.addEventListener("click",()=>{if(b.dataset.c){S.tx=S.tx.filter(t=>t.id!==b.dataset.dt);changed();}else{b.dataset.c=1;b.textContent="Sure?";}}));}
+function openCat(id){const c=catById[id],m=viewMonth,T=monthTx(m).filter(t=>t.type==="expense"&&t.cat===id),pd=isPaid(m,id),manual=!!(S.paid[m]&&S.paid[m][id]);
+ openModal(`<h2>${esc(c.name)}</h2><div class="muted">${esc(TIERS[c.tier].name)} · ${esc(viewMonth)}</div>
+  <div class="hero" style="margin-top:10px"><div class="tile"><div class="big">${money(spentIn(m,id))}</div><small>spent</small></div><div class="tile"><div class="big">${money(budgetOf(id))}</div><small>budget</small></div></div>
+  ${c.tier===1?`<div class="row" style="margin-top:10px"><button class="btn ${manual?"ghost":"gold"}" id="markPaid">${manual?"Unmark paid":pd?"✓ Paid (by logged amount)":"🕯️ Mark paid this month"}</button></div>`:""}
+  <label class="f" for="cb">Monthly budget for this category</label><input id="cb" type="number" step="1" value="${budgetOf(id)}">
+  <h3>Entries</h3>${T.length?T.map(t=>`<div class="muted">${esc(t.date)} · ${money(+t.amt)} · ${esc(t.acct)} ${t.note?"· "+esc(t.note):""}</div>`).join(""):`<div class="muted">None this month.</div>`}
+  <div class="foot"><button class="btn ghost" id="addHere">+ Log to this category</button><button class="btn" onclick="closeModal()">Done</button></div>`);
+ $("#cb").addEventListener("change",e=>{S.budget[id]=+e.target.value||0;changed();});
+ const mp=$("#markPaid");if(mp)mp.addEventListener("click",()=>{S.paid[m]=S.paid[m]||{};S.paid[m][id]=!manual;if(!manual){SFX.ok();if(BUDGET_CATS.filter(c=>c.tier===1).every(c=>isPaid(m,c.id)||(c.id===id))){hadesSays(pick(HADES.paid));petals(60);}}closeModal();changed();});
+ $("#addHere").addEventListener("click",()=>openTx(id));}
+function openTx(presetCat){let type="expense";const draw=()=>{openModal(`<h2>🪙 Log money</h2><div class="seg" id="tt">${[["expense","Spent"],["income","Came in"],["transfer","Transfer / card payment"]].map(([k,l])=>`<button data-t="${k}" class="${type===k?"on":""}">${l}</button>`).join("")}</div>
+  <form class="f2" id="tf"><label class="f">Amount ($)<input name="amt" type="number" step=".01" min="0" required inputmode="decimal" placeholder="0.00"></label><label class="f">Date<input name="date" type="date" value="${today()}" required></label>
+  ${type==="expense"?`<label class="f full">Category<select name="cat">${[1,2,3].map(t=>`<optgroup label="${TIERS[t].name}">${BUDGET_CATS.filter(c=>c.tier===t).map(c=>`<option value="${c.id}" ${c.id===presetCat?"selected":""}>${esc(c.name)}</option>`).join("")}</optgroup>`).join("")}</select></label>`:type==="income"?`<label class="f full">Source<select name="src">${INCOME_SRC.map(s=>`<option>${s}</option>`).join("")}</select></label>`:`<div class="full muted" style="font-size:13px;margin-top:8px">Transfers (like paying the Amex from checking) are recorded but never counted as spending, so nothing gets double-counted.</div>`}
+  <label class="f">Account<select name="acct">${ACCOUNTS.map(a=>`<option>${a}</option>`).join("")}</select></label><label class="f">Note<input name="note" placeholder="H-E-B, Paltz Commons…"></label>
+  <div class="foot full"><span></span><button class="btn gold">Record it</button></div></form>`);
+  $$("#tt button").forEach(b=>b.addEventListener("click",()=>{type=b.dataset.t;draw();}));
+  $("#tf").addEventListener("submit",e=>{e.preventDefault();const f=e.target,a=+f.amt.value;if(!(a>=0))return;const t={id:uid(),type,amt:Math.round(a*100)/100,date:f.date.value,acct:f.acct.value,note:f.note.value.trim()};
+   if(type==="expense")t.cat=f.cat.value;if(type==="income")t.src=f.src.value;S.tx.push(t);closeModal();SFX.ok();
+   if(type==="expense"){const m=monthKey(t.date),c=catById[t.cat];if(c.tier===3&&spentIn(m,t.cat)>budgetOf(t.cat))hadesSays(pick(HADES.spendOver));}
+   toast(`🪙 Recorded ${money(t.amt)}`);viewMonth=monthKey(t.date);changed();});};draw();}
+$("#logSpendBtn").addEventListener("click",()=>openTx());
+$("#finSet").addEventListener("click",()=>{const F=S.fin;openModal(`<h2>Vault & budget settings</h2>
+ <label class="f" for="fc">Cash in the vault (total cash on hand)</label><input id="fc" type="number" step=".01" value="${esc(F.cash)}"><div class="muted" style="font-size:13px">Update this every week or two. Last updated ${esc(F.cashDate||"never")}.</div>
+ <label class="f" for="fi">Expected money coming in each month</label><input id="fi" type="number" step="1" value="${esc(F.incomeMonthly||0)}"><div class="muted" style="font-size:13px">Part-time pay, aid refunds spread out, contract work. Leave 0 if nothing is certain yet. Runway uses this.</div>
+ <label class="f" for="ft">Tuition owed per semester, after aid</label><input id="ft" type="number" step="1" value="${esc(F.tuitionSem)}"><div class="muted" style="font-size:13px">${esc((S.pack&&S.pack.notes&&S.pack.notes.tuition)||"Update once FAFSA or residency kicks in.")}</div>
+ <label class="f" for="fw">${esc(CARD_LABEL)} payoff month</label><input id="fw" type="month" value="${esc(F.wfEnd)}">
+ <label class="f" for="fg">War chest goal (between-gigs fund)</label><input id="fg" type="number" step="1" value="${esc(F.warchestGoal)}">
+ <h3>Monthly budgets</h3><div class="f2">${BUDGET_CATS.map(c=>`<label class="f">${esc(c.name)}<input type="number" step="1" data-b="${c.id}" value="${budgetOf(c.id)}"></label>`).join("")}</div>
+ <div class="muted" style="margin-top:8px">Total living budget: <b id="tb">${money(totalBudget())}</b>/month</div>
+ <div class="foot"><span></span><button class="btn gold" id="fs">Save</button></div>`);
+ $("#fs").addEventListener("click",()=>{const c=+$("#fc").value;if(c!==+F.cash){F.cash=c;F.cashDate=today();}else if(!F.cashDate)F.cashDate=today();F.tuitionSem=+$("#ft").value||0;F.incomeMonthly=+$("#fi").value||0;F.wfEnd=$("#fw").value;F.warchestGoal=+$("#fg").value||0;
+  $$("[data-b]").forEach(i=>S.budget[i.dataset.b]=+i.value||0);closeModal();toast("Vault updated");changed();});});
+
+// ---------- Bulk import ("Charon's Ledger") ----------
+// Built-in merchant rules: [regex, category | "transfer" | "income:Source"]. Learned rules (S.rules) win over these.
+const AUTO_RULES=[
+ [/WELLS ?FARGO.*(CARD|CRD|PMT|PAYMENT)/,"wf"],
+ [/AUTOPAY|AUTO PAY|PAYMENT THANK|THANK YOU|ONLINE PAYMENT|EPAYMENT|E-PAYMENT|CRCARDPMT|CREDIT CRD|CARD ?PMT|PAYMENT - |MOBILE PAYMENT|AMEX EPAY|AMERICAN EXPRESS ACH|CHASE CREDIT|ONLINE TRANSFER|TRANSFER TO|TRANSFER FROM|INTERNAL TRANSFER/,"transfer"],
+ [/PAYROLL|DIRECT DEP|DIR DEP|SALARY|INSPERITY/,"income:Part-time job"],
+ [/SUNY|NEW PALTZ.*(REFUND|FIN AID)|FINANCIAL AID|DEPT OF ED|STUDENT AID/,"income:Aid refund"],
+ [/PALTZ COMMONS|APARTMENT|PROPERTY MGMT|\bRENT\b|YARDI|APPFOLIO|RENTCAFE/,"rent"],
+ [/LEMONADE|RENTERS|ASSURANT/,"renters"],
+ [/CENTRAL HUDSON|CON ?ED|NYSEG|ELECTRIC|NATIONAL GRID|RELIANT|TXU|CENTERPOINT/,"utilities"],
+ [/SPECTRUM|OPTIMUM|XFINITY|COMCAST|VERIZON FIOS|FRONTIER|STARLINK/,"internet"],
+ [/T-MOBILE|TMOBILE|VERIZON WIRELESS|AT&T|ATT\*|MINT MOBILE|VISIBLE/,"phone"],
+ [/GEICO|PROGRESSIVE|STATE FARM|ALLSTATE|USAA|LIBERTY MUTUAL|SUBARU MOTORS FIN|INSURANCE PREM/,"carins"],
+ [/CVS|WALGREENS|RITE AID|PHARMACY|URGENT CARE|MEDICAL|CLINIC|HOSPITAL|DENTAL|LABCORP|QUEST DIAG|COPAY/,"medical"],
+ [/HANNAFORD|SHOPRITE|STOP ?& ?SHOP|PRICE ?CHOPPER|ALDI|TRADER JOE|WHOLE FOODS|WEGMANS|H-?E-?B\b|KROGER|PUBLIX|INSTACART|GROCER|SUPERMARKET|MARKET BASKET|COSTCO WHSE|SAM'?S CLUB|FOOD LION/,"groceries"],
+ [/SHELL|EXXON|MOBIL|SUNOCO|CITGO|STEWART'?S|SPEEDWAY|CUMBERLAND|BP#|\bBP\b|CHEVRON|VALERO|BUC-?EE|GAS ?STATION|FUEL|MURPHY|QT \d|QUIKTRIP|COSTCO GAS/,"gas"],
+ [/JIFFY|AUTOZONE|ADVANCE AUTO|O'?REILLY|FIRESTONE|MIDAS|DMV|INSPECTION|CAR WASH|TIRE/,"carupkeep"],
+ [/BOOKSTORE|CHEGG|PEARSON|MCGRAW|CENGAGE|TEXTBOOK|BARNES|VITALSOURCE|AAMC/,"books"],
+ [/TARGET|WALMART|WAL-MART|DOLLAR TREE|DOLLAR GENERAL|HOME DEPOT|LOWE'?S|BED BATH|IKEA|BJ'?S/,"household"],
+ [/STARBUCKS|DUNKIN|DOORDASH|UBER ?EATS|GRUBHUB|POSTMATES|MCDONALD|CHICK-?FIL|CHIPOTLE|TACO BELL|WENDY|SUBWAY|PANERA|RESTAURANT|CAFE|COFFEE|PIZZA|DINER|BAR & GRILL|TST\*|TOAST|SWEETGREEN|SONIC|WHATABURGER|KOLACHE|BAKERY|BRUNCH|GRILL|SUSHI|TAQUER/,"dining"],
+ [/YOGA|GYM|PLANET FITNESS|CLASSPASS|SALON|BARBER|NAIL|SPA\b|ULTA|SEPHORA|MINDBODY|PELOTON/,"selfcare"],
+ [/AMAZON|AMZN|ETSY|SHEIN|TJ ?MAXX|MARSHALLS|\bROSS\b|OLD NAVY|KOHL|NORDSTROM|EBAY|TEMU|BEST BUY|APPLE STORE/,"shopping"],
+ [/NETFLIX|SPOTIFY|HULU|DISNEY|MAX\.COM|HBO|YOUTUBE|APPLE\.COM\/BILL|ITUNES|AUDIBLE|PATREON|ADOBE|ICLOUD|GOOGLE \*|PRIME VIDEO|CRUNCHYROLL|PARAMOUNT|PEACOCK|OPENAI|ANTHROPIC|CLAUDE\.AI|DUOLINGO|NYTIMES/,"subs"],
+ [/SMOKE|VAPE|HEMP|CBD|DISPENSARY|TOBACCO|HEADSHOP|CANNABIS/,"smoke"],
+ [/AMC |REGAL|CINEMA|THEATER|THEATRE|TICKETMASTER|STEAM|PLAYSTATION|XBOX|NINTENDO|BOWL|EVENTBRITE|MUSEUM/,"fun"],
+ [/AIRLINE|DELTA AIR|UNITED AIR|AMERICAN AIR|SOUTHWEST|JETBLUE|AMTRAK|HOTEL|MARRIOTT|HILTON|AIRBNB|EXPEDIA|FLORIST|1-800-FLOWERS|HALLMARK/,"gifts"]
+];
+// These are NEVER auto-sorted: they could be anything, so you get asked.
+const ALWAYS_ASK=/VENMO|ZELLE|CASH ?APP|PAYPAL|ATM|WITHDRAWAL|CHECK ?#?\d|DEPOSIT\b|SQUARE CASH|APPLE CASH/;
+const normDesc=d=>String(d||"").toUpperCase().replace(/\s+/g," ").trim();
+const merchKey=d=>normDesc(d).replace(/\d{3,}|#\S*|\*\S*|\b(POS|DEBIT|PURCHASE|CARD|RECURRING|PENDING|ACH|WEB|PPD|ID:?)\b/g,"").replace(/[^A-Z&' ]/g," ").replace(/\s+/g," ").trim().split(" ").slice(0,3).join(" ");
+function classify(desc,signedOut){const D=normDesc(desc),mk=merchKey(desc);
+ if(S.rules&&S.rules[mk])return {how:"learned",v:S.rules[mk]};
+ if(ALWAYS_ASK.test(D))return null;
+ for(const [re,v] of AUTO_RULES){if(re.test(D)){
+   if(v==="transfer")return {how:"rule",v};
+   if(v.startsWith("income:"))return signedOut>0?null:{how:"rule",v};
+   return {how:"rule",v};}}
+ return null;}
+function parseCSV(text){const rows=[];let row=[],f="",q=false;text=text.replace(/^﻿/,"");
+ for(let i=0;i<text.length;i++){const c=text[i];if(q){if(c==='"'){if(text[i+1]==='"'){f+='"';i++;}else q=false;}else f+=c;}
+  else if(c==='"')q=true;else if(c===","){row.push(f);f="";}else if(c==="\n"||c==="\r"){if(c==="\r"&&text[i+1]==="\n")i++;row.push(f);f="";if(row.some(x=>x.trim()))rows.push(row);row=[];}else f+=c;}
+ row.push(f);if(row.some(x=>x.trim()))rows.push(row);return rows;}
+const numOf=s=>{s=String(s||"").trim();if(!s)return NaN;const neg=/^\(.*\)$/.test(s)||/^-/.test(s)||/-$/.test(s);const n=parseFloat(s.replace(/[^0-9.]/g,""));return isNaN(n)?NaN:neg?-n:n;};
+function toISO(s){s=String(s||"").trim();let m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);if(m)return `${m[1]}-${pad(+m[2])}-${pad(+m[3])}`;
+ m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})/);if(m){let y=+m[3];if(y<100)y+=2000;return `${y}-${pad(+m[1])}-${pad(+m[2])}`;}const d=new Date(s);return isNaN(d)?null:`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;}
+// Turns any bank/card CSV into [{date,desc,out}] where out>0 means money left you.
+function readStatement(text,acct){
+ const t=text.trim();
+ if(t.startsWith("[")){ // a file Claude prepared for you
+  const a=JSON.parse(t);return {claude:true,rows:a.map(x=>({date:toISO(x.date),desc:x.desc||x.note||"",out:x.type==="income"?-Math.abs(+x.amt):Math.abs(+x.amt)*(x.refund?-1:1),pre:x.type==="transfer"?"transfer":x.type==="income"?"income:"+(x.src||"Other"):x.cat||null,acct:x.acct}))};}
+ const R=parseCSV(text);if(!R.length)throw new Error("empty");
+ const H=R[0].map(h=>h.trim().toLowerCase());const hasHead=H.some(h=>/date|description|amount|debit|credit|payee|details/.test(h));
+ let iD,iDesc,iAmt=-1,iDeb=-1,iCred=-1,body;
+ if(hasHead){body=R.slice(1);const f=re=>H.findIndex(h=>re.test(h));
+  iD=f(/^(transaction date|trans\.? date|date|posting date|posted date)$/);if(iD<0)iD=f(/date/);
+  iDesc=f(/^(description|payee|merchant|name|details|memo)$/);if(iDesc<0||H[iDesc]==="details"&&f(/^description$/)>=0)iDesc=f(/description/);if(iDesc<0)iDesc=f(/desc|payee|merchant|name/);
+  iAmt=f(/^amount$|^amount \(usd\)$|^transaction amount$/);iDeb=f(/debit|withdrawal|charges?$/);iCred=f(/credit|deposit|payments?$/);if(iAmt<0&&iDeb<0)iAmt=f(/amount/);}
+ else{body=R;const w=R[0];iD=w.findIndex(x=>toISO(x)&&/\d/.test(x));iAmt=w.findIndex((x,i)=>i!==iD&&!isNaN(numOf(x))&&/\d/.test(x));
+  let best=-1,bl=0;w.forEach((x,i)=>{if(i!==iD&&i!==iAmt&&x.length>bl&&/[a-z]/i.test(x)){best=i;bl=x.length;}});iDesc=best;}
+ if(iD<0||iDesc<0||(iAmt<0&&iDeb<0))throw new Error("columns");
+ let rows=body.map(r=>{let amt;if(iAmt>=0)amt=numOf(r[iAmt]);else{const d=numOf(r[iDeb]),c=numOf(r[iCred]);amt=!isNaN(d)&&d!==0?-Math.abs(d):!isNaN(c)?Math.abs(c):NaN;}
+  return {date:toISO(r[iD]),desc:(r[iDesc]||"").trim(),raw:amt};}).filter(r=>r.date&&!isNaN(r.raw)&&r.raw!==0);
+ // Sign: checking & Chase cards show spending as negative. Amex shows charges as positive. Detect by majority unless it's checking.
+ const isCard=!/checking|cash/i.test(acct);let flip=false;
+ if(iAmt>=0&&isCard){const pos=rows.filter(r=>r.raw>0&&!/PAYMENT|THANK YOU|AUTOPAY/.test(normDesc(r.desc))).length,neg=rows.filter(r=>r.raw<0&&!/PAYMENT|THANK YOU|AUTOPAY/.test(normDesc(r.desc))).length;flip=pos>neg;}
+ rows.forEach(r=>{r.out=flip?r.raw:-r.raw;});return {rows,card:isCard};}
+const fp=(acct,date,amt,desc)=>`${acct}|${date}|${(+amt).toFixed(2)}|${normDesc(desc).slice(0,40)}`;
+function existingFP(){const s=new Set();S.tx.forEach(t=>{if(t.fp)s.add(t.fp);});return s;}
+function openImport(){openModal(`<h2>📥 Charon's Ledger</h2><div class="who-row"><div class="face">${face(HADES_O)}</div><div class="bub" style="flex:1"><b class="who">Hades</b>Hand me the whole statement. I'll sort what's obvious and only ask you about the ones that are actually unclear. Duplicates get skipped, so re-uploading the same file is harmless.</div></div>
+ <label class="f" for="ia">Which account is this file from?</label><select id="ia">${ACCOUNTS.map(a=>`<option>${a}</option>`).join("")}</select>
+ <label class="f" for="if">Statement file (CSV from your bank or card, or a file Claude made for you)</label><input type="file" id="if" accept=".csv,.txt,.json,text/csv,application/json" multiple>
+ <label class="f" for="ip">Or paste it</label><textarea id="ip" rows="3" placeholder="Date,Description,Amount…"></textarea>
+ <details style="margin-top:8px"><summary class="muted" style="cursor:pointer">Where do I get the CSV?</summary><div class="muted" style="font-size:13px;line-height:1.5;margin-top:6px">
+ <b>Amex:</b> Statements & Activity → pick the dates → Download → CSV.<br><b>Chase (card or checking):</b> account → Download account activity (the ⬇ icon) → CSV.<br><b>Wells Fargo:</b> Account activity → Download → Comma-delimited.<br>Pick one account per upload so I tag it right.</div></details>
+ <div class="foot"><span></span><button class="btn gold" id="igo">Read it</button></div>`);
+ $("#igo").addEventListener("click",async()=>{const acct=$("#ia").value,files=[...$("#if").files];let texts=[];for(const f of files)texts.push(await f.text());if($("#ip").value.trim())texts.push($("#ip").value);
+  if(!texts.length){toast("Pick a file or paste one first.");return;}
+  let rows=[],claude=false;try{texts.forEach(t=>{const r=readStatement(t,acct);if(r.claude)claude=true;rows.push(...r.rows.map(x=>Object.assign({acct:x.acct||acct},x)));});}
+  catch(e){toast("I couldn't read that file. Try the CSV download, or send it to Claude in chat.");return;}
+  stageImport(rows,claude);});}
+$("#impBtn").addEventListener("click",openImport);
+let IMP=null;
+function stageImport(rows,claude){const seen=existingFP(),inFile=new Set();let dup=0;const items=[];
+ rows.forEach(r=>{const k=fp(r.acct,r.date,r.out,r.desc);if(seen.has(k)||inFile.has(k)){dup++;return;}inFile.add(k);
+  let c=r.pre!==undefined&&r.pre!==null?{how:claude?"claude":"rule",v:r.pre}:classify(r.desc,r.out);
+  // money coming in to checking that isn't recognised = ask; a credit on a card that isn't a payment = refund in same category if we know it
+  if(c&&r.out<0&&!c.v.startsWith("income:")&&c.v!=="transfer"&&!/checking|cash/i.test(r.acct)){c={how:c.how,v:c.v,refund:true};}
+  else if(c&&r.out<0&&!c.v.startsWith("income:")&&c.v!=="transfer")c=null;
+  items.push(Object.assign({},r,{fp:k,c,ans:c?c.v:null,learn:true}));});
+ IMP={items,dup,i:0};const ask=items.filter(x=>!x.c);
+ openModal(`<h2>📜 The ledger is read</h2><div class="hero" style="margin-top:8px"><div class="tile"><div class="big status-ok">${items.length-ask.length}</div><small>sorted on their own</small></div><div class="tile"><div class="big ${ask.length?"status-warn":"status-ok"}">${ask.length}</div><small>need you</small></div><div class="tile"><div class="big muted">${dup}</div><small>already in the game (skipped)</small></div></div>
+  ${items.length-ask.length?`<details style="margin-top:10px"><summary class="muted" style="cursor:pointer">Peek at what I sorted (tap any to change it)</summary><div class="tbl" style="max-height:260px">${items.filter(x=>x.c).map(x=>`<div class="row sp" style="padding:4px 0;border-bottom:1px dashed var(--edge);cursor:pointer" data-fix="${x.fp}"><span style="flex:1;min-width:150px;font-size:13px">${esc(x.date.slice(5))} · ${esc(x.desc.slice(0,32))}</span><b style="font-size:13px">${money(Math.abs(x.out))}</b><span class="chip">${esc(labelOf(x.ans,x))}</span></div>`).join("")}</div></details>`:""}
+  <div class="foot"><button class="btn ghost" onclick="closeModal()">Cancel</button>${ask.length?`<button class="btn gold" id="iq">Answer ${ask.length} question${ask.length>1?"s":""}</button>`:`<button class="btn gold" id="isave">Save ${items.length} entr${items.length===1?"y":"ies"}</button>`}</div>`);
+ const q=$("#iq");if(q)q.addEventListener("click",()=>askNext());const s=$("#isave");if(s)s.addEventListener("click",commitImport);
+ $$("[data-fix]").forEach(d=>d.addEventListener("click",()=>{const it=IMP.items.find(x=>x.fp===d.dataset.fix);it.c=null;it.ans=null;askOne(it,()=>stageAgain());}));}
+function stageAgain(){const items=IMP.items;IMP.items=[];const dup=IMP.dup;items.forEach(x=>{if(x.ans&&!x.c)x.c={how:"you",v:x.ans};});IMP={items,dup,i:0};
+ const ask=items.filter(x=>!x.ans);if(ask.length)askNext();else summaryAgain();}
+function summaryAgain(){const it=IMP.items;openModal(`<h2>📜 All sorted</h2><p>${it.length} entr${it.length===1?"y":"ies"} ready. ${IMP.dup?`${IMP.dup} duplicates skipped.`:""}</p><div class="foot"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn gold" id="isave">Save them</button></div>`);$("#isave").addEventListener("click",commitImport);}
+function labelOf(v,x){if(!v)return "?";if(v==="skip")return "Ignore";if(v==="transfer")return "Transfer (not spending)";if(v.startsWith("income:"))return "Came in: "+v.slice(7);return (x&&x.c&&x.c.refund?"Refund · ":"")+((catById[v]||{}).name||v);}
+function askNext(){const left=IMP.items.filter(x=>!x.ans);if(!left.length){summaryAgain();return;}askOne(left[0],askNext,left.length);}
+function askOne(it,then,nLeft){const out=it.out>0,mk=merchKey(it.desc);
+ const catBtns=[1,2,3].map(t=>`<div class="muted" style="font-size:12px;margin-top:8px">${TIERS[t].icon} ${TIERS[t].name}</div><div class="seg">${BUDGET_CATS.filter(c=>c.tier===t).map(c=>`<button data-a="${c.id}">${esc(c.name)}</button>`).join("")}</div>`).join("");
+ openModal(`<div class="row sp" style="padding-right:44px"><h2 style="margin:0">One question</h2>${nLeft?`<span class="chip">${nLeft} left</span>`:""}</div>
+  <div class="tile" style="margin-top:10px;text-align:left"><div class="muted" style="font-size:13px">${esc(it.date)} · ${esc(it.acct)}</div><div style="font-weight:800;font-size:17px;word-break:break-word">${esc(it.desc)}</div><div class="big ${out?"":"status-ok"}">${out?"":"+"}${money(Math.abs(it.out))}</div><small>${out?"money went out":"money came in"}</small></div>
+  <div style="margin-top:8px">${out?catBtns+`<div class="seg" style="margin-top:10px"><button data-a="transfer">↔ Transfer / card payment</button><button data-a="skip">Ignore it</button></div>`
+   :`<div class="seg">${INCOME_SRC.map(s=>`<button data-a="income:${esc(s)}">${esc(s)}</button>`).join("")}</div><div class="muted" style="font-size:12px;margin-top:8px">Or it was a refund / someone paying you back:</div>${catBtns}<div class="seg" style="margin-top:10px"><button data-a="transfer">↔ Transfer between my accounts</button><button data-a="skip">Ignore it</button></div>`}</div>
+  <label class="row" style="margin-top:12px;font-weight:700"><input type="checkbox" id="ilearn" style="width:auto" ${it.learn?"checked":""}> Always sort “${esc(mk||it.desc.slice(0,20))}” this way</label>
+  <div class="muted" style="font-size:12px">Leave this off for Venmo/Zelle-type things that change every time.</div>`);
+ if(ALWAYS_ASK.test(normDesc(it.desc)))$("#ilearn").checked=false;
+ $$("#modal [data-a]").forEach(b=>b.addEventListener("click",()=>{const v=b.dataset.a;it.ans=v;it.c={how:"you",v,refund:!out&&!v.startsWith("income:")&&v!=="transfer"&&v!=="skip"};
+  if($("#ilearn").checked&&mk&&v!=="skip"){S.rules[mk]=v;}SFX.tap();then();}));}
+function commitImport(){let n=0,sp=0;IMP.items.forEach(x=>{const v=x.ans||(x.c&&x.c.v);if(!v||v==="skip")return;const amt=Math.round(Math.abs(x.out)*100)/100;
+ const t={id:uid(),date:x.date,acct:x.acct,note:x.desc.slice(0,60),fp:x.fp,imp:1};
+ if(v==="transfer"){t.type="transfer";t.amt=amt;}else if(v.startsWith("income:")){t.type="income";t.src=v.slice(7);t.amt=amt;}
+ else{t.type="expense";t.cat=v;t.amt=x.out>0?amt:-amt;sp++;}S.tx.push(t);n++;});
+ S.imports.push({at:Date.now(),n});IMP=null;closeModal();petals(50);SFX.done();toast(`🪙 ${n} entries recorded. Charon is satisfied.`);
+ const months=[...new Set(S.tx.filter(t=>t.imp).map(t=>monthKey(t.date)))].sort();if(months.length)viewMonth=months[months.length-1];changed();}
+// ---------- War chest ----------
+function renderWar(){const inc=S.tx.filter(t=>t.type==="income"&&t.src==="Contract work").reduce((a,t)=>a+(+t.amt||0),0),g=+S.fin.warchestGoal||0,sv=+S.war.saved||0,act=S.war.opps.filter(o=>o.stage==="Active").length;
+ $("#warHero").innerHTML=`<div class="tile"><div class="jbar" style="height:18px"><i style="width:${g?Math.min(100,sv/g*100):0}%;background:var(--gold)"></i></div><div class="big">${money(sv)}</div><small>saved of ${money(g)} between-gigs fund</small><button class="btn sm ghost" id="warSave" style="margin-top:6px">Update saved</button></div>
+  <div class="tile"><div class="big">${money(inc)}</div><small>contract income logged (all time)</small></div><div class="tile"><div class="big">${S.war.opps.filter(o=>!["Closed"].includes(o.stage)).length}</div><small>open opportunities · ${act} active</small></div>`;
+ $("#warSave").addEventListener("click",()=>{openModal(`<h2>War chest</h2><label class="f" for="ws">Amount saved for between gigs</label><input id="ws" type="number" step="1" value="${sv}"><div class="foot"><span></span><button class="btn gold" id="wok">Save</button></div>`);$("#wok").addEventListener("click",()=>{S.war.saved=+$("#ws").value||0;closeModal();changed();});});
+ $("#warQuests").innerHTML=WAR_QUESTS.map(([t,k],i)=>`<li class="${S.war.q[i]?"ok":""}" data-i="${i}" tabindex="0"><span class="cb">${S.war.q[i]?"✓":""}</span><span class="tx"><b>${esc(k)}:</b> ${esc(t)}</span></li>`).join("");
+ $$("#warQuests li").forEach(li=>li.addEventListener("click",()=>{const i=+li.dataset.i;S.war.q[i]=!S.war.q[i];SFX.tap();if(S.war.q[i])toast("⚔️ +20 XP");changed();}));
+ $("#pipeline").innerHTML=S.war.opps.length?PIPE_STAGES.map(st=>{const L=S.war.opps.filter(o=>o.stage===st);return L.length?`<h3 style="font-size:17px">${st} (${L.length})</h3>${L.map(o=>`<div class="jar" data-o="${o.id}" style="margin-bottom:6px"><div class="row sp"><b>${esc(o.company)}</b><span class="muted" style="font-size:12px">${esc(o.date)}</span></div><div class="muted" style="font-size:13px">${esc(o.role)}${o.rate?" · "+esc(o.rate):""}${o.where?" · "+esc(o.where):""}</div></div>`).join("")}`:"";}).join(""):`<p class="muted">No opportunities yet. Add the first one, even if it's just "scouting".</p>`;
+ $$("[data-o]").forEach(d=>d.addEventListener("click",()=>openOpp(d.dataset.o)));}
+function openOpp(id){const o=id?S.war.opps.find(x=>x.id===id):{id:uid(),company:"",role:"",rate:"",where:"Remote",stage:"Scouting",link:"",notes:"",date:today()};
+ openModal(`<h2>${id?"Edit":"New"} opportunity</h2><div class="f2"><label class="f">Company / agency<input id="oc" value="${esc(o.company)}"></label><label class="f">Role<input id="or" value="${esc(o.role)}" placeholder="HRIS Implementation Consultant"></label>
+  <label class="f">Rate / pay<input id="ora" value="${esc(o.rate)}" placeholder="$/hr"></label><label class="f">Where<input id="ow" value="${esc(o.where)}" placeholder="Remote / NYC hybrid"></label>
+  <label class="f">Stage<select id="os">${PIPE_STAGES.map(s=>`<option ${s===o.stage?"selected":""}>${s}</option>`).join("")}</select></label><label class="f">Date<input id="od" type="date" value="${esc(o.date)}"></label>
+  <label class="f full">Link<input id="ol" value="${esc(o.link)}"></label><label class="f full">Notes<textarea id="on" rows="2">${esc(o.notes)}</textarea></label></div>
+  <div class="foot">${id?`<button class="btn ghost sm" id="odel">Delete</button>`:"<span></span>"}<button class="btn" id="osave">Save</button></div>`);
+ $("#osave").addEventListener("click",()=>{Object.assign(o,{company:$("#oc").value.trim()||"Unnamed",role:$("#or").value.trim(),rate:$("#ora").value.trim(),where:$("#ow").value.trim(),stage:$("#os").value,date:$("#od").value,link:$("#ol").value.trim(),notes:$("#on").value.trim()});if(!id)S.war.opps.push(o);closeModal();SFX.ok();changed();});
+ const d=$("#odel");if(d)d.addEventListener("click",()=>{if(d.dataset.c){S.war.opps=S.war.opps.filter(x=>x.id!==id);closeModal();changed();}else{d.dataset.c=1;d.textContent="Sure?";}});}
+$("#addOpp").addEventListener("click",()=>openOpp(null));
+// ---------- Hearth ----------
+$("#hDate").value=today();$("#hDate").addEventListener("change",renderHearth);
+function renderHearth(){const d=$("#hDate").value||today(),h=S.hearth[d]||{};
+ $("#hearthBtns").innerHTML=HEARTH_ITEMS.map(([k,ic,l])=>`<button data-h="${k}" class="${h[k]?"on":""}"><span>${ic}</span>${l}</button>`).join("");
+ $$("#hearthBtns button").forEach(b=>b.addEventListener("click",()=>{S.hearth[d]=S.hearth[d]||{};S.hearth[d][b.dataset.h]=!S.hearth[d][b.dataset.h];SFX.tap();changed();}));
+ $("#hNote").value=h.note||"";$("#hNote").oninput=e=>{S.hearth[d]=S.hearth[d]||{};S.hearth[d].note=e.target.value;save();};
+ const f=fire7(),sc=.5+f*1;$("#fireBox").innerHTML=`<div style="display:flex;gap:14px;align-items:center"><svg viewBox="-40 -70 80 80" width="90" height="90"><g transform="scale(${sc})"><path class="flame" d="M0 0 q-24 -14 -8 -44 q4 14 12 8 q10 -18 2 -32 q28 20 12 54 q-8 14 -18 14z" fill="#e8743b"/><path class="flame" d="M0 0 q-12 -10 -2 -26 q4 10 10 2 q8 14 -2 24z" fill="#e8c66a"/></g></svg>
+  <div><div class="big serif" style="font-size:32px">${Math.round(f*100)}%</div><div class="muted">of your self-care rites this week</div></div></div>
+  <div class="bub" style="margin-top:10px"><b class="who">${f<.3?"Hestia (and Hades)":"Hestia"}</b>${f<.3?esc(pick(HADES.hearthLow)):f<.55?"The fire is low, not out. Pick one thing for yourself today. Just one.":"The hearth is warm. You're taking care of the person doing all this work."}</div>`;
+ $("#hDays").innerHTML=lastDays(7).map(x=>{const s=hearthScore(x);return `<div><i style="background:rgba(232,116,59,${.12+s*.88})"></i>${new Date(x+"T12:00").toLocaleDateString("en-US",{weekday:"short"})}</div>`;}).join("");}
+// ---------- Games ----------
+let game="pantheon";$$("#gameSel button").forEach(b=>b.addEventListener("click",()=>{game=b.dataset.g;$$("#gameSel button").forEach(x=>x.classList.toggle("on",x===b));renderGame();}));
+function award(n){const t=today();const cur=S.games[t]||0;const add=Math.max(0,Math.min(n,100-cur));S.games[t]=cur+add;if(add)save();return add;}
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+function renderGame(){const box=$("#gameBox");
+ if(game==="pantheon"||game==="cards"){let pool;if(game==="pantheon")pool=TRIVIA.map(([q,a,w])=>({q,a,opts:shuffle([a,...w])}));
+  else{if(S.cards.length<4){box.innerHTML=`<p class="muted">Add at least 4 flashcards below and they turn into a multiple-choice quiz. (You have ${S.cards.length}.)</p>`;return;}
+   pool=S.cards.map(c=>({q:c.f,a:c.b,opts:shuffle([c.b,...shuffle(S.cards.filter(x=>x.id!==c.id).map(x=>x.b)).slice(0,3)])}));}
+  const round=shuffle(pool).slice(0,5);let i=0,score=0;
+  const show=()=>{if(i>=round.length){const got=award(score*5);box.innerHTML=`<h3>${score}/${round.length}</h3><p>${score===round.length?"Flawless. Athena is furious she didn't think of it.":score>=3?"The gods nod approvingly.":"Hades: 'Wrong answers are just research.'"} ${got?`+${got} XP`:"(Daily game XP is maxed.)"}</p><button class="btn" id="again">Play again</button>`;$("#again").addEventListener("click",renderGame);changed();return;}
+   const r=round[i];box.innerHTML=`<div class="muted">Question ${i+1} of ${round.length}</div><h3 style="color:var(--ink)">${esc(r.q)}</h3><div class="opts">${r.opts.map(o=>`<button data-o="${esc(o)}">${esc(o)}</button>`).join("")}</div>`;
+   $$("#gameBox .opts button").forEach(b=>b.addEventListener("click",()=>{const ok=b.dataset.o===r.a;if(ok){score++;SFX.ok();}b.classList.add(ok?"right":"wrong");$$("#gameBox .opts button").forEach(x=>{x.disabled=true;if(x.dataset.o===r.a)x.classList.add("right");});setTimeout(()=>{i++;show();},900);}));};show();}
+ else{const [w,hint]=pick(ANAGRAMS);let letters=shuffle(w.split(""));while(letters.join("")===w)letters=shuffle(letters);let picked=[];
+  const show=()=>{box.innerHTML=`<div class="muted">Hint: ${esc(hint)} · ${w.length} letters</div><div class="answer">${Array.from({length:w.length},(_,k)=>`<span>${picked[k]!==undefined?letters[picked[k]]:""}</span>`).join("")}</div>
+   <div class="tiles6">${letters.map((l,k)=>`<button data-k="${k}" class="${picked.includes(k)?"used":""}">${l}</button>`).join("")}</div><div class="row" style="justify-content:center"><button class="btn ghost sm" id="undo">Undo</button><button class="btn ghost sm" id="skip">Reveal</button><button class="btn sm" id="next">New scroll</button></div>`;
+   $$(".tiles6 button").forEach(b=>b.addEventListener("click",()=>{const k=+b.dataset.k;if(picked.includes(k))return;picked.push(k);SFX.tap();if(picked.length===w.length){const guess=picked.map(x=>letters[x]).join("");if(guess===w){const g=award(10);SFX.done();toast(`📜 ${w}! ${g?`+${g} XP`:""}`);changed();setTimeout(renderGame,700);}else{toast("Not quite. The scroll resists.");setTimeout(()=>{picked=[];show();},500);}}else show();}));
+   $("#undo").addEventListener("click",()=>{picked.pop();show();});$("#skip").addEventListener("click",()=>{toast(`It was ${w}`);setTimeout(renderGame,900);});$("#next").addEventListener("click",renderGame);};show();}}
+function renderCards(){$("#cardList").innerHTML=S.cards.length?`<table><tr><th>Front</th><th>Back</th><th>Deck</th><th></th></tr>${S.cards.map(c=>`<tr><td>${esc(c.f)}</td><td>${esc(c.b)}</td><td>${esc(c.d)}</td><td><button class="btn ghost sm" data-dc="${c.id}">✕</button></td></tr>`).join("")}</table>`:`<p class="muted">No cards yet.</p>`;
+ $$("[data-dc]").forEach(b=>b.addEventListener("click",()=>{S.cards=S.cards.filter(c=>c.id!==b.dataset.dc);changed();}));}
+$("#cardForm").addEventListener("submit",e=>{e.preventDefault();const f=e.target;S.cards.push({id:uid(),f:f.f.value.trim(),b:f.b.value.trim(),d:f.d.value.trim()});f.f.value="";f.b.value="";SFX.ok();toast(`🃏 ${esc(pick(HADES.study))}`);changed();});
+// ---------- Altar ----------
+function letterState(){if(!S.ceremony)return isDone("q7_5")?"open":"sealed";const now=new Date(),c=new Date(S.ceremony+"T17:00");return now>=c?"open":"sealed";}
+function renderAltar(){$("#oath").innerHTML=S.oath.map((v,i)=>`<input data-oath="${i}" value="${esc(v)}" placeholder="A value you'd live and die for" style="margin-bottom:6px;font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:600">`).join("");
+ $$("[data-oath]").forEach(i=>i.addEventListener("input",e=>{S.oath[+e.target.dataset.oath]=e.target.value;save();}));
+ const st=letterState(),days=S.ceremony?Math.ceil((new Date(S.ceremony+"T17:00")-new Date())/864e5):null;
+ $("#letterBox").innerHTML=`<h2>The Green Couch Letter</h2>${st==="open"?`${SEALED_LETTER?`<div class="letter">${esc(SEALED_LETTER)}</div>`:`<p class="muted">The letter lives in your private pack. Load it in Settings & Scrolls to read it.</p>`}<p class="muted">Written on the green couch, Nov 2026. Delivered on White Coat night.</p>`:
+  `<div class="seal">🔒</div><p style="text-align:center">Sealed by your own hand. It opens on the night of your White Coat Ceremony, quiet and private, with PB.</p>
+   ${days!==null&&days<=180?`<p class="serif" style="text-align:center;font-size:24px">${days} day${days===1?"":"s"} until it opens</p>`:""}
+   <label class="f" for="cer">Ceremony date (set it when you know it)</label><input type="date" id="cer" value="${esc(S.ceremony)}"><div class="muted" style="font-size:13px">No peeking, not even for you. Hades guards it personally.</div>`}`;
+ const ce=$("#cer");if(ce)ce.addEventListener("change",e=>{S.ceremony=e.target.value;changed();});
+ $("#guardian").innerHTML=`<h3 style="margin-top:0">Hecate's Watch</h3><div style="display:flex;gap:10px;align-items:flex-end;justify-content:center"><svg viewBox="0 0 120 160" width="110" height="146">${chibiInner(HECATE_O)}</svg><svg viewBox="0 0 120 160" width="90" height="120">${quincy()}</svg></div>
+  <p style="text-align:center"><b class="serif" style="font-size:20px">Quincy</b><br><span class="muted">Hecate's black hound, guardian of the crossroads. He keeps watch here, always.</span></p>
+  <div class="muted" style="text-align:center">🌙 Tonight: ${moonPhase().name}</div><button class="btn ghost" id="hec2" style="width:100%;margin-top:10px">Call Hecate</button>`;
+ $("#hec2").addEventListener("click",callHecate);
+ const L=[...S.pbLuck].reverse(),fo=Object.entries(S.fortuna).filter(([d,t])=>t).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,5);
+ $("#pbList").innerHTML=`<div class="who-row"><div class="face">${face(FORTUNA_O)}</div><div class="face">${face(PB())}</div></div>`+(L.length?L.map(x=>`<div class="muted" style="margin-top:6px">✨ ${esc(x.date)}: ${esc(x.t)}</div>`).join(""):`<p class="muted">Log PB's real-life lucky moments here. Fortuna is keeping score.</p>`)+(fo.length?`<h3 style="font-size:16px">Fortuna's recent gifts</h3>${fo.map(([d,t])=>`<div class="muted">${esc(d)}: ${esc(t)}</div>`).join("")}`:"");}
+$("#pbLuck").addEventListener("click",()=>{openModal(`<h2>✨ PB got lucky</h2><input id="pl" placeholder="Found $20 on the subway"><div class="foot"><span></span><button class="btn gold" id="plok">Tell Fortuna</button></div>`);$("#plok").addEventListener("click",()=>{const t=$("#pl").value.trim();if(!t)return;S.pbLuck.push({date:today(),t});closeModal();SFX.ok();changed();});});
+// ---------- exports ----------
+async function download(name,text,type){if(dlCap){try{await dlCap.save({filename:name,data:text});return true;}catch(e){if(e&&e.code!=="declined")toast("Download didn't go through. Try Copy instead.");return false;}}
+ try{const b=new Blob([text],{type});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove();},1500);return true;}catch(e){return false;}}
+const ce=v=>`"${String(v??"").replace(/"/g,'""')}"`,toCSV=(h,r)=>"﻿"+[h,...r].map(x=>x.map(ce).join(",")).join("\r\n"),toTSV=(h,r)=>[h,...r].map(x=>x.map(v=>String(v??"").replace(/[\t\r\n]+/g," ").trim()).join("\t")).join("\n");
+const EXPORTS={
+ hours:{name:"apothecary-hours",label:"Clinical, shadowing & service hours",h:["Date","Type","Plant","Hours","Where","Contact","Note"],r:()=>[...S.hours].sort((a,b)=>a.date.localeCompare(b.date)).map(x=>{const c=HOUR_CATS.find(c=>c.id===x.cat)||{};return [x.date,c.label,c.plant,x.hrs,x.place,x.contact,x.note];})},
+ money:{name:"treasury-transactions",label:"All transactions",h:["Date","Type","Category / Source","Tier","Account","Amount","Note"],r:()=>[...S.tx].sort((a,b)=>a.date.localeCompare(b.date)).map(t=>[t.date,t.type,t.type==="expense"?(catById[t.cat]||{}).name:t.type==="income"?t.src:"Transfer (not spending)",t.type==="expense"?(catById[t.cat]||{}).tier:"",t.acct,(+t.amt).toFixed(2),t.note])},
+ month:{name:()=>`treasury-summary-${viewMonth}`,label:"Month summary (budget vs actual)",h:["Month","Category","Tier","Budget","Spent","Remaining","Paid (must-pays)"],r:()=>BUDGET_CATS.map(c=>[viewMonth,c.name,c.tier,budgetOf(c.id).toFixed(2),spentIn(viewMonth,c.id).toFixed(2),(budgetOf(c.id)-spentIn(viewMonth,c.id)).toFixed(2),c.tier===1?(isPaid(viewMonth,c.id)?"Yes":"No"):""])},
+ pipeline:{name:"war-chest-opportunities",label:"Contract opportunities",h:["Date","Company","Role","Rate","Where","Stage","Link","Notes"],r:()=>S.war.opps.map(o=>[o.date,o.company,o.role,o.rate,o.where,o.stage,o.link,o.notes])},
+ hearth:{name:"hearth-log",label:"Hearth (self-care) log",h:["Date",...HEARTH_ITEMS.map(x=>x[2]),"Score %","Note"],r:()=>Object.keys(S.hearth).sort().map(d=>[d,...HEARTH_ITEMS.map(([k])=>S.hearth[d][k]?"Yes":""),Math.round(hearthScore(d)*100),S.hearth[d].note||""])},
+ cards:{name:"flashcards",label:"Flashcards",h:["Front","Back","Deck"],r:()=>S.cards.map(c=>[c.f,c.b,c.d])},
+ courses:{name:"grimoire-classes",label:"Classes & grades",h:["Class","Type","Credits","Status","Grade"],r:()=>S.courses.map(c=>[c.name,{B:"Biology",C:"Chemistry",P:"Physics",M:"Math",O:"Non-science"}[c.cat],c.cr,{todo:"Not yet",doing:"Taking",done:"Done"}[c.status],c.grade])},
+ quests:{name:"path-progress",label:"Quest & rite progress",h:["Section","Quest","Done","Completed on","Steps done","Notes"],r:()=>ALLQ.map(q=>{const s=S.q[q.id]||{};return [q.ch>=0?CHAPTERS[q.ch].name:"Life Rites",q.title,s.d?"Yes":"No",s.at||"",(s.s||[]).filter(Boolean).length+"/"+(q.steps||[]).length,s.n||""];})}
+};
+async function doExport(k,copy){const E=EXPORTS[k],rows=E.r(),nm=typeof E.name==="function"?E.name():E.name;
+ if(copy){const t=toTSV(E.h,rows);try{await navigator.clipboard.writeText(t);toast(`📋 ${esc(E.label)} copied. Paste into cell A1.`);}catch(e){openModal(`<h2>Copy this</h2><textarea style="height:240px">${esc(t)}</textarea>`);}return;}
+ if(await download(`${nm}-${today()}.csv`,toCSV(E.h,rows),"text/csv;charset=utf-8"))toast(`⬇ ${esc(E.label)} downloaded`);}
+document.addEventListener("click",e=>{const d=e.target.closest("[data-dl]"),c=e.target.closest("[data-copy]");if(d)doExport(d.dataset.dl,false);if(c)doExport(c.dataset.copy,true);});
+// ---------- settings ----------
+function restore(t){try{const d=JSON.parse(t);if(!d||!d.q)throw 0;const keep=S.pack;S=Object.assign(fresh(),d);if(!S.pack&&keep)S.pack=keep;applyPack();closeModal();changed();toast("✨ Restored");}catch(e){toast("That backup didn't work.");}}
+function openSettings(){openModal(`<h2>Settings & Scrolls</h2>
+ <h3>Wardrobe</h3><div class="seg" id="ow">${OUTFITS.map((o,i)=>`<button data-i="${i}" class="${S.outfit===i?"on":""}">${esc(o.name)}</button>`).join("")}</div>
+ <label class="row" style="margin-top:8px;font-weight:700"><input type="checkbox" id="pbc" style="width:auto" ${S.pbCap?"checked":""}> PB wears his cap</label>
+ <label class="row" style="margin-top:6px;font-weight:700"><input type="checkbox" id="snd" style="width:auto" ${S.sound?"checked":""}> Soft sounds</label>
+ <h3>📜 The Scroll Room: every CSV</h3><div class="muted" style="font-size:13px;margin-bottom:6px">Download opens straight in Excel or Google Sheets. Copy pastes into cell A1.</div>
+ <div style="display:grid;gap:6px">${Object.entries(EXPORTS).map(([k,E])=>`<div class="row sp" style="background:#1f1627;border:1px solid var(--edge);border-radius:10px;padding:6px 10px"><span>${esc(E.label)}</span><span class="row"><button class="btn sm ghost" data-copy="${k}">Copy</button><button class="btn sm gold" data-dl="${k}">⬇ CSV</button></span></div>`).join("")}</div>
+ <h3>💾 Full backup</h3><div class="muted" style="font-size:13px">${IN_CLAUDE?"Saves everything to your Claude account automatically.":"Saves to your Village or Pot login when you're logged in on this browser."} A weekly backup file is extra peace of mind. Last: ${S.lastBackup?new Date(S.lastBackup).toLocaleDateString():"never"}.</div>
+ <div class="row" style="margin-top:6px"><button class="btn gold" id="bkd">⬇ Download backup</button><button class="btn ghost" id="bkc">Copy backup code</button></div>
+ <label class="f">Restore from file</label><input type="file" id="bkf" accept=".json,application/json"><label class="f" for="bkt">Or paste a code</label><textarea id="bkt" rows="2"></textarea><button class="btn ghost sm" id="bkr" style="margin-top:6px">Restore</button>
+ <h3>🔒 Private pack</h3><div class="muted" style="font-size:13px">${S.pack?"Loaded. Your personal rites, labels and the sealed letter are in your save.":"Not loaded. Load the private pack file from your Mac to bring in your personal rites, labels and numbers."}</div>
+ <input type="file" id="pkf" accept=".json,application/json" style="margin-top:6px"><label class="f" for="pkt">Or paste it</label><textarea id="pkt" rows="2"></textarea><button class="btn ghost sm" id="pkr" style="margin-top:6px">Load pack</button>
+ <h3>🧾 Sorting rules I've learned</h3><div class="muted" style="font-size:13px">From your answers during imports. Remove one if it's sorting things wrong.</div><div id="rulesBox">${Object.keys(S.rules||{}).length?Object.entries(S.rules).map(([k,v])=>`<div class="row sp" style="padding:3px 0;border-bottom:1px dashed var(--edge)"><span style="font-size:13px">${esc(k)} → <b>${esc(labelOf(v))}</b></span><button class="btn ghost sm" data-rr="${esc(k)}">✕</button></div>`).join(""):`<div class="muted" style="font-size:13px">None yet.</div>`}</div>
+ <h3>Other</h3><button class="btn ghost sm" id="intro2">Replay the welcome</button> <button class="btn ghost sm" id="rst">Reset everything</button>`);
+ $$("#ow button").forEach(b=>b.addEventListener("click",()=>{S.outfit=+b.dataset.i;$$("#ow button").forEach(x=>x.classList.toggle("on",x===b));SFX.tap();changed();}));
+ $("#pbc").addEventListener("change",e=>{S.pbCap=e.target.checked;changed();});$("#snd").addEventListener("change",e=>{S.sound=e.target.checked;save();});
+ const mark=()=>{S.lastBackup=Date.now();changed();};
+ $("#bkd").addEventListener("click",async()=>{if(await download(`apothecary-backup-${today()}.json`,JSON.stringify(S,null,1),"application/json")){toast("💾 Backup saved");mark();}});
+ $("#bkc").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(JSON.stringify(S));toast("Backup code copied");mark();}catch(e){toast("Copy blocked. Use download.");}});
+ $("#bkf").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>restore(r.result);r.readAsText(f);});$("#bkr").addEventListener("click",()=>restore($("#bkt").value));
+ $("#pkf").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>loadPack(r.result);r.readAsText(f);});$("#pkr").addEventListener("click",()=>loadPack($("#pkt").value));
+ $("#intro2").addEventListener("click",()=>{closeModal();intro(0);});$$("[data-rr]").forEach(b=>b.addEventListener("click",()=>{delete S.rules[b.dataset.rr];save();b.parentElement.remove();}));
+ $("#rst").addEventListener("click",e=>{const b=e.target;if(b.dataset.c){S=fresh();S.seenIntro=true;applyPack();save();closeModal();renderAll();}else{b.dataset.c=1;b.textContent="Tap again to erase everything";}});}
+$("#setBtn").addEventListener("click",openSettings);$("#meAv").addEventListener("click",openSettings);$("#meAv").addEventListener("keydown",e=>{if(e.key==="Enter")openSettings();});
+// ---------- intro ----------
+const INTRO=[
+ ()=>`<div class="who-row"><div class="face" style="width:80px;height:80px">${face(HADES_O)}</div><div class="bub" style="flex:1"><b class="who">Hades</b>Welcome home, little witch. This is <b>your</b> apothecary. Not your cousins', not your boyfriend's. Yours. I've been waiting. Patiently. (Impatiently.)</div></div>`,
+ ()=>`<div class="bub"><b class="who">Hades</b>Here's how it works. Your hours grow real medicinal plants in the <b>Garden</b>. Your bills light candles on the <b>Altar</b> in the <b>Treasury</b>. Your runway is counted in pomegranate seeds. I chose that. Obviously.</div>`,
+ ()=>`<div class="bub"><b class="who">Hades</b>When everything feels like it's on fire, go to <b>All Quiet</b>. It tells you the truth, no sugar, and it remembers what you've already checked so you don't have to check it again.</div>`,
+ ()=>`<div class="who-row"><div class="face" style="width:72px;height:72px">${face(HECATE_O)}</div><div class="bub" style="flex:1"><b class="who">Hecate</b>I come at the crossroads, and whenever you call. Quincy keeps watch with me. Rest is not a detour. It's part of the road.</div></div>`,
+ ()=>`<div class="who-row"><div class="face" style="width:72px;height:72px">${face(FORTUNA_O)}</div><div class="bub" style="flex:1"><b class="who">Fortuna</b>And I'm here for PB. Some days I'll leave him a little gift. He's my favorite. Don't tell the others.</div></div>`,
+ ()=>`<div class="bub"><b class="who">Hades</b>One more thing. There's a letter on the Altar, sealed with your own hand. It opens on White Coat night. Until then, it's mine to guard. Now go. Make me proud. You already do.</div>`
+];
+function intro(i){openModal(`${INTRO[i]()}<div class="foot"><span class="muted">${i+1}/${INTRO.length}</span><span class="row">${i>0?`<button class="btn ghost" id="ib">Back</button>`:""}${i<INTRO.length-1?`<button class="btn" id="in">Next</button>`:`<button class="btn" id="ig">Enter the Apothecary</button>`}</span></div>`);
+ const b=$("#ib");if(b)b.addEventListener("click",()=>intro(i-1));const n=$("#in");if(n)n.addEventListener("click",()=>{SFX.tap();intro(i+1);});
+ const g=$("#ig");if(g)g.addEventListener("click",()=>{S.seenIntro=true;save();closeModal();petals(80);SFX.done();});}
+// ---------- boot ----------
+function renderAll(){renderTop();renderCottage();renderQuiet();renderPath();renderCourses();renderGarden();renderTreasury();renderWar();renderHearth();renderGame();renderCards();renderAltar();
+ try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});}catch(e){}}
+renderAll();hadesSays(hadesContext());
+const hh=(location.hash||"").slice(1);if($(`.tab[data-v="${hh}"]`))go(hh);
+if(!S.seenIntro)setTimeout(()=>intro(0),400);
+window.addEventListener("load",initClaude);   // waits for the cloud-save scripts below
+let _tod=tod();setInterval(()=>{if(tod()!==_tod){_tod=tod();renderScene();hadesSays(hadesContext());}},60000);
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
+<script src="../shared/cloudsave.js"></script>
+</body>
+</html>
