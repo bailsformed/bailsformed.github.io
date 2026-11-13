@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#140c18">
+<title>Unmarketable Little Freak</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Pixelify+Sans:wght@500;700&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+/* Gothic archive + craft-room glitter explosion. One look, dark on purpose. */
+:root{
+  --bg:#140c18; --stone:#1e1424; --panel:#271a30; --panel2:#30203b; --edge:#4e3260;
+  --ink:#f5e9f7; --dim:#bfa6cc; --pink:#ff5fa2; --gold:#f4c95d; --teal:#5ee0d0; --violet:#a77bff; --blood:#d83a5e;
+  --display:"Pirata One","Georgia",serif; --px:"Pixelify Sans",ui-monospace,monospace; --body:Nunito,system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;position:relative;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.55;
+  background-image:radial-gradient(1.5px 1.5px at 12% 18%,var(--gold),transparent),radial-gradient(1.5px 1.5px at 78% 9%,var(--pink),transparent),
+  radial-gradient(1px 1px at 33% 72%,var(--teal),transparent),radial-gradient(1.5px 1.5px at 61% 44%,#fff,transparent),
+  radial-gradient(1px 1px at 88% 66%,var(--gold),transparent),radial-gradient(1.5px 1.5px at 22% 91%,var(--violet),transparent),
+  radial-gradient(1px 1px at 47% 23%,var(--pink),transparent),radial-gradient(1px 1px at 5% 55%,#fff,transparent);
+  background-size:340px 340px;animation:glit 9s linear infinite}
+@keyframes glit{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){body::before{animation:none}*{transition:none!important;animation:none!important}}
+.wrap{position:relative;z-index:1;max-width:1000px;margin:0 auto;padding-block:18px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+h1,h2,h3{margin:0;font-weight:400;text-wrap:balance}
+.disp{font-family:var(--display);letter-spacing:.5px}
+.px{font-family:var(--px)}
+.dim{color:var(--dim)}
+.small{font-size:14px}
+.hidden{display:none!important}
+.panel{background:linear-gradient(180deg,var(--panel),var(--stone));border:2px solid var(--edge);border-radius:6px;box-shadow:0 4px 0 #0a060c,inset 0 1px 0 #ffffff12}
+.pad{padding:16px 18px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.grow{flex:1;min-width:0}
+/* header */
+header.top{display:flex;gap:16px;align-items:center;flex-wrap:wrap;padding:14px 18px}
+.title{font-family:var(--display);font-size:clamp(28px,5vw,44px);line-height:1;background:linear-gradient(90deg,var(--pink),var(--gold) 55%,var(--teal));-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none}
+.sub{font-family:var(--px);font-size:13px;color:var(--dim);margin-top:4px}
+.stats{display:grid;gap:6px;min-width:230px;flex:1;max-width:360px}
+.bar{height:12px;background:#0006;border:1px solid var(--edge);border-radius:8px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--violet),var(--teal));transition:width .4s}
+.bar.heat i{background:linear-gradient(90deg,var(--blood),var(--pink),var(--gold))}
+.lbl{display:flex;justify-content:space-between;font-family:var(--px);font-size:12px;color:var(--dim)}
+nav.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0}
+nav.tabs button{font-family:var(--px);font-size:15px;background:var(--panel);border:2px solid var(--edge);border-radius:4px;padding:8px 12px;color:var(--dim)}
+nav.tabs button.on{background:var(--pink);border-color:var(--pink);color:#1a0b14}
+nav.tabs button:focus-visible,.btn:focus-visible,.chip:focus-visible,.opt:focus-visible{outline:3px dashed var(--gold);outline-offset:2px}
+/* buttons */
+.btn{border:2px solid var(--ink);background:var(--gold);color:#1d1206;border-radius:4px;padding:9px 16px;font-weight:800;box-shadow:0 3px 0 #000}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 #000}
+.btn.pink{background:var(--pink)}.btn.ghost{background:transparent;color:var(--ink);border-color:var(--edge)}.btn.teal{background:var(--teal)}
+.btn:disabled{opacity:.45;cursor:default}
+/* map */
+.rooms{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.room{text-align:left;padding:14px;border-radius:6px;border:2px solid var(--edge);background:linear-gradient(160deg,var(--panel2),var(--stone));color:var(--ink);position:relative;min-height:150px;display:flex;flex-direction:column;gap:6px}
+.room:hover:not(:disabled){border-color:var(--pink);transform:translateY(-2px)}
+.room .ic{font-size:30px}
+.room h3{font-family:var(--display);font-size:24px;line-height:1.05}
+.room p{margin:0;font-size:14px;color:var(--dim)}
+.room .st{margin-top:auto;font-family:var(--px);font-size:12px}
+.room.done{border-color:var(--teal)}.room.done .st{color:var(--teal)}
+.room.locked{opacity:.5}
+.room.forge{background:linear-gradient(160deg,#3a1d22,#1e1424);border-color:var(--blood)}
+/* scene */
+.scene{display:grid;gap:12px}
+.scene-head{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.scene-head h2{font-family:var(--display);font-size:30px;flex:1}
+#log{display:flex;flex-direction:column;gap:10px;max-height:min(62vh,640px);overflow-y:auto;padding:14px;scroll-behavior:smooth}
+.line{display:flex;gap:10px;align-items:flex-start;animation:pop .25s ease-out}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}}
+.face{width:52px;height:52px;flex:none;border-radius:6px;border:2px solid var(--edge);background:#0b070e;image-rendering:pixelated;padding:3px}
+.face svg{width:100%;height:100%;display:block}
+.bub{background:var(--panel2);border:1px solid var(--edge);border-radius:4px 14px 14px 14px;padding:9px 13px;min-width:0;max-width:720px}
+.bub .who{font-family:var(--px);font-size:12px;letter-spacing:.5px;margin-bottom:2px}
+.bub em{color:var(--dim)}
+.line.v .who{color:var(--gold)}.line.k .who{color:var(--teal)}
+.line.m .bub{background:#0c1a17;border-color:#2d7f72;font-family:var(--px);font-size:15px;color:#bff7ee;border-radius:4px}
+.line.m .who{color:var(--teal)}
+.line.me{flex-direction:row-reverse}.line.me .bub{background:#3a1f35;border-color:var(--pink);border-radius:14px 4px 14px 14px}
+.line.me .who{color:var(--pink);text-align:right}
+.line.ach .bub{background:linear-gradient(90deg,#3d2a08,#2a1838);border:2px solid var(--gold);font-family:var(--px);color:var(--gold);border-radius:4px}
+#ctrl{padding:14px 16px;border-top:2px solid var(--edge);display:grid;gap:10px}
+.q{font-weight:800}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;background:var(--panel2);border:2px solid var(--edge);border-radius:6px;padding:10px 13px;color:var(--ink)}
+.opt:hover{border-color:var(--pink)}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{background:var(--panel2);border:2px solid var(--edge);border-radius:999px;padding:6px 12px;font-size:15px;color:var(--ink)}
+.chip.on{background:var(--pink);border-color:var(--pink);color:#1a0b14;font-weight:800}
+input[type=text],textarea,select{width:100%;background:#0d0810;border:2px solid var(--edge);border-radius:6px;padding:10px 12px;color:var(--ink)}
+textarea{min-height:90px;resize:vertical}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--pink)}
+.next{justify-self:end}
+/* profile + cards */
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.sec h3{font-family:var(--display);font-size:24px;color:var(--gold);margin-bottom:6px}
+.fact{padding:8px 0;border-bottom:1px dashed var(--edge)}
+.fact b{display:block;font-family:var(--px);font-weight:500;font-size:13px;color:var(--dim)}
+.fact span{white-space:pre-wrap;word-break:break-word}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.tag{font-size:13px;padding:2px 9px;border-radius:999px;background:#ffffff14;border:1px solid var(--edge)}
+.idea{border-left:4px solid var(--pink)}
+.idea h4{margin:0 0 4px;font-size:18px}
+.hearts{color:var(--pink);letter-spacing:2px}
+.scroll{background:#1b1406;border:1px solid #6b5520;border-radius:6px;padding:10px 12px;color:#f3dfa7;font-size:15px}
+.scenelist{display:grid;gap:8px}
+.lock{opacity:.5}
+pre.prompt{white-space:pre-wrap;word-break:break-word;background:#0d0810;border:2px solid var(--edge);border-radius:6px;padding:12px;font-size:14px;max-height:340px;overflow:auto;margin:0}
+/* toasts + modal */
+#toasts{position:fixed;left:50%;transform:translateX(-50%);bottom:max(16px,env(safe-area-inset-bottom,0px));z-index:50;display:flex;flex-direction:column;gap:8px;align-items:center;width:min(560px,92vw)}
+.toast{background:#0c1a17;border:2px solid var(--teal);color:#bff7ee;font-family:var(--px);padding:10px 14px;border-radius:6px;box-shadow:0 8px 30px #000;width:100%;animation:pop .3s}
+.toast.gold{border-color:var(--gold);color:var(--gold);background:#22180a}
+.modal-bg{position:fixed;inset:0;background:#000b;z-index:40;display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:24px 16px}
+.modal{width:min(680px,100%)}
+.modal .story{font-size:17px;line-height:1.7}
+.modal .story p{margin:0 0 12px}
+.fade{font-family:var(--px);color:var(--pink);text-align:center;margin-top:10px}
+footer{color:var(--dim);font-family:var(--px);font-size:12px;text-align:center;margin-top:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="panel top">
+    <div class="face" style="width:64px;height:64px" id="herFace"></div>
+    <div class="grow" style="min-width:220px">
+      <h1 class="title">Unmarketable Little Freak</h1>
+      <div class="sub" id="subline">Lvl 1 · Beige Refugee</div>
+    </div>
+    <div class="stats">
+      <div><div class="lbl"><span>XP</span><span id="xpTxt"></span></div><div class="bar"><i id="xpBar"></i></div></div>
+      <div><div class="lbl"><span>🔥 Varrick's composure, lost</span><span id="heatTxt"></span></div><div class="bar heat"><i id="heatBar"></i></div></div>
+      <div class="lbl"><span id="saveStat">Saved on this device</span></div>
+    </div>
+  </header>
+  <nav class="tabs" id="tabs">
+    <button data-v="map" class="on">🗝️ The Archive</button>
+    <button data-v="profile">📖 Creative Identity</button>
+    <button data-v="vault">💡 Idea Vault</button>
+    <button data-v="varrick">⚔️ Varrick</button>
+    <button data-v="trophies">🏆 Achievements</button>
+    <button data-v="settings">⚙️ Save & Settings</button>
+  </nav>
+  <main id="main"></main>
+  <footer>made with love (and filth) by your favorite child · this page isn't listed anywhere, so keep the link to yourself</footer>
+</div>
+<div id="toasts" aria-live="polite"></div>
+
+<script>
+"use strict";
+/* =====================================================================
+   UNMARKETABLE LITTLE FREAK
+   A self-discovery RPG for Mom. Find the market for what you love.
+   ===================================================================== */
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const uid = () => Math.random().toString(36).slice(2, 9);
+
+/* ---------- pixel portraits ---------- */
+const ART = {
+  v: { g: ["WW....HHHH....WW", "WWW..HHHHHH..WWW", "WWW.HHHHHHHH.WWW", "WWWWHSSSSSSHWWWW", "WWW.SSESSESS.WWW", "WW..SSSSSSSS..WW", "W...SSSMMSSS...W", "W....SSSSSS....W", "...AAAAAAAAAA...", "..AAGAAAAAAGAA..", "..AAAAGGGGAAAA..", ".SAAAAAAAAAAAAS.", ".S.AAAAAAAAAA.S.", "...PPPP..PPPP...", "...PPPP..PPPP...", "...BBBB..BBBB..."],
+       c: { W: "#4a3560", H: "#2b1a12", S: "#c98b5e", E: "#1a0f0a", M: "#8a3b3b", A: "#c9a227", G: "#e0457b", P: "#2a2a3a", B: "#120c10" } },
+  k: { g: ["....C.C.C.C.....", "....CCCCCCC.....", "....CJCCCJC.....", "...hhhhhhhhh....", "...hSSSSSSSh....", "...SSESSSESS....", "...SSRSSSRSS....", "....SSSMMSS.....", "..RRSSSSSSSRR...", ".RRQQQQQQQQQRR..", ".RQQQZQQQZQQQR..", "RRQQQQQQQQQQQRR.", "RRQQQQZQQQQQQRR.", "RR.QQQQQQQQQ.RR.", "....LL...LL.....", "....FF...FF....."],
+       c: { C: "#f4c95d", J: "#5ee0d0", h: "#d9d2c5", S: "#f2c9a8", E: "#2a1a10", R: "#ff8fb8", M: "#b84a62", Q: "#7b2fb0", Z: "#f4c95d", L: "#f2f2f2", F: "#b0306a" } },
+  m: { g: ["................", "..XXXXXXXXXXXX..", "..XooooooooooX..", "..XooOOOOOOooX..", "..XoOOIIIIOOoX..", "..XoOIIDDIIOoX..", "..XoOIIDDIIOoX..", "..XoOOIIIIOOoX..", "..XooOOOOOOooX..", "..XooooooooooX..", "..XXXXXXXXXXXX..", "......XXXX......", ".....XXXXXX.....", "...XXXXXXXXXX...", "................", "................"],
+       c: { X: "#2d7f72", o: "#0c1a17", O: "#1f5c52", I: "#5ee0d0", D: "#f5e9f7" } },
+  me: { g: ["....CC.CC.CC....", "....CCCCCCCC....", "...HHHHHHHHHH...", "..HHHHHHHHHHHH..", "..HHSSSSSSSSHH..", "..HSSESSSSESSH..", "..HSSRSSSSRSSH..", "..HHSSSMMSSSHH..", "..HH.SSSSSS.HH..", "...PPPPPPPPPP...", "..PPPPKPPKPPPP..", ".SPPPPPPPPPPPPS.", ".S.PPPPPPPPPP.S.", "...LLLL..LLLL...", "...LLLL..LLLL...", "...BBBB..BBBB..."],
+        c: { C: "#f4c95d", H: "#8a4b2a", S: "#f1c08f", E: "#2b2240", R: "#f4a3b4", M: "#c2566f", P: "#ff5fa2", K: "#f4c95d", L: "#2b1f3a", B: "#120c10" } },
+};
+function face(who) {
+  const a = ART[who] || ART.me; let o = "";
+  a.g.forEach((r, y) => [...r].forEach((ch, x) => { if (a.c[ch]) o += `<rect x="${x}" y="${y}" width="1" height="1" fill="${a.c[ch]}"/>`; }));
+  return `<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true">${o}</svg>`;
+}
+const WHO = { v: "VARRICK STORMHALLOW", k: "KING PERCIVAL PUDDINGHAM III", m: "📢 MANAGEMENT" };
+const PETS = ["gorgeous", "trouble", "sweetheart", "my terrifying little empress", "menace", "darlin'", "boss lady", "my favorite problem"];
+
+/* ---------- save ---------- */
+const KEY = "little_freak_v1";
+function fresh() {
+  return { v: 1, updatedAt: 0, name: "", xp: 0, heat: 0, rooms: {}, ideas: [], customer: null, ach: {}, seenScenes: {}, kingVisits: 0, lastBackup: 0, archiveDone: false };
+}
+let S = fresh();
+try { const r = localStorage.getItem(KEY); if (r) S = Object.assign(fresh(), JSON.parse(r)); } catch (e) {}
+let cloud = { ref: null, w: false, p: false }, st = null;
+function save() { S.updatedAt = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} clearTimeout(st); st = setTimeout(push, 1200); }
+async function push() {
+  if (!cloud.ref) return; if (cloud.w) { cloud.p = true; return; } cloud.w = true;
+  try { await cloud.ref.set({ state: JSON.stringify(S), updatedAt: S.updatedAt }); setSave("☁ Saved to " + (cloud.ref.where || "your account")); } catch (e) { setSave("Saved on this device"); }
+  cloud.w = false; if (cloud.p) { cloud.p = false; push(); }
+}
+function setSave(t) { const e = $("#saveStat"); if (e) e.textContent = t; }
+async function initWebSave() {
+  if (!window.CloudSave) return;
+  const ref = await CloudSave.connect({ game: "freak", localKey: KEY, getState: () => S, status: setSave,
+    setState: d => { S = Object.assign(fresh(), d); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} renderAll(); } });
+  if (ref) { cloud.ref = ref; push(); }
+}
+
+/* ---------- names & templating ---------- */
+const nm = () => S.name || "Artisan";
+const ans = (room, key) => (S.rooms[room] && S.rooms[room].a || {})[key];
+const short = v => { const s = Array.isArray(v) ? v.join(", ") : String(v ?? ""); return s.length > 90 ? s.slice(0, 88).trim() + "…" : s; };
+const listOf = v => { const a = Array.isArray(v) ? v : [v]; return a.length > 1 ? a.slice(0, -1).join(", ") + " and " + a[a.length - 1] : (a[0] || ""); };
+function tpl(t, cur) {
+  return String(t).replace(/\{n\}/g, nm()).replace(/\{p\}/g, () => pick(PETS))
+    .replace(/\{ans\}/g, cur === undefined ? "" : short(cur)).replace(/\{list\}/g, cur === undefined ? "" : listOf(cur))
+    .replace(/\{a:(\w+)\.(\w+)\}/g, (_, r, k) => short(ans(r, k)) || "that thing you said");
+}
+// *stage directions* become italics. Escapes first, so answers can never inject HTML.
+const rich = t => esc(t).replace(/\*([^*]+)\*/g, "<em>$1</em>").replace(/\n/g, "<br>");
+
+/* ---------- XP, levels, heat ---------- */
+const TITLES = ["Beige Refugee", "Glitter Recruit", "Vinyl Witch", "Heat-Press Heretic", "Unhinged Artisan", "Empress of Weird", "Terrifying Little Empress"];
+const XPL = 300;   // XP per level: the first campaign lands her around level 4, leaving room for later campaigns
+const level = () => Math.min(TITLES.length, Math.floor(S.xp / XPL) + 1);
+const HEAT_TIERS = [[0, "Professional (lying)"], [20, "Staring"], [45, "Smitten"], [70, "Feral"], [95, "Down bad"]];
+const heatName = () => HEAT_TIERS.filter(t => S.heat >= t[0]).pop()[1];
+function addXP(n) { const before = level(); S.xp += n; if (level() > before) toast(`LEVEL UP! You are now a ${TITLES[level() - 1].toUpperCase()}. Management did not approve this.`, "gold"); }
+function addHeat(n) {
+  const before = S.heat; S.heat = Math.max(0, Math.min(100, S.heat + n));
+  SCENES.forEach(sc => { if (before < sc.at && S.heat >= sc.at) toast(`🔥 NEW SCENE UNLOCKED: "${sc.title}". Find it on Varrick's page.`, "gold"); });
+  [[25, "heat25"], [50, "heat50"], [75, "heat75"], [100, "heat100"]].forEach(([n2, id]) => { if (S.heat >= n2) award(id); });
+}
+
+/* ---------- achievements ---------- */
+const ACH = {
+  summoned: ["ISEKAI'D AGAINST HER WILL", "Got summoned to a fantasy kingdom by family paperwork.", 25],
+  hazing: ["HAZING THE MILITARY", "Smacked a general's ass on day one.", 10],
+  curious: ["CURIOUS LITTLE GOBLIN", "Restored the Curiosity Chamber.", 40],
+  freak: ["UNMARKETABLE LITTLE FREAK", "Opened the Forbidden Shelf. None of it is trending. Good.", 50],
+  royal: ["ROYAL PAIN", "Got hit on by a king the size of a dinner roll.", 20],
+  normal: ["HE'S BEING NORMAL ABOUT IT", "Made the General jealous. He is fine. He is totally fine.", 20],
+  shutup: ["WILL NOT SHUT UP ABOUT IT (AFFECTIONATE)", "Restored the Hall of Obsessions.", 40],
+  taste: ["HAS TASTE, ACTUALLY", "Restored the Museum of Personal Taste.", 40],
+  joy: ["GRAVE ROBBER OF JOY", "Dug up the things you loved before money got involved.", 40],
+  zero: ["ZERO FUCKS GIVEN (LEGENDARY)", "Looked into the Mirror and didn't apologize.", 60],
+  archive: ["ARCHIVE RESTORED", "Rebuilt your whole Creative Identity. The kingdom is 2.4% less beige.", 100],
+  forge: ["FORGEMISTRESS", "Smashed two loves onto one product.", 30],
+  hoarder: ["IDEA HOARDER", "Put five ideas in the Vault.", 40],
+  anyway: ["MADE IT FOR ME, NOT FOR YOU", "Said you'd make an idea even if it never sold.", 20],
+  people: ["FOUND HER PEOPLE", "Sketched your dream customer.", 50],
+  oracle: ["CONSULTED THE ORACLE", "Built a question for Claude about your real business.", 20],
+  backup: ["PARANOID (CORRECT)", "Made a backup. Management hates a woman with a contingency plan.", 15],
+  beige: ["BEIGE ALERT", "Picked the boring option. Management is so proud. Varrick is concerned.", 5],
+  night: ["UP PAST BEDTIME, ARE WE", "Played after 11 p.m. The General will not be telling your family.", 15],
+  heat25: ["HE'S STARING AGAIN", "Varrick's composure dropped below 75%.", 15],
+  heat50: ["DOWN HORRENDOUS", "Varrick's composure is at 50%. The Legion has noticed.", 25],
+  heat75: ["CODE RED (SHE'S WEARING THE SHIRT)", "Varrick is one more compliment away from walking into a wall.", 25],
+  heat100: ["EMOTIONAL DAMAGE (HIS)", "The General has fully lost it. Over you. Obviously.", 50],
+};
+function award(id) {
+  if (S.ach[id] || !ACH[id]) return; S.ach[id] = Date.now(); const [t, , xp] = ACH[id]; addXP(xp);
+  toast(`★ NEW ACHIEVEMENT ★ ${t}. +${xp} XP.`, "gold"); save();
+}
+
+/* ---------- the rooms (script) ----------
+   lines: {w:"m"|"v"|"k"|"n", t}   effects: {ach}, {heat}, {xp}
+   questions: {ask:"choice"|"chips"|"text", key, q, ...}; replies may be lines or a function(answer) */
+const L = (w, t) => ({ w, t });
+const ROOMS = {
+  intro: {
+    name: "The Summoning", ic: "🌀", hidden: true, script: [
+      L("m", "⚠ SYSTEM ANNOUNCEMENT ⚠\nAttention, citizen. You have been selected for MANDATORY CREATIVE RESTORATION.\nSelection was random. (It was not random. Someone in your family filed paperwork.)"),
+      L("m", "Kingdom status report: 41,000 identical \"Live, Laugh, Love\" tumblers. 9,000 \"Blessed\" signs. Zero personality.\nCurrent morale: a sad little candle that smells like \"Linen.\""),
+      L("v", "*A man the size of a wardrobe crashes through the ceiling, wings first, sword second, ego third.*\nSorry. Doors are for people who aren't in a hurry. ...Oh. Oh, they did NOT tell me you'd look like that."),
+      L("v", "Varrick Stormhallow. General of the Seventh Legion. Your bodyguard, your guide, and, if I'm lucky, your biggest problem."),
+      { ask: "text", key: "name", q: "What do I call you, {p}? (Your name, your nickname, or what your enemies whisper.)", ph: "Your name", max: 30,
+        r: v => [L("v", "{ans}. *says it slowly, like he's tasting it.* That's going in the war journal. And on my tongue. Repeatedly. As a NAME. Behave."), L("m", "Name registered. Note: the General's heart rate has been flagged as \"unprofessional.\"")] },
+      L("m", "Your quest: restore the Lost Archive of Self, a vault containing everything you actually like, before Trend Management sells it for parts.\nEvery room you restore makes the kingdom 0.4% less beige."),
+      L("v", "Translation: we figure out what YOU like. Not what sells. Not what Brenda from the craft group sells. You."),
+      { ask: "choice", key: "enter", q: "Varrick offers his arm. How do you enter the dungeon?", opts: [
+        { l: "Take his arm. A lady accepts help.", heat: 4, r: [L("v", "Look at that. Manners. I'm going to be insufferable about this for a week.")] },
+        { l: "Smack his ass and walk in first.", heat: 8, r: [L("v", "...Did you just— *stunned silence* Seventh Legion, we have a new commanding officer."), { ach: "hazing" }] },
+        { l: "Ask if there's wine in there first.", heat: 3, r: [L("v", "There's a cellar on level three. I'll carry you AND the bottle. I've carried worse into battle. Mostly Gary.")] },
+      ] },
+      { ach: "summoned" },
+      L("m", "Tutorial complete. The Archive has six sealed rooms. Pick any one.\nThe General will follow you. The General would follow you into a volcano. HR is aware and has given up."),
+    ] },
+
+  curiosity: {
+    name: "The Curiosity Chamber", ic: "🕳️", blurb: "Every rabbit hole you've fallen down at 2 a.m. Several are still occupied.", script: [
+      L("m", "ROOM 1: THE CURIOSITY CHAMBER.\nContents: every rabbit hole you have ever fallen down. Several are still occupied. One contains a true-crime podcast that never ended."),
+      L("v", "Floor's covered in open browser tabs. Watch your step, {p}. Some of them are recipes you'll never make."),
+      { ask: "chips", key: "topics", min: 2, q: "Which of these send you down a three-hour rabbit hole? Pick every guilty one. Add your own.",
+        opts: ["True crime", "Romance books", "Home makeovers", "Southern sayings", "Witchy stuff & tarot", "Weird history", "Animals being idiots", "Food & recipes", "Gardening", "Holidays & decorating", "Celebrity drama", "Fonts (yes, fonts)", "Music & lyrics", "Faith & church life", "Vintage & antiques", "Pets", "Sports", "Conspiracy theories", "Wine", "Old movies"],
+        r: v => [L("v", v.length > 6 ? "{list}?? You're not a person, you're a library with a temper. I love it." : "{list}. So you're a menace with a library card. Noted. Saluted."),
+                 L("m", `Interests logged: ${v.length}. Interests currently trending on TikTok: 0. This is going terribly. Continue.`)] },
+      { ask: "text", key: "rabbit", q: "Tell me your most recent rabbit hole. What started it, and where did you end up three hours later?", long: true, ph: "Started with ___, somehow ended up reading about ___",
+        r: [L("v", "*reads it twice* Started there and ended up THERE? That's not a rabbit hole, that's a pilgrimage. I'd follow you down it. I'd follow you down most things."),
+            L("m", "Note: the General has made a \"down\" joke. Total jokes this session: 1. Projected: 400.")] },
+      { ask: "choice", key: "collect", q: "Varrick kicks open a cabinet labeled STUFF YOU KEEP BUYING. What's in it?", opts: [
+        { l: "Mugs. So many mugs.", r: [L("v", "You don't collect mugs. You adopt them. Each one has a name and a backstory and you'd fight me for it.")] },
+        { l: "Books I swear I'll read", r: [L("v", "Your to-be-read pile has its own zip code. And at least three of them have shirtless men on the cover. *flexes* Competition. Love that.")] },
+        { l: "Craft supplies I'm \"saving for something\"", r: [L("v", "\"Saving it for something.\" The something is your funeral, and they'll find four hundred sheets of adhesive vinyl and a heat press still warm.")] },
+        { l: "Holiday decor, out of season", r: [L("v", "It's March and you just bought a ghost. Respect.")] },
+        { l: "Something else (type it)", other: true, r: [L("v", "{ans}? Of course. Of course that's what's in there. I'm not even surprised. I'm aroused, but not surprised.")] },
+      ] },
+      { ask: "text", key: "teach", q: "What could you teach a whole class on with zero notes?", ph: "Something you just KNOW",
+        r: [L("v", "Professor {n}. I'd fail on purpose for the extra credit. And the after-class meetings."), L("m", "The General has been reported to the Department of Education.")] },
+      { ach: "curious" },
+      L("m", "📜 MARKETING SCROLL #1 (translated from corporate):\nThe stuff you fall down rabbit holes about is called a NICHE. People search for niches. People BUY in niches. Your 2 a.m. browser history is a business plan. Disgusting. Effective."),
+    ] },
+
+  forbidden: {
+    name: "The Forbidden Shelf", ic: "🔒", blurb: "Things you love but decided were too weird to sell. Locked for your own good. (It was not for your own good.)", script: [
+      L("m", "ROOM 2: THE FORBIDDEN SHELF.\nRESTRICTED. Contains things you like but decided were \"too weird to sell.\" Locked by Management for the sake of quarterly beige."),
+      L("v", "*kicks the lock off* Oops. My boot slipped. Into the lock. Four times. With intent."),
+      { ask: "text", key: "weird", long: true, q: "What do you love that you've told yourself is too weird, too niche, or \"nobody would buy that\"? One per line, as many as you want.", ph: "One weird love per line",
+        r: [L("v", "THAT'S what they locked up? That's the best stuff in the whole dungeon. Who decided this was weird? Give me names. I have a sword and a free afternoon."),
+            L("m", "ATTENTION: the Artisan has identified multiple personal interests. None of them are currently trending. This is a serious violation of corporate policy."),
+            { ach: "freak" }, L("v", "Sounds like they're afraid of you."), L("m", "Sounds like someone is sleeping outside tonight."), L("v", "Worth it.")] },
+      { ask: "choice", key: "why", q: "So why did you shelve them?", opts: [
+        { l: "I figured nobody else likes that stuff", r: [L("v", "Somebody does. Usually thousands of somebodies. They're just quiet about it. Like you were. Until today.")] },
+        { l: "Somebody laughed at me once", heat: 3, r: [L("v", "Give me a name and a time. ...Fine. No murder. A light maiming? A strongly worded scroll? I'm negotiating, {p}.")] },
+        { l: "It didn't seem like it'd make money", r: [L("m", "Correct! Finally, someone who respects the spreadsheet."), L("v", "Ignore it. Money follows the weird ones. Normal people buy normal stuff at Walmart. Your people are hunting for YOU.")] },
+        { l: "Honestly? Never thought about it", r: [L("v", "Well, think about it now. Out loud. I like hearing you think. It's my second favorite sound you make.")] },
+      ] },
+      L("n", "*A trumpet blast. A small, round man in a cape covered in hand-sewn sequins bursts through the wall.*"),
+      L("k", "HELLO! King Percival Puddingham the Third! I heard there was an ARTIST in my dungeon!"),
+      L("k", "Quick question, darling, very urgent, fate of the realm and so on: if you could put ONE ridiculous saying on a koozie, and every man in my kingdom had to drink from it, what would it say?"),
+      { ask: "text", key: "kingKoozie", q: "Your koozie for the King:", ph: "What it says",
+        r: [L("k", "\"{ans}\"!! *clutches his pearls, then yours* SCANDALOUS. Glorious. Marry me. Or don't, but at least make me forty of them."),
+            L("v", "*hand resting very casually on his sword* Percival."),
+            L("k", "General! Didn't see you there, you enormous wall of jealousy! TOODLES! *scurries off at a velocity royalty should not reach*"),
+            L("v", "He does that every time someone interesting shows up. ...Which, lately, is you."), { ach: "royal" }, { heat: 5 }] },
+      { ask: "choice", key: "tease", q: "Varrick is still glaring at the hole in the wall.", opts: [
+        { l: "Tell him the king is kind of cute", heat: 8, r: [L("v", "Cute. CUTE. He's four foot nothing and he rhymes his laws. ...I'm cuter. Say I'm cuter. I'll wait. I have nowhere to be except next to you."), { ach: "normal" }] },
+        { l: "Pat his chest and say \"down, boy\"", heat: 10, r: [L("v", "*makes a noise that should never come out of a decorated war hero* ...Do that again and we are not finishing this room.")] },
+        { l: "Ignore both men and keep working", heat: 5, r: [L("v", "Ignored. By you. I hate how much I like that. Keep going, boss.")] },
+      ] },
+      L("m", "📜 MARKETING SCROLL #2:\nThe weird stuff isn't the problem. It's the PRODUCT. Big stores can't make it because it's too specific. You can. That's called a competitive advantage. Management hates that you have one."),
+    ] },
+
+  obsessions: {
+    name: "The Hall of Obsessions", ic: "🌀", blurb: "Subjects that make you talk for 45 minutes without breathing.", script: [
+      L("m", "ROOM 3: THE HALL OF OBSESSIONS.\nWarning: subjects in this hall may cause the Artisan to talk for 45 minutes without breathing. Hydrate."),
+      L("v", "Finally. Something I'm good at: listening to you talk. And watching your mouth while you do it. For lip-reading purposes. Strictly tactical."),
+      { ask: "text", key: "obsess", long: true, q: "What could you talk about for hours if somebody let you? (Somebody is letting you.)", ph: "The thing you'd never shut up about",
+        r: [L("v", "Keep going. No, seriously. Your whole face changes when you talk about that. I'd go to war for that face. I have gone to war for much dumber reasons. Ask me about the Goat Rebellion sometime.")] },
+      { ask: "choice", key: "friends", q: "When you get going on it, what do your people do?", opts: [
+        { l: "Their eyes glaze over", r: [L("v", "Wrong audience. Your real audience is out there somewhere with their eyes WIDE open, refreshing Etsy, waiting for you.")] },
+        { l: "They join in and it gets LOUD", r: [L("v", "So there's a crowd for it. Write that down. I mean it. That's a market wearing a fun hat.")] },
+        { l: "They send me stuff about it", r: [L("v", "Everybody already knows it's your thing? {p}, that's not a hobby. That's a BRAND.")] },
+        { l: "I don't really talk about it", heat: 4, r: [L("v", "Then talk to me. I don't get bored. I get ideas. Some of them are even about crafting.")] },
+      ] },
+      { ask: "text", key: "whylove", q: "Why do you love it? One sentence. The real reason, not the polite one.", ph: "Because...",
+        r: [L("v", "That right there. People don't buy shirts, {p}. They buy THAT feeling. ...Don't tell Management I said something smart. It ruins my image."), L("m", "Too late. It's in the permanent record.")] },
+      { ask: "choice", key: "bench", q: "Varrick is sitting way too close to you on a stone bench.", opts: [
+        { l: "Put your feet in his lap", heat: 8, r: [L("v", "I will rub these feet, and I will be extremely smug about it. My hands have killed a dragon. They were made for this.")] },
+        { l: "Ask if HE has an obsession", heat: 7, r: [L("v", "*looks at you. Keeps looking. Doesn't stop looking.* ...Next question.")] },
+        { l: "Tell him to scoot, his wings are hogging the bench", heat: 4, r: [L("v", "The wings are load-bearing, ma'am. So is the ego. So is something else, but we're in a public archive.")] },
+        { l: "Scoot away and fix your hair", heat: 0, r: [L("v", "Your hair was fine. Your hair is always fine. Come back."), { ach: "beige" }] },
+      ] },
+      { ach: "shutup" },
+      L("m", "📜 MARKETING SCROLL #3:\nPeople buy from people who obviously care. Your obsession IS your marketing. You will never have to fake enthusiasm. Management is furious; enthusiasm was supposed to be a premium subscription."),
+    ] },
+
+  taste: {
+    name: "The Museum of Personal Taste", ic: "🖼️", blurb: "Colors, styles and symbols you're irrationally loyal to.", script: [
+      L("m", "ROOM 4: THE MUSEUM OF PERSONAL TASTE.\nExhibits: colors, styles, fonts and symbols you are irrationally loyal to. Admission: free. Judgment: also free. Leopard print: considered a neutral by this museum."),
+      { ask: "chips", key: "colors", min: 2, q: "Which colors do you reach for first?", opts: ["Black & red", "Hot pink", "Teal & turquoise", "Leopard print (a neutral)", "Gold & glitter", "Pastels", "Earth tones", "Purple", "Camo", "Rainbow everything", "Black & white", "Christmas red & green"],
+        r: [L("v", "{list}. Noted. I'm having my armor repainted. The Legion is going to have questions.")] },
+      { ask: "chips", key: "styles", min: 2, q: "Which styles make you stop scrolling?", opts: ["Vintage & retro", "Western & rodeo", "Gothic & spooky", "Cute & sassy", "Distressed & grunge", "Script & swirly", "Bold block letters", "Floral", "Minimal & clean", "Tacky on purpose", "Sports-mom energy", "Church-camp sweet"],
+        r: [L("m", "Taste profile updated. Kingdom beige index: DROPPING. Management is breathing into a paper bag.")] },
+      { ask: "chips", key: "symbols", min: 1, q: "Which little symbols do you keep putting on things?", opts: ["Skulls", "Hearts", "Crosses", "Cowboy boots", "Wine glasses", "Coffee cups", "Books", "Flowers", "Moons & stars", "Cats", "Dogs", "Ghosts", "Bows", "Snakes", "Crowns", "Middle fingers (tasteful)"],
+        r: v => [L("v", v.some(x => /middle/i.test(x)) ? "Middle fingers. Tasteful ones. I'm going to marry you." : "{list}. Those are going on the Legion banner. Don't argue.")] },
+      { ask: "text", key: "font", q: "You've got special fonts. Which one is your favorite child? (Name it, or describe it.)", ph: "Font name or what it looks like",
+        r: [L("v", "I don't know what that is, but I'd die for its honor.")] },
+      L("n", "*The floor opens. The King rises on a tiny glittery elevator, already mid-sentence.*"),
+      L("k", "Darling! DARLING. Emergency. I've been invited to a ball and I have nothing to wear but my second-best cape. Design me a shirt! What does it say?"),
+      { ask: "text", key: "kingShirt", q: "The King's ball shirt says:", ph: "What it says",
+        r: [L("k", "\"{ans}\"!! I'll wear it to the ball AND to my own funeral. *kisses your hand. Slowly. With direct, unbroken eye contact.*"),
+            L("n", "*The torch on the wall next to Varrick quietly melts.*"),
+            L("k", "Oh dear, the General's doing that thing with his jaw again. TOODLES! *escapes on the elevator, which goes the wrong way first*"),
+            L("v", "I'm going to have a talk with that elevator."), { heat: 5 }] },
+      { ask: "choice", key: "jealous", q: "Varrick is very, very calm. Extremely calm. Look how calm he is.", opts: [
+        { l: "Ask him if he's jealous", heat: 8, r: [L("v", "Jealous? Of a man shaped like a dinner roll? ...Yes. Obviously. Next question."), { ach: "normal" }] },
+        { l: "Kiss his cheek to calm him down", heat: 12, r: [L("v", "*fully short-circuits* ...Calm. Very calm. Never been calmer. Let's go to the next room before I do something unprofessional against that wall.")] },
+        { l: "Tell him the King has better fashion sense", heat: 3, r: [L("v", "The King dresses like a disco ball had a baby with a curtain. I dress like your future. Your very near future.")] },
+      ] },
+      { ach: "taste" },
+      L("m", "📜 MARKETING SCROLL #4:\nColors + styles + symbols = a BRAND. When strangers can tell something is yours before they see your name, you have one. You are closer than you think. Management is drafting a cease-and-desist."),
+    ] },
+
+  joys: {
+    name: "The Crypt of Forgotten Joys", ic: "🪦", blurb: "What you loved making before money got involved. Keep your voice down; some are napping.", script: [
+      L("m", "ROOM 5: THE CRYPT OF FORGOTTEN JOYS.\nHere lie the things you loved making before money got involved. Please keep your voice down. Some of them are napping."),
+      L("v", "*quieter than usual* This one's different. Take your time. I've got your back. ...And yes, I'm looking at it. But I've also GOT it."),
+      { ask: "text", key: "joys", long: true, q: "What did you love making before you ever worried whether it would sell? Any age, any craft. Macaroni art counts.", ph: "What you made and when",
+        r: [L("v", "You're smiling. Don't stop. That smile is the whole quest. Everything else is paperwork.")] },
+      { ask: "choice", key: "feel", q: "How did it feel to make it?", opts: [
+        { l: "Like playing", r: [L("v", "Then we bring play back. Orders of the General. Insubordination will be punished with tickling.")] },
+        { l: "Like I was proud of myself", heat: 3, r: [L("v", "You should be proud more often. I'll remind you. Loudly. In public. At the worst possible moments.")] },
+        { l: "Like time disappeared", r: [L("v", "That feeling? That's your compass. Follow that, not the money. The money's a dog; it follows the compass.")] },
+        { l: "Like making a gift for somebody", heat: 3, r: [L("v", "So you love making things FOR people. {p}, that's the most sellable sentence I've ever heard, and I don't sell anything but violence.")] },
+      ] },
+      { ask: "text", key: "giftFor", long: true, q: "Who do you most love making things for, and what's the best thing you ever made them?", ph: "Who, and what you made",
+        r: [L("v", "That's the softest thing you've said all day. I'm not crying. Soldiers don't cry. It's dungeon dust. There's a lot of dust in here. Somebody dust."),
+            L("m", "Management has detected emotions. Management is not equipped for this. Management is going to go stand in the hallway.")] },
+      { ask: "choice", key: "soft", q: "Varrick is quiet for a second.", opts: [
+        { l: "Ask what HE loved making before the war", heat: 10, r: [L("v", "Carving. Little wooden birds. For my sister. *beat* ...Don't tell the Legion. Don't you DARE smile like that. ...Okay, you can smile like that.")] },
+        { l: "Lean your head on his shoulder", heat: 12, r: [L("v", "*his wing curls around you without being asked* ...Just for a minute. Then we go save a kingdom.")] },
+        { l: "Crack a dirty joke to break the tension", heat: 7, r: [L("v", "*laughs so hard a bat falls off the ceiling* There she is. Never let me be sincere for more than nine seconds.")] },
+      ] },
+      { ach: "joy" },
+      L("m", "📜 MARKETING SCROLL #5:\nCustomers can feel the difference between \"made it to sell\" and \"made it because I loved it.\" The second one sells better. Management has filed a complaint with the universe. The universe has not responded."),
+    ] },
+
+  mirror: {
+    name: "The Mirror of Unapologetic Taste", ic: "🪞", blurb: "What you'd make if nobody could judge you. Management recommends looking away.", script: [
+      L("m", "ROOM 6: THE MIRROR OF UNAPOLOGETIC TASTE.\nThe mirror shows what you would make if nobody could ever judge you. Management recommends looking away. Management has never once been listened to."),
+      L("v", "Go on. Look. Whatever it shows you, I already like it. I liked it before I saw it. That's how this works now."),
+      { ask: "text", key: "nojudge", long: true, q: "Zero sales, zero judgment, unlimited freedom. What would you make? Be as unhinged as you want.", ph: "Go feral",
+        r: [L("v", "*reads it, slowly, twice* ...Okay. I need to sit down. That's incredible. Make that. Make ten. Make one for me, I'll wear it to war."),
+            L("m", "WARNING: the Artisan has stopped apologizing. This is a known precursor to success. Notifying the shareholders.")] },
+      { ask: "chips", key: "humor", min: 1, q: "Pick the humor that's really yours. They can all be true.", opts: ["Dirty & filthy", "Sarcastic & petty", "Southern mom chaos", "Dark & morbid", "Wholesome & cheesy", "Puns", "Mean but fair", "Unhinged nonsense"],
+        r: v => [L("v", v.some(x => /dirty/i.test(x)) ? "Dirty. I knew it. I KNEW it. The way you said \"stuff\" in the first room. I knew." : "{list}. That's going on your tombstone. Next to the glitter.")] },
+      { ask: "text", key: "saying", q: "One saying you'd put on a shirt TODAY. Something only you would say.", ph: "Your saying",
+        r: [L("v", "\"{ans}\" on a shirt. On YOU. *has to look at the ceiling for a moment* I'm going to need a minute. Or a cold river."), { heat: 4 }] },
+      { ask: "choice", key: "exit", q: "The Mirror shatters into glitter. Varrick holds out his hand.", opts: [
+        { l: "Take it", heat: 10, r: [L("v", "Ready to go wreck the kingdom's beige? And let me watch you do it?")] },
+        { l: "Jump into his arms", heat: 15, r: [L("v", "*catches you without even looking* Of course you did. Of course I caught you. That's the whole job.")] },
+        { l: "Make him carry you out", heat: 12, r: [L("v", "Bridal style, obviously. The Legion will never respect me again. Worth it. Every time.")] },
+      ] },
+      { ach: "zero" },
+    ] },
+
+  finale: {
+    name: "The Archive Restored", ic: "📖", hidden: true, script: [
+      L("m", "ATTENTION ALL CITIZENS. THE LOST ARCHIVE OF SELF HAS BEEN RESTORED.\nCreative Identity Profile: GENERATED.\nKingdom beige levels: CRITICAL.\nManagement is updating its résumé."),
+      L("k", "*bursts in with a confetti cannon pointed the wrong way* I KNEW IT! I knew she was a genius! I want her on a coin! I want her on ALL the coins!"),
+      L("v", "*picking confetti out of his wings* Percival, you have four seconds."),
+      L("k", "Toodles! *gone*"),
+      L("v", "So. You know who you are now. On paper. In ink. In a big glowing book with your name on it."),
+      L("v", "Next comes the fun part. The Mashup Forge. We take the things you love, smash them onto the things you make, and see what you'd make even if nobody ever bought it. Spoiler: they will buy it."),
+      { ach: "archive" },
+      L("m", "NEW AREA UNLOCKED: THE MASHUP FORGE. Your Creative Identity Profile is waiting in the 📖 tab. Read it. Frame it. Show it to your enemies."),
+    ] },
+};
+const ORDER = ["curiosity", "forbidden", "obsessions", "taste", "joys", "mirror"];
+
+/* ---------- Varrick's scenes (unlocked by heat; all fade to black) ---------- */
+const SCENES = [
+  { id: "spar", at: 20, title: "The Sparring Lesson", body: () => [
+    "*The training yard is empty except for two wooden swords and one extremely tall problem.*",
+    "\"Feet apart,\" Varrick says, stepping in behind you. \"Wider. No, wider. Good. Now hips square.\" His hands land on your hips to square them. They stay there for a full three seconds longer than any instructor has ever needed.",
+    "\"Is this part of the lesson, General?\"",
+    "\"Absolutely. Core military doctrine. Very old. Very important.\" A pause. \"I made it up just now.\"",
+    "You swing. He blocks. You swing again, then hook his ankle the way your mama taught you to deal with a man who's too sure of himself. Two hundred and forty pounds of decorated war hero hits the dirt.",
+    "He lies there, staring up at you, grinning like an idiot. \"Best loss of my life. Do it again. I'll fall slower.\"",
+  ] },
+  { id: "wings", at: 45, title: "Wing Maintenance", body: () => [
+    "*He's been fidgeting with a bent feather for an hour, pretending he isn't.*",
+    "\"Give it here,\" you say. He goes very still. \"Nobody touches the wings,\" he says. \"Legion rule.\"",
+    "\"Do I look like the Legion?\"",
+    "\"...No, ma'am. You do not.\" He sits down on the floor in front of you like a giant obedient dog and lets one wing fall across your lap.",
+    "You smooth the feathers flat, one by one. Somewhere around the fourth feather, a sound comes out of him that would get a lesser man kicked out of church.",
+    "\"Careful,\" he says, voice rough. \"Those are... sensitive.\" A beat. \"Not as sensitive as SOME things. But up there.\"",
+    "\"Varrick.\"",
+    "\"Sorry. Sorry. Keep going. Please. I'll be good.\" He was not good. It was a very long afternoon.",
+  ] },
+  { id: "tent", at: 70, title: "One Tent. One Bedroll. A Storm.", body: () => [
+    "*It is raining sideways. There is one tent. Inside the tent there is one bedroll. Management swears this was an accident. Management is lying.*",
+    "\"I'll sleep outside,\" Varrick announces, nobly, while making absolutely no move to go outside.",
+    "\"In that?\" Thunder answers for you.",
+    "\"I've slept in worse. I once slept inside a dead troll for warmth.\" He considers this. \"Don't put that on a shirt.\"",
+    `"Too late," you say, and he laughs, and then he isn't laughing. He's looking at you the way he looked at you the very first second he crashed through that ceiling, like you are the most dangerous and wonderful thing in this entire dungeon.`,
+    "\"Tell me to go outside, {n},\" he says, very quietly. \"And I will.\"",
+    "You do not tell him to go outside.",
+  ], fade: "🕯️ FADE TO BLACK 🕯️\nManagement has disabled the cameras. Management is disappointed. The tent is not." },
+  { id: "soft", at: 95, title: "What He Doesn't Say Out Loud", body: () => {
+    const joy = short(ans("joys", "joys")), say = short(ans("mirror", "saying")), weird = short((ans("forbidden", "weird") || "").split("\n")[0]);
+    return [
+      "*Late. The fire's down to coals. He thinks you're asleep.*",
+      "\"I need to tell you something and I'm only going to say it once, because if the Legion finds out I'll have to fake my own death.\"",
+      `"You spent so long thinking your weird was a problem. ${weird ? `\"${weird}\". ` : ""}That's not a problem. That's the best part. That's the part I'd cross every dungeon in this kingdom to find."`,
+      `"You told me about ${joy ? `\"${joy}\"` : "the things you used to make"}, and you lit up like a forge. I've seen armies. I've seen dragons. I've never seen anything brighter than you talking about something you love."`,
+      `"So make the weird stuff. Make ${say ? `\"${say}\"` : "the thing that makes you laugh"}. Make it for you. And if anybody ever tells you you're too much—" he stops. "Well. I'll be there. With the sword. But mostly I'll be there."`,
+      "*He kisses your hair, very lightly, like you might break, which is funny, because you are the least breakable thing he's ever met.*",
+      "You were not asleep. You will never, ever tell him that.",
+    ];
+  } },
+];
+
+/* ---------- scene engine ---------- */
+let R = null;   // the room being played: { id, i, queue }
+function roomState(id) { return S.rooms[id] || (S.rooms[id] = { i: 0, a: {}, done: false }); }
+
+function openRoom(id) {
+  const st = roomState(id);
+  if (st.done) st.i = 0;       // replaying a finished room starts over (answers kept until re-answered)
+  R = { id, queue: [], replay: st.done };
+  view = "scene"; renderTabs();
+  const room = ROOMS[id];
+  $("#main").innerHTML = `<section class="scene">
+    <div class="scene-head"><span style="font-size:30px">${room.ic}</span><h2>${esc(room.name)}</h2><button class="btn ghost" id="backMap">← Back to the Archive</button></div>
+    <div class="panel"><div id="log" aria-live="polite"></div><div id="ctrl"></div></div></section>`;
+  $("#backMap").onclick = () => go("map");
+  if (st.i > 0 && !st.done) addLine(L("m", "Resuming your quest. Management saved your place. Management saves everything. Management is always watching."));
+  advance();
+}
+
+function addLine(l, cur) {
+  const log = $("#log"); if (!log) return;
+  const who = l.w === "me" ? "me" : l.w;
+  const div = document.createElement("div");
+  if (l.w === "n") { div.className = "line n"; div.innerHTML = `<div class="bub" style="background:transparent;border:0;padding:2px 4px"><em>${rich(tpl(l.t, cur)).replace(/<\/?em>/g, "")}</em></div>`; }
+  else if (l.w === "ach") { div.className = "line ach"; div.innerHTML = `<div class="bub">${rich(l.t)}</div>`; }
+  else {
+    div.className = "line " + who;
+    const name = who === "me" ? esc(nm()) : WHO[who];
+    div.innerHTML = `<div class="face">${face(who)}</div><div class="bub"><div class="who">${name}</div>${rich(who === "me" ? l.t : tpl(l.t, cur))}</div>`;
+  }
+  log.appendChild(div); log.scrollTop = log.scrollHeight;
+}
+
+function runEffect(x) {
+  if (R && R.replay && (x.heat || x.xp)) return;   // replaying a room doesn't farm heat or XP
+  if (x.ach) { const had = S.ach[x.ach]; award(x.ach); if (!had && ACH[x.ach]) addLine({ w: "ach", t: `★ ACHIEVEMENT UNLOCKED: ${ACH[x.ach][0]} ★\n${ACH[x.ach][1]} +${ACH[x.ach][2]} XP` }); }
+  if (x.heat) addHeat(x.heat);
+  if (x.xp) addXP(x.xp);
+}
+
+function advance() {
+  const st = roomState(R.id), script = ROOMS[R.id].script;
+  // play queued replies first, one click at a time
+  while (R.queue.length) {
+    const item = R.queue.shift();
+    if (!item.w) { runEffect(item); continue; }
+    addLine(item, R.cur); return showNext();
+  }
+  if (st.i >= script.length) return finishRoom();
+  const b = script[st.i];
+  if (!b.ask) {
+    st.i++; save();
+    if (!b.w) { runEffect(b); return advance(); }
+    addLine(b); return showNext();
+  }
+  showAsk(b);
+}
+function showNext() {
+  const c = $("#ctrl");
+  c.innerHTML = `<button class="btn next" id="nextBtn">Continue ▸</button>`;
+  const btn = $("#nextBtn"); btn.onclick = advance; btn.focus({ preventScroll: true });
+}
+function answer(b, value, opt) {
+  const st = roomState(R.id);
+  st.a[b.key] = value;
+  if (b.key === "name" && R.id === "intro") S.name = String(value).trim().slice(0, 30);
+  addLine({ w: "me", t: Array.isArray(value) ? value.join(" · ") : String(value) });
+  if (!R.replay) { addXP(10); if (opt && opt.heat) addHeat(opt.heat); }
+  const reply = opt && opt.r ? opt.r : b.r;
+  R.cur = value;
+  R.queue = typeof reply === "function" ? reply(value) : (reply || []).slice();
+  st.i++; save(); renderHUD();
+  advance();
+}
+function showAsk(b) {
+  const c = $("#ctrl");
+  const q = `<div class="q">${rich(tpl(b.q))}</div>`;
+  if (b.ask === "choice") {
+    c.innerHTML = q + `<div class="opts">${b.opts.map((o, i) => `<button class="opt" data-i="${i}">${esc(o.l)}</button>`).join("")}</div><div id="otherBox"></div>`;
+    $$("#ctrl .opt").forEach(el => el.onclick = () => {
+      const o = b.opts[+el.dataset.i];
+      if (o.other) {
+        $("#otherBox").innerHTML = `<div class="row" style="margin-top:8px"><input type="text" id="otherIn" class="grow" maxlength="120" placeholder="Type it"><button class="btn" id="otherGo">Say it</button></div>`;
+        const go2 = () => { const v = $("#otherIn").value.trim(); if (v) answer(b, v, o); };
+        $("#otherGo").onclick = go2; $("#otherIn").onkeydown = e => { if (e.key === "Enter") go2(); }; $("#otherIn").focus(); return;
+      }
+      answer(b, o.l, o);
+    });
+  } else if (b.ask === "chips") {
+    const prev = roomState(R.id).a[b.key];
+    const chosen = new Set(Array.isArray(prev) ? prev : []);
+    const all = [...new Set([...b.opts, ...chosen])];
+    const draw = () => {
+      c.innerHTML = q + `<div class="chips">${all.map(o => `<button class="chip ${chosen.has(o) ? "on" : ""}" data-v="${esc(o)}">${esc(o)}</button>`).join("")}</div>
+        <div class="row"><input type="text" id="addIn" class="grow" maxlength="40" placeholder="Add your own and press Enter"><button class="btn ghost" id="addGo">Add</button></div>
+        <div class="row"><span class="dim small grow">${chosen.size ? chosen.size + " picked" : `Pick at least ${b.min || 1}`}</span><button class="btn" id="chipsGo" ${chosen.size >= (b.min || 1) ? "" : "disabled"}>That's me ▸</button></div>`;
+      $$("#ctrl .chip").forEach(el => el.onclick = () => { const v = el.dataset.v; chosen.has(v) ? chosen.delete(v) : chosen.add(v); draw(); });
+      const add = () => { const v = $("#addIn").value.trim(); if (!v) return; if (!all.includes(v)) all.push(v); chosen.add(v); draw(); $("#addIn").focus(); };
+      $("#addGo").onclick = add; $("#addIn").onkeydown = e => { if (e.key === "Enter") add(); };
+      $("#chipsGo").onclick = () => answer(b, [...chosen]);
+    };
+    draw();
+  } else {
+    const prev = roomState(R.id).a[b.key] || "";
+    c.innerHTML = q + (b.long ? `<textarea id="ansIn" maxlength="1500" placeholder="${esc(b.ph || "")}">${esc(prev)}</textarea>`
+      : `<input type="text" id="ansIn" maxlength="${b.max || 200}" placeholder="${esc(b.ph || "")}" value="${esc(prev)}">`)
+      + `<div class="row"><span class="dim small grow">${b.long ? "Shift+Enter for a new line" : ""}</span><button class="btn" id="ansGo">Say it ▸</button></div>`;
+    const go2 = () => { const v = $("#ansIn").value.trim(); if (!v) return toast("Management requires an answer. Even a weird one. ESPECIALLY a weird one."); answer(b, v); };
+    $("#ansGo").onclick = go2;
+    $("#ansIn").onkeydown = e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); go2(); } };
+    $("#ansIn").focus({ preventScroll: true });
+  }
+}
+function finishRoom() {
+  const st = roomState(R.id), first = !st.done;
+  st.done = true; st.i = ROOMS[R.id].script.length;
+  if (first && ORDER.includes(R.id)) { addXP(50); addHeat(5); }
+  if (R.id === "intro") S.seenIntro = true;
+  save(); renderHUD();
+  const allDone = ORDER.every(id => S.rooms[id] && S.rooms[id].done);
+  const c = $("#ctrl");
+  if (allDone && !S.archiveDone && R.id !== "finale") {
+    S.archiveDone = true; save();
+    c.innerHTML = `<button class="btn pink next" id="toFinale">Something is happening in the Archive… ▸</button>`;
+    $("#toFinale").onclick = () => openRoom("finale"); return;
+  }
+  c.innerHTML = `<div class="row" style="justify-content:flex-end">
+    ${R.id === "finale" ? `<button class="btn ghost" id="toProfile">📖 See my Creative Identity</button><button class="btn pink" id="toForge">🔥 Into the Forge</button>` : `<button class="btn" id="toMap">Back to the Archive ▸</button>`}</div>`;
+  if ($("#toMap")) $("#toMap").onclick = () => go("map");
+  if ($("#toProfile")) $("#toProfile").onclick = () => go("profile");
+  if ($("#toForge")) $("#toForge").onclick = () => go("forge");
+}
+
+/* ---------- the profile ---------- */
+function profileSections() {
+  const a = (r, k) => ans(r, k);
+  const lines = v => (v || "").split(/\n+/).map(s => s.trim()).filter(Boolean);
+  return [
+    ["🕳️ What she falls down rabbit holes about", [["Topics", a("curiosity", "topics")], ["Latest rabbit hole", a("curiosity", "rabbit")], ["Keeps buying", a("curiosity", "collect")], ["Could teach a class on", a("curiosity", "teach")]]],
+    ["🔒 The Forbidden Shelf (her unfair advantage)", [["Too-weird-to-sell loves", lines(a("forbidden", "weird"))], ["Why she shelved them", a("forbidden", "why")], ["Her koozie for the King", a("forbidden", "kingKoozie")]]],
+    ["🌀 Obsessions", [["Could talk about for hours", a("obsessions", "obsess")], ["Why she loves it", a("obsessions", "whylove")], ["What her people do", a("obsessions", "friends")]]],
+    ["🖼️ Her taste (the start of a brand)", [["Colors", a("taste", "colors")], ["Styles", a("taste", "styles")], ["Symbols", a("taste", "symbols")], ["Favorite font", a("taste", "font")], ["The King's ball shirt", a("taste", "kingShirt")]]],
+    ["🪦 Forgotten joys", [["Loved making before money", a("joys", "joys")], ["How it felt", a("joys", "feel")], ["Who she loves making things for", a("joys", "giftFor")]]],
+    ["🪞 Unapologetic", [["Would make with zero judgment", a("mirror", "nojudge")], ["Her humor", a("mirror", "humor")], ["Her shirt saying, today", a("mirror", "saying")]]],
+  ];
+}
+function tagPool() {
+  const a = (r, k) => ans(r, k) || [];
+  const weird = (ans("forbidden", "weird") || "").split(/\n+/).map(s => s.trim()).filter(s => s && s.length <= 40);
+  const ob = (ans("obsessions", "obsess") || "").split(/\n+/)[0].trim();
+  return [...new Set([...[].concat(a("curiosity", "topics")), ...weird, ...(ob && ob.length <= 40 ? [ob] : []), ...[].concat(a("taste", "styles")), ...[].concat(a("taste", "symbols")), ...[].concat(a("taste", "colors")), ...[].concat(a("mirror", "humor"))])].filter(Boolean);
+}
+function varrickSummary() {
+  const top = [].concat(ans("curiosity", "topics") || []).slice(0, 2), hum = [].concat(ans("mirror", "humor") || [])[0], sym = [].concat(ans("taste", "symbols") || [])[0];
+  if (!top.length) return "The book is still mostly blank. Go restore some rooms, {p}. I'll carry the torch. And you, if asked.";
+  return `"She's ${top.join(" and ").toLowerCase()} with a ${(hum || "wicked").toLowerCase()} streak${sym ? ` and a weakness for ${sym.toLowerCase()}` : ""}. The kingdom isn't ready. I wasn't either." — V.`;
+}
+function profileText() {
+  const out = [`CREATIVE IDENTITY PROFILE: ${nm()}`, `(from Unmarketable Little Freak, ${new Date().toLocaleDateString()})`, ""];
+  profileSections().forEach(([h, facts]) => {
+    const f = facts.filter(([, v]) => v && (!Array.isArray(v) || v.length)); if (!f.length) return;
+    out.push(h.replace(/^\S+\s/, "").toUpperCase()); f.forEach(([k, v]) => out.push(`- ${k}: ${Array.isArray(v) ? v.join(", ") : v}`)); out.push("");
+  });
+  if (S.ideas.length) { out.push("PRODUCT IDEAS"); S.ideas.forEach(i => out.push(`- ${i.design} (${i.product}, ${i.method}; mashes ${i.ings.join(" + ")}; excitement ${i.excite}/5${i.anyway ? "; would make it even if it never sold" : ""})`)); out.push(""); }
+  if (S.customer) { const c = S.customer; out.push("DREAM CUSTOMER"); out.push(`- ${c.name}, ${c.age}. Hangs out: ${c.hangs.join(", ")}. Buys it ${c.why}. Would search Etsy for: ${c.keywords.join(", ")}.`); }
+  return out.join("\n");
+}
+
+/* ---------- views ---------- */
+let view = "map";
+function go(v) { view = v; R = null; renderTabs(); VIEWS[v](); window.scrollTo(0, 0); }
+function renderTabs() { $$("#tabs button").forEach(b => b.classList.toggle("on", b.dataset.v === view || (view === "scene" && b.dataset.v === "map") || (view === "forge" && b.dataset.v === "vault"))); }
+
+const VIEWS = {
+  map() {
+    if (!(S.rooms.intro && S.rooms.intro.done)) {
+      $("#main").innerHTML = `<section class="panel pad" style="text-align:center;display:grid;gap:14px;justify-items:center">
+        <div class="face" style="width:96px;height:96px">${face("m")}</div>
+        <h2 class="disp" style="font-size:36px">You have been summoned.</h2>
+        <p class="dim" style="max-width:520px;margin:0">A kingdom gone beige. A dungeon AI with opinions. A general with wings, a sword and absolutely no chill. And a vault holding everything you actually like.</p>
+        <button class="btn pink" id="startBtn" style="font-size:19px">Answer the summons ▸</button></section>`;
+      $("#startBtn").onclick = () => openRoom("intro"); return;
+    }
+    const done = ORDER.filter(id => S.rooms[id] && S.rooms[id].done).length;
+    $("#main").innerHTML = `<section style="display:grid;gap:14px">
+      <div class="panel pad row"><div class="face">${face("v")}</div><div class="grow"><b class="disp" style="font-size:22px">The Lost Archive of Self</b>
+        <div class="dim small">${done}/6 rooms restored. ${done === 6 ? "The Forge is open. Go make something weird." : tpl(pick(["Pick a door, {p}. I'll go first. Mostly so I can hold it open and watch you walk through.", "Six rooms. One of you. Zero chance any of this stays beige.", "Any room you want. I'm just here for moral support and, frankly, the view."]))}</div></div></div>
+      <div class="rooms">${ORDER.map(id => { const r = ROOMS[id], s = S.rooms[id]; const status = s && s.done ? "✔ RESTORED (tap to replay)" : s && s.i > 0 ? "◐ IN PROGRESS" : "SEALED";
+        return `<button class="room ${s && s.done ? "done" : ""}" data-r="${id}"><span class="ic">${r.ic}</span><h3>${esc(r.name)}</h3><p>${esc(r.blurb)}</p><span class="st">${status}</span></button>`; }).join("")}
+        <button class="room forge ${S.archiveDone ? "" : "locked"}" data-r="forge" ${S.archiveDone ? "" : "disabled"}><span class="ic">🔥</span><h3>The Mashup Forge</h3><p>Smash two things you love onto something you can make.</p><span class="st">${S.archiveDone ? `${S.ideas.length} idea${S.ideas.length === 1 ? "" : "s"} forged` : "🔒 Restore all six rooms first"}</span></button>
+      </div></section>`;
+    $$(".room[data-r]").forEach(b => b.onclick = () => b.dataset.r === "forge" ? go("forge") : openRoom(b.dataset.r));
+  },
+
+  profile() {
+    const secs = profileSections();
+    const any = secs.some(([, f]) => f.some(([, v]) => v && (!Array.isArray(v) || v.length)));
+    $("#main").innerHTML = `<section style="display:grid;gap:14px">
+      <div class="panel pad"><h2 class="disp" style="font-size:34px">Creative Identity Profile: ${esc(nm())}</h2>
+        <p class="dim" style="margin:6px 0 0">${rich(tpl(varrickSummary()))}</p>
+        <div class="row" style="margin-top:12px"><button class="btn" id="cpProf">📋 Copy it</button><button class="btn ghost" id="dlProf">⬇ Download as a text file</button></div></div>
+      ${any ? `<div class="grid2">${secs.map(([h, facts]) => { const f = facts.filter(([, v]) => v && (!Array.isArray(v) || v.length));
+          return `<div class="panel pad sec"><h3>${esc(h)}</h3>${f.length ? f.map(([k, v]) => `<div class="fact"><b>${esc(k)}</b>${Array.isArray(v) ? `<div class="tags">${v.map(x => `<span class="tag">${esc(x)}</span>`).join("")}</div>` : `<span>${esc(v)}</span>`}</div>`).join("") : `<p class="dim small">Sealed. Restore this room to fill it in.</p>`}</div>`; }).join("")}</div>`
+        : `<div class="panel pad dim">Nothing here yet. Every room you restore writes a page of this book.</div>`}
+      <div class="scroll">📜 <b>What this is for:</b> this is the "you" part of your business. Every product idea, customer and listing later on gets checked against this page. If an idea doesn't match anything here, Varrick throws it in the fire.</div>
+    </section>`;
+    $("#cpProf").onclick = () => copyText(profileText(), "Profile");
+    $("#dlProf").onclick = () => download(`creative-identity-${new Date().toISOString().slice(0, 10)}.txt`, profileText(), "text/plain");
+  },
+
+  forge() {
+    if (!S.archiveDone) return go("map");
+    const pool = tagPool(), F = FORGE;
+    const products = ["T-shirt", "Koozie", "Tumbler", "Ornament", "Hoodie", "Mug", "Car decal", "Tote bag", "Sticker", "Hat"];
+    const hum = ([].concat(ans("mirror", "humor") || [])[0] || "unhinged").toLowerCase();
+    const sparks = F.ings.length >= 2 ? [
+      `A ${F.product || "shirt"} for people who love ${F.ings[0]} AND ${F.ings[1]}. What's the joke only they'd get?`,
+      `${F.ings[0]}, but make it ${hum}.`,
+      `What would Varrick say about ${F.ings[1]} if he saw it on a ${(F.product || "koozie").toLowerCase()}?`,
+    ] : [];
+    $("#main").innerHTML = `<section style="display:grid;gap:14px">
+      <div class="panel pad row"><div class="face">${face("v")}</div><div class="grow"><b class="disp" style="font-size:26px">The Mashup Forge</b>
+        <div class="dim small">Rule one of the Forge: if it doesn't make you laugh or make you feel something, it goes back in the fire.</div></div></div>
+      <div class="panel pad" style="display:grid;gap:12px">
+        <div class="q">1. Pick two (or three) things from your Creative Identity to smash together:</div>
+        <div class="chips">${pool.map(t => `<button class="chip ${F.ings.includes(t) ? "on" : ""}" data-ing="${esc(t)}">${esc(t)}</button>`).join("") || `<span class="dim">Your profile is empty. Restore some rooms first.</span>`}</div>
+        <div class="q">2. Onto what?</div>
+        <div class="chips">${products.map(p => `<button class="chip ${F.product === p ? "on" : ""}" data-prod="${p}">${p}</button>`).join("")}</div>
+        <div class="chips">${["Cricut vinyl", "Sublimation"].map(m => `<button class="chip ${F.method === m ? "on" : ""}" data-meth="${m}">${m === "Cricut vinyl" ? "✂️" : "🔥"} ${m}</button>`).join("")}</div>
+        ${sparks.length ? `<div class="scroll">⚒️ <b>Sparks from the Forge:</b><br>${sparks.map(s => "• " + esc(s)).join("<br>")}</div>` : ""}
+        <div class="q">3. What's the design? (A saying, a picture, a joke, all three.)</div>
+        <textarea id="fDesign" maxlength="300" placeholder="e.g. a skull in a church hat that says 'Bless Your Heart (Derogatory)'">${esc(F.design || "")}</textarea>
+        <div class="q">4. How excited are you about it?</div>
+        <div class="chips" id="fExcite">${[1, 2, 3, 4, 5].map(n => `<button class="chip ${F.excite === n ? "on" : ""}" data-ex="${n}">${"❤️".repeat(n)}</button>`).join("")}</div>
+        <div class="q">5. Would you make this even if it never sold a single one?</div>
+        <div class="chips">${[["yes", "Hell yes"], ["no", "Honestly? No"]].map(([v, l]) => `<button class="chip ${F.anyway === v ? "on" : ""}" data-any="${v}">${l}</button>`).join("")}</div>
+        <div class="row" style="justify-content:flex-end"><button class="btn pink" id="fSave">🔥 Forge it</button></div>
+      </div>
+      ${S.ideas.length >= 3 ? customerPanel() : `<div class="panel pad dim">Forge ${3 - S.ideas.length} more idea${3 - S.ideas.length === 1 ? "" : "s"} to unlock <b>Who else loves this?</b>, where you find your people.</div>`}
+    </section>`;
+    $$("[data-ing]").forEach(b => b.onclick = () => { keepDesign(); const v = b.dataset.ing; F.ings = F.ings.includes(v) ? F.ings.filter(x => x !== v) : F.ings.length >= 3 ? [...F.ings.slice(1), v] : [...F.ings, v]; VIEWS.forge(); });
+    $$("[data-prod]").forEach(b => b.onclick = () => { keepDesign(); F.product = b.dataset.prod; VIEWS.forge(); });
+    $$("[data-meth]").forEach(b => b.onclick = () => { keepDesign(); F.method = b.dataset.meth; VIEWS.forge(); });
+    $$("[data-ex]").forEach(b => b.onclick = () => { keepDesign(); F.excite = +b.dataset.ex; VIEWS.forge(); });
+    $$("[data-any]").forEach(b => b.onclick = () => { keepDesign(); F.anyway = b.dataset.any; VIEWS.forge(); });
+    $("#fSave").onclick = forgeIt;
+    if (S.ideas.length >= 3) wireCustomer();
+  },
+
+  vault() {
+    $("#main").innerHTML = `<section style="display:grid;gap:14px">
+      <div class="panel pad row"><b class="disp grow" style="font-size:30px">💡 The Idea Vault</b>${S.archiveDone ? `<button class="btn pink" id="toForge2">🔥 Forge a new one</button>` : ""}</div>
+      ${S.ideas.length ? `<div class="grid2">${S.ideas.slice().reverse().map(i => `<div class="panel pad idea"><h4>${esc(i.design)}</h4>
+          <div class="dim small">${esc(i.product)} · ${esc(i.method)} · mashes ${esc(i.ings.join(" + "))}</div>
+          <div class="hearts">${"❤".repeat(i.excite)}${"♡".repeat(5 - i.excite)}</div>
+          <div class="small">${i.anyway ? "✔ Would make it even if it never sold" : "Made for the market (Varrick is side-eyeing it)"}</div>
+          <div class="row" style="margin-top:8px"><button class="btn ghost" data-del="${i.id}" style="padding:4px 10px;font-size:14px">🗑 Toss it in the fire</button></div></div>`).join("")}</div>`
+        : `<div class="panel pad dim">${S.archiveDone ? "Empty. The Forge is hungry." : "The Vault opens after you restore all six rooms of the Archive and enter the Mashup Forge."}</div>`}
+      ${S.customer ? `<div class="panel pad"><h3 class="disp" style="font-size:24px;color:var(--gold)">Your dream customer</h3>${customerCard()}</div>` : ""}
+      ${S.ideas.length ? oraclePanel() : ""}
+    </section>`;
+    if ($("#toForge2")) $("#toForge2").onclick = () => go("forge");
+    $$("[data-del]").forEach(b => b.onclick = () => { if (b.dataset.sure) { S.ideas = S.ideas.filter(i => i.id !== b.dataset.del); save(); VIEWS.vault(); } else { b.dataset.sure = 1; b.textContent = "Tap again to burn it"; } });
+    wireOracle();
+  },
+
+  varrick() {
+    const memories = [
+      ["Your rabbit hole", ans("curiosity", "rabbit")], ["What you keep buying", ans("curiosity", "collect")], ["The koozie you made for the King", ans("forbidden", "kingKoozie")],
+      ["Why you love your obsession", ans("obsessions", "whylove")], ["Who you love making things for", ans("joys", "giftFor")], ["Your shirt saying", ans("mirror", "saying")],
+    ].filter(([, v]) => v);
+    $("#main").innerHTML = `<section style="display:grid;gap:14px">
+      <div class="panel pad row"><div class="face" style="width:96px;height:96px">${face("v")}</div><div class="grow">
+        <h2 class="disp" style="font-size:32px">Varrick Stormhallow</h2>
+        <div class="dim small">General of the Seventh Legion · wingspan: excessive · loyalty: yours · chill: none</div>
+        <div style="margin-top:8px"><div class="lbl"><span>Composure lost</span><span>${S.heat}% · ${heatName()}</span></div><div class="bar heat"><i style="width:${S.heat}%"></i></div></div>
+        <div class="row" style="margin-top:10px"><button class="btn" id="poke">Bother him</button></div>
+        <div id="pokeOut" style="margin-top:8px"></div></div></div>
+      <div class="panel pad"><h3 class="disp" style="font-size:24px;color:var(--gold)">🔥 Scenes</h3><p class="dim small" style="margin:0 0 10px">Unlocked by making him lose his composure. Flirt in the rooms. He's very easy.</p>
+        <div class="scenelist">${SCENES.map(sc => S.heat >= sc.at ? `<button class="opt" data-scene="${sc.id}">${S.seenScenes[sc.id] ? "✔" : "✨ NEW"} · ${esc(sc.title)}</button>`
+          : `<div class="opt lock">🔒 ${esc(sc.title)} <span class="dim small">(unlocks at ${sc.at}%)</span></div>`).join("")}</div></div>
+      <div class="panel pad"><h3 class="disp" style="font-size:24px;color:var(--gold)">📓 Things he remembers about you</h3>
+        ${memories.length ? memories.map(([k, v]) => `<div class="fact"><b>${esc(k)}</b><span>${esc(short(v))}</span></div>`).join("") : `<p class="dim">Nothing yet. He's paying attention, though. Uncomfortably close attention.</p>`}</div>
+    </section>`;
+    $("#poke").onclick = () => { $("#pokeOut").innerHTML = `<div class="line v"><div class="bub"><div class="who">VARRICK</div>${rich(tpl(banter()))}</div></div>`; };
+    $$("[data-scene]").forEach(b => b.onclick = () => openScene(b.dataset.scene));
+  },
+
+  trophies() {
+    const got = Object.keys(S.ach).length, total = Object.keys(ACH).length;
+    $("#main").innerHTML = `<section style="display:grid;gap:14px">
+      <div class="panel pad"><h2 class="disp" style="font-size:32px">🏆 Achievements · ${got}/${total}</h2><p class="dim small" style="margin:4px 0 0">Awarded by Management, who is upset about every single one.</p></div>
+      <div class="grid2">${Object.entries(ACH).map(([id, [t, d, xp]]) => S.ach[id]
+        ? `<div class="panel pad"><b class="px" style="color:var(--gold)">★ ${esc(t)}</b><div class="small">${esc(d)}</div><div class="dim small">+${xp} XP</div></div>`
+        : `<div class="panel pad lock"><b class="px">🔒 ???</b><div class="dim small">Keep playing. Management is hiding it from you.</div></div>`).join("")}</div></section>`;
+  },
+
+  settings() {
+    $("#main").innerHTML = `<section style="display:grid;gap:14px">
+      <div class="panel pad" style="display:grid;gap:10px"><h2 class="disp" style="font-size:30px">⚙️ Save & Settings</h2>
+        <div><b>Status:</b> <span>${esc($("#saveStat").textContent)}</span></div>
+        <p class="dim small" style="margin:0">Your progress saves on this device by itself, and to your Family Village account when you're logged in to the Village in this same browser. A backup now and then is still smart.</p>
+        <div class="row"><button class="btn" id="bkDl">⬇ Download a backup</button><button class="btn ghost" id="bkCp">📋 Copy backup code</button></div>
+        <label class="small dim" for="bkIn">Restore from a backup code:</label><textarea id="bkIn" style="min-height:70px" placeholder="Paste a backup code here"></textarea>
+        <div class="row"><button class="btn ghost" id="bkGo">Restore</button><label class="small dim">or from a file: <input type="file" id="bkFile" accept=".json,application/json"></label></div></div>
+      <div class="panel pad" style="display:grid;gap:10px"><h3 class="disp" style="font-size:24px">Your name</h3>
+        <div class="row"><input type="text" id="nmIn" class="grow" maxlength="30" value="${esc(S.name)}"><button class="btn ghost" id="nmGo">Save</button></div></div>
+      <div class="panel pad" style="display:grid;gap:10px"><h3 class="disp" style="font-size:24px;color:var(--blood)">Start over</h3>
+        <p class="dim small" style="margin:0">Erases everything on this device and in your account. Download a backup first.</p>
+        <div><button class="btn ghost" id="reset">Erase everything</button></div></div></section>`;
+    const data = () => JSON.stringify(S);
+    $("#bkDl").onclick = () => { download(`little-freak-backup-${new Date().toISOString().slice(0, 10)}.json`, data(), "application/json"); backedUp(); };
+    $("#bkCp").onclick = () => { copyText(data(), "Backup code"); backedUp(); };
+    $("#bkGo").onclick = () => restore($("#bkIn").value);
+    $("#bkFile").onchange = async e => { const f = e.target.files[0]; if (f) restore(await f.text()); };
+    $("#nmGo").onclick = () => { S.name = $("#nmIn").value.trim().slice(0, 30); save(); renderHUD(); toast(`Name updated. Varrick is practicing saying it in the mirror.`); };
+    $("#reset").onclick = e => { const b = e.target; if (!b.dataset.sure) { b.dataset.sure = 1; b.textContent = "Tap again to erase EVERYTHING"; return; }
+      S = fresh(); S.updatedAt = Date.now(); save(); renderAll(); go("map"); toast("Wiped clean. Management is thrilled. Varrick is in mourning."); };
+  },
+};
+
+/* ---------- forge logic ---------- */
+const FORGE = { ings: [], product: "", method: "", design: "", excite: 0, anyway: "" };
+function keepDesign() { const d = $("#fDesign"); if (d) FORGE.design = d.value; }
+function forgeIt() {
+  keepDesign(); const F = FORGE;
+  if (F.ings.length < 2) return toast("Pick at least two things to smash together. The Forge demands a mashup.");
+  if (!F.product || !F.method) return toast("Pick a product and how you'd make it.");
+  if (!F.design.trim()) return toast("Tell the Forge what the design is. Even a rough idea.");
+  if (!F.excite || !F.anyway) return toast("Rate it, and tell me if you'd make it anyway. Be honest. Varrick can tell.");
+  const idea = { id: uid(), ings: F.ings.slice(), product: F.product, method: F.method, design: F.design.trim(), excite: F.excite, anyway: F.anyway === "yes", at: Date.now() };
+  S.ideas.push(idea); addXP(25); addHeat(3);
+  award("forge"); if (idea.anyway) award("anyway"); if (S.ideas.length >= 5) award("hoarder");
+  save(); renderHUD();
+  const line = idea.excite >= 4 && idea.anyway ? pick(["THAT one. That's the one that makes your eyes do the thing. Vault it, then make it.", "If you don't make that, I'm getting it tattooed. On my ass. Which you'd then have to look at. Win-win."])
+    : idea.excite <= 2 ? pick(["Two hearts? Then why are we making it, {p}? Back in the fire. Make the one that makes you giggle.", "That one's for Brenda. We don't make things for Brenda."])
+    : pick(["Solid. Not life-changing, but solid. Like my thighs.", "Vaulted. Sleep on it. If you're still thinking about it tomorrow, it's a real one."]);
+  Object.assign(FORGE, { ings: [], product: "", method: "", design: "", excite: 0, anyway: "" });
+  VIEWS.forge();
+  toast("VARRICK: " + tpl(line));
+}
+const HANGS = ["Facebook groups", "BookTok / TikTok", "Instagram", "Pinterest", "Church & Bible study", "Wine nights", "True-crime podcasts", "Craft fairs", "Sports games", "Book clubs", "Etsy (searching)", "Group chats"];
+function customerPanel() {
+  const fav = S.ideas.slice().sort((a, b) => (b.excite + (b.anyway ? 2 : 0)) - (a.excite + (a.anyway ? 2 : 0)))[0];
+  const c = CDRAFT || S.customer || {};
+  return `<div class="panel pad" style="display:grid;gap:10px">
+    <b class="disp" style="font-size:26px">👀 Who else loves this?</b>
+    <div class="scroll">📜 <b>MARKETING SCROLL #6:</b> a <b>target customer</b> is one specific person who'd lose her mind over your idea. Not "everyone." Everyone is nobody. Picture her, name her, figure out where she hangs out and what she'd type into the Etsy search bar. That last part is called <b>keywords</b>, and it's how strangers find you.</div>
+    <div class="dim small">Your favorite idea so far: <b>${esc(fav.design)}</b> (${esc(fav.product)}).</div>
+    <label class="q" for="cName">Give her a name (like "Petty Pam" or "Bookclub Barb")</label><input type="text" id="cName" maxlength="40" value="${esc(c.name || "")}">
+    <div class="q">How old is she, roughly?</div>
+    <div class="chips" id="cAge">${["20s", "30s", "40s", "50s", "60s+"].map(a => `<button class="chip ${c.age === a ? "on" : ""}" data-age="${a}">${a}</button>`).join("")}</div>
+    <div class="q">Where does she hang out? (pick any)</div>
+    <div class="chips">${HANGS.map(h => `<button class="chip ${(c.hangs || []).includes(h) ? "on" : ""}" data-hang="${esc(h)}">${esc(h)}</button>`).join("")}</div>
+    <div class="q">What would she type into the Etsy search bar to find it? (3 searches)</div>
+    ${[0, 1, 2].map(i => `<input type="text" class="kw" maxlength="60" placeholder="${["funny ___ shirt", "gift for ___ lover", "___ koozie"][i]}" value="${esc((c.keywords || [])[i] || "")}">`).join("")}
+    <div class="q">Why is she buying it?</div>
+    <div class="chips" id="cWhy">${["for herself", "as a gift", "for a holiday", "for her group / club"].map(w => `<button class="chip ${c.why === w ? "on" : ""}" data-why="${w}">${w}</button>`).join("")}</div>
+    <div class="row" style="justify-content:flex-end"><button class="btn teal" id="cSave">Save my dream customer</button></div>
+    ${S.customer ? customerCard() : ""}</div>`;
+}
+let CDRAFT = null;
+function wireCustomer() {
+  CDRAFT = CDRAFT || Object.assign({ name: "", age: "", hangs: [], keywords: [], why: "" }, S.customer || {});
+  const sync = () => { CDRAFT.name = $("#cName").value; CDRAFT.keywords = $$(".kw").map(i => i.value.trim()); };
+  const redraw = () => { sync(); $("#cSave").closest(".panel").outerHTML = customerPanel(); wireCustomer(); };
+  $("#cName").oninput = sync; $$(".kw").forEach(i => i.oninput = sync);
+  $$("[data-age]").forEach(b => b.onclick = () => { CDRAFT.age = b.dataset.age; redraw(); });
+  $$("[data-hang]").forEach(b => b.onclick = () => { const h = b.dataset.hang; CDRAFT.hangs = CDRAFT.hangs.includes(h) ? CDRAFT.hangs.filter(x => x !== h) : [...CDRAFT.hangs, h]; redraw(); });
+  $$("[data-why]").forEach(b => b.onclick = () => { CDRAFT.why = b.dataset.why; redraw(); });
+  $("#cSave").onclick = () => {
+    sync(); const c = CDRAFT, kw = c.keywords.filter(Boolean);
+    if (!c.name.trim() || !c.age || !c.hangs.length || !kw.length || !c.why) return toast("Fill in all of her: name, age, where she hangs out, at least one search, and why she's buying.");
+    S.customer = { name: c.name.trim(), age: c.age, hangs: c.hangs.slice(), keywords: kw, why: c.why };
+    award("people"); addHeat(5); save(); renderHUD(); CDRAFT = null;
+    toast(`MANAGEMENT: Customer "${S.customer.name}" located. She is weird. She has money. This is extremely inconvenient for Management.`);
+    VIEWS.forge();
+  };
+}
+function customerCard() {
+  const c = S.customer;
+  return `<div class="fact"><b>Name</b><span>${esc(c.name)} (${esc(c.age)})</span></div>
+    <div class="fact"><b>Hangs out</b><div class="tags">${c.hangs.map(h => `<span class="tag">${esc(h)}</span>`).join("")}</div></div>
+    <div class="fact"><b>Searches Etsy for</b><div class="tags">${c.keywords.map(k => `<span class="tag">🔎 ${esc(k)}</span>`).join("")}</div></div>
+    <div class="fact"><b>Buying it</b><span>${esc(c.why)}</span></div>`;
+}
+
+/* ---------- the Oracle: a ready-made question for Claude ---------- */
+function oraclePrompt() {
+  return `I make and sell custom products: Cricut vinyl and sublimation (shirts, koozies, tumblers, ornaments and more), and I have an Etsy shop. I'm new to marketing. I want to sell what I genuinely love and find the people who love it too, not chase whatever is trending.
+
+Here is everything I figured out about myself and my ideas:
+
+${profileText()}
+
+Please help me, in plain English (I'm a beginner):
+1. Name 3 specific niche audiences who would love my favorite ideas, and where each one hangs out online.
+2. For my favorite idea, suggest 15 Etsy search keywords that real buyers would type.
+3. Write 3 Etsy listing titles and one short, funny product description in MY voice (my humor is in the profile).
+4. Suggest one cheap way to test whether people want it before I make a bunch.
+5. Tell me which of my ideas you'd start with, and why.`;
+}
+function oraclePanel() {
+  return `<div class="panel pad" style="display:grid;gap:10px"><div class="row"><div class="face">${face("m")}</div><b class="disp grow" style="font-size:26px">🔮 Ask the Oracle</b></div>
+    <p class="dim small" style="margin:0">The Oracle is Claude (or ChatGPT). This builds a question with your whole profile, your ideas and your dream customer already in it. Copy it, open Claude, paste it, and ask follow-ups about your real shop.</p>
+    <pre class="prompt" id="oracleTxt">${esc(oraclePrompt())}</pre>
+    <div class="row"><button class="btn" id="oracleCp">📋 Copy the question</button><a class="btn ghost" href="https://claude.ai/new" target="_blank" rel="noopener" style="text-decoration:none">Open Claude ↗</a></div></div>`;
+}
+function wireOracle() { const b = $("#oracleCp"); if (b) b.onclick = () => { copyText(oraclePrompt(), "Oracle question"); award("oracle"); }; }
+
+/* ---------- Varrick banter (uses what she told him) ---------- */
+function banter() {
+  const L2 = ["Did you need something, or did you just want to look at me? Both are allowed. The second one is encouraged.",
+    "I sharpened my sword, polished my armor, and brushed my wings. For no reason. Certainly not for you. ...It was for you.",
+    "The Legion asked why I've been smiling. I told them I found a weapon. They think I mean a sword.",
+    "If anyone in this kingdom tells you to make another \"Live, Laugh, Love\" sign, I'm legally allowed to throw them into the sea. I checked."];
+  const t = ans("curiosity", "topics"), s = ans("mirror", "saying"), k = ans("forbidden", "kingKoozie"), c = ans("curiosity", "collect");
+  if (t && t.length) L2.push(`Read a book about ${String(t[0]).toLowerCase()} last night so I'd have something to talk to you about. I understood none of it. Worth it.`);
+  if (s) L2.push(`I had "${short(s)}" stitched inside my cloak. Over my heart. Don't make it weird.`);
+  if (k) L2.push(`Percival is STILL drinking out of that "${short(k)}" koozie. He sleeps with it. I hate that I respect it.`);
+  if (c) L2.push(`Found another one for your cabinet. ${/mug/i.test(c) ? "A mug. It has a goat on it. I named him Gerald." : "Don't ask where I got it. There was a fight."}`);
+  if (S.heat >= 70) L2.push("Come here. No reason. ...Okay, one reason. Several reasons. They're all you.");
+  return pick(L2);
+}
+function openScene(id) {
+  const sc = SCENES.find(x => x.id === id); if (!sc || S.heat < sc.at) return;
+  S.seenScenes[id] = Date.now(); save();
+  const bg = document.createElement("div"); bg.className = "modal-bg";
+  bg.innerHTML = `<div class="modal panel pad"><div class="row"><h2 class="disp grow" style="font-size:30px">${esc(sc.title)}</h2><button class="btn ghost" data-close>✕</button></div>
+    <div class="story">${sc.body().map(p => `<p>${rich(tpl(p))}</p>`).join("")}</div>${sc.fade ? `<div class="fade">${rich(sc.fade)}</div>` : ""}
+    <div class="row" style="justify-content:flex-end;margin-top:12px"><button class="btn pink" data-close>Fan yourself ▸</button></div></div>`;
+  bg.addEventListener("click", e => { if (e.target === bg || e.target.closest("[data-close]")) { bg.remove(); if (view === "varrick") VIEWS.varrick(); } });
+  document.body.appendChild(bg);
+}
+
+/* ---------- helpers: toast, copy, download, backup ---------- */
+function toast(t, cls = "") {
+  const e = document.createElement("div"); e.className = "toast " + cls; e.textContent = t;
+  const b = $("#toasts"); b.appendChild(e); while (b.children.length > 3) b.firstChild.remove(); setTimeout(() => e.remove(), 5200);
+}
+async function copyText(t, label) {
+  try { await navigator.clipboard.writeText(t); toast(`📋 ${label} copied.`); return true; }
+  catch (e) {
+    const bg = document.createElement("div"); bg.className = "modal-bg";
+    bg.innerHTML = `<div class="modal panel pad" style="display:grid;gap:10px"><b>Copy this</b><p class="dim small" style="margin:0">Your browser blocked the copy button. Select all of it and copy.</p><textarea style="min-height:260px">${esc(t)}</textarea><button class="btn" data-close>Done</button></div>`;
+    bg.onclick = ev => { if (ev.target === bg || ev.target.closest("[data-close]")) bg.remove(); };
+    document.body.appendChild(bg); bg.querySelector("textarea").select(); return false;
+  }
+}
+function download(name, text, type) {
+  const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+}
+function backedUp() { S.lastBackup = Date.now(); award("backup"); save(); }
+function restore(txt) {
+  try { const d = JSON.parse(txt); if (!d || typeof d.rooms !== "object") throw 0; S = Object.assign(fresh(), d); S.updatedAt = Date.now(); save(); renderAll(); go("map"); toast("✔ Restored. Varrick says welcome back, like you ever left."); }
+  catch (e) { toast("That backup didn't work. Make sure it's the whole code or the right file."); }
+}
+
+/* ---------- header ---------- */
+function renderHUD() {
+  const lv = level(), into = S.xp % XPL;
+  $("#subline").textContent = `${S.name ? S.name + " · " : ""}Lvl ${lv} · ${TITLES[lv - 1]}`;
+  $("#xpTxt").textContent = lv >= TITLES.length ? `${S.xp} XP · max level` : `${into}/${XPL}`;
+  $("#xpBar").style.width = (lv >= TITLES.length ? 100 : into / XPL * 100) + "%";
+  $("#heatTxt").textContent = `${S.heat}% · ${heatName()}`;
+  $("#heatBar").style.width = S.heat + "%";
+}
+function renderAll() { renderHUD(); if (view !== "scene") VIEWS[view] ? VIEWS[view]() : VIEWS.map(); }
+
+$("#herFace").innerHTML = face("me");
+$$("#tabs button").forEach(b => b.onclick = () => go(b.dataset.v));
+if (new Date().getHours() >= 23) setTimeout(() => award("night"), 2000);
+renderHUD(); VIEWS.map();
+window.addEventListener("load", initWebSave);   // waits for the cloud-save scripts below
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
+<script src="../shared/cloudsave.js"></script>
+<script data-goatcounter="https://bailsformed.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
