@@ -13,7 +13,7 @@ const today = () => iso(new Date());
 const pick = a => a[Math.floor(Math.random() * a.length)];
 const money = n => (n < 0 ? "-" : "") + "$" + Math.abs(+n || 0).toLocaleString("en-US", {minimumFractionDigits: (Math.abs(n) % 1 ? 2 : 0), maximumFractionDigits: 2});
 const num = v => { const x = parseFloat(String(v).replace(/[$,]/g, "")); return isFinite(x) ? x : 0; };
-const daysUntil = d => { if (!d) return null; const t = new Date(d + "T23:59"); return Math.ceil((t - new Date()) / 864e5); };
+const daysUntil = d => { if (!d) return null; const t = new Date(d + "T00:00"), n = new Date(); n.setHours(0, 0, 0, 0); return Math.round((t - n) / 864e5); };
 const GM = Object.fromEntries(GREMS.map(g => [g.id, g]));
 const QM = Object.fromEntries(QUESTS.map(q => [q.id, q]));
 const isParent = s => s.startsWith("👪");
@@ -37,7 +37,8 @@ async function initCloud() {
   if (!window.CloudSave) { setSaveStat("Saved on this device"); return; }
   try {
     const ref = await CloudSave.connect({game:"kyla", localKey:KEY, getState:() => S, status:setSaveStat,
-      setState:d => { S = Object.assign(fresh(), d); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} renderAll(); }});
+      setState:d => { S = Object.assign(fresh(), d); lastLv = levelInfo().lv; try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+        if (S.seenIntro && ($("#i1") || $("#i2") || $("#i3"))) closeModal(); renderAll(); }});
     if (ref) { cloud.ref = ref; push(); }
   } catch (e) { setSaveStat("Saved on this device"); }
 }
@@ -443,9 +444,11 @@ $("#payBtn").onclick = () => { const tot = S.jars.reduce((a, j) => a + (+j.pct |
    <div class="f2"><label class="f">Amount ($)<input id="pAmt" inputmode="decimal" placeholder="0.00" autofocus></label><label class="f">Date<input type="date" id="pDate" value="${today()}"></label><label class="f full">Note (optional)<input id="pNote" placeholder="first paycheck!!"></label></div>
    <div id="pPrev" class="tip">Type an amount to see the split.</div>${tot !== 100 ? `<p class="small" style="color:#d6284a">Your split adds to ${tot}%, not 100%. I'll scale it so it adds up.</p>` : ""}
    <div class="foot"><span></span><button class="btn mint" id="pGo">Split it!</button></div>`);
-  const split = a => { const o = {}; S.jars.forEach(j => o[j.id] = Math.round(a * (+j.pct || 0) / (tot || 1) * 100) / 100); return o; };
+  const split = a => { const o = {}, live = S.jars.filter(j => +j.pct > 0); let left = Math.round(a * 100);
+    S.jars.forEach(j => o[j.id] = 0); live.forEach((j, i) => { const c = i === live.length - 1 ? left : Math.round(a * 100 * j.pct / tot); o[j.id] = c / 100; left -= c; }); return o; };
   $("#pAmt").oninput = () => { const a = num($("#pAmt").value), s = split(a); $("#pPrev").innerHTML = a ? S.jars.map(j => `${j.e} ${esc(j.n)}: <b>${money(s[j.id])}</b>`).join("<br>") : "Type an amount to see the split."; };
   $("#pGo").onclick = () => { const a = num($("#pAmt").value); if (a <= 0) { toast("How much did you get paid?"); return; }
+    if (tot <= 0) { toast("Every jar is at 0%. Give at least one jar a percentage first."); return; }
     S.tx.push({id:uid(), type:"pay", amt:a, date:$("#pDate").value || today(), note:$("#pNote").value.trim(), split:split(a)});
     const got = earn("pay:" + today(), 3); logDay("logged a paycheck"); autoStep("s4", 2); if (S.q.s2 && S.q.s2.s && S.q.s2.s[2]) autoStep("s2", 3);
     closeModal(); SFX.done(); toast(`🫘 Beans split it into jars!${got ? " +3 🍪" : ""}`); setTimeout(() => doTrick(), 300); changed(); go("bank"); };
@@ -565,8 +568,10 @@ function focusView() { if (!TM) return; const desk = g => `<div style="text-alig
    <div class="foot"><button class="btn white sm" id="fStop">Stop early (still counts)</button><button class="btn mint" data-close>Hide timer</button></div>`); tick();
   $("#fStop").onclick = () => finishFocus(true); }
 $("#pill").onclick = () => focusView();
-function finishFocus(early) { if (!TM) return; clearInterval(TM.iv); const mins = early ? Math.max(1, Math.round((TM.mins * 6e4 - (TM.end - Date.now())) / 6e4)) : TM.mins; TM = null;
-  $("#pill").classList.remove("on"); if ($("#fBig")) closeModal(); S.focusMin += mins; S.bx = (S.bx || 0) + mins * 2; S.snk += mins; S.snkEarned += mins; logDay("focus " + mins + " min");
+function finishFocus(early) { if (!TM) return; clearInterval(TM.iv); const mins = early ? Math.floor((TM.mins * 6e4 - Math.max(0, TM.end - Date.now())) / 6e4) : TM.mins; TM = null;
+  $("#pill").classList.remove("on"); if ($("#fBig")) closeModal();
+  if (mins < 1) { toast("⏱️ Stopped. Under a minute doesn't earn snacks, but trying counts. 💜"); return; }
+  S.focusMin += mins; S.bx = (S.bx || 0) + mins * 2; S.snk += mins; S.snkEarned += mins; logDay("focus " + mins + " min");
   SFX.done(); toast(`⏱️ ${mins} focus minutes! +${mins * 2} XP · +${mins} 🍪`); if (!early) setTimeout(() => doTrick(), 300); changed(); maybeHot(.25, 4000); }
 
 // ---------- settings ----------
@@ -585,7 +590,7 @@ $("#setBtn").onclick = () => {
   $("#sSave").onclick = () => { S.name = $("#sName").value.trim() || "Kyla Bug"; S.state = $("#sState").value; S.fandom = $("#sFan").value.trim(); S.hotMode = $("#sHot").value; S.sound = $("#sSnd").value === "1"; S.calm = $("#sCalm").checked;
     if (S.state && S.fandom) autoStep("q0a", 2); closeModal(); toast("Saved! ✨"); changed(); };
   $("#bDl").onclick = () => { const b = new Blob([JSON.stringify(S, null, 1)], {type:"application/json"}); const a = document.createElement("a"); a.href = URL.createObjectURL(b); a.download = `gremlin-town-backup-${today()}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); };
-  $("#bUp").onchange = e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { try { const d = JSON.parse(r.result); if (!d || typeof d !== "object" || !d.q) throw 0; if (!confirm("Replace your current progress with this backup?")) return; S = Object.assign(fresh(), d); closeModal(); changed(); toast("Backup restored ✨"); } catch (x) { toast("That file isn't a Gremlin Town backup."); } }; r.readAsText(f); };
+  $("#bUp").onchange = e => { const f = e.target.files[0]; if (!f) return; const r = new FileReader(); r.onload = () => { try { const d = JSON.parse(r.result); if (!d || typeof d !== "object" || !d.q) throw 0; if (!confirm("Replace your current progress with this backup?")) return; S = Object.assign(fresh(), d); lastLv = levelInfo().lv; closeModal(); changed(); toast("Backup restored ✨"); } catch (x) { toast("That file isn't a Gremlin Town backup."); } }; r.readAsText(f); };
   $("#bIntro").onclick = () => intro(0);
 };
 
