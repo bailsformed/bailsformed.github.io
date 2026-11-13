@@ -256,12 +256,14 @@ function openGoogleAdd(date) {
 function openDay(d) {
   const evs = D.events.filter(e => e.date === d), gs = G.events.filter(g => (g.start.date || g.start.dateTime).slice(0, 10) === d), bills = billsOn(d);
   const m = P.modal(`<h2>${new Date(d + 'T12:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</h2>
-   ${bills.map(x => `<div class="pmuted">🪙 ${esc(x.b.name)} · ${money(x.b.amount)} ${x.paid ? '✓ paid' : ''}</div>`).join('')}
-   ${evs.map(e => `<button class="pbtn" style="display:block;width:100%;text-align:left;margin:6px 0" data-pe="${e.id}">${e.done ? '✓ ' : ''}${KIND_ICON[e.kind] || ''} ${esc(e.course ? e.course + ': ' : '')}${esc(e.title)} <span class="pmuted">· ${esc(e.owner ? P.memberOf(e.owner).display_name : 'Both')}</span></button>`).join('')}
+   ${bills.map(x => `<div class="prow psp pmuted" style="margin:4px 0"><span>🪙 ${esc(x.b.name)} · ${money(x.b.amount)} ${x.paid === 'matched' ? '✓ paid (found the charge)' : x.paid ? '✓ marked paid' : ''}</span>${x.paid === 'matched' ? '' : `<button class="pbtn sm" data-bpaid="${x.b.id}">${x.paid ? '↩ Not paid' : '✓ Paid'}</button>`}</div>`).join('')}
+   ${evs.map(e => `<div class="prow" style="margin:6px 0;flex-wrap:nowrap"><button class="pbtn" style="flex:1;min-width:0;text-align:left" data-pe="${e.id}">${e.done ? '✓ ' : ''}${KIND_ICON[e.kind] || ''} ${esc(e.course ? e.course + ': ' : '')}${esc(e.title)} <span class="pmuted">· ${esc(e.owner ? P.memberOf(e.owner).display_name : 'Both')}</span></button><button class="pbtn sm" data-tdone="${e.id}">${e.done ? '↩ Not done' : '✓ Done'}</button></div>`).join('')}
    ${gs.map((g, i) => `<button class="pbtn" style="display:block;width:100%;text-align:left;margin:6px 0" data-ge="${i}">📅 ${g.start.dateTime ? esc(new Date(g.start.dateTime).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })) + ' · ' : ''}${esc(g.summary || '(no title)')}</button>`).join('')}
    ${!evs.length && !gs.length && !bills.length ? '<p class="pmuted">Nothing yet.</p>' : ''}
    <div class="prow" style="margin-top:12px"><button class="pbtn main" id="dAddDl">+ Deadline</button>${gOn() && calId() ? '<button class="pbtn" id="dAddG">+ Event in Google</button>' : ''}</div>`);
   $$('[data-pe]').forEach(b => b.addEventListener('click', () => openEvent(D.events.find(e => e.id === b.dataset.pe))));
+  $$('[data-bpaid]').forEach(b => b.addEventListener('click', async () => { b.disabled = true; try { await P.togglePaid(b.dataset.bpaid, d.slice(0, 7)); openDay(d); } catch (e) { b.disabled = false; P.toast(e.message); } }));
+  $$('[data-tdone]').forEach(b => b.addEventListener('click', async () => { b.disabled = true; try { await toggleDone(b.dataset.tdone); openDay(d); } catch (e) { b.disabled = false; P.toast(e.message); } }));
   $$('[data-ge]').forEach(b => b.addEventListener('click', () => openGoogleEvent(gs[+b.dataset.ge])));
   $('#dAddDl').addEventListener('click', () => openEvent(null, d)); const ag = $('#dAddG'); if (ag) ag.addEventListener('click', () => openGoogleAdd(d));
 }
