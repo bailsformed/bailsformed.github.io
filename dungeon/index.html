@@ -909,11 +909,19 @@ try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(freshState(),JSON
 let cloud={ref:null,writing:false,pending:false},saveTimer=null;
 function save(){S.updatedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}clearTimeout(saveTimer);saveTimer=setTimeout(pushCloud,1200);}
 async function pushCloud(){if(!cloud.ref)return;if(cloud.writing){cloud.pending=true;return;}cloud.writing=true;
-  try{await cloud.ref.set({state:JSON.stringify(S),updatedAt:S.updatedAt});setSaveStat("☁ Synced");}catch(e){}
+  try{await cloud.ref.set({state:JSON.stringify(S),updatedAt:S.updatedAt});setSaveStat(cloud.ref.where?"☁ Saved to "+cloud.ref.where:"☁ Synced");}catch(e){setSaveStat("Saved on this device");}
   cloud.writing=false;if(cloud.pending){cloud.pending=false;pushCloud();}}
 function setSaveStat(t){const el=$("#savestat");if(el)el.textContent=t;}
 async function initCloud(){
-  if(!(window.claude&&typeof window.claude.use==="function"))return;
+  if(!(window.claude&&typeof window.claude.use==="function")){
+    // on the website: save to PB's Pot login, or a Village account (shared/cloudsave.js)
+    if(!window.CloudSave)return;
+    const ref=await CloudSave.connect({game:"dungeon",localKey:KEY,getState:()=>S,status:setSaveStat,
+      potClient:()=>{if(!window.Pot)return null;window.Pot.start({skin:"dungeon",theme:"dungeon"});return window.Pot.client();},
+      setState:d=>{S=Object.assign(freshState(),d);localStorage.setItem(KEY,JSON.stringify(S));renderAll();}});
+    if(ref){cloud.ref=ref;await pushCloud();}
+    return;
+  }
   try{const [db,user]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);if(!db||!user)return;
     const id=await user.id();if(!id)return;const ref=db.collection("data/users/"+id).doc("save");
     let snap=await ref.get();let remote=snap&&typeof snap.data==="function"?snap.data():snap;if(remote&&remote.data&&remote.state===undefined)remote=remote.data;
@@ -1284,7 +1292,7 @@ setInterval(()=>{if(!document.hidden&&!$("#scrim").classList.contains("on"))stoa
 $("#soundBtn").addEventListener("click",()=>{S.sound=!S.sound;save();renderHUD();if(S.sound)SFX.tick();});
 $("#setBtn").addEventListener("click",()=>{
   openModal(`<button class="btn sm ghost mclose" onclick="closeModal()">✕</button><h2 class="px">⚙︎ Save & settings</h2>
-   <p style="font-size:14px">Progress saves automatically in this browser on this device. To move it to another device or browser, use the backup code below.</p>
+   <p style="font-size:14px">Progress saves automatically on this device, and to your account when you're signed in to the Loot Ledger or the Family Village on this browser (status at the top). No account here? Use the backup code below to move it.</p>
    <label style="font-weight:800;font-size:13px">Companion name<br><input id="sname" value="${esc(S.stoat)}" maxlength="28"></label>
    <h3 class="px">💾 Weekly backup</h3>
    <p class="muted" style="font-size:13px">A backup saves <b>everything</b>: hours, courses, grades, quests, notes and loot. Last full backup: <b>${S.lastBackup?new Date(S.lastBackup).toLocaleDateString():"never"}</b>.</p>
@@ -1330,11 +1338,12 @@ function renderAll(){renderBackupBanner();askPersist();renderHUD();renderMap();r
 renderCodex();checkAch();renderAll();
 const h=(location.hash||"").slice(1);const tb=$(`.tab[data-v="${h}"]`);if(tb)tb.click();
 if(!S.seenIntro)setTimeout(()=>intro(0),400);
-initCloud();
+window.addEventListener("load",initCloud);   // waits for the cloud-save scripts below
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script src="../pot/pot.js"></script>
+<script src="../shared/cloudsave.js"></script>
 <script>
 /* ---- Loot Ledger: hooks this game into the shared Pot ---- */
 (function(){
