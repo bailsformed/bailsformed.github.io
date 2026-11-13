@@ -585,7 +585,7 @@ $("#setBtn").onclick = () => {
    <label class="f full" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="sCalm" style="width:auto" ${S.calm ? "checked" : ""}> Calm mode (fewer animations)</label></div>
    <div class="foot"><span></span><button class="btn mint" id="sSave">Save</button></div>
    <h3>💾 Backup</h3><p class="muted small" style="margin-top:0">Your progress saves on this device${cloud.ref ? " and to your Village account" : ""}. Download a backup once in a while, just in case.</p>
-   <div class="row"><button class="btn white sm" id="bDl">⬇️ Download backup</button><label class="btn white sm" style="cursor:pointer">⬆️ Restore backup<input type="file" id="bUp" accept=".json,application/json" style="display:none"></label><button class="btn white sm" id="bIntro">👋 Replay intro</button></div>
+   <div class="row"><button class="btn white sm" id="bDl">⬇️ Download backup</button><label class="btn white sm" style="cursor:pointer">⬆️ Restore backup<input type="file" id="bUp" accept=".json,application/json" style="display:none"></label><button class="btn white sm" id="bIntro">👋 Replay intro</button><a class="btn white sm" href="guide.html" style="text-decoration:none">📖 Game guide</a></div>
    <p class="muted small">Want to keep progress if you switch phones? Log in to the <a href="../village/">Family Village</a> on this browser and it backs up automatically.</p>`);
   $("#sSave").onclick = () => { S.name = $("#sName").value.trim() || "Kyla Bug"; S.state = $("#sState").value; S.fandom = $("#sFan").value.trim(); S.hotMode = $("#sHot").value; S.sound = $("#sSnd").value === "1"; S.calm = $("#sCalm").checked;
     if (S.state && S.fandom) autoStep("q0a", 2); closeModal(); toast("Saved! ✨"); changed(); };
