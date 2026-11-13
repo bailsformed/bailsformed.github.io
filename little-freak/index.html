@@ -802,7 +802,7 @@ const VIEWS = {
         <div><button class="btn ghost" id="reset">Erase everything</button></div></div></section>`;
     const data = () => JSON.stringify(S);
     $("#bkDl").onclick = () => { download(`little-freak-backup-${new Date().toISOString().slice(0, 10)}.json`, data(), "application/json"); backedUp(); };
-    $("#bkCp").onclick = () => { copyText(data(), "Backup code"); backedUp(); };
+    $("#bkCp").onclick = () => copyText(data(), "Backup code", backedUp);
     $("#bkGo").onclick = () => restore($("#bkIn").value);
     $("#bkFile").onchange = async e => { const f = e.target.files[0]; if (f) restore(await f.text()); };
     $("#nmGo").onclick = () => { S.name = $("#nmIn").value.trim().slice(0, 30); save(); renderHUD(); toast(`Name updated. Varrick is practicing saying it in the mirror.`); };
@@ -930,12 +930,12 @@ function toast(t, cls = "") {
   const e = document.createElement("div"); e.className = "toast " + cls; e.textContent = t;
   const b = $("#toasts"); b.appendChild(e); while (b.children.length > 3) b.firstChild.remove(); setTimeout(() => e.remove(), 5200);
 }
-async function copyText(t, label) {
-  try { await navigator.clipboard.writeText(t); toast(`📋 ${label} copied.`); return true; }
+async function copyText(t, label, done) {
+  try { await navigator.clipboard.writeText(t); toast(`📋 ${label} copied.`); if (done) done(); return true; }
   catch (e) {
     const bg = document.createElement("div"); bg.className = "modal-bg";
-    bg.innerHTML = `<div class="modal panel pad" style="display:grid;gap:10px"><b>Copy this</b><p class="dim small" style="margin:0">Your browser blocked the copy button. Select all of it and copy.</p><textarea style="min-height:260px">${esc(t)}</textarea><button class="btn" data-close>Done</button></div>`;
-    bg.onclick = ev => { if (ev.target === bg || ev.target.closest("[data-close]")) bg.remove(); };
+    bg.innerHTML = `<div class="modal panel pad" style="display:grid;gap:10px"><b>Copy this</b><p class="dim small" style="margin:0">Your browser blocked the copy button. Select all of it and copy.</p><textarea style="min-height:260px">${esc(t)}</textarea>${done ? `<button class="btn" data-copied>✓ I copied it</button>` : ""}<button class="btn" data-close>Done</button></div>`;
+    bg.onclick = ev => { if (ev.target.closest("[data-copied]")) { bg.remove(); done(); } else if (ev.target === bg || ev.target.closest("[data-close]")) bg.remove(); };
     document.body.appendChild(bg); bg.querySelector("textarea").select(); return false;
   }
 }

@@ -1103,10 +1103,11 @@ $("#logForm").addEventListener("submit",e=>{
   SFX.done();toast(`<span class="big">📓</span><div>Logged ${hrs} hrs<br><b>+${Math.round(hrs*2)} XP</b></div>`);
   f.hrs.value="";f.note.value="";afterChange();
 });
-async function copyText(txt,label){
-  try{await navigator.clipboard.writeText(txt);toast(`<span class="big">📋</span><div>${esc(label)} copied!</div>`);}
+// done() runs only once the text was really copied (or the person says they copied it by hand)
+async function copyText(txt,label,done){
+  try{await navigator.clipboard.writeText(txt);toast(`<span class="big">📋</span><div>${esc(label)} copied!</div>`);if(done)done();}
   catch(e){openModal(`<button class="btn sm ghost mclose" onclick="closeModal()">✕</button><h2 class="px">Copy this</h2>
-    <p class="muted">Your browser blocked automatic copying. Select all of the text below and copy it.</p><textarea style="width:100%;height:260px">${esc(txt)}</textarea>`);}
+    <p class="muted">Your browser blocked automatic copying. Select all of the text below and copy it.</p><textarea style="width:100%;height:260px">${esc(txt)}</textarea>${done?`<button class="btn" id="cpDone" style="margin-top:8px">✓ I copied it</button>`:""}`);if(done){const d=document.getElementById("cpDone");if(d)d.addEventListener("click",()=>{closeModal();done();});}}
 }
 // ---------- exports & backups ----------
 const IN_CLAUDE=!!(window.claude&&typeof window.claude.use==="function");
@@ -1216,7 +1217,7 @@ $("#setBtn").addEventListener("click",()=>{
    <button class="btn ghost" id="introBtn">Replay the Sage's intro</button>
    <button class="btn ghost" id="resetBtn" style="margin-left:6px">Reset all progress</button>
    <div id="resetMsg" class="muted" style="font-size:13px;margin-top:6px"></div>`);
-  $("#bkCopy").addEventListener("click",()=>{copyText(JSON.stringify(S),"Backup code");markBackup();});
+  $("#bkCopy").addEventListener("click",()=>copyText(JSON.stringify(S),"Backup code",markBackup));
   $("#bkDl").addEventListener("click",async()=>{if(await download(`medquest-backup-${fileStamp()}.json`,JSON.stringify(S,null,1),"application/json")){markBackup();toast("💾 Backup file downloaded");}});
   $("#bkFile").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>restoreText(r.result);r.readAsText(f);});
   $("#bkLoad").addEventListener("click",()=>{try{const d=JSON.parse($("#bkIn").value);if(!d||!d.q)throw 0;S=Object.assign(freshState(),d);closeModal();afterChange();toast("✅ Save restored!");}

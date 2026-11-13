@@ -352,7 +352,7 @@ td{border-bottom:1px dashed var(--edge);padding:6px;vertical-align:top}
     </div>
   </section>
 
-  <div class="footer px">MED SCHOOL DUNGEON · built with love by a certain stoat · progress saves on this device</div>
+  <div class="footer px">MED SCHOOL DUNGEON · built with love by a certain stoat · <span id="footSave">progress saves on this device</span></div>
 </div>
 
 <div class="scrim" id="scrim"><div class="panel modal" id="modal" role="dialog" aria-modal="true"></div></div>
@@ -919,7 +919,7 @@ async function initCloud(){
     const ref=await CloudSave.connect({game:"dungeon",localKey:KEY,getState:()=>S,status:setSaveStat,
       potClient:()=>{if(!window.Pot)return null;window.Pot.start({skin:"dungeon",theme:"dungeon"});return window.Pot.client();},
       setState:d=>{S=Object.assign(freshState(),d);localStorage.setItem(KEY,JSON.stringify(S));renderAll();}});
-    if(ref){cloud.ref=ref;await pushCloud();}
+    if(ref){cloud.ref=ref;const fs=$("#footSave");if(fs)fs.textContent="progress saves on this device + "+ref.where;await pushCloud();}
     return;
   }
   try{const [db,user]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);if(!db||!user)return;
@@ -1200,8 +1200,8 @@ $("#logForm").addEventListener("submit",e=>{e.preventDefault();const f=e.target,
   SFX.done();toast(`<span class="big">📓</span><div>Logged ${hrs} hrs<br><b>+${Math.round(hrs*2)} XP</b></div>`);
   stoatSays(pick(["You logged it! I'm so proud. Also I'm hungry.","Did you write down that I helped? Write it down.","Look at you, being organized. Gross. Cute."]));
   f.hrs.value="";f.note.value="";afterChange();});
-async function copyText(txt,label){try{await navigator.clipboard.writeText(txt);toast(`<span class="big">📋</span><div>${esc(label)} copied!</div>`);}
-  catch(e){openModal(`<button class="btn sm ghost mclose" onclick="closeModal()">✕</button><h2 class="px">Copy this</h2><p class="muted">Your browser blocked auto-copy. Select all of the text below and copy it.</p><textarea style="width:100%;height:260px">${esc(txt)}</textarea>`);}}
+async function copyText(txt,label,done){try{await navigator.clipboard.writeText(txt);toast(`<span class="big">📋</span><div>${esc(label)} copied!</div>`);if(done)done();}
+  catch(e){openModal(`<button class="btn sm ghost mclose" onclick="closeModal()">✕</button><h2 class="px">Copy this</h2><p class="muted">Your browser blocked auto-copy. Select all of the text below and copy it.</p><textarea style="width:100%;height:260px">${esc(txt)}</textarea>${done?`<button class="btn" id="cpDone" style="margin-top:8px">✓ I copied it</button>`:""}`);if(done){const d=document.getElementById("cpDone");if(d)d.addEventListener("click",()=>{closeModal();done();});}}}
 // ---------- exports & backups ----------
 const IN_CLAUDE=!!(window.claude&&typeof window.claude.use==="function");
 if(IN_CLAUDE)document.body.classList.add("inclaude");
@@ -1304,7 +1304,7 @@ $("#setBtn").addEventListener("click",()=>{
    <button class="btn ghost" id="introBtn">Replay the intro</button> <button class="btn ghost" id="resetBtn">Reset all progress</button>
    <div id="resetMsg" class="muted" style="font-size:13px;margin-top:6px"></div>`);
   $("#sname").addEventListener("input",e=>{S.stoat=e.target.value||"Lady Bailsworth";save();renderHUD();});
-  $("#bkCopy").addEventListener("click",()=>{copyText(JSON.stringify(S),"Backup code");markBackup();});
+  $("#bkCopy").addEventListener("click",()=>copyText(JSON.stringify(S),"Backup code",markBackup));
   $("#bkDl").addEventListener("click",async()=>{if(await download(`dungeon-backup-${fileStamp()}.json`,JSON.stringify(S,null,1),"application/json")){markBackup();toast("💾 Backup file downloaded");}});
   $("#bkFile").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>restoreText(r.result);r.readAsText(f);});
   $("#bkLoad").addEventListener("click",()=>{try{const d=JSON.parse($("#bkIn").value);if(!d||!d.q)throw 0;S=Object.assign(freshState(),d);closeModal();afterChange();toast("✅ Save restored!");}catch(e){toast("That code didn't work. Make sure you copied all of it.","sysx");}});
