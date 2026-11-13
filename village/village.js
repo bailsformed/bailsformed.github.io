@@ -256,6 +256,7 @@ async function doJoin() {
   if (pin !== pin2) return err("The PINs don't match.");
   const { data, error } = await sb.rpc('join_village', { p_code: code, p_name: name, p_pin: pin, p_avatar: S.form.avatar });
   if (error) return err(error.message);
+  if (!data) return err("That's not the family code.");
   confetti();
   await enter(data);
 }
@@ -266,7 +267,7 @@ async function doLogin() {
   const { data, error } = await sb.rpc('login_village', { p_code: code, p_name: name, p_pin: pin });
   if (error) return err(error.message);
   const msg = {
-    bad_code: "That's not the family code.", no_member: "Nobody by that name lives here yet. Check spelling, or move in as new.",
+    bad_code: "That's not the family code.", code_locked: 'Too many wrong family codes. Try again in 15 minutes.', no_member: "Nobody by that name lives here yet. Check spelling, or move in as new.",
     bad_pin: 'Wrong PIN. (5 wrong tries locks it for 15 minutes.)', locked: 'Too many wrong PINs. Try again in 15 minutes, or ask an admin to reset it.',
     not_signed_in: 'Something hiccuped. Refresh and try again.',
   };
@@ -323,7 +324,8 @@ function renderShell() {
 async function go(tab, silent) {
   if (!TABS.some(t => t[0] === tab)) tab = 'home';
   S.tab = tab;
-  if (location.hash !== '#' + tab) history.replaceState(null, '', '#' + tab);
+  // a real tab switch adds a history step, so the phone's back button returns to the last tab
+  if (location.hash !== '#' + tab) history[silent || !location.hash ? 'replaceState' : 'pushState'](null, '', '#' + tab);
   document.querySelectorAll('nav.tabs button').forEach(b => b.classList.toggle('on', b.dataset.t === tab));
   const hv = $('#hv'); if (hv) hv.innerHTML = S.honeyVision ? `<div class="banner hv-banner" style="margin-top:10px">👀 <b>Honey Vision is ON.</b> This is exactly what Honey sees. <button class="chip" data-a="honeyVision">turn off</button></div>` : '';
   if (!silent) $('#main').innerHTML = `<div class="loading">…</div>`;
@@ -517,7 +519,7 @@ async function showMember(id) {
     <div class="panel pad" style="margin-top:12px">
       <div>🔥 Streak: <b>${st.current_streak || 0}</b> days <span class="muted">(best ${st.best_streak || 0})</span></div>
       <div>💪 This month: <b>${s.wins || 0}</b> Ws · ${s.checkins || 0} check-ins</div>
-      <div>📚 Study: <b>${hrs(s.study_minutes)}</b> hrs · 💼 Work: <b>${hrs(s.work_minutes)}</b> hrs</div>
+      <div>📚 Study: <b>${hrs(s.study_minutes)}</b> ${hrs(s.study_minutes) === 1 ? 'hr' : 'hrs'} · 💼 Work: <b>${hrs(s.work_minutes)}</b> ${hrs(s.work_minutes) === 1 ? 'hr' : 'hrs'}</div>
       <div>🗡️ Roasts given: <b>${s.roasts_given || 0}</b> · 🎯 times roasted: <b>${s.times_roasted || 0}</b></div>
       <div>🧠 Trivia right: <b>${s.trivia_correct || 0}</b>/${s.trivia_played || 0}${s.wordle_avg ? ` · 🟩 Wordle avg ${s.wordle_avg}` : ''}</div>
     </div>
@@ -534,7 +536,7 @@ async function showMember(id) {
 const htype = () => S.draft.htype || (S.me && S.me.is_scholar ? 'study' : 'work');
 const Ws = {
   async load() {
-    const wins = await q(sb.from('wins').select('*').order('created_at', { ascending: false }).limit(60));
+    const wins = await q(sb.from('wins').select('*').order('created_at', { ascending: false }).limit(S.wsLimit || 60));
     const ids = wins.map(w => w.id);
     const [comments, emojis] = ids.length ? await Promise.all([
       q(sb.from('comments').select('*').in('win_id', ids).order('created_at')),
@@ -564,6 +566,7 @@ const Ws = {
       </div>
       ${wins.length ? wins.map(w => winCard(w, comments.filter(c => c.win_id === w.id), emojis.filter(e => e.win_id === w.id))).join('')
         : '<div class="panel pad center muted">No Ws yet. Somebody has to go first. (It should be you.)</div>'}
+      ${wins.length >= (S.wsLimit || 60) ? '<button class="btn plain" style="width:100%" data-a="moreWs">⬇ Show older Ws</button>' : ''}
     </div>`;
   },
 };
@@ -681,7 +684,7 @@ const Daily = {
         ${roast ? `<div class="villager" style="margin-top:6px">🏘️ ${esc(roast)}</div>` : ''}</div>`;
     }).join('');
     return `<div class="stack">
-      <h2 class="title px">🧠 Daily Trivia <small>${new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })}</small></h2>
+      <h2 class="title px">🧠 Daily Trivia <small>${new Date().toLocaleDateString(undefined, { timeZone: CFG.tz, weekday: 'long', month: 'short', day: 'numeric' })}</small></h2>
       ${tri}
       <button class="btn plain" style="width:100%" data-a="addTrivia">➕ Add a trivia question (family lore welcome)</button>
       <h2 class="title px">🟩 Word Games <small>paste your share text</small></h2>
@@ -777,16 +780,16 @@ async function pollKitchen() {
    AWARDS ENGINE
    ===================================================================== */
 const METRIC = {
-  wins: { label: 'Ws', fmt: v => v },
+  wins: { label: 'Ws', one: 'W', fmt: v => v },
   best_streak: { label: 'day streak', fmt: v => v },
-  minutes: { label: 'hrs', fmt: v => Math.round(v / 6) / 10 },
+  minutes: { label: 'hrs', one: 'hr', fmt: v => Math.round(v / 6) / 10 },
   trivia_correct: { label: 'right', fmt: v => v },
   wordle_avg: { label: 'avg', fmt: v => v, low: true, min: 'wordle_played', minN: 5 },
-  roasts_given: { label: 'roasts', fmt: v => v },
-  times_roasted: { label: 'times', fmt: v => v },
-  reactions_received: { label: 'reactions', fmt: v => v },
-  study_minutes: { label: 'study hrs', fmt: v => hrs(v) },
-  work_minutes: { label: 'work hrs', fmt: v => hrs(v) },
+  roasts_given: { label: 'roasts', one: 'roast', fmt: v => v },
+  times_roasted: { label: 'times', one: 'time', fmt: v => v },
+  reactions_received: { label: 'reactions', one: 'reaction', fmt: v => v },
+  study_minutes: { label: 'study hrs', one: 'study hr', fmt: v => hrs(v) },
+  work_minutes: { label: 'work hrs', one: 'work hr', fmt: v => hrs(v) },
   study_streak: { label: 'day study streak', fmt: v => v },
   work_streak: { label: 'day work streak', fmt: v => v },
   science_correct: { label: 'science right', fmt: v => v },
@@ -813,6 +816,9 @@ function rankAuto(cat, stats, official) {
   rows.sort((a, b) => M.low ? a[cat.metric] - b[cat.metric] : b[cat.metric] - a[cat.metric]);
   return rows.map(s => ({ member_id: s.member_id, value: +s[cat.metric] }));
 }
+
+// "1 W", "2 Ws": singular label when the shown number is exactly 1
+const unit = (M, v) => (+M.fmt(v) === 1 && M.one ? M.one : M.label);
 
 const catsFor = period => S.categories.filter(c => c.approved && c.period === period);
 
@@ -937,7 +943,7 @@ const Awards = {
       const ranked = rankAuto(cat, stats, false).slice(0, 3);
       const M = METRIC[cat.metric];
       return `<div class="panel award"><div class="ah"><span class="em">${esc(cat.emoji)}</span>${esc(cat.name)}</div>
-        ${ranked.length ? ranked.map((r, i) => `<div class="rank">${['🥇', '🥈', '🥉'][i]} ${esc(avOf(r.member_id))} ${esc(nameOf(r.member_id))} <span class="muted">· ${M.fmt(r.value)} ${M.label}</span></div>`).join('')
+        ${ranked.length ? ranked.map((r, i) => `<div class="rank">${['🥇', '🥈', '🥉'][i]} ${esc(avOf(r.member_id))} ${esc(nameOf(r.member_id))} <span class="muted">· ${M.fmt(r.value)} ${unit(M, r.value)}</span></div>`).join('')
           : '<div class="muted tiny">Wide open. Somebody take it.</div>'}
         ${M.min ? `<div class="tiny muted">Needs ${M.minN}+ games to officially win.</div>` : ''}</div>`;
     };
@@ -951,7 +957,7 @@ const Awards = {
     const main = (period, kind) => catsFor(period).filter(c => c.kind === kind && !c.league);
     const league = (lg, period) => catsFor(period).filter(c => c.league === lg);
     const sd = showdown(monthStats);
-    const sdRow = (t, label, emoji) => `<div class="rank">${emoji} <b>${label}</b> <span class="muted">· ${t.n ? `${hrs(t.raw)} hrs/person${t === sd.old ? ` × ${OLD_FOLKS_BONUS} bonus = <b>${hrs(t.score)}</b>` : ''}` : 'nobody logged hours yet'}</span></div>`;
+    const sdRow = (t, label, emoji) => `<div class="rank">${emoji} <b>${label}</b> <span class="muted">· ${t.n ? `${hrs(t.raw)} ${hrs(t.raw) === 1 ? 'hr' : 'hrs'}/person${t === sd.old ? ` × ${OLD_FOLKS_BONUS} bonus = <b>${hrs(t.score)}</b>` : ''}` : 'nobody logged hours yet'}</span></div>`;
     const showdownCard = `<div class="panel award"><div class="ah"><span class="em">⚔️</span>Old Heads vs Youngins</div>
       ${sdRow(sd.old, 'Old Heads', '🧓')}${sdRow(sd.young, 'Youngins', '🐣')}
       <div style="margin-top:6px;font-weight:800">${sd.winner ? (sd.winner === 'old' ? '🧓 The Old Heads are winning. Respect your elders.' : '🐣 The Youngins are winning. The old heads are FURIOUS.') : 'Dead even. Somebody log some hours.'}</div>
@@ -975,7 +981,7 @@ const Awards = {
       <h2 class="title px">📜 Past results</h2>
       ${pastOptions.length ? `<select id="res-pick" data-change="resultsPick">${pastOptions.map(([v, l]) => `<option value="${v}" ${v === S.resultsView ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select>
         ${past.map(({ cat, winners }) => `<div class="panel award"><div class="ah"><span class="em">${esc(cat.emoji)}</span>${esc(cat.name)}</div>
-          ${winners.length ? winners.map(w => `<div class="rank">🏆 <b>${esc(w.label)}</b>${cat.kind === 'auto' ? ` <span class="muted">· ${METRIC[cat.metric].fmt(w.value)} ${METRIC[cat.metric].label}</span>` : cat.kind === 'vote' ? ` <span class="muted">· ${w.value} vote${w.value > 1 ? 's' : ''}</span>` : ''}</div>`).join('') : '<div class="muted tiny">No winner. Shameful.</div>'}
+          ${winners.length ? winners.map(w => `<div class="rank">🏆 <b>${esc(w.label)}</b>${cat.kind === 'auto' ? ` <span class="muted">· ${METRIC[cat.metric].fmt(w.value)} ${unit(METRIC[cat.metric], w.value)}</span>` : cat.kind === 'vote' ? ` <span class="muted">· ${w.value} vote${w.value > 1 ? 's' : ''}</span>` : ''}</div>`).join('') : '<div class="muted tiny">No winner. Shameful.</div>'}
           ${winners.length ? `<div class="sass">🏘️ ${esc(sass(cat.name, cat.kind === 'team' ? (cat.name.startsWith('Old') ? 'the Old Heads' : 'the Youngins') : (winners[0].owner ? nameOf(winners[0].owner) : winners[0].label), cat.kind === 'auto' ? METRIC[cat.metric].fmt(winners[0].value) : winners[0].value, S.resultsView))}</div>` : ''}</div>`).join('')}`
         : '<div class="panel pad muted">The first results unlock when this month ends. The tension is unbearable.</div>'}
       <h2 class="title px">💡 Proposed categories <small>3 seconds = official</small></h2>
@@ -1378,6 +1384,7 @@ const A = {
   wkind: b => { S.draft.kind = b.dataset.k; b.parentElement.querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x === b));
     $('#w-body').placeholder = S.draft.kind === 'win' ? 'What did you do? Brag. Go ahead.' : 'What did you work on today?'; },
   wmin: b => { $('#w-min').value = b.dataset.m; },
+  async moreWs() { S.wsLimit = (S.wsLimit || 60) + 60; await go('ws', true); },
   htype: b => { S.draft.htype = b.dataset.h; b.parentElement.querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x === b)); },
   toggleNsfh: b => { S.ns[b.id] = !S.ns[b.id]; if (!S.ns[b.id]) delete S.ns[b.id]; b.classList.toggle('on', !!S.ns[b.id]); if (S.ns[b.id]) toast('🍯 Marked Not Safe For Honey. Grandma will see something sweet instead.'); },
   async postWin() {
@@ -1385,6 +1392,7 @@ const A = {
     if (!body) return toast('Type something first. Even a small W counts.');
     const min = parseInt($('#w-min').value, 10);
     const minutes = isNaN(min) ? null : min;
+    if (minutes !== null && (minutes < 0 || minutes > 1440)) return toast('Hours can be 0 to 24 (that\'s 0 to 1440 minutes).');
     await q(sb.from('wins').insert({ kind: S.draft.kind, body, minutes, hours_type: minutes || S.draft.kind === 'checkin' ? htype() : null, nsfh: !!S.ns['ns-win'], member_id: S.myId }));
     delete S.ns['ns-win'];
     confetti(); $('#w-body').value = ''; $('#w-min').value = '';
@@ -1578,5 +1586,11 @@ document.addEventListener('keydown', e => {
 });
 
 const VIEWS = { home: Home, ws: Ws, daily: Daily, quotes: Quotes, kitchen: Kitchen, awards: Awards };
+
+// back/forward buttons and #tab links switch tabs
+window.addEventListener('hashchange', () => {
+  const t = location.hash.slice(1);
+  if (S.me && VIEWS[t] && t !== S.tab) { closeModal(); go(t); }
+});
 
 boot();
