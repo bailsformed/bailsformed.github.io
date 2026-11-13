@@ -154,6 +154,8 @@ async function loadAll() {
   Object.assign(D, { house, members, accounts, cats, budgets, tx, bills, paid, events, settings: settings || { income_monthly: 0 } });
   D.rules = {}; rules.filter(r => r.owner === D.user.id).forEach(r => D.rules[r.merchant] = r.value);
   if (!cats.length) { await seedCategories(); return loadAll(); }
+  // does the database have the balance_set_at column yet? (pot/setup/02_pot_fixes.sql)
+  if (D.hasSetAt === undefined) D.hasSetAt = accounts.length ? 'balance_set_at' in accounts[0] : !(await sb.from('pot_accounts').select('balance_set_at').limit(1)).error;
   emit();
   if (readyResolve) { const r = readyResolve; readyResolve = null; r(D); }
 }
@@ -165,10 +167,16 @@ async function seedCategories() {
 const memberOf = uid => D.members.find(m => m.user_id === uid) || { display_name: '?', emoji: '•' };
 const catOf = id => D.cats.find(c => c.id === id) || { id, name: id || 'Uncategorized', tier: 2 };
 const isCredit = a => a && a.kind === 'credit';
+// a balance counts everything up to the moment it was set; entries on that same day
+// count only if they were added afterwards (so today's coffee still lowers today's balance)
 function estBalance(a) {
-  const after = D.tx.filter(t => t.account_id === a.id && t.date > a.balance_date).reduce((s, t) => s + (+t.out_amt), 0);
+  const setAt = a.balance_set_at ? Date.parse(a.balance_set_at) : null;
+  const after = D.tx.filter(t => t.account_id === a.id &&
+    (t.date > a.balance_date || (t.date === a.balance_date && setAt && Date.parse(t.created_at) > setAt)))
+    .reduce((s, t) => s + (+t.out_amt), 0);
   return r2(isCredit(a) ? +a.balance + after : +a.balance - after);
 }
+const balanceStamp = rec => (D.hasSetAt ? Object.assign(rec, { balance_set_at: new Date().toISOString() }) : rec);
 function potCash(owner) {
   let cash = 0, debt = 0;
   D.accounts.filter(a => !a.archived && (!owner || a.owner === owner)).forEach(a => { const b = estBalance(a); if (isCredit(a)) debt += b; else cash += b; });
@@ -178,11 +186,37 @@ const budgetOf = (cat, owner) => D.budgets.filter(b => b.category === cat && (!o
 const totalBudget = owner => D.budgets.filter(b => !owner || b.owner === owner).reduce((s, b) => s + (+b.amount), 0);
 const monthTx = (m, owner) => D.tx.filter(t => monthKey(t.date) === m && (!owner || t.owner === owner));
 const spentIn = (m, cat, owner) => monthTx(m, owner).filter(t => t.type === 'expense' && t.category === cat).reduce((s, t) => s + (+t.out_amt), 0);
+/* Which bills did this month's charges pay? Each charge can pay only one bill.
+   1. charges whose description names the bill (part-payments add up)
+   2. one charge of about the right amount in the bill's category
+   3. split payments: the rest of that category adds up to the bill (rent paid half each) */
+const BILL_STOP = new Set(['BILL', 'BILLS', 'PAYMENT', 'CARD', 'THE', 'AND', 'MONTHLY', 'FULL', 'SUBSCRIPTION', 'PLAN']);
+const billWords = b => normDesc(b.name).replace(/[^A-Z0-9 ]/g, ' ').split(' ').filter(w => w.length >= 4 && !BILL_STOP.has(w));
+let matchCache = { tx: null, bills: null, byMonth: {} };
+function billMatches(m) {
+  if (matchCache.tx !== D.tx || matchCache.bills !== D.bills) matchCache = { tx: D.tx, bills: D.bills, byMonth: {} };
+  if (matchCache.byMonth[m]) return matchCache.byMonth[m];
+  const map = {}, used = new Set(), near = (x, amt) => Math.abs(x - amt) <= Math.max(2, amt * .15);
+  const T = monthTx(m).filter(t => t.type === 'expense' && +t.out_amt > 0);
+  const free = b => T.filter(t => !used.has(t.id) && t.category === b.category);
+  const bills = D.bills.filter(b => b.active && b.kind !== 'oneoff' && b.category && +b.amount > 0);
+  bills.forEach(b => {
+    const W = billWords(b); if (!W.length) return;
+    const hits = free(b).filter(t => W.some(w => normDesc(t.note).includes(w)));
+    if (hits.length && hits.reduce((s, t) => s + +t.out_amt, 0) >= +b.amount * .85) { hits.forEach(t => used.add(t.id)); map[b.id] = true; }
+  });
+  bills.filter(b => !map[b.id]).sort((x, y) => +y.amount - +x.amount).forEach(b => {
+    const t = free(b).find(t => near(+t.out_amt, +b.amount)); if (t) { used.add(t.id); map[b.id] = true; }
+  });
+  bills.filter(b => !map[b.id]).forEach(b => {
+    const rest = free(b); if (rest.length >= 2 && near(rest.reduce((s, t) => s + +t.out_amt, 0), +b.amount)) { rest.forEach(t => used.add(t.id)); map[b.id] = true; }
+  });
+  return (matchCache.byMonth[m] = map);
+}
 function billPaid(b, m) {
   if (D.paid.some(p => p.bill_id === b.id && p.month === m)) return 'marked';
   if (b.kind === 'oneoff') return false;
-  const hit = monthTx(m).find(t => t.type === 'expense' && b.category && t.category === b.category && Math.abs(+t.out_amt - +b.amount) <= Math.max(2, +b.amount * .15));
-  return hit ? 'matched' : false;
+  return billMatches(m)[b.id] ? 'matched' : false;
 }
 function nextDue(b, from = new Date()) {
   if (b.kind === 'oneoff') return b.due_date ? new Date(b.due_date + 'T12:00') : null;
@@ -306,13 +340,21 @@ function readStatement(text, acct) {
     let best = -1, bl = 0; w.forEach((x, i) => { if (i !== iD && i !== iAmt && x.length > bl && /[a-z]/i.test(x)) { best = i; bl = x.length; } }); iDesc = best;
   }
   if (iD < 0 || iDesc < 0 || (iAmt < 0 && iDeb < 0)) throw new Error('columns');
-  let balance = null;
+  const bals = [];
   const rows = body.map(r => {
     let amt; if (iAmt >= 0) amt = numOf(r[iAmt]); else { const d = numOf(r[iDeb]), c = numOf(r[iCred]); amt = !isNaN(d) && d !== 0 ? -Math.abs(d) : !isNaN(c) ? Math.abs(c) : NaN; }
     const row = { date: toISO(r[iD]), desc: (r[iDesc] || '').trim(), raw: amt };
-    if (iBal >= 0 && row.date) { const b = numOf(r[iBal]); if (!isNaN(b) && (!balance || row.date >= balance.date)) balance = { date: row.date, amt: b }; }
+    if (iBal >= 0 && row.date) { const b = numOf(r[iBal]); if (!isNaN(b)) bals.push({ date: row.date, amt: b }); }
     return row;
   }).filter(r => r.date && !isNaN(r.raw) && r.raw !== 0);
+  // the account's balance = the running balance after the LAST entry of the latest day.
+  // Banks list newest-first or oldest-first, so on that day take the top row or the bottom row to match.
+  let balance = null;
+  if (bals.length) {
+    const newestFirst = bals[0].date > bals[bals.length - 1].date, latest = bals.reduce((m, b) => b.date > m ? b.date : m, bals[0].date);
+    const onLatest = bals.filter(b => b.date === latest);
+    balance = newestFirst ? onLatest[0] : onLatest[onLatest.length - 1];
+  }
   let flip = false;
   if (iAmt >= 0 && isCredit(acct)) {
     const nonpay = rows.filter(r => !/PAYMENT|THANK YOU|AUTOPAY/.test(normDesc(r.desc)));
@@ -343,16 +385,20 @@ function openImport(opts = {}) {
     for (const f of files) texts.push(await f.text()); if ($('#pip', m).value.trim()) texts.push($('#pip', m).value);
     if (!texts.length) return toast('Pick a file or paste one first.');
     let rows = [], balance = null;
-    try { texts.forEach(t => { const r = readStatement(t, acct); rows.push(...r.rows); if (r.balance && (!balance || r.balance.date >= balance.date)) balance = r.balance; }); }
+    try { texts.forEach((t, fi) => { const r = readStatement(t, acct); r.rows.forEach(x => { x.file = fi; }); rows.push(...r.rows); if (r.balance && (!balance || r.balance.date >= balance.date)) balance = r.balance; }); }
     catch (e) { return toast("I couldn't read that file. Try the CSV download, or send it to Claude in chat."); }
     stage(rows, acct, balance);
   });
 }
 let IMP = null;
 function stage(rows, acct, balance) {
-  const seen = new Set(D.tx.map(t => t.fp).filter(Boolean)), inFile = new Set(); let dup = 0; const items = [];
+  // two real $4.75 coffees on one day look identical, so number repeats within a file:
+  // the 2nd one becomes "...#2". Re-importing the same file gives the same numbers, so it's still skipped.
+  const seen = new Set(D.tx.map(t => t.fp).filter(Boolean)), repeats = {}, taken = new Set(); let dup = 0; const items = [];
   rows.forEach(r => {
-    const k = fpOf(acct.id, r.date, r.out, r.desc); if (seen.has(k) || inFile.has(k)) { dup++; return; } inFile.add(k);
+    const base = fpOf(acct.id, r.date, r.out, r.desc), n = (repeats[(r.file || 0) + '|' + base] = (repeats[(r.file || 0) + '|' + base] || 0) + 1);
+    const k = n === 1 ? base : `${base}#${n}`;
+    if (seen.has(k) || taken.has(k)) { dup++; return; } taken.add(k);
     let c = r.pre ? { how: 'claude', v: r.pre } : classify(r.desc, r.out);
     if (c && r.out < 0 && !c.v.startsWith('income:') && c.v !== 'transfer') c = isCredit(acct) ? Object.assign(c, { refund: true }) : null;
     items.push(Object.assign({}, r, { fp: k, c, ans: c ? c.v : null }));
@@ -401,7 +447,7 @@ async function commit(btn) {
   });
   try {
     for (let i = 0; i < rows.length; i += 400) await q(sb.from('pot_tx').upsert(rows.slice(i, i + 400), { onConflict: 'household_id,fp', ignoreDuplicates: true }));
-    if (IMP.useBalance && IMP.balance) await q(sb.from('pot_accounts').update({ balance: r2(isCredit(acct) ? Math.abs(IMP.balance.amt) : IMP.balance.amt), balance_date: IMP.balance.date }).eq('id', acct.id));
+    if (IMP.useBalance && IMP.balance) await q(sb.from('pot_accounts').update(balanceStamp({ balance: r2(isCredit(acct) ? Math.abs(IMP.balance.amt) : IMP.balance.amt), balance_date: IMP.balance.date })).eq('id', acct.id));
   } catch (e) { btn.disabled = false; btn.textContent = 'Try again'; return toast('Saving failed: ' + e.message); }
   const n = rows.length; IMP = null; close(); toast(skin().done(n)); await loadAll();
   listeners.forEach(f => f.imported && f.imported(n));
@@ -450,9 +496,9 @@ function openAccounts(fromSetup, after) {
         if (row.dataset.del) { if (id) await q(sb.from('pot_accounts').update({ archived: true }).eq('id', id)); continue; }
         if (!name) continue;
         const prev = D.accounts.find(a => a.id === id); const rec = { name, kind };
-        if (bal !== '' && (!prev || +bal !== +prev.balance || prev.kind !== kind)) { rec.balance = r2(Math.abs(+bal) * (kind === 'credit' ? 1 : Math.sign(+bal) || 1)); rec.balance_date = today(); }
+        if (bal !== '' && (!prev || +bal !== estBalance(prev) || prev.kind !== kind)) { rec.balance = r2(Math.abs(+bal) * (kind === 'credit' ? 1 : Math.sign(+bal) || 1)); rec.balance_date = today(); balanceStamp(rec); }
         if (id) await q(sb.from('pot_accounts').update(rec).eq('id', id));
-        else await q(sb.from('pot_accounts').insert(Object.assign({ household_id: D.me.household_id, owner: D.user.id, balance: 0, balance_date: today() }, rec)));
+        else await q(sb.from('pot_accounts').insert(balanceStamp(Object.assign({ household_id: D.me.household_id, owner: D.user.id, balance: 0, balance_date: today() }, rec))));
       }
       await loadAll(); close(); toast('Balances saved'); if (after) after();
     } catch (err) { btn.disabled = false; toast('Saving failed: ' + err.message); }
