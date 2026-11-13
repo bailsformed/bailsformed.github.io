@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sunbeam Farm</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#8cc56b">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{
+  --ink:#4a3423;--ink2:#7a5f48;--parch:#fff6e2;--parch2:#f7e6c0;--edge:#e6c98e;
+  --wood:#9a6436;--wood2:#b77b45;--woodd:#5e3a1d;
+  --grass:#8cc56b;--grass2:#7ab65a;--soil:#8a5a33;--soil2:#74492a;
+  --green:#4f9e4a;--green2:#dff3d2;--amber:#e39a2d;--amber2:#fde9c4;--blue:#4b9fd1;--blue2:#dcefff;
+  --pink:#f39bb8;--pink2:#ffe1ea;--lav:#b9a3e8;--sun:#ffd45a;--red:#d9534f;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:Nunito,system-ui,sans-serif;color:var(--ink);font-size:16px;line-height:1.5;min-height:100vh;padding-bottom:110px;
+  background-color:var(--grass);
+  background-image:
+    linear-gradient(45deg,rgba(255,255,255,.07) 25%,transparent 25%,transparent 75%,rgba(255,255,255,.07) 75%),
+    linear-gradient(45deg,rgba(255,255,255,.07) 25%,transparent 25%,transparent 75%,rgba(255,255,255,.07) 75%);
+  background-size:32px 32px;background-position:0 0,16px 16px}
+.px,h1,h2,h3,.btn,.tab,.chip,.pill{font-family:"Pixelify Sans",Nunito,sans-serif}
+h1{font-size:26px;margin:0;line-height:1.1}
+h2{font-size:22px;margin:0 0 8px;font-weight:700}
+h3{font-size:18px;margin:12px 0 6px;font-weight:600}
+p{margin:6px 0}
+canvas.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
+.wrap{max-width:980px;margin:0 auto;padding:12px 14px}
+.panel{background:var(--parch);border:4px solid var(--woodd);border-radius:12px;box-shadow:inset 0 0 0 3px var(--edge),0 5px 0 rgba(60,35,15,.35);padding:16px;margin:0 0 16px}
+.panel.wood{background:linear-gradient(180deg,var(--wood2),var(--wood));color:#fff5e6;box-shadow:inset 0 0 0 3px #c98f58,0 5px 0 rgba(60,35,15,.35)}
+.muted{color:var(--ink2);font-size:14px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.spread{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.btn{font-size:17px;font-weight:600;border:3px solid var(--woodd);border-radius:10px;padding:8px 14px;cursor:pointer;background:var(--sun);color:var(--ink);box-shadow:0 3px 0 var(--woodd);transition:transform .06s;line-height:1.15}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--woodd)}
+.btn:disabled{opacity:.45;cursor:default;transform:none}
+.btn.green{background:#9fdc7c}.btn.pink{background:var(--pink)}.btn.blue{background:#9ed2f2}.btn.white{background:#fffaf0}.btn.lav{background:var(--lav)}
+.btn.sm{font-size:14px;padding:4px 9px;border-width:2px;box-shadow:0 2px 0 var(--woodd)}
+.btn.big{font-size:21px;padding:12px 20px}
+.btn.link{background:none;border:none;box-shadow:none;padding:2px 4px;text-decoration:underline;color:var(--ink2);font-family:Nunito,sans-serif;font-size:14px}
+input,select,textarea{font:inherit;color:var(--ink);background:#fffdf7;border:2px solid #c9a46e;border-radius:8px;padding:7px 9px;max-width:100%}
+input:focus,select:focus,textarea:focus{outline:3px solid var(--pink);outline-offset:1px}
+textarea{width:100%;min-height:70px;resize:vertical}
+label.f{display:block;font-weight:800;font-size:14px;margin:10px 0 4px}
+.pill{display:inline-block;font-size:13px;padding:1px 8px;border-radius:99px;border:2px solid currentColor;line-height:1.4;white-space:nowrap}
+.t-income{color:#2f7d4f}.t-bill{color:#9a5a12}.t-savings{color:#2f6ea5}.t-spending{color:#a8456b}
+.toast-wrap{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);z-index:60;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none;width:min(92vw,460px)}
+.toast{background:var(--parch);border:3px solid var(--woodd);border-radius:10px;padding:8px 14px;box-shadow:0 4px 0 rgba(60,35,15,.35);font-weight:700;animation:pop .25s ease-out;text-align:center}
+@keyframes pop{from{transform:scale(.8);opacity:0}to{transform:scale(1);opacity:1}}
+.floater{position:fixed;z-index:70;font-family:"Pixelify Sans";font-weight:700;font-size:22px;color:#fff;text-shadow:0 2px 0 var(--woodd),0 0 6px var(--woodd);pointer-events:none;animation:floatUp 1.2s ease-out forwards}
+@keyframes floatUp{to{transform:translateY(-60px);opacity:0}}
+
+/* header */
+.top{display:flex;gap:12px;align-items:center}
+.top .who{flex:1;min-width:0}
+.top h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.xpbar{height:14px;background:#e8d6ae;border:2px solid var(--woodd);border-radius:7px;overflow:hidden;margin-top:4px;max-width:340px}
+.xpbar i{display:block;height:100%;background:linear-gradient(90deg,#9fdc7c,#5fb85a)}
+.starct{color:var(--ink);font-family:"Pixelify Sans";font-size:22px;font-weight:700;background:#fff3c4;border:3px solid var(--woodd);border-radius:10px;padding:4px 10px;white-space:nowrap}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 14px}
+.tab{flex:1 1 auto;font-size:16px;font-weight:600;background:#e9d3a6;border:3px solid var(--woodd);border-radius:10px 10px 4px 4px;padding:7px 10px;cursor:pointer;color:var(--ink);text-align:center}
+.tab.on{background:var(--parch);box-shadow:inset 0 -4px 0 var(--pink)}
+.fab{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));z-index:40;font-size:20px;padding:13px 20px;border-radius:14px;background:#9fdc7c;box-shadow:0 5px 0 var(--woodd),0 0 0 4px rgba(255,255,255,.6)}
+
+/* Sen card */
+.sen{display:flex;gap:14px;align-items:center}
+.bubble{position:relative;background:#fff;border:3px solid var(--woodd);border-radius:12px;padding:10px 14px;flex:1;font-weight:700;font-size:17px}
+.bubble:before{content:"";position:absolute;left:-12px;top:22px;border:8px solid transparent;border-right-color:var(--woodd)}
+.quest{display:flex;gap:10px;align-items:center;padding:9px 10px;border:2px dashed #d9bb86;border-radius:10px;margin:6px 0;background:#fffaf0}
+.quest.done{background:var(--green2);border-style:solid;border-color:#9fcf87}
+.quest .ck{font-size:22px;width:28px;text-align:center}
+.quest .q{flex:1}
+.gift{font-size:52px;cursor:pointer;background:none;border:none;animation:wiggle 2.4s infinite;padding:0}
+@keyframes wiggle{0%,80%,100%{transform:rotate(0)}85%{transform:rotate(-10deg)}90%{transform:rotate(10deg)}95%{transform:rotate(-6deg)}}
+
+/* farm */
+.months{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:10px}
+.months .px{font-size:22px;font-weight:700;min-width:170px;text-align:center}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.tile{background:#fffaf0;border:3px solid var(--woodd);border-radius:10px;padding:10px 12px}
+.tile .k{font-size:13px;font-weight:800;color:var(--ink2);text-transform:uppercase;letter-spacing:.4px}
+.tile .v{font-family:"Pixelify Sans";font-size:26px;font-weight:700;line-height:1.15}
+.tile.gold{background:#fff3c4}
+.bar{height:10px;background:#ead8b3;border-radius:6px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--green)}
+.garden{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.plot{display:flex;flex-direction:column;align-items:stretch;border:3px solid var(--woodd);border-radius:10px;overflow:hidden;cursor:pointer;background:#fffaf0;text-align:left;padding:0;font:inherit;color:inherit}
+.plot .soil{position:relative;height:96px;display:flex;align-items:flex-end;justify-content:center;
+  background-color:var(--soil);background-image:repeating-linear-gradient(0deg,var(--soil) 0 10px,var(--soil2) 10px 12px)}
+.plot.water .soil{background-color:#b0814f;background-image:repeating-linear-gradient(0deg,#b0814f 0 10px,#9b6e41 10px 12px)}
+.plot .badge{position:absolute;top:6px;right:6px;font-size:18px}
+.plot .info{padding:7px 9px}
+.plot .nm{font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plot .st{font-size:12.5px;font-weight:800}
+.st.thrive{color:var(--green)}.st.close{color:var(--amber)}.st.water{color:var(--blue)}
+.plot.thrive{box-shadow:0 0 0 2px #9fdc7c}.plot.close{box-shadow:0 0 0 2px #f3c06b}.plot.water{box-shadow:0 0 0 2px #9ed2f2}
+.board{background:linear-gradient(180deg,#a8703f,#8c5a30);border:4px solid var(--woodd);border-radius:10px;padding:12px;display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.note{background:#fff8de;border-radius:4px;padding:10px 10px 8px;box-shadow:2px 3px 0 rgba(0,0,0,.25);position:relative;transform:rotate(-1deg)}
+.note:nth-child(2n){transform:rotate(1.2deg)}
+.note:before{content:"";position:absolute;top:-5px;left:50%;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:var(--red);box-shadow:inset -2px -2px 0 rgba(0,0,0,.25)}
+.note.paid{background:#e4f6d9}
+.note label{display:flex;gap:8px;align-items:flex-start;cursor:pointer;font-weight:800}
+.note input{width:20px;height:20px;margin-top:2px;accent-color:var(--green)}
+.bin{display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap}
+.crate{width:96px;height:78px;border:4px solid var(--woodd);border-radius:6px;background:repeating-linear-gradient(0deg,#c58b52 0 14px,#a8703f 14px 17px);position:relative;flex:none}
+.crate:after{content:"";position:absolute;left:-8px;right:-8px;top:-12px;height:12px;background:#8c5a30;border:3px solid var(--woodd);border-radius:4px}
+.jars{display:flex;gap:16px;flex-wrap:wrap}
+.jar{width:130px;text-align:center;cursor:pointer;background:none;border:none;font:inherit;color:inherit;padding:0}
+.jar .glass{position:relative;margin:0 auto;width:84px;height:100px;border:4px solid #6b8fa6;border-top-width:3px;border-radius:12px 12px 22px 22px;background:rgba(220,240,255,.55);overflow:hidden}
+.jar .lid{width:64px;height:12px;margin:0 auto -2px;background:var(--wood);border:3px solid var(--woodd);border-radius:4px}
+.jar .fill{position:absolute;left:0;right:0;bottom:0;background:repeating-radial-gradient(circle at 30% 30%,#ffe27a 0 5px,#f2c14e 5px 9px);transition:height .4s}
+.jar .pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:"Pixelify Sans";font-weight:700;font-size:18px;text-shadow:0 0 4px #fff,0 0 2px #fff}
+.ledger{width:100%;border-collapse:collapse;font-size:15px}
+.ledger td{padding:7px 6px;border-bottom:1px dashed #d9bb86;vertical-align:top}
+.ledger td.amt{text-align:right;font-weight:800;white-space:nowrap}
+.ledger .x{background:none;border:none;cursor:pointer;font-size:16px;color:var(--ink2);padding:0 4px}
+.harvest{background:linear-gradient(180deg,#ffe9b0,#ffd27a)}
+
+/* self care */
+.ptdots{display:flex;gap:10px;margin:8px 0}
+.ptdot{width:46px;height:46px;border-radius:50%;border:3px dashed var(--woodd);display:flex;align-items:center;justify-content:center;font-size:24px;background:#fffaf0}
+.ptdot.on{border-style:solid;background:var(--pink2)}
+.cups{display:flex;gap:6px;flex-wrap:wrap}
+.cup{width:38px;height:46px;border:3px solid #6b8fa6;border-top:none;border-radius:0 0 10px 10px;background:#f4fbff;cursor:pointer;position:relative;overflow:hidden;padding:0}
+.cup.on:after{content:"";position:absolute;left:0;right:0;bottom:0;height:78%;background:linear-gradient(180deg,#a9dcff,#62b6ea)}
+.exlist label{display:flex;gap:8px;align-items:center;padding:3px 0}
+.exlist input[type=checkbox]{width:20px;height:20px;accent-color:var(--pink)}
+.entry{background:#fffaf0;border-left:4px solid var(--pink);padding:7px 10px;margin:6px 0;border-radius:0 8px 8px 0}
+
+/* farmhouse room */
+.room{position:relative;width:100%;aspect-ratio:16/10;border:4px solid var(--woodd);border-radius:10px;overflow:hidden;
+  background:linear-gradient(180deg,transparent 64%,#6b4226 64%,#6b4226 65.5%,transparent 65.5%),
+  repeating-linear-gradient(90deg,#f7dfc0 0 26px,#f2d4ae 26px 52px);font-size:min(5vw,40px)}
+.room .floor{position:absolute;left:0;right:0;bottom:0;height:35%;background:repeating-linear-gradient(0deg,#b98352 0 18px,#a7723f 18px 20px)}
+.room .it{position:absolute;line-height:1;transform:translate(-50%,-100%);text-align:center}
+.room .win{position:absolute;left:5%;top:10%;width:20%;height:34%;border:5px solid #8c5a30;border-radius:6px;background:linear-gradient(180deg,#2d3a6b,#7f6aa8 70%,#f4a6a0);overflow:hidden}
+.room .win:before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:4px solid #8c5a30}
+.room .win:after{content:"";position:absolute;top:50%;left:0;right:0;border-top:4px solid #8c5a30}
+.room .win i{position:absolute;width:3px;height:3px;background:#fff;border-radius:50%}
+.room .couch{position:absolute;left:60%;top:46%;width:30%;height:22%;background:#e89aa8;border:4px solid #a85a6a;border-radius:18px 18px 8px 8px}
+.room .couch:before{content:"";position:absolute;left:-10%;right:-10%;bottom:-4px;height:45%;background:#e48a9c;border:4px solid #a85a6a;border-radius:14px}
+.room .quilt{position:absolute;left:62%;top:52%;width:22%;height:16%;border:3px solid #7d5a8a;border-radius:6px;
+  background:conic-gradient(#ffd45a 0 25%,#9ed2f2 0 50%,#f39bb8 0 75%,#9fdc7c 0) 0 0/24px 24px;transform:rotate(-4deg)}
+.room .table{position:absolute;left:40%;top:70%;width:16%;height:5%;background:#8c5a30;border:3px solid var(--woodd);border-radius:4px}
+.room .table:after{content:"";position:absolute;left:12%;right:12%;top:100%;height:110%;border-left:6px solid var(--woodd);border-right:6px solid var(--woodd)}
+.room .rug{position:absolute;left:28%;top:78%;width:40%;height:18%;border-radius:50%;background:repeating-radial-gradient(ellipse,#c97a9a 0 8px,#f0b5c8 8px 16px);border:3px solid #a85a6a}
+.room .fire{position:absolute;left:30%;top:28%;width:18%;height:37%;background:repeating-linear-gradient(0deg,#b5503c 0 12px,#8f3b2b 12px 14px);border:4px solid #5e2a1d;border-radius:6px 6px 0 0}
+.room .fire:before{content:"";position:absolute;left:20%;right:20%;bottom:0;height:55%;background:#2b1a14;border-radius:40% 40% 0 0}
+.room .fire span{position:absolute;left:50%;bottom:4%;transform:translateX(-50%);animation:flick 1s infinite alternate}
+.room .fire:after{content:"";position:absolute;left:-12%;right:-12%;top:-10px;height:10px;background:#8c5a30;border:3px solid var(--woodd)}
+@keyframes flick{to{transform:translateX(-50%) scale(1.08,1.15)}}
+.room .lights{position:absolute;left:0;right:0;top:3%;height:8%;display:flex;justify-content:space-around}
+.room .lights b{width:12px;height:12px;border-radius:50%;animation:tw 1.6s infinite alternate}
+@keyframes tw{from{opacity:.45}to{opacity:1;box-shadow:0 0 12px currentColor}}
+.room .beam{position:absolute;left:8%;top:30%;width:28%;height:62%;background:linear-gradient(160deg,rgba(255,236,150,.55),rgba(255,236,150,0));clip-path:polygon(15% 0,55% 0,100% 100%,30% 100%);pointer-events:none}
+.room .cushion{position:absolute;left:10%;top:84%;width:16%;height:8%;background:#ffd45a;border:3px solid #c99a2a;border-radius:50%}
+.room .glow{filter:drop-shadow(0 0 10px #fff3a0)}
+.room canvas.spr{position:absolute;transform:translate(-50%,-100%)}
+.shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.item{background:#fffaf0;border:3px solid var(--woodd);border-radius:10px;padding:10px;text-align:center}
+.item .e{font-size:32px}
+.item .n{font-weight:900;font-size:14px;line-height:1.25;min-height:36px}
+.item.owned{background:var(--green2)}
+.letter{background:#fffdf5 repeating-linear-gradient(180deg,transparent 0 27px,#e8dcc6 27px 28px);border:3px solid #c9a46e;border-radius:6px;padding:18px 20px;font-size:17px;line-height:28px;font-style:italic}
+.letter .sig{text-align:right;font-weight:800}
+
+/* modal */
+#modal{position:fixed;inset:0;z-index:50;background:rgba(40,25,10,.55);display:flex;align-items:center;justify-content:center;padding:14px}
+#modal[hidden]{display:none}
+#modal .sheet{background:var(--parch);border:4px solid var(--woodd);border-radius:14px;box-shadow:inset 0 0 0 3px var(--edge);padding:18px;width:min(560px,100%);max-height:92vh;overflow:auto;position:relative}
+#modal .close{position:absolute;top:8px;right:10px;background:none;border:none;font-size:24px;cursor:pointer;color:var(--ink2)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:2px solid var(--woodd);background:#fffaf0;border-radius:99px;padding:5px 11px;cursor:pointer;font-size:15px;color:var(--ink)}
+.chip.on{background:var(--pink);font-weight:700}
+.amtin{font-family:"Pixelify Sans";font-size:34px;width:100%;text-align:center;padding:8px}
+
+/* onboarding */
+.drop{border:3px dashed var(--wood);border-radius:12px;padding:26px;text-align:center;background:#fffaf0;cursor:pointer}
+.drop.over{background:var(--pink2)}
+.rv{display:grid;grid-template-columns:28px 1fr 140px 110px;gap:6px 8px;align-items:center;padding:8px 6px;border-bottom:1px dashed #d9bb86}
+.rv.off{opacity:.5}
+.rv input[type=checkbox]{width:20px;height:20px;accent-color:var(--green)}
+.rv .meta{grid-column:2/-1;font-size:12.5px;color:var(--ink2);margin-top:-4px}
+.rv input[type=text],.rv input[inputmode]{width:100%}
+.sticky{position:sticky;bottom:0;background:var(--parch);border-top:3px solid var(--woodd);padding:10px 0 4px;margin-top:8px}
+.cat-ed{display:grid;grid-template-columns:1fr 110px 100px 100px 34px;gap:6px;align-items:center;margin:4px 0}
+.cat-ed input,.cat-ed select{width:100%;padding:5px 6px;font-size:14px}
+@media (max-width:640px){
+  h1{font-size:21px}
+  .rv{grid-template-columns:26px 1fr 1fr}
+  .rv .nmcell{grid-column:2/-1}
+  .rv .meta{grid-column:2/-1}
+  .cat-ed{grid-template-columns:1fr 1fr 34px}
+  .cat-ed .nmc{grid-column:1/-1}
+  .tab{font-size:14px;padding:6px 6px}
+  .fab{left:16px;right:16px}
+  .board{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div class="wrap" id="root"></div>
+<button class="btn fab" id="fab" data-act="logBuy" hidden>🌱 Log a purchase</button>
+<div id="modal" hidden></div>
+<div class="toast-wrap" id="toasts" aria-live="polite"></div>
+
+<script>
+"use strict";
+/* ================================================================
+   Sunbeam Farm: a cozy budget farm for Ashley.
+   Everything is saved in this browser (localStorage). Nothing is uploaded.
+   ✏️ Personalize: edit LEO_LETTERS, AFFIRMATIONS, SEN_GIFTS below.
+   ================================================================ */
+
+// Leo's letters, shown when Ashley reaches each level (index = level).
+const LEO_LETTERS = {
+  2: "Ash,\nLook at you, planting a whole farm! I know spreadsheets are not your favorite thing, so I'm extra proud you're doing this. Sen already thinks she runs the place.",
+  3: "Hey sweetheart,\nLittle check-in: you're doing great. Not \"great for a beginner\", just great. Thank you for taking care of us and of you.",
+  4: "Ash,\nI was going to write something clever but mostly I just wanted to say I love you. Also Charlie buried something in the yard again. Probably fine.",
+  5: "To my favorite farmer,\nFive levels! Every little log is a little vote for future-us. I love building a life with you.",
+  6: "Ash,\nRemember: an over-budget month isn't a failure, it's information. You are allowed to be human. I'm on your team either way.",
+  7: "Sweetheart,\nYour hips, your heart, your budget: you've been showing up for all of it. Coffee's on me this weekend (from the fun budget, obviously).",
+  8: "Ash,\nSen has asked me to formally inform you that the sunbeam cushion is \"acceptable.\" High praise. I think you're amazing.",
+  9: "Hey you,\nI love watching you get a little more confident about money every month. Proud of you is an understatement.",
+  10: "Ash,\nLevel TEN. Honestly, the farm looks incredible and so do you. Thank you for being the kindest person I know, including to yourself.",
+  11: "Sweetheart,\nOne kind thing about you, from me: you make every room feel like home. Even the pixel ones.",
+  12: "Ash,\nQueen of the Valley! I'd follow you to any farm. Let's keep growing this little life together. Love you always."
+};
+const LEO_DEFAULT = "Ash,\nAnother level! I'm so proud of you and I love you more than Charlie loves that chew bone. And that's a lot.";
+
+const AFFIRMATIONS = [
+  "You are allowed to take up space, even the whole sunbeam.",
+  "Progress, not perfection. Sen naps imperfectly and is thriving.",
+  "Your worth isn't measured in dollars. Your budget is just a map, and you're the one holding it.",
+  "Being gentle with yourself is a skill, and you're getting good at it.",
+  "You did hard things before. You can do this one too.",
+  "Rest is productive. Ask any cat.",
+  "Your body is doing its best for you. Thank it today.",
+  "It's okay to start again as many times as you need.",
+  "You make the people around you feel safe. That's rare.",
+  "Small steps still get you there. Tiny paws, big journeys.",
+  "You don't have to earn kindness, especially from yourself.",
+  "Every logged purchase is just information, never a judgment.",
+  "You are a very good human. Sen has checked.",
+  "Today you only need to do the next small thing.",
+  "Your future self is cheering for you right now.",
+  "You're allowed to be proud of yourself out loud.",
+  "Money mistakes are normal. You're learning, and that's the whole point.",
+  "You are loved exactly as you are today.",
+  "Soft heart, strong hips, steady hands.",
+  "Your pace is the right pace.",
+  "You deserve the same kindness you give everyone else.",
+  "A no-spend day is a gift to future-you. A treat-yourself day can be too.",
+  "You are not behind. You're exactly where your story is.",
+  "Breathe in, breathe out. The farm will wait for you.",
+  "Sen thinks you're the best lap in the house.",
+  "You're building something cozy and safe, one coin at a time.",
+  "Healing isn't linear, and neither are budgets. Both still move forward.",
+  "Drink some water, little plant. You're growing.",
+  "You handle more than people know. That's strength.",
+  "Today, you're allowed to be a little bit amazing."
+];
+const SEN_GIFTS = [
+  "a very fancy leaf 🍂", "one (1) of Leo's socks 🧦", "a sunbeam she was saving 🌞", "a slightly chewed hair tie 🎀",
+  "a dandelion wish 🌼", "a perfect blep 😛", "a ribbon from somewhere 🎗️", "a shiny bottle cap ✨", "a feather from the yard 🪶",
+  "a slow blink (the highest honor) 😽", "a pebble shaped like a heart 💗", "a clover, maybe lucky 🍀", "a crinkly receipt (she's helping with the budget) 🧾",
+  "a strand of fairy-light tinsel 🌟", "a little pinecone 🌲", "a very important crumb 🍪", "the warm spot on the couch 🛋️", "a purr that lasts four minutes 💤"
+];
+const HIP_MSGS = [
+  "Hips don't lie, and they say thank you! 💕", "Strong hips, soft heart. That was great work.",
+  "Your hips are cheering. Sen is too (quietly, from a nap).", "Every rep is a love letter to future-you's hips.",
+  "Look at you, taking such good care of yourself!", "PT done! Those hips are lucky to have you.",
+  "Charlie is doing zoomies in your honor. 🐾"
+];
+const REST_MSGS = [
+  "Rest counts too. Healing happens in the quiet days. 🌙", "Listening to your body is part of PT. Proud of you.",
+  "A rest day is still a care day. Sen approves. 😴"
+];
+const TITLES = ["","Seedling Sweetie","Sprout Keeper","Watering-Can Wizard","Garden Friend","Budget Bloomer","Sunflower Saver","Harvest Hero","Orchard Royalty","Moonlit Farmer","Meadow Legend","Sen's Favorite Human","Queen of the Valley"];
+
+const DECOR = [
+  {id:"cushion",n:"Sen's sunbeam cushion",e:"☀️",c:10,d:"Sen will sit here and glow."},
+  {id:"bone",n:"Charlie's chew bone",e:"🦴",c:6,d:"His most prized possession."},
+  {id:"mug",n:"Leo's coffee mug",e:"☕",c:8,d:"Still warm."},
+  {id:"lights",n:"Fairy lights",e:"✨",c:15,d:"Twinkly, all year round."},
+  {id:"fire",n:"Cozy fireplace",e:"🔥",c:30,d:"Crackle crackle."},
+  {id:"quilt",n:"Patchwork quilt",e:"🧵",c:20,d:"For the couch. And naps."},
+  {id:"moon",n:"Moon lamp",e:"🌙",c:18,d:"A soft glow for evenings."},
+  {id:"rug",n:"Round rag rug",e:"🟣",c:12,d:"Charlie's favorite spot."},
+  {id:"plant",n:"Big leafy plant",e:"🪴",c:8,d:"Sen promises not to chew it."},
+  {id:"books",n:"Stack of books",e:"📚",c:10,d:"Cozy reads."},
+  {id:"tulips",n:"Vase of tulips",e:"🌷",c:7,d:"Fresh from the farm."},
+  {id:"candle",n:"Vanilla candle",e:"🕯️",c:5,d:"Smells like a hug."},
+  {id:"yarn",n:"Ball of yarn",e:"🧶",c:4,d:"Technically for Sen."},
+  {id:"teapot",n:"Little teapot",e:"🫖",c:6,d:"For slow mornings."},
+  {id:"sunflower",n:"Window sunflowers",e:"🌻",c:9,d:"They face you, not the sun."},
+  {id:"photo",n:"Photo of you & Leo",e:"💞",c:12,d:"Best day ever."},
+  {id:"radio",n:"Old radio",e:"📻",c:16,d:"Plays only cozy songs."},
+  {id:"art",n:"Painting of the farm",e:"🖼️",c:14,d:"Signed by Sen (paw print)."}
+];
+
+const DEFAULT_EXERCISES = ["Clamshells","Glute bridges","Side-lying leg lifts","Hip flexor stretch","Bird dogs","Monster walks"];
+const DEFAULT_CATS = [
+  ["Paycheck","income"],["Rent / Mortgage","bill"],["Utilities","bill"],["Phone","bill"],["Internet","bill"],["Car payment","bill"],["Insurance","bill"],["Subscriptions","bill"],
+  ["Groceries","spending"],["Dining out","spending"],["Gas","spending"],["Household","spending"],["Fun","spending"],["Self-care","spending"],["Gifts","spending"],["Sen & Charlie","spending"],
+  ["Emergency fund","savings"],["Vacation","savings"]
+];
+
+/* ---------------- helpers ---------------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const uid = () => Math.random().toString(36).slice(2, 9) + Date.now().toString(36).slice(-3);
+const r2 = n => Math.round((+n || 0) * 100) / 100;
+const fm = n => { n = r2(n); const a = Math.abs(n); return (n < 0 ? "-" : "") + "$" + a.toLocaleString(undefined, {minimumFractionDigits: a % 1 ? 2 : 0, maximumFractionDigits: 2}); };
+const pad = n => String(n).padStart(2, "0");
+const ymd = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+const today = () => ymd(new Date());
+const mkOf = ds => ds.slice(0, 7);
+const curMK = () => mkOf(today());
+const parseD = s => { const [y, m, d] = s.split("-").map(Number); return new Date(y, m - 1, d || 1); };
+const dim = mk => { const [y, m] = mk.split("-").map(Number); return new Date(y, m, 0).getDate(); };
+const mLabel = mk => parseD(mk + "-01").toLocaleDateString(undefined, {month: "long", year: "numeric"});
+const dLabel = ds => parseD(ds).toLocaleDateString(undefined, {month: "short", day: "numeric"});
+const shiftMK = (mk, k) => { const d = parseD(mk + "-01"); d.setMonth(d.getMonth() + k); return mkOf(ymd(d)); };
+const daysBetween = (a, b) => Math.round((parseD(b) - parseD(a)) / 864e5);
+const weekStart = ds => { const d = parseD(ds); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return ymd(d); };
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const hashStr = s => { let h = 0; for (const c of s) h = (h * 31 + c.charCodeAt(0)) | 0; return Math.abs(h); };
+const norm = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+function num(v) {
+  if (typeof v === "number") return isFinite(v) ? v : null;
+  if (typeof v !== "string") return null;
+  let s = v.trim(); if (!s) return null;
+  const neg = /^\(.*\)$/.test(s) || /^-/.test(s) || /-$/.test(s);
+  s = s.replace(/[()$£€¥,\s+-]/g, "").replace(/^usd/i, "");
+  if (!/^\d*\.?\d+$/.test(s)) return null;
+  const n = parseFloat(s); return neg ? -n : n;
+}
+
+/* ---------------- state ---------------- */
+const KEY = "sunbeamFarm.ashley.v1";
+let S = null, storageOK = true;
+try { const raw = localStorage.getItem(KEY); if (raw) S = JSON.parse(raw); } catch (e) { storageOK = false; }
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch (e) { if (storageOK) toast("This browser won't let me save 😿 Bury a backup bone in Settings!"); storageOK = false; }
+}
+function newState(name, farm, cats) {
+  return {v: 1, name, farm, created: today(), cats, months: {}, xp: 0, level: 1, stars: 3, owned: [], hidden: [],
+    days: {}, pt: {log: [], exercises: DEFAULT_EXERCISES.slice()}, journal: [], letters: [], pendingLetters: [],
+    lastSeen: today(), visits: 1, lastBackup: null, lastCat: null};
+}
+const M = mk => (S.months[mk] ||= {tx: [], inc: [], sav: [], bills: {}, nospend: [], harvested: false, billXP: {}});
+const D = ds => (S.days[ds ||= today()] ||= {});
+const cat = id => S.cats.find(c => c.id === id);
+const catsOf = t => S.cats.filter(c => c.type === t);
+
+let tab = "today", viewMK = curMK();
+
+/* ---------------- money math ---------------- */
+function spentOn(mk, id) { return r2(M(mk).tx.filter(t => t.cat === id).reduce((a, t) => a + t.amt, 0)); }
+function monthFrac(mk) { const c = curMK(); if (mk < c) return 1; if (mk > c) return 0; return new Date().getDate() / dim(mk); }
+function cropStatus(spent, bud, frac) {
+  if (bud <= 0) return spent > 0 ? "water" : "thrive";
+  const r = spent / bud;
+  if (r > 1) return "water";
+  if (r >= 0.9 || r > frac + 0.2) return "close";
+  return "thrive";
+}
+const STATUS_TXT = {thrive: "Thriving 🌿", close: "Getting close 🌼", water: "Needs a little water, it happens! 💧"};
+function summary(mk) {
+  const m = M(mk);
+  const incPlan = r2(catsOf("income").reduce((a, c) => a + c.amt, 0));
+  const incAct = r2(m.inc.reduce((a, t) => a + t.amt, 0));
+  const spendBud = r2(catsOf("spending").reduce((a, c) => a + c.amt, 0));
+  const billBud = r2(catsOf("bill").reduce((a, c) => a + c.amt, 0));
+  const savPlan = r2(catsOf("savings").reduce((a, c) => a + c.amt, 0));
+  const spendAct = r2(m.tx.reduce((a, t) => a + t.amt, 0));
+  const billPaid = r2(Object.values(m.bills).reduce((a, b) => a + b.amt, 0));
+  const billUnpaid = r2(catsOf("bill").filter(c => !m.bills[c.id]).reduce((a, c) => a + c.amt, 0));
+  const saved = r2(m.sav.reduce((a, t) => a + t.amt, 0));
+  const base = incAct > 0 ? incAct : incPlan;
+  const purse = r2(base - spendAct - billPaid - saved);
+  return {incPlan, incAct, spendBud, billBud, savPlan, spendAct, billPaid, billUnpaid, saved, purse, usingPlan: !(incAct > 0),
+    budget: r2(spendBud + billBud), spent: r2(spendAct + billPaid), unassigned: r2(incPlan - spendBud - billBud - savPlan)};
+}
+
+/* ---------------- XP & stars ---------------- */
+const xpNeed = L => 100 + 50 * (L - 1);
+const title = L => TITLES[L] || "Legendary Homesteader ✦" + (L - TITLES.length + 1);
+let lastClick = {x: innerWidth / 2, y: innerHeight / 2};
+document.addEventListener("pointerdown", e => { lastClick = {x: e.clientX, y: e.clientY}; }, true);
+function floater(txt) {
+  const f = document.createElement("div"); f.className = "floater"; f.textContent = txt;
+  f.style.left = Math.min(innerWidth - 120, Math.max(10, lastClick.x - 30)) + "px"; f.style.top = (lastClick.y - 30) + "px";
+  document.body.appendChild(f); setTimeout(() => f.remove(), 1300);
+}
+function addXP(n) {
+  S.xp += n; floater("+" + n + " XP");
+  while (S.xp >= xpNeed(S.level)) { S.xp -= xpNeed(S.level); S.level++; S.stars += 5; S.pendingLetters.push(S.level); }
+}
+function addStars(n) { S.stars += n; setTimeout(() => floater("+" + n + " ⭐"), 250); }
+function toast(msg, ms = 3200) {
+  const t = document.createElement("div"); t.className = "toast"; t.innerHTML = msg; $("#toasts").appendChild(t);
+  setTimeout(() => t.remove(), ms);
+}
+function commit() { save(); render(); flush(); }
+function flush() {
+  if (!$("#modal").hidden || !S.pendingLetters.length) return;
+  const L = S.pendingLetters.shift(); if (!S.letters.includes(L)) S.letters.push(L); save();
+  showLetter(L, true);
+}
+function showLetter(L, fresh) {
+  modal(`<h2>${fresh ? "🎉 Level " + L + "! " : ""}${esc(title(L))}</h2>
+    ${fresh ? `<p class="muted">You earned 5 ⭐. And there's a letter on the doorstep, from Leo.</p>` : ""}
+    <div class="letter">${esc(LEO_LETTERS[L] || LEO_DEFAULT).replace(/\n/g, "<br>")}<div class="sig">♥ Leo</div></div>
+    <p style="text-align:right"><button class="btn green" data-act="close">Keep it forever 💌</button></p>`);
+}
+
+/* ---------------- pixel sprites ---------------- */
+const SPR = {
+  sen: {p: {o: "#6b5a70", w: "#ffffff", g: "#e4e0ec", p: "#f7a8c0", e: "#3a3350", n: "#e57f9c"}, g: [
+    "..o..........o..", ".owo........owo.", ".owpo......opwo.", ".owwwoooooowwwo.", ".o" + "w".repeat(12) + "o.",
+    ".owwewwwwwwewwo.", ".owwewwwwwwewwo.", ".oppwwwwwwwwppo.", ".owwwwwnnwwwwwo.", "..o" + "w".repeat(10) + "o..",
+    "...oowwwwwwoo...", "..o" + "w".repeat(10) + "o..", ".o" + "w".repeat(12) + "o.", ".o" + "w".repeat(12) + "oo",
+    ".owgwwwwwwwwgwow", "..oooooooooooooo"]},
+  charlie: {p: {o: "#4a3326", b: "#7a4a2a", c: "#c98d52", w: "#f3dcb6", e: "#2a1d17", n: "#2a1d17", t: "#f48aa0", r: "#d94b4b", y: "#f2c94c"}, g: [
+    "....oooooooo....", "...occcccccco...", ".oobccccccccboo.", "obbbceccccecbbbo", "obbbceccccecbbbo", "obbbccccccccbbbo",
+    "obbocccnncccobbo", ".obocccttcccobo.", "..oo.occcco.oo..", "....orryyrro....", "...occcyyccco...", "..o" + "c".repeat(10) + "o..",
+    ".o" + "c".repeat(12) + "o.", ".o" + "ccc" + "w".repeat(6) + "ccc" + "o.", ".occb" + "w".repeat(6) + "bcco.", ".." + "o".repeat(12) + ".."]},
+  seed: {g: ["", "", "", "", "", "", "", "", "", ".....L......", "....MBBM....", "...MMMMMM..."]},
+  sprout: {g: ["", "", "", "", "", "..LL....LL..", ".LDLL..LLDL.", "..LLLSSLLL..", ".....SS.....", ".....SS.....", "...MMSSMM...", "..MMMMMMMM.."]},
+  bloom: {g: ["....FFFF....", "...FFFFFF...", "..FFFCCFFF..", "..FFCCCCFF..", "...FFCCFF...", "....FFFF....", ".LL..SS..LL.", "LDLL.SS.LLDL", ".LLLLSSLLLL.", ".....SS.....", "...MMSSMM...", "..MMMMMMMM.."]}
+};
+const FLOWER_COLORS = ["#f39bb8", "#b9a3e8", "#ffd45a", "#ff9a6b", "#8fd3ff", "#ff7aa8", "#ffffff", "#f8c4ff"];
+const LEAVES = {thrive: ["#5aa64a", "#3f7f37", "#4c8a3e"], close: ["#9fb54a", "#76893a", "#7f9442"], water: ["#c2ad5a", "#9a8840", "#a89a55"]};
+function drawSprite(cv) {
+  const k = cv.dataset.spr, sc = +(cv.dataset.s || 4), sp = SPR[k]; if (!sp) return;
+  let pal = sp.p;
+  if (!pal) { const L = LEAVES[cv.dataset.st || "thrive"]; pal = {L: L[0], D: L[1], S: L[2], F: cv.dataset.f || "#f39bb8", C: "#ffd65a", B: "#5e3a1d", M: "#6b4226"}; }
+  const g = sp.g, w = Math.max(12, ...g.map(r => r.length)), h = g.length;
+  cv.width = w * sc; cv.height = h * sc; const x = cv.getContext("2d");
+  g.forEach((r, yy) => [...r].forEach((ch, xx) => { if (pal[ch]) { x.fillStyle = pal[ch]; x.fillRect(xx * sc, yy * sc, sc, sc); } }));
+}
+const spr = (k, s, extra = "") => `<canvas class="spr" data-spr="${k}" data-s="${s}" ${extra}></canvas>`;
+
+/* ---------------- modal ---------------- */
+function modal(html, setup) {
+  const m = $("#modal"); m.innerHTML = `<div class="sheet" role="dialog" aria-modal="true"><button class="close" data-act="close" aria-label="Close">✕</button>${html}</div>`;
+  m.hidden = false; m.querySelectorAll("canvas[data-spr]").forEach(drawSprite);
+  setup && setup(m);
+  const f = m.querySelector("[autofocus]"); if (f) setTimeout(() => f.focus(), 60);
+}
+function closeModal() { const m = $("#modal"); m.hidden = true; m.innerHTML = ""; if (S) flush(); }
+$("#modal").addEventListener("click", e => { if (e.target.id === "modal") closeModal(); });
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("#modal").hidden) closeModal(); });
+function confirmBox(msg, yes, onYes) {
+  modal(`<p style="font-weight:800;font-size:17px;margin-top:18px">${msg}</p><p class="row" style="justify-content:flex-end"><button class="btn white" data-act="close">Never mind</button><button class="btn pink" id="cfYes">${yes}</button></p>`,
+    m => m.querySelector("#cfYes").onclick = () => { closeModal(); onYes(); });
+}
+
+/* =================================================================
+   SPREADSHEET PARSING
+   ================================================================= */
+const RX_MONTH = /\b(january|february|march|april|may|june|july|august|september|sept|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|oct|nov|dec)\b\.?/i;
+const MON3 = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
+const RX_BUD = /budget|planned|\bplan\b|projected|expected|estimate|\bgoal|target|allot|\blimit|amount|\bamt\b|monthly|\bcost\b|\bdue\b/i;
+const RX_ACT = /actual|spent|\bpaid\b|\breal\b|so far|to date|\bused\b/i;
+const RX_LABELHDR = /^(categor(y|ies)|items?|names?|descriptions?|expenses?|bills?|sources?|accounts?|types?|line items?)$/i;
+const RX_TOTAL = /\b(total|totals|subtotal|sub total|balance|remaining|left ?over|difference|\bnet\b|sum|surplus|deficit|cash ?flow|unassigned|left to (spend|budget)|net income)\b/i;
+const RX_INC = /income|salary|pay ?check|\bpay\b|wages?|bonus|side hustle|freelance|commission|dividend|interest earned|\btips\b|reimburse|child support received|stipend/i;
+const RX_SAV = /saving|emergency|\bfund\b|invest|401 ?k|\bira\b|roth|retire|\bhsa\b|sinking|nest egg|brokerage|\bgoals?\b/i;
+const RX_BILL = /rent|mortgage|electric|utilit|water|\bgas bill|sewer|trash|internet|wi-?fi|\bphone|cell|insurance|\bloan|car payment|student|credit card|subscription|netflix|spotify|hulu|disney|hbo|\bmax\b|youtube|apple|amazon prime|prime|gym|membership|\bhoa\b|tuition|daycare|child ?care|cable|streaming|\bpayment\b|\bbills?\b|fixed/i;
+
+function monthOf(v) {
+  if (v instanceof Date && !isNaN(v)) return {m: v.getMonth(), y: v.getFullYear()};
+  if (typeof v !== "string") return null;
+  const s = v.toLowerCase(), mm = s.match(RX_MONTH);
+  if (mm) { const y = s.match(/\b(20\d\d)\b/) || s.match(/'(\d\d)\b/); return {m: MON3.indexOf(mm[1].slice(0, 3)), y: y ? (y[1].length === 2 ? 2000 + +y[1] : +y[1]) : null}; }
+  const n = s.match(/^\s*(\d{1,2})[\/\-.](\d{2}|\d{4})\s*$/);
+  if (n && +n[1] >= 1 && +n[1] <= 12) return {m: +n[1] - 1, y: n[2].length === 2 ? 2000 + +n[2] : +n[2]};
+  return null;
+}
+function guessType(label, section) {
+  const L = label, Sx = section || "";
+  if (RX_INC.test(L) && !/expense/i.test(L)) return "income";
+  if (RX_SAV.test(L)) return "savings";
+  if (/income|earning/i.test(Sx)) return "income";
+  if (/saving|invest|goal|retire/i.test(Sx)) return "savings";
+  if (RX_BILL.test(L)) return "bill";
+  if (/bill|fixed|recurring|housing|utilit|debt|insurance|subscription/i.test(Sx)) return "bill";
+  return "spending";
+}
+const isText = v => typeof v === "string" && v.trim() !== "" && num(v) === null;
+
+function parseWorkbook(wb) {
+  const now = new Date(), cm = now.getMonth(), cy = now.getFullYear();
+  const out = [];
+  wb.SheetNames.forEach((sn, sIdx) => {
+    const ws = wb.Sheets[sn]; if (!ws || !ws["!ref"]) return;
+    const rows = XLSX.utils.sheet_to_json(ws, {header: 1, raw: true, defval: null, blankrows: false});
+    const smo = monthOf(sn);
+    let prio;
+    if (smo && smo.m === cm && (smo.y == null || smo.y === cy)) prio = 100;
+    else if (!smo) prio = 70 - sIdx * 0.01;
+    else { const back = ((cm - smo.m) + 12) % 12 + ((smo.y && smo.y < cy) ? 12 : 0); prio = 50 - back; }
+    let map = null, section = "", prevMonthRow = null;
+    const pickMonthCols = cols => {
+      // cols: [{i, m, y, act}] -> choose budget/actual column for the current month
+      let here = cols.filter(c => c.m === cm && (c.y == null || c.y === cy));
+      if (!here.length) {
+        const score = c => ((c.y ?? cy) * 12 + c.m);
+        const past = cols.filter(c => score(c) <= cy * 12 + cm).sort((a, b) => score(b) - score(a));
+        here = past.length ? cols.filter(c => c.m === past[0].m && c.y === past[0].y) : cols.filter(c => c.m === cols[0].m);
+      }
+      const act = here.find(c => c.act), bud = here.find(c => !c.act);
+      return {bud: bud ? bud.i : (act ? act.i : null), act: bud && act ? act.i : null, month: true};
+    };
+    rows.forEach((row, ri) => {
+      if (!row || !row.some(v => v !== null && v !== "")) return;
+      // ---- header detection
+      let bud = [], act = [], mons = [], nums = 0, textCells = [];
+      row.forEach((v, i) => {
+        const mo = monthOf(v);
+        if (typeof v === "number" && !(v >= 1990 && v <= 2100 && Number.isInteger(v))) nums++;
+        if (mo) mons.push({i, m: mo.m, y: mo.y, act: typeof v === "string" && RX_ACT.test(v)});
+        else if (typeof v === "string") {
+          if (RX_ACT.test(v) && v.length < 40) act.push(i);
+          else if (RX_BUD.test(v) && v.length < 40) bud.push(i);
+          else if (v.trim()) textCells.push(i);
+        }
+      });
+      const isMonthRow = mons.length >= 2 && nums === 0;
+      const isHeader = nums === 0 && (isMonthRow || bud.length + act.length >= 1 && (bud.length + act.length >= 2 || textCells.length <= 2));
+      if (isHeader) {
+        if (isMonthRow) { map = pickMonthCols(mons); prevMonthRow = row; }
+        else if (prevMonthRow && ri > 0) {
+          // sub-header beneath a month row: carry months to the right (merged cells)
+          let cur = null; const cols = [];
+          for (let i = 0; i < Math.max(row.length, prevMonthRow.length); i++) {
+            const mo = monthOf(prevMonthRow[i]); if (mo) cur = mo;
+            if (cur && (bud.includes(i) || act.includes(i))) cols.push({i, m: cur.m, y: cur.y, act: act.includes(i)});
+          }
+          map = cols.length ? pickMonthCols(cols) : {bud: bud[0] ?? null, act: act[0] ?? null};
+          prevMonthRow = null;
+        } else { map = {bud: bud.length ? bud[0] : null, act: act.length ? act[0] : null}; prevMonthRow = null; }
+        const lab = textCells.length ? String(row[textCells[0]]).trim() : "";
+        if (!lab || RX_LABELHDR.test(lab)) section = /^(expenses?|bills?)$/i.test(lab) ? lab : "";
+        else if (!RX_TOTAL.test(lab) && lab.length < 40) section = lab;
+        return;
+      }
+      prevMonthRow = null;
+      // ---- data row
+      const firstNumCol = (() => { for (let i = 0; i < row.length; i++) if (num(row[i]) !== null && !(row[i] instanceof Date)) return i; return Infinity; })();
+      const limit = Math.min(firstNumCol, map && map.bud != null ? map.bud : Infinity, map && map.act != null ? map.act : Infinity);
+      let label = null;
+      for (let i = 0; i < Math.min(row.length, limit); i++) if (isText(row[i])) { label = String(row[i]).trim(); break; }
+      if (!label) return;
+      if (RX_LABELHDR.test(label)) return;
+      let amt = map && map.bud != null ? num(row[map.bud]) : null;
+      let actual = map && map.act != null ? num(row[map.act]) : null;
+      const anyNum = row.some(v => num(v) !== null && !(v instanceof Date));
+      if (amt === null && actual === null && !anyNum) { if (label.length < 48) section = label; return; }
+      if (amt === null && !(map && map.month)) {
+        for (let i = 0; i < row.length; i++) { if (map && i === map.act) continue; const n = num(row[i]); if (n !== null && !(row[i] instanceof Date)) { amt = n; break; } }
+      }
+      amt = Math.abs(amt || 0); actual = actual == null ? null : Math.abs(actual);
+      const isTotal = RX_TOTAL.test(label) || RX_TOTAL.test(section) && /total/i.test(section);
+      out.push({sheet: sn, prio, label, section, amt: r2(amt), act: actual == null ? null : r2(actual), isTotal});
+    });
+  });
+  // ---- dedupe across sheets, preferring current month's sheet
+  const best = {};
+  out.forEach(r => { const k = norm(r.label); if (!best[k] || r.prio > best[k].prio) best[k] = {prio: r.prio, sheet: r.sheet}; });
+  const seen = {}, rowsOut = [];
+  out.forEach(r => {
+    const k = norm(r.label); if (!k) return;
+    if (best[k].sheet !== r.sheet) return;
+    let name = r.label;
+    if (seen[k]) { name = r.label + (r.section ? " (" + r.section + ")" : " 2"); }
+    seen[k] = true;
+    const type = guessType(r.label, r.section);
+    rowsOut.push({id: uid(), on: !r.isTotal && r.amt > 0, name, type, amt: r.amt, act: r.act, meta: r.sheet + (r.section ? " · " + r.section : ""), isTotal: r.isTotal});
+  });
+  return rowsOut;
+}
+
+/* =================================================================
+   ONBOARDING
+   ================================================================= */
+let OB = {step: 1, name: "", farm: "", rows: [], useActual: false, mode: "new", fileName: ""};
+function renderOnboard() {
+  $("#fab").hidden = true;
+  const root = $("#root");
+  if (OB.step === 1) {
+    root.innerHTML = `<div class="panel" style="max-width:600px;margin:30px auto">
+      <div class="sen">${spr("sen", 5)}<div class="bubble">Mrrp! Hi, I'm Sen. 🐾 I'll be your farm guide. Let's make money feel cozy instead of scary.</div></div>
+      <label class="f" for="obName">What should I call you?</label><input id="obName" value="${esc(OB.name || "Ashley")}" style="width:100%" autocomplete="given-name">
+      <label class="f" for="obFarm">Name your farm</label><input id="obFarm" value="${esc(OB.farm || "Sunbeam Farm")}" style="width:100%">
+      <p style="text-align:right;margin-top:16px"><button class="btn green big" data-act="ob2">Next 🌱</button></p></div>`;
+  } else if (OB.step === 2) {
+    root.innerHTML = `<div class="panel" style="max-width:640px;margin:30px auto">
+      <div class="sen">${spr("sen", 4)}<div class="bubble">Got a budget spreadsheet, ${esc(OB.name)}? Hand it over and I'll turn it into a garden. It never leaves this device, promise. 🔒</div></div>
+      <label class="drop" id="drop" style="display:block;margin-top:16px">
+        <div style="font-size:40px">📄➡️🌱</div>
+        <div class="px" style="font-size:20px;font-weight:700">Drop your spreadsheet here, or tap to pick it</div>
+        <div class="muted">.xlsx, .xls or .csv · all your sheets welcome</div>
+        <input type="file" id="file" accept=".xlsx,.xls,.xlsm,.csv,.ods" hidden>
+      </label>
+      <p id="obErr" class="muted"></p>
+      <div class="spread" style="margin-top:10px"><button class="btn white" data-act="ob1">← Back</button><button class="btn link" data-act="obNoSheet">Start without a spreadsheet</button></div>
+    </div>`;
+    wireFile($("#file"), $("#drop"));
+  } else {
+    renderReview();
+  }
+  root.querySelectorAll("canvas[data-spr]").forEach(drawSprite);
+}
+function wireFile(inp, drop) {
+  inp.onchange = () => inp.files[0] && readFile(inp.files[0]);
+  if (!drop) return;
+  ["dragenter", "dragover"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add("over"); }));
+  ["dragleave", "drop"].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove("over"); }));
+  drop.addEventListener("drop", e => { const f = e.dataTransfer.files[0]; if (f) readFile(f); });
+}
+function readFile(f) {
+  const err = m => { const el = $("#obErr"); if (el) el.textContent = m; else toast(m); };
+  if (typeof XLSX === "undefined") return err("The spreadsheet reader didn't load. Check your internet connection and refresh. 💛");
+  const fr = new FileReader();
+  fr.onload = () => {
+    try {
+      const wb = XLSX.read(new Uint8Array(fr.result), {type: "array", cellDates: true});
+      const rows = parseWorkbook(wb);
+      if (!rows.length) return err("Hmm, I couldn't find any budget rows in that file. Want to start without a spreadsheet instead?");
+      OB.rows = rows; OB.fileName = f.name; OB.step = 3; OB.useActual = false;
+      if (S) { OB.mode = "merge"; markMerge(); }
+      S ? renderReview() : renderOnboard();
+    } catch (e) { console.error(e); err("Sen tried, but that file wouldn't open. Is it an Excel or CSV file?"); }
+  };
+  fr.readAsArrayBuffer(f);
+}
+function markMerge() {
+  const byName = {}; S.cats.forEach(c => byName[norm(c.name)] = c);
+  OB.rows.forEach(r => { const ex = byName[norm(r.name)]; r.ex = ex ? ex.id : null; if (ex) { r.type = ex.type; r.was = ex.amt; } });
+}
+function reviewTotals() {
+  const t = {income: 0, bill: 0, spending: 0, savings: 0};
+  OB.rows.forEach(r => { if (r.on) t[r.type] += +r.amt || 0; });
+  return t;
+}
+function renderReview() {
+  $("#fab").hidden = true;
+  const merge = OB.mode === "merge";
+  const rowsHTML = OB.rows.map((r, i) => `<div class="rv ${r.on ? "" : "off"}" data-i="${i}">
+      <input type="checkbox" data-f="on" ${r.on ? "checked" : ""} aria-label="Include ${esc(r.name)}">
+      <div class="nmcell"><input type="text" data-f="name" value="${esc(r.name)}" aria-label="Name"></div>
+      <select data-f="type" class="t-${r.type}" aria-label="Type">${["income", "bill", "savings", "spending"].map(t => `<option value="${t}" ${r.type === t ? "selected" : ""}>${{income: "💰 Income", bill: "📋 Bill", savings: "🫙 Savings", spending: "🌱 Spending"}[t]}</option>`).join("")}</select>
+      <input inputmode="decimal" data-f="amt" value="${r.amt || ""}" placeholder="0" aria-label="Monthly amount">
+      <div class="meta">${esc(r.meta || "")}${r.isTotal ? " · looks like a total row, so I unchecked it" : ""}${r.act != null ? " · actual so far: " + fm(r.act) : ""}${merge ? (r.ex ? ` · <b>updates</b> your ${esc(r.name)} (was ${fm(r.was)})` : " · <b>new</b>") : ""}</div>
+    </div>`).join("");
+  const hasActual = OB.rows.some(r => r.act > 0);
+  $("#root").innerHTML = `<div class="panel" style="max-width:820px;margin:20px auto">
+    <div class="sen">${spr("sen", 3)}<div class="bubble">${merge ? "Here's what changed in your newer spreadsheet. Checked rows will update or join the farm." : OB.fileName ? `I read <b>${esc(OB.fileName)}</b>! Check what looks right. Tap a type to change it, and fix any names or amounts.` : "Here are some starter categories. Fill in your monthly amounts (rough guesses are totally fine)."}</div></div>
+    <div class="row" style="margin:12px 0"><button class="btn sm white" data-act="rvAll">Check all</button><button class="btn sm white" data-act="rvNone">Uncheck all</button>
+      <button class="btn sm white" data-act="rvAdd">+ Add a row</button><span class="muted">Amounts are per month.</span></div>
+    <div id="rvList">${rowsHTML}</div>
+    <div class="sticky">
+      <div id="rvSum" class="muted" style="font-weight:700"></div>
+      ${hasActual && !merge ? `<label style="display:flex;gap:8px;align-items:center;margin:6px 0;font-weight:700"><input type="checkbox" id="useAct" ${OB.useActual ? "checked" : ""} style="width:20px;height:20px">Also bring in this month's "actual" numbers as a starting point</label>` : ""}
+      <div class="spread"><button class="btn white" data-act="${merge ? "rvCancel" : "ob2back"}">← Back</button>
+      <button class="btn green big" data-act="${merge ? "rvMerge" : "plant"}">${merge ? "Update my farm 🌾" : "Plant my farm! 🌱"}</button></div>
+    </div></div>`;
+  $("#root").querySelectorAll("canvas[data-spr]").forEach(drawSprite);
+  const list = $("#rvList");
+  const upd = e => {
+    const el = e.target, row = el.closest(".rv"); if (!row || !el.dataset.f) return;
+    const r = OB.rows[+row.dataset.i], f = el.dataset.f;
+    if (f === "on") { r.on = el.checked; row.classList.toggle("off", !r.on); }
+    else if (f === "amt") r.amt = Math.abs(num(el.value) || 0);
+    else if (f === "type") { r.type = el.value; el.className = "t-" + r.type; }
+    else r[f] = el.value;
+    rvSum();
+  };
+  list.addEventListener("input", upd); list.addEventListener("change", upd);
+  const ua = $("#useAct"); if (ua) ua.onchange = () => OB.useActual = ua.checked;
+  rvSum();
+}
+function rvSum() {
+  const t = reviewTotals(), left = r2(t.income - t.bill - t.spending - t.savings);
+  const n = OB.rows.filter(r => r.on).length;
+  $("#rvSum").innerHTML = `${n} rows checked · 💰 ${fm(t.income)} in · 📋 ${fm(t.bill)} bills · 🌱 ${fm(t.spending)} spending · 🫙 ${fm(t.savings)} savings → <span style="color:${left >= 0 ? "var(--green)" : "var(--amber)"}">${left >= 0 ? fm(left) + " left to plan" : fm(-left) + " more planned than income (that's okay, we can tweak it later)"}</span>`;
+}
+function plantFarm() {
+  const rows = OB.rows.filter(r => r.on && String(r.name).trim());
+  if (!rows.length) return toast("Pick at least one row to plant 🌱");
+  const cats = rows.map(r => ({id: uid(), name: String(r.name).trim(), type: r.type, amt: r2(r.amt), goal: 0}));
+  S = newState(OB.name || "Ashley", OB.farm || "Sunbeam Farm", cats);
+  if (OB.useActual) {
+    const mk = curMK(), m = M(mk), d = today();
+    rows.forEach((r, i) => {
+      const c = cats[i]; if (!(r.act > 0)) return;
+      if (c.type === "spending") m.tx.push({id: uid(), date: d, amt: r.act, cat: c.id, note: "Starting spending from spreadsheet", imp: true});
+      else if (c.type === "bill") m.bills[c.id] = {amt: r.act, date: d};
+      else if (c.type === "income") m.inc.push({id: uid(), date: d, amt: r.act, cat: c.id, note: "From spreadsheet"});
+      else m.sav.push({id: uid(), date: d, amt: r.act, cat: c.id, note: "From spreadsheet"});
+    });
+  }
+  OB = {step: 1, rows: []};
+  tab = "today"; save(); render();
+  modal(`<div class="sen">${spr("sen", 4)}<div class="bubble">Your farm is planted! 🌱 Every spending category is a little crop now. Log purchases with the big green button and watch them grow.</div></div>
+    <p class="muted" style="margin-top:12px">Tip: Charlie buries <b>backup bones</b> in Settings. A bone is a save file, in case this browser ever forgets.</p>
+    <p style="text-align:right"><button class="btn green" data-act="close">Let's go!</button></p>`);
+}
+
+/* =================================================================
+   MAIN RENDER
+   ================================================================= */
+function render() {
+  if (!S) return renderOnboard();
+  if (OB.step === 3 && OB.mode === "merge") return renderReview();
+  $("#fab").hidden = false;
+  const need = xpNeed(S.level);
+  const tabs = [["today", "☀️ Today"], ["farm", "🌱 Farm"], ["care", "💗 Self-care"], ["home", "🏡 Farmhouse"], ["settings", "⚙️ Settings"]];
+  const body = {today: vToday, farm: vFarm, care: vCare, home: vHome, settings: vSettings}[tab]();
+  $("#root").innerHTML = `<div class="panel wood top">
+      ${spr("sen", 3)}
+      <div class="who"><h1>${esc(S.farm)}</h1>
+        <div style="font-weight:800">Lv ${S.level} · ${esc(title(S.level))}</div>
+        <div class="xpbar" title="${S.xp} / ${need} XP"><i style="width:${Math.min(100, S.xp / need * 100)}%"></i></div></div>
+      <div class="starct" title="Stars to spend on decor">⭐ ${S.stars}</div>
+    </div>
+    <nav class="tabs">${tabs.map(([k, l]) => `<button class="tab ${tab === k ? "on" : ""}" data-act="tab" data-t="${k}">${l}</button>`).join("")}</nav>
+    ${body}`;
+  $("#root").querySelectorAll("canvas[data-spr]").forEach(drawSprite);
+  afterRender();
+}
+let afterHooks = [];
+function afterRender() { const h = afterHooks; afterHooks = []; h.forEach(f => f()); }
+
+/* ---------------- TODAY ---------------- */
+function questState() {
+  const t = today(), d = D(t), mk = curMK(), m = M(mk);
+  const gardened = m.tx.some(x => x.date === t && !x.imp) || m.nospend.includes(t);
+  const ws = weekStart(t);
+  const ptBefore = S.pt.log.filter(p => p.kind === "pt" && weekStart(p.date) === ws && p.date < t).length;
+  const ptToday = S.pt.log.some(p => p.date === t);
+  const ptMode = ptBefore < 2;
+  const kind = S.journal.some(j => j.date === t);
+  const q = [
+    {done: gardened, ic: "🌱", t: "Tend the garden", s: "Log a purchase or a no-spend day", act: "logBuy", btn: "Log"},
+    ptMode ? {done: ptToday, ic: "🦵", t: "Hip PT (or a rest day)", s: "This week: " + Math.min(2, ptBefore + (ptToday ? S.pt.log.filter(p => p.kind === "pt" && p.date === t).length : 0)) + " / 2 sessions", act: "gotoCare", btn: "Go"}
+      : {done: (d.water || 0) >= 4, ic: "💧", t: "Water yourself", s: "Drink 4 cups (" + (d.water || 0) + " / 4). PT is done this week, yay!", act: "gotoCare", btn: "Go"},
+    {done: kind, ic: "💌", t: "One kind note", s: "Write one kind thing about yourself", act: "kindNote", btn: "Write"}
+  ];
+  return {q, all: q.every(x => x.done), claimed: !!d.questBonus};
+}
+function vToday() {
+  const t = today(), d = D(t), aff = AFFIRMATIONS[hashStr(t + S.name) % AFFIRMATIONS.length];
+  const qs = questState(), sm = summary(curMK());
+  const ws = weekStart(t), ptN = S.pt.log.filter(p => p.kind === "pt" && weekStart(p.date) === ws).length;
+  const backupNudge = (!S.lastBackup ? daysBetween(S.created, t) >= 3 : daysBetween(S.lastBackup, t) >= 14);
+  return `<div class="panel"><div class="sen">${spr("sen", 4)}<div class="bubble"><span class="muted" style="font-weight:800">Sen's affirmation for ${esc(S.name)}</span><br>${esc(aff)}</div></div></div>
+  <div class="grid2">
+    <div class="panel"><h2>🎁 Doorstep</h2>
+      ${d.gift ? `<p>Sen left you <b>${esc(d.gift)}</b> and ${d.giftStars} ⭐ today. Come back tomorrow for another! 🐾</p>`
+        : `<div class="row"><button class="gift" data-act="gift" aria-label="Open Sen's gift">🎁</button><p style="flex:1">There's something on the doorstep… it has suspicious little paw prints on it.</p></div>`}
+    </div>
+    <div class="panel"><h2>📜 Today's quests</h2>
+      ${qs.q.map(x => `<div class="quest ${x.done ? "done" : ""}"><div class="ck">${x.done ? "✅" : x.ic}</div><div class="q"><b>${x.t}</b><div class="muted">${x.s}</div></div>${x.done ? "" : `<button class="btn sm" data-act="${x.act}">${x.btn}</button>`}</div>`).join("")}
+      ${qs.claimed ? `<p class="muted">All three done today. Sen is so proud she's purring. 💕</p>` : `<p><button class="btn ${qs.all ? "pink" : "white"}" data-act="questBonus" ${qs.all ? "" : "disabled"}>${qs.all ? "🎉 Claim bonus + Sen's gift" : "Finish all 3 for a bonus"}</button></p>`}
+    </div>
+  </div>
+  <div class="tiles" style="margin-bottom:16px">
+    <div class="tile gold"><div class="k">Gold left in the purse</div><div class="v">${fm(sm.purse)}</div><div class="muted">${sm.purse < 0 ? "spent a bit ahead of paychecks, the next one catches up 💛" : sm.usingPlan ? "based on planned income" : "from paychecks shipped"}</div></div>
+    <div class="tile"><div class="k">Hip PT this week</div><div class="v">${Math.min(ptN, 2)} / 2 ${ptN >= 2 ? "🎉" : "🦵"}</div><div class="muted">${ptN >= 2 ? "Goal met! Anything extra is a bonus." : "Twice a week, gentle and steady"}</div></div>
+    <div class="tile"><div class="k">Water today</div><div class="v">${d.water || 0} / 8 💧</div><div class="muted">little sips count</div></div>
+  </div>
+  ${backupNudge ? `<div class="panel row">${spr("charlie", 3)}<p style="flex:1"><b>Charlie wants to bury a backup bone!</b> 🦴 It's a little save file, just in case.</p><button class="btn" data-act="backup">Bury a bone</button></div>` : ""}`;
+}
+
+/* ---------------- FARM ---------------- */
+function vFarm() {
+  const mk = viewMK, m = M(mk), sm = summary(mk), frac = monthFrac(mk), cur = curMK();
+  const stage = mk < cur ? "bloom" : mk > cur ? "seed" : (new Date().getDate() <= 10 ? "seed" : new Date().getDate() <= 20 ? "sprout" : "bloom");
+  const sp = catsOf("spending"), bills = catsOf("bill"), inc = catsOf("income"), sav = catsOf("savings");
+  const crops = sp.map(c => {
+    const s = spentOn(mk, c.id), st = cropStatus(s, c.amt, frac), left = r2(c.amt - s);
+    return `<button class="plot ${st}" data-act="crop" data-id="${c.id}">
+      <div class="soil">${spr(stage, 6, `data-st="${st}" data-f="${FLOWER_COLORS[hashStr(c.name) % FLOWER_COLORS.length]}"`)}${st === "water" ? '<span class="badge">💧</span>' : st === "thrive" && stage === "bloom" ? '<span class="badge">✨</span>' : ""}</div>
+      <div class="info"><div class="nm">${esc(c.name)}</div>
+      <div>${fm(s)} <span class="muted">of ${fm(c.amt)}</span></div>
+      <div class="bar"><i style="width:${c.amt > 0 ? Math.min(100, s / c.amt * 100) : (s > 0 ? 100 : 0)}%;background:${{thrive: "var(--green)", close: "var(--amber)", water: "var(--blue)"}[st]}"></i></div>
+      <div class="st ${st}">${left >= 0 ? fm(left) + " left · " : ""}${STATUS_TXT[st]}</div></div></button>`;
+  }).join("");
+  const harvestOpen = mk < cur || (mk === cur && new Date().getDate() >= dim(mk) - 2);
+  const ledger = [
+    ...m.tx.map(t => ({d: t.date, ic: "🌱", l: (cat(t.cat)?.name || "(removed category)") + (t.note ? " · " + t.note : ""), a: -t.amt, k: "tx", id: t.id})),
+    ...m.inc.map(t => ({d: t.date, ic: "📦", l: (cat(t.cat)?.name || "Income") + (t.note ? " · " + t.note : ""), a: t.amt, k: "inc", id: t.id})),
+    ...m.sav.map(t => ({d: t.date, ic: "🫙", l: (cat(t.cat)?.name || "Savings") + (t.note ? " · " + t.note : ""), a: -t.amt, k: "sav", id: t.id})),
+    ...Object.entries(m.bills).map(([id, b]) => ({d: b.date, ic: "📋", l: (cat(id)?.name || "Bill") + " (paid)", a: -b.amt, k: "bill", id})),
+    ...m.nospend.map(d => ({d, ic: "🌤️", l: "No-spend day!", a: null, k: "ns", id: d}))
+  ].sort((a, b) => b.d.localeCompare(a.d));
+  return `<div class="months"><button class="btn sm white" data-act="mon" data-k="-1" aria-label="Previous month">◀</button><span class="px">${mLabel(mk)}</span><button class="btn sm white" data-act="mon" data-k="1" aria-label="Next month">▶</button>${mk !== cur ? `<button class="btn sm" data-act="mon" data-k="0">This month</button>` : ""}</div>
+  <div class="panel">
+    <div class="tiles">
+      <div class="tile"><div class="k">📦 Income shipped</div><div class="v">${fm(sm.incAct)}</div><div class="muted">of ${fm(sm.incPlan)} planned</div><div class="bar"><i style="width:${sm.incPlan ? Math.min(100, sm.incAct / sm.incPlan * 100) : 0}%"></i></div></div>
+      <div class="tile"><div class="k">🧺 Spent (incl. bills)</div><div class="v">${fm(sm.spent)}</div><div class="muted">of ${fm(sm.budget)} budget</div><div class="bar"><i style="width:${sm.budget ? Math.min(100, sm.spent / sm.budget * 100) : 0}%;background:${sm.spent > sm.budget ? "var(--blue)" : "var(--green)"}"></i></div></div>
+      <div class="tile gold"><div class="k">💰 Gold left in the purse</div><div class="v">${fm(sm.purse)}</div><div class="muted">${sm.usingPlan ? "using planned income until a paycheck ships" : "paychecks − spending − bills − savings"}${sm.purse < 0 ? "<br>a little ahead of paychecks, totally normal mid-month 💛" : ""}${sm.billUnpaid > 0 ? `<br>after bills still to pay: <b>${fm(sm.purse - sm.billUnpaid)}</b>` : ""}</div></div>
+    </div>
+    ${Math.abs(sm.unassigned) >= 1 ? `<p class="muted" style="margin-top:10px">📝 Your plan: ${fm(sm.incPlan)} income − ${fm(sm.billBud)} bills − ${fm(sm.spendBud)} spending − ${fm(sm.savPlan)} savings = <b>${sm.unassigned >= 0 ? fm(sm.unassigned) + " not assigned yet" : fm(-sm.unassigned) + " over plan"}</b>. You can tweak amounts in Settings.</p>` : ""}
+    <div class="row" style="margin-top:12px"><button class="btn green big" data-act="logBuy">🌱 Log a purchase</button><button class="btn blue big" data-act="noSpend">🌤️ No-spend day</button></div>
+  </div>
+  <div class="panel"><div class="spread"><h2>🌻 The garden</h2><span class="muted">Each crop is a spending category. Tap one for details.</span></div>
+    ${sp.length ? `<div class="garden">${crops}</div>` : `<p class="muted">No spending crops yet. Add some in Settings!</p>`}</div>
+  <div class="grid2">
+    <div class="panel"><h2>📋 Chore board <span class="muted">(bills)</span></h2>
+      ${bills.length ? `<div class="board">${bills.map(c => { const p = m.bills[c.id]; return `<div class="note ${p ? "paid" : ""}"><label><input type="checkbox" data-act="bill" data-id="${c.id}" ${p ? "checked" : ""}><span>${esc(c.name)}<br><span class="muted" style="font-weight:700">${p ? "paid " + fm(p.amt) + " · " + dLabel(p.date) : fm(c.amt)}</span></span></label></div>`; }).join("")}</div>
+      <p class="muted">${Object.keys(m.bills).length} of ${bills.length} chores done ${Object.keys(m.bills).length === bills.length ? "🎉" : ""}</p>` : `<p class="muted">No bills here. Lucky! (Add some in Settings.)</p>`}
+    </div>
+    <div class="panel"><h2>📦 Shipping bin <span class="muted">(income)</span></h2>
+      <div class="bin"><div class="crate"></div><div style="flex:1;min-width:150px">
+      ${inc.map(c => { const got = r2(m.inc.filter(t => t.cat === c.id).reduce((a, t) => a + t.amt, 0)); return `<div class="spread"><b>${esc(c.name)}</b><span>${fm(got)} <span class="muted">/ ${fm(c.amt)}</span></span></div>`; }).join("") || `<p class="muted">No income sources yet.</p>`}
+      <p><button class="btn green" data-act="ship">📦 Ship a paycheck</button></p></div></div>
+    </div>
+  </div>
+  <div class="panel"><h2>🫙 Savings jars</h2>
+    ${sav.length ? `<div class="jars">${sav.map(c => {
+      const month = r2(m.sav.filter(t => t.cat === c.id).reduce((a, t) => a + t.amt, 0));
+      const total = r2(Object.values(S.months).reduce((a, mm) => a + mm.sav.filter(t => t.cat === c.id).reduce((b, t) => b + t.amt, 0), 0));
+      const pct = c.goal > 0 ? total / c.goal : c.amt > 0 ? month / c.amt : 0;
+      return `<button class="jar" data-act="jar" data-id="${c.id}"><div class="lid"></div><div class="glass"><div class="fill" style="height:${Math.min(100, pct * 100)}%"></div><div class="pct">${Math.round(pct * 100)}%</div></div>
+        <div style="font-weight:900;margin-top:4px">${esc(c.name)}</div><div class="muted">${c.goal > 0 ? fm(total) + " of " + fm(c.goal) + " goal" : fm(month) + " of " + fm(c.amt) + " this month"}</div></button>`;
+    }).join("")}</div><p class="muted">Tap a jar to drop in coins or set a goal.</p>` : `<p class="muted">No savings jars yet. Add one in Settings!</p>`}
+  </div>
+  <div class="panel harvest"><div class="spread"><h2>🌾 Harvest Festival</h2>
+    ${m.harvested ? `<span class="pill t-income">Harvested ✓ +${m.harvestStars} ⭐</span>` : harvestOpen ? `<button class="btn pink" data-act="harvest">Celebrate the harvest!</button>` : `<span class="muted">Opens the last 3 days of the month</span>`}</div>
+    <p class="muted">Every crop that stays within its budget earns a ⭐ at month's end. Over-budget crops just get extra water next month, no shame.</p></div>
+  <div class="panel"><h2>🧾 This month's ledger</h2>
+    ${ledger.length ? `<table class="ledger">${ledger.map(x => `<tr><td style="white-space:nowrap">${dLabel(x.d)}</td><td>${x.ic} ${esc(x.l)}</td><td class="amt" style="color:${x.a > 0 ? "var(--green)" : "inherit"}">${x.a == null ? "" : (x.a > 0 ? "+" : "−") + fm(Math.abs(x.a))}</td><td><button class="x" data-act="del" data-k="${x.k}" data-id="${esc(x.id)}" aria-label="Delete">✕</button></td></tr>`).join("")}</table>` : `<p class="muted">Nothing logged in ${mLabel(mk)} yet.</p>`}
+  </div>`;
+}
+function defaultDate() { const c = curMK(); if (viewMK === c) return today(); return viewMK < c ? viewMK + "-" + pad(dim(viewMK)) : viewMK + "-01"; }
+
+function logBuy(preCat) {
+  const sp = catsOf("spending");
+  if (!sp.length) return toast("Add a spending category in Settings first 🌱");
+  const ordered = sp.slice().sort((a, b) => (b.id === S.lastCat) - (a.id === S.lastCat));
+  let sel = preCat || S.lastCat && cat(S.lastCat) && cat(S.lastCat).type === "spending" && S.lastCat || ordered[0].id;
+  modal(`<h2>🌱 Log a purchase</h2>
+    <input class="amtin" id="lbAmt" inputmode="decimal" placeholder="$0.00" autofocus aria-label="Amount">
+    <label class="f">Which crop?</label><div class="chips" id="lbChips">${ordered.map(c => `<button class="chip ${c.id === sel ? "on" : ""}" data-c="${c.id}">${esc(c.name)}</button>`).join("")}</div>
+    <label class="f" for="lbNote">Note <span class="muted">(optional)</span></label><input id="lbNote" style="width:100%" placeholder="e.g. Trader Joe's">
+    <label class="f" for="lbDate">Date</label><input type="date" id="lbDate" value="${defaultDate()}">
+    <p class="spread" style="margin-top:16px"><button class="btn link" data-act="noSpend">It was a no-spend day instead</button><button class="btn green big" id="lbGo">Log it</button></p>`, mm => {
+    mm.querySelector("#lbChips").onclick = e => { const b = e.target.closest(".chip"); if (!b) return; sel = b.dataset.c; mm.querySelectorAll(".chip").forEach(x => x.classList.toggle("on", x === b)); };
+    const go = () => {
+      const a = r2(Math.abs(num(mm.querySelector("#lbAmt").value) || 0));
+      if (!(a > 0)) { mm.querySelector("#lbAmt").focus(); return toast("How much was it? 🪙"); }
+      const date = mm.querySelector("#lbDate").value || today(), note = mm.querySelector("#lbNote").value.trim();
+      const mk = mkOf(date); M(mk).tx.push({id: uid(), date, amt: a, cat: sel, note});
+      S.lastCat = sel;
+      const d = D(); d.txXP = (d.txXP || 0) + 1;
+      closeModal(); if (d.txXP <= 8) addXP(5);
+      const c = cat(sel), s = spentOn(mk, sel), st = cropStatus(s, c.amt, monthFrac(mk)), left = r2(c.amt - s);
+      toast(`${esc(c.name)}: ${left >= 0 ? fm(left) + " left" : fm(-left) + " over"} · ${st === "water" ? "it happens! Next month is a fresh field 💧" : st === "close" ? "getting close, you've got this 🌼" : "still thriving 🌿"}`);
+      viewMK = mk; commit();
+    };
+    mm.querySelector("#lbGo").onclick = go;
+    mm.querySelectorAll("input").forEach(i => i.addEventListener("keydown", e => { if (e.key === "Enter") go(); }));
+  });
+}
+function noSpend() {
+  const t = today(), m = M(curMK());
+  closeModal();
+  if (m.nospend.includes(t)) return toast("Today is already a no-spend day 🌤️ Look at you!");
+  if (m.tx.some(x => x.date === t && !x.imp)) return toast("You logged a purchase today, and that counts as tending the garden too 🌱");
+  m.nospend.push(t); addXP(15);
+  toast(pick(["A no-spend day! Your purse is doing a happy dance 💃", "No-spend day logged. Sen is impressed (she never spends anything either) 🐾", "Future-you just got a little gift 🌤️"]));
+  commit();
+}
+function ship() {
+  const inc = catsOf("income");
+  if (!inc.length) return toast("Add an income source in Settings first 📦");
+  let sel = inc[0].id;
+  modal(`<h2>📦 Ship a paycheck</h2><p class="muted">Money in! Drop it in the shipping bin.</p>
+    <input class="amtin" id="shAmt" inputmode="decimal" placeholder="$0.00" autofocus aria-label="Amount">
+    <label class="f">From</label><div class="chips" id="shChips">${inc.map((c, i) => `<button class="chip ${i ? "" : "on"}" data-c="${c.id}">${esc(c.name)}</button>`).join("")}</div>
+    <label class="f" for="shDate">Date</label><input type="date" id="shDate" value="${defaultDate()}">
+    <p style="text-align:right;margin-top:16px"><button class="btn green big" id="shGo">Ship it!</button></p>`, mm => {
+    mm.querySelector("#shChips").onclick = e => { const b = e.target.closest(".chip"); if (!b) return; sel = b.dataset.c; mm.querySelectorAll(".chip").forEach(x => x.classList.toggle("on", x === b)); };
+    mm.querySelector("#shGo").onclick = () => {
+      const a = r2(Math.abs(num(mm.querySelector("#shAmt").value) || 0)); if (!(a > 0)) return toast("How much came in? 💰");
+      const date = mm.querySelector("#shDate").value || today();
+      M(mkOf(date)).inc.push({id: uid(), date, amt: a, cat: sel, note: ""}); closeModal(); addXP(10);
+      toast("Shipped! " + fm(a) + " landed in the bin 📦✨"); viewMK = mkOf(date); commit();
+    };
+  });
+}
+function jar(id) {
+  const c = cat(id), total = r2(Object.values(S.months).reduce((a, mm) => a + mm.sav.filter(t => t.cat === id).reduce((b, t) => b + t.amt, 0), 0));
+  modal(`<h2>🫙 ${esc(c.name)}</h2><p>Saved so far, all time: <b>${fm(total)}</b>${c.goal > 0 ? ` of your ${fm(c.goal)} goal` : ""}. Planned each month: <b>${fm(c.amt)}</b>.</p>
+    <label class="f" for="jAmt">Drop in coins</label><input class="amtin" id="jAmt" inputmode="decimal" placeholder="$0.00" value="${c.amt || ""}" autofocus>
+    <label class="f" for="jDate">Date</label><input type="date" id="jDate" value="${defaultDate()}">
+    <label class="f" for="jGoal">Total goal for this jar <span class="muted">(optional, e.g. 1000)</span></label><input id="jGoal" inputmode="decimal" value="${c.goal || ""}" placeholder="no goal">
+    <p class="spread" style="margin-top:16px"><button class="btn white" id="jSave">Just save goal</button><button class="btn green big" id="jGo">Drop it in 🪙</button></p>`, mm => {
+    const setGoal = () => { c.goal = r2(Math.abs(num(mm.querySelector("#jGoal").value) || 0)); };
+    mm.querySelector("#jSave").onclick = () => { setGoal(); closeModal(); commit(); };
+    mm.querySelector("#jGo").onclick = () => {
+      setGoal(); const a = r2(Math.abs(num(mm.querySelector("#jAmt").value) || 0)); if (!(a > 0)) return toast("How much are you saving? 🪙");
+      const date = mm.querySelector("#jDate").value || today();
+      M(mkOf(date)).sav.push({id: uid(), date, amt: a, cat: id, note: ""}); closeModal(); addXP(15);
+      toast("Clink! " + fm(a) + " into " + esc(c.name) + " 🫙"); viewMK = mkOf(date); commit();
+    };
+  });
+}
+function cropDetail(id) {
+  const c = cat(id), mk = viewMK, txs = M(mk).tx.filter(t => t.cat === id).sort((a, b) => b.date.localeCompare(a.date)), s = spentOn(mk, id);
+  const st = cropStatus(s, c.amt, monthFrac(mk));
+  const daysLeft = mk === curMK() ? dim(mk) - new Date().getDate() + 1 : 0;
+  modal(`<h2>🌱 ${esc(c.name)}</h2>
+    <p><b>${fm(s)}</b> spent of <b>${fm(c.amt)}</b> in ${mLabel(mk)} · <span class="st ${st}" style="font-weight:800">${STATUS_TXT[st]}</span></p>
+    ${daysLeft && c.amt > s ? `<p class="muted">That's about <b>${fm((c.amt - s) / daysLeft)}</b> a day for the rest of the month.</p>` : ""}
+    <label class="f" for="cBud">Monthly budget</label><div class="row"><input id="cBud" inputmode="decimal" value="${c.amt}"><button class="btn sm" id="cSave">Save</button></div>
+    <h3>Purchases</h3>${txs.length ? `<table class="ledger">${txs.map(t => `<tr><td>${dLabel(t.date)}</td><td>${esc(t.note || "")}</td><td class="amt">${fm(t.amt)}</td></tr>`).join("")}</table>` : `<p class="muted">Nothing yet this month.</p>`}
+    <p style="text-align:right;margin-top:14px"><button class="btn green" id="cLog">🌱 Log a purchase here</button></p>`, mm => {
+    mm.querySelector("#cSave").onclick = () => { c.amt = r2(Math.abs(num(mm.querySelector("#cBud").value) || 0)); closeModal(); toast("Budget updated 🌱"); commit(); };
+    mm.querySelector("#cLog").onclick = () => { closeModal(); logBuy(id); };
+  });
+}
+function toggleBill(id, el) {
+  const m = M(viewMK), c = cat(id);
+  if (m.bills[id]) { delete m.bills[id]; commit(); return; }
+  el.checked = false;
+  modal(`<h2>📋 ${esc(c.name)}</h2><label class="f" for="bAmt">Amount paid</label><input class="amtin" id="bAmt" inputmode="decimal" value="${c.amt}" autofocus>
+    <label class="f" for="bDate">Date</label><input type="date" id="bDate" value="${defaultDate()}">
+    <p style="text-align:right;margin-top:14px"><button class="btn green big" id="bGo">Mark paid ✓</button></p>`, mm => {
+    const go = () => {
+      const a = r2(Math.abs(num(mm.querySelector("#bAmt").value) || 0));
+      m.bills[id] = {amt: a, date: mm.querySelector("#bDate").value || today()};
+      closeModal(); if (!m.billXP[id]) { m.billXP[id] = true; addXP(10); }
+      toast(pick(["Chore done! ✓", "Bill paid, one less thing to think about 🧹", "Checked off! Sen gives it a paw of approval 🐾"])); commit();
+    };
+    mm.querySelector("#bGo").onclick = go; mm.querySelector("#bAmt").addEventListener("keydown", e => e.key === "Enter" && go());
+  });
+}
+function harvest() {
+  const mk = viewMK, m = M(mk); if (m.harvested) return;
+  const sp = catsOf("spending").filter(c => c.amt > 0);
+  const res = sp.map(c => ({c, s: spentOn(mk, c.id)})).map(x => ({...x, ok: x.s <= x.c.amt}));
+  const stars = Math.max(1, res.filter(x => x.ok).length);
+  modal(`<h2>🌾 Harvest Festival · ${mLabel(mk)}</h2>
+    <div class="sen">${spr("sen", 3)}<div class="bubble">${res.every(x => x.ok) && res.length ? "Every single crop stayed in budget! Sen is doing a victory loaf. 🍞" : "Look at everything you grew! Every month you track is a month you understand a little better. 💛"}</div></div>
+    <table class="ledger" style="margin-top:10px">${res.map(x => `<tr><td>${x.ok ? "⭐" : "💧"}</td><td>${esc(x.c.name)}</td><td class="amt">${fm(x.s)} / ${fm(x.c.amt)}</td></tr>`).join("")}</table>
+    <p style="text-align:right;margin-top:14px"><button class="btn pink big" id="hvGo">Collect ${stars} ⭐ + 50 XP</button></p>`, mm => {
+    mm.querySelector("#hvGo").onclick = () => { m.harvested = true; m.harvestStars = stars; closeModal(); addStars(stars); addXP(50); commit(); };
+  });
+}
+function delEntry(k, id) {
+  const m = M(viewMK);
+  confirmBox("Remove this entry? (It just disappears, no penalties.)", "Remove", () => {
+    if (k === "tx") m.tx = m.tx.filter(t => t.id !== id);
+    else if (k === "inc") m.inc = m.inc.filter(t => t.id !== id);
+    else if (k === "sav") m.sav = m.sav.filter(t => t.id !== id);
+    else if (k === "bill") delete m.bills[id];
+    else if (k === "ns") m.nospend = m.nospend.filter(d => d !== id);
+    commit();
+  });
+}
+
+/* ---------------- SELF-CARE ---------------- */
+function vCare() {
+  const t = today(), d = D(t), ws = weekStart(t);
+  const week = S.pt.log.filter(p => weekStart(p.date) === ws);
+  const ptN = week.filter(p => p.kind === "pt").length, restN = week.filter(p => p.kind === "rest").length;
+  const recent = S.pt.log.slice().sort((a, b) => b.date.localeCompare(a.date)).slice(0, 6);
+  return `<div class="grid2">
+  <div class="panel"><h2>🦵 Hip PT</h2>
+    <p class="muted">Goal: 2 sessions a week. Gentle and steady wins.</p>
+    <div class="ptdots">${[0, 1].map(i => `<div class="ptdot ${i < ptN ? "on" : ""}">${i < ptN ? "💗" : ""}</div>`).join("")}${ptN > 2 ? `<div class="ptdot on">+${ptN - 2}</div>` : ""}${restN ? `<div class="muted" style="align-self:center">+ ${restN} rest day${restN > 1 ? "s" : ""} 🌙</div>` : ""}</div>
+    <p style="font-weight:800">${ptN >= 2 ? "Weekly hip goal met! Your hips are throwing a tiny party. 🎉" : ptN === 1 ? "One down, one to go. Your hips believe in you." : "A fresh week for your hips. You've got this. 💕"}</p>
+    <div class="row"><button class="btn pink big" data-act="ptLog">Log PT session (+40 XP)</button><button class="btn white" data-act="ptRest">🌙 Rest counts too</button></div>
+    <h3>My exercises</h3>
+    <div class="exlist">${S.pt.exercises.map((e, i) => `<div class="spread"><span>• ${esc(e)}</span><button class="x btn link" data-act="exDel" data-i="${i}" aria-label="Remove ${esc(e)}">remove</button></div>`).join("") || `<p class="muted">No exercises yet.</p>`}</div>
+    <div class="row" style="margin-top:6px"><input id="exNew" placeholder="Add an exercise" style="flex:1"><button class="btn sm" data-act="exAdd">Add</button></div>
+    ${recent.length ? `<h3>Recent</h3>${recent.map(p => `<div class="muted">${dLabel(p.date)} · ${p.kind === "pt" ? "💗 PT" + (p.ex && p.ex.length ? ": " + esc(p.ex.join(", ")) : "") : "🌙 Rest day"} <button class="x btn link" data-act="ptDel" data-id="${p.id}">undo</button></div>`).join("")}` : ""}
+  </div>
+  <div>
+    <div class="panel"><h2>💧 Water</h2><p class="muted">Tap a cup for each one you drink.</p>
+      <div class="cups">${Array.from({length: 8}, (_, i) => `<button class="cup ${i < (d.water || 0) ? "on" : ""}" data-act="water" data-i="${i}" aria-label="Cup ${i + 1}"></button>`).join("")}</div>
+      <p style="font-weight:800">${(d.water || 0) >= 8 ? "Fully watered! You're a thriving little plant 🌿" : (d.water || 0) >= 4 ? "Halfway hydrated, look at you! 💧" : "Little sips count. 🌱"}</p></div>
+    <div class="panel"><h2>💌 One kind thing about yourself</h2>
+      <textarea id="kindTxt" placeholder="Today I'm proud that I…"></textarea>
+      <p style="text-align:right"><button class="btn pink" data-act="kindSave">Save to my journal</button></p>
+      ${S.journal.slice().reverse().slice(0, 8).map(j => `<div class="entry"><div class="muted">${dLabel(j.date)} <button class="btn link" data-act="jDel" data-id="${j.id}">remove</button></div>${esc(j.text)}</div>`).join("")}
+      ${S.journal.length > 8 ? `<p class="muted">…and ${S.journal.length - 8} more kind things. 💕</p>` : ""}
+    </div>
+  </div></div>`;
+}
+function ptLog() {
+  modal(`<h2>🦵 Log a PT session</h2><p class="muted">What did you do today? (Tick whatever applies. Any amount counts.)</p>
+    <div class="exlist">${S.pt.exercises.map((e, i) => `<label><input type="checkbox" value="${i}"> ${esc(e)}</label>`).join("")}</div>
+    <label class="f" for="ptDate">Date</label><input type="date" id="ptDate" value="${today()}">
+    <p style="text-align:right;margin-top:14px"><button class="btn pink big" id="ptGo">Done! 💗</button></p>`, mm => {
+    mm.querySelector("#ptGo").onclick = () => {
+      const ex = [...mm.querySelectorAll("input[type=checkbox]:checked")].map(i => S.pt.exercises[+i.value]);
+      const date = mm.querySelector("#ptDate").value || today();
+      const ws = weekStart(date), before = S.pt.log.filter(p => p.kind === "pt" && weekStart(p.date) === ws).length;
+      S.pt.log.push({id: uid(), date, kind: "pt", ex}); closeModal(); addXP(40);
+      if (before === 1) { addStars(2); toast("Weekly hip goal met! +2 ⭐ 🎉"); }
+      toast(pick(HIP_MSGS)); commit();
+    };
+  });
+}
+function ptRest() {
+  const t = today();
+  if (S.pt.log.some(p => p.date === t && p.kind === "rest")) return toast("Rest day already logged. Keep resting, you deserve it 🌙");
+  S.pt.log.push({id: uid(), date: t, kind: "rest", ex: []}); addXP(10); toast(pick(REST_MSGS)); commit();
+}
+function water(i) {
+  const d = D(), cur = d.water || 0;
+  d.water = (i + 1 === cur) ? i : i + 1;
+  const earned = d.waterXP || 0;
+  if (d.water > earned) { addXP(2 * (d.water - earned)); d.waterXP = d.water; }
+  commit();
+}
+function kindSave(text) {
+  text = (text || "").trim(); if (!text) return toast("Write one tiny kind thing, even \"I tried today\" counts 💕");
+  const t = today(), first = !S.journal.some(j => j.date === t);
+  S.journal.push({id: uid(), date: t, text}); addXP(first ? 15 : 3);
+  toast(pick(["Saved to your heart-journal 💌", "Sen read it and agrees 100% 🐾", "That's so true. Never forget it 💕"])); commit();
+}
+function kindNote() {
+  modal(`<h2>💌 One kind thing about yourself</h2><textarea id="knTxt" autofocus placeholder="Today I'm proud that I…"></textarea>
+    <p style="text-align:right"><button class="btn pink" id="knGo">Save 💕</button></p>`, mm => {
+    mm.querySelector("#knGo").onclick = () => { const v = mm.querySelector("#knTxt").value; if (!v.trim()) return toast("Even a tiny kind thing counts 💕"); closeModal(); kindSave(v); };
+  });
+}
+
+/* ---------------- FARMHOUSE ---------------- */
+const shown = id => S.owned.includes(id) && !S.hidden.includes(id);
+function vHome() {
+  const has = shown;
+  const stars = Array.from({length: 14}, (_, i) => `<i style="left:${(i * 37) % 95}%;top:${(i * 23) % 60}%"></i>`).join("");
+  const lightColors = ["#ffd45a", "#f39bb8", "#9ed2f2", "#9fdc7c", "#b9a3e8"];
+  const senPos = has("cushion") ? "left:18%;top:89%" : "left:68%;top:56%";
+  return `<div class="panel">
+    <div class="spread"><h2>🏡 The farmhouse</h2><span class="muted">Visits: ${S.visits} · decor: ${S.owned.length} / ${DECOR.length}</span></div>
+    <div class="room" aria-label="Farmhouse room">
+      <div class="win">${stars}</div>
+      ${has("sunflower") ? `<div class="it" style="left:15%;top:46%">🌻🌻</div>` : ""}
+      ${has("fire") ? `<div class="fire"><span>🔥</span></div>${has("candle") ? `<div class="it" style="left:34%;top:26%;font-size:.7em">🕯️</div>` : ""}` : (has("candle") ? `<div class="it" style="left:46%;top:70%;font-size:.7em">🕯️</div>` : "")}
+      ${has("art") ? `<div class="it" style="left:58%;top:30%">🖼️</div>` : ""}
+      ${has("photo") ? `<div class="it" style="left:72%;top:30%;font-size:.8em">💞</div>` : ""}
+      ${has("books") ? `<div class="it" style="left:88%;top:34%">📚</div>` : ""}
+      <div class="floor"></div>
+      ${has("rug") ? `<div class="rug"></div>` : ""}
+      <div class="couch"></div>
+      ${has("quilt") ? `<div class="quilt"></div>` : ""}
+      ${has("moon") ? `<div class="it glow" style="left:94%;top:66%">🌙</div>` : ""}
+      ${has("plant") ? `<div class="it" style="left:4%;top:80%;font-size:1.3em">🪴</div>` : ""}
+      ${has("radio") ? `<div class="it" style="left:93%;top:90%;font-size:.8em">📻</div>` : ""}
+      ${has("cushion") ? `<div class="beam"></div><div class="cushion"></div>` : ""}
+      <div class="table"></div>
+      <div class="it" style="left:48%;top:70%;font-size:.65em;white-space:nowrap">${has("mug") ? "☕" : ""}${has("teapot") ? "🫖" : ""}${has("tulips") ? "🌷" : ""}</div>
+      ${has("yarn") ? `<div class="it" style="left:30%;top:93%;font-size:.6em">🧶</div>` : ""}
+      ${spr("sen", 4, `style="${senPos};width:10%"`)}
+      ${spr("charlie", 4, `style="left:56%;top:96%;width:11%"`)}
+      ${has("bone") ? `<div class="it" style="left:67%;top:96%;font-size:.6em">🦴</div>` : ""}
+      ${has("lights") ? `<div class="lights">${Array.from({length: 16}, (_, i) => `<b style="background:${lightColors[i % 5]};color:${lightColors[i % 5]};animation-delay:${(i % 4) * .4}s"></b>`).join("")}</div>` : ""}
+    </div>
+    <p class="muted">${S.owned.length ? "Sen and Charlie love what you've done with the place." : "It's a little empty… earn ⭐ from quests, gifts and harvests to decorate!"}</p>
+  </div>
+  <div class="panel"><div class="spread"><h2>🛍️ Sen's Little Shop</h2><div class="starct">⭐ ${S.stars}</div></div>
+    <div class="shop">${DECOR.map(it => { const o = S.owned.includes(it.id); return `<div class="item ${o ? "owned" : ""}"><div class="e">${it.e}</div><div class="n">${esc(it.n)}</div><div class="muted" style="font-size:12.5px">${esc(it.d)}</div>
+      ${o ? `<button class="btn sm white" data-act="hide" data-id="${it.id}">${S.hidden.includes(it.id) ? "Put out" : "Put away"}</button>` : `<button class="btn sm" data-act="buy" data-id="${it.id}" ${S.stars < it.c ? "disabled" : ""}>⭐ ${it.c}</button>`}</div>`; }).join("")}</div></div>
+  <div class="panel"><h2>💌 Leo's letters</h2>
+    ${S.letters.length ? `<div class="row">${S.letters.slice().sort((a, b) => a - b).map(L => `<button class="btn white" data-act="letter" data-l="${L}">✉️ Level ${L}</button>`).join("")}</div>` : `<p class="muted">Leo writes you a little letter every time you level up. The first one comes at level 2!</p>`}</div>`;
+}
+
+/* ---------------- SETTINGS ---------------- */
+function vSettings() {
+  const groups = ["income", "bill", "spending", "savings"];
+  const lbl = {income: "💰 Income", bill: "📋 Bills", spending: "🌱 Spending crops", savings: "🫙 Savings jars"};
+  return `<div class="panel"><h2>🧑‍🌾 Farmer</h2>
+    <div class="row"><label>Name <input id="stName" value="${esc(S.name)}"></label><label>Farm <input id="stFarm" value="${esc(S.farm)}"></label><button class="btn sm" data-act="stSave">Save</button></div></div>
+  <div class="panel"><h2>📄 Newer spreadsheet?</h2><p class="muted">Upload it and I'll update budgets for categories with the same name, and offer to add any new ones. Your logged purchases stay put.</p>
+    <label class="btn blue" style="display:inline-block">Upload spreadsheet<input type="file" id="reFile" accept=".xlsx,.xls,.xlsm,.csv,.ods" hidden></label></div>
+  <div class="panel"><h2>🗂️ Categories</h2><p class="muted">Monthly amounts. Changes save as you go. Savings jars can have a total goal.</p>
+    ${groups.map(g => `<h3>${lbl[g]}</h3>${catsOf(g).map(c => `<div class="cat-ed" data-id="${c.id}">
+      <input class="nmc" data-f="name" value="${esc(c.name)}" aria-label="Name">
+      <select data-f="type" aria-label="Type">${groups.map(t => `<option value="${t}" ${t === c.type ? "selected" : ""}>${t}</option>`).join("")}</select>
+      <input data-f="amt" inputmode="decimal" value="${c.amt}" aria-label="Monthly amount">
+      ${c.type === "savings" ? `<input data-f="goal" inputmode="decimal" value="${c.goal || ""}" placeholder="goal" aria-label="Goal">` : "<span></span>"}
+      <button class="btn sm white" data-act="catDel" data-id="${c.id}" aria-label="Delete ${esc(c.name)}">✕</button></div>`).join("") || `<p class="muted">None yet.</p>`}
+      <button class="btn sm white" data-act="catAdd" data-t="${g}">+ Add</button>`).join("")}
+  </div>
+  <div class="panel"><div class="row">${spr("charlie", 4)}<div style="flex:1"><h2>🦴 Charlie's backup bones</h2>
+    <p class="muted">Charlie buries a save file on your device. If this browser ever forgets your farm, dig it back up! ${S.lastBackup ? "Last bone buried " + dLabel(S.lastBackup) + "." : "No bones buried yet."}</p></div></div>
+    <div class="row"><button class="btn" data-act="backup">🦴 Bury a bone (download)</button><label class="btn white" style="display:inline-block">⛏️ Dig up a bone<input type="file" id="restore" accept=".json,application/json" hidden></label></div></div>
+  <div class="panel"><h2>🌧️ Start over</h2><p class="muted">Clears the whole farm from this browser. Bury a bone first if you might want it back.</p><button class="btn white" data-act="reset">Reset farm</button></div>`;
+}
+
+/* ---------------- actions ---------------- */
+const ACT = {
+  close: () => closeModal(),
+  ob1: () => { OB.step = 1; renderOnboard(); },
+  ob2: () => { OB.name = $("#obName").value.trim() || "Ashley"; OB.farm = $("#obFarm").value.trim() || "Sunbeam Farm"; OB.step = 2; renderOnboard(); },
+  ob2back: () => { OB.step = 2; renderOnboard(); },
+  obNoSheet: () => { OB.rows = DEFAULT_CATS.map(([n, t]) => ({id: uid(), on: true, name: n, type: t, amt: 0, act: null, meta: "starter category"})); OB.fileName = ""; OB.mode = "new"; OB.step = 3; renderOnboard(); },
+  rvAll: () => { OB.rows.forEach(r => r.on = true); renderReview(); },
+  rvNone: () => { OB.rows.forEach(r => r.on = false); renderReview(); },
+  rvAdd: () => { OB.rows.push({id: uid(), on: true, name: "New category", type: "spending", amt: 0, act: null, meta: "added by you"}); renderReview(); setTimeout(() => { const l = [...document.querySelectorAll(".rv input[type=text]")].pop(); l && (l.focus(), l.select()); }, 30); },
+  plant: () => plantFarm(),
+  rvCancel: () => { OB = {step: 1, rows: []}; tab = "settings"; render(); },
+  rvMerge: () => {
+    let up = 0, add = 0;
+    OB.rows.filter(r => r.on && String(r.name).trim()).forEach(r => {
+      const ex = r.ex && cat(r.ex);
+      if (ex) { ex.amt = r2(r.amt); ex.type = r.type; up++; } else { S.cats.push({id: uid(), name: String(r.name).trim(), type: r.type, amt: r2(r.amt), goal: 0}); add++; }
+    });
+    OB = {step: 1, rows: []}; tab = "farm"; toast(`Farm updated! ${up} budgets refreshed, ${add} new ${add === 1 ? "category" : "categories"} 🌾`); commit();
+  },
+  tab: d => { tab = d.t; if (tab === "farm") viewMK = viewMK || curMK(); render(); scrollTo({top: 0}); },
+  gotoCare: () => { tab = "care"; render(); scrollTo({top: 0}); },
+  logBuy: () => logBuy(),
+  noSpend: () => noSpend(),
+  ship: () => ship(),
+  jar: d => jar(d.id),
+  crop: d => cropDetail(d.id),
+  bill: (d, el) => toggleBill(d.id, el),
+  harvest: () => harvest(),
+  del: d => delEntry(d.k, d.id),
+  mon: d => { viewMK = d.k === "0" ? curMK() : shiftMK(viewMK, +d.k); render(); },
+  gift: () => {
+    const d = D(); if (d.gift) return;
+    d.gift = pick(SEN_GIFTS); d.giftStars = 1 + Math.floor(Math.random() * 3); addStars(d.giftStars); addXP(5);
+    modal(`<div class="sen">${spr("sen", 5)}<div class="bubble">Mrrrp! I brought you <b>${esc(d.gift)}</b>. Also ${d.giftStars} ⭐. You're welcome. 🐾</div></div><p style="text-align:right;margin-top:12px"><button class="btn pink" data-act="close">Thank you, Sen! 💕</button></p>`);
+    save(); render();
+  },
+  questBonus: () => {
+    const qs = questState(), d = D(); if (!qs.all || d.questBonus) return;
+    d.questBonus = true; const g = pick(SEN_GIFTS); addXP(30); addStars(3);
+    modal(`<h2>🎉 All quests done!</h2><div class="sen">${spr("sen", 4)}<div class="bubble">You did all three! I'm giving you my best treasure: <b>${esc(g)}</b>. Plus 3 ⭐ and 30 XP. 💕</div></div><p style="text-align:right;margin-top:12px"><button class="btn pink" data-act="close">Yay!</button></p>`);
+    save(); render();
+  },
+  kindNote: () => kindNote(),
+  ptLog: () => ptLog(), ptRest: () => ptRest(),
+  ptDel: d => { S.pt.log = S.pt.log.filter(p => p.id !== d.id); commit(); },
+  exAdd: () => { const v = $("#exNew").value.trim(); if (!v) return; S.pt.exercises.push(v); commit(); },
+  exDel: d => { S.pt.exercises.splice(+d.i, 1); commit(); },
+  water: d => water(+d.i),
+  kindSave: () => kindSave($("#kindTxt").value),
+  jDel: d => confirmBox("Remove this kind note? (It's still true, though.)", "Remove", () => { S.journal = S.journal.filter(j => j.id !== d.id); commit(); }),
+  buy: d => {
+    const it = DECOR.find(x => x.id === d.id); if (!it || S.stars < it.c || S.owned.includes(it.id)) return;
+    S.stars -= it.c; S.owned.push(it.id); toast(`${it.e} ${esc(it.n)} is in the farmhouse now!`); commit();
+  },
+  hide: d => { S.hidden = S.hidden.includes(d.id) ? S.hidden.filter(x => x !== d.id) : [...S.hidden, d.id]; commit(); },
+  letter: d => showLetter(+d.l, false),
+  stSave: () => { S.name = $("#stName").value.trim() || S.name; S.farm = $("#stFarm").value.trim() || S.farm; toast("Saved 🌱"); commit(); },
+  catAdd: d => { S.cats.push({id: uid(), name: "New " + {income: "income", bill: "bill", spending: "crop", savings: "jar"}[d.t], type: d.t, amt: 0, goal: 0}); commit(); },
+  catDel: d => { const c = cat(d.id); confirmBox(`Delete <b>${esc(c.name)}</b>? Past entries stay in your ledger.`, "Delete", () => { S.cats = S.cats.filter(x => x.id !== d.id); commit(); }); },
+  backup: () => {
+    const blob = new Blob([JSON.stringify(S, null, 1)], {type: "application/json"});
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "sunbeam-farm-bone-" + today() + ".json";
+    document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+    S.lastBackup = today(); toast("Charlie buried a bone! 🦴 (It's in your downloads.)"); commit();
+  },
+  reset: () => confirmBox("Really clear the whole farm from this browser? This can't be undone unless you have a backup bone.", "Clear it", () => {
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    S = null; OB = {step: 1, rows: []}; render();
+  })
+};
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-act]"); if (!b) return;
+  if (b.tagName === "INPUT" && b.type === "checkbox") { ACT[b.dataset.act]?.(b.dataset, b); return; }
+  e.preventDefault(); ACT[b.dataset.act]?.(b.dataset, b);
+});
+document.addEventListener("change", e => {
+  const el = e.target;
+  if (el.id === "reFile" && el.files[0]) return readFile(el.files[0]);
+  if (el.id === "restore" && el.files[0]) {
+    const fr = new FileReader();
+    fr.onload = () => {
+      try { const d = JSON.parse(fr.result); if (!d || !Array.isArray(d.cats) || !d.months) throw 0;
+        confirmBox("Dig up this bone and replace the current farm with it?", "Dig it up", () => { S = d; S.pendingLetters ||= []; S.hidden ||= []; save(); toast("Charlie found it! Farm restored 🦴✨"); render(); });
+      } catch (x) { toast("That doesn't look like one of Charlie's bones 🤔"); }
+    };
+    fr.readAsText(el.files[0]); return;
+  }
+  const row = el.closest(".cat-ed");
+  if (row && el.dataset.f) {
+    const c = cat(row.dataset.id); if (!c) return;
+    const f = el.dataset.f;
+    if (f === "amt" || f === "goal") c[f] = r2(Math.abs(num(el.value) || 0));
+    else if (f === "name") c.name = el.value.trim() || c.name;
+    else c[f] = el.value;
+    save(); if (f === "type") render();
+  }
+});
+document.addEventListener("keydown", e => {
+  if (e.key !== "Enter") return;
+  if (e.target.id === "exNew") ACT.exAdd();
+  if (e.target.id === "obFarm" || e.target.id === "obName") ACT.ob2();
+});
+
+/* ---------------- boot ---------------- */
+function boot() {
+  if (!S) { render(); return; }
+  S.pendingLetters ||= []; S.hidden ||= []; S.pt ||= {log: [], exercises: DEFAULT_EXERCISES.slice()};
+  const t = today(), away = S.lastSeen ? daysBetween(S.lastSeen, t) : 0;
+  if (S.lastSeen !== t) { S.visits = (S.visits || 0) + 1; }
+  S.lastSeen = t; save(); render();
+  if (away >= 3) {
+    addStars(3); save(); render();
+    modal(`<div class="sen">${spr("sen", 5)}<div class="bubble">${esc(S.name)}! You're back! 💕 I kept your sunbeam warm the whole time. There's nothing to catch up on, no streaks to fix, nothing wilted. The farm just waited for you.</div></div>
+      <div class="row" style="margin-top:12px">${spr("charlie", 4)}<p style="flex:1">Charlie guarded the bones and wants you to have <b>3 ⭐</b> for coming home. Just start with today. 🌱</p></div>
+      <p style="text-align:right"><button class="btn green" data-act="close">Hi Sen, hi Charlie! 🐾</button></p>`);
+  } else flush();
+}
+boot();
+</script>
+<script data-goatcounter="https://bailsformed.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
