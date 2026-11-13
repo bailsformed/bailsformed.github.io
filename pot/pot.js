@@ -273,7 +273,7 @@ const AUTO_RULES = [
   [/AUTOPAY|AUTO PAY|PAYMENT THANK|THANK YOU|ONLINE PAYMENT|EPAYMENT|E-PAYMENT|CRCARDPMT|CREDIT CRD|CARD ?PMT|PAYMENT - |MOBILE PAYMENT|AMEX EPAY|AMERICAN EXPRESS ACH|CHASE CREDIT|ONLINE TRANSFER|TRANSFER TO|TRANSFER FROM|INTERNAL TRANSFER|DISCOVER E-PAYMENT|CAPITAL ONE.*PMT|CITI.*PAYMENT/, 'transfer'],
   [/PAYROLL|DIRECT DEP|DIR DEP|SALARY/, 'income:Paycheck'],
   [/SUNY|NEW PALTZ.*(REFUND|FIN AID)|FINANCIAL AID|DEPT OF ED|STUDENT AID/, 'income:Aid refund'],
-  [/PALTZ COMMONS|APARTMENT|PROPERTY MGMT|\bRENT\b|YARDI|APPFOLIO|RENTCAFE/, 'rent'],
+  [/APARTMENT|PROPERTY MGMT|\bRENT\b|YARDI|APPFOLIO|RENTCAFE/, 'rent'],
   [/LEMONADE|RENTERS|ASSURANT/, 'renters'],
   [/CENTRAL HUDSON|CON ?ED|NYSEG|ELECTRIC|NATIONAL GRID|RELIANT|TXU|CENTERPOINT/, 'utilities'],
   [/SPECTRUM|OPTIMUM|XFINITY|COMCAST|VERIZON FIOS|FRONTIER|STARLINK/, 'internet'],
@@ -461,7 +461,7 @@ function openAddTx(preset = {}) {
      <div class="pf2"><label class="pl">Amount ($)<input id="pamt" type="number" step=".01" min="0" inputmode="decimal" placeholder="0.00"></label><label class="pl">Date<input id="pdate" type="date" value="${today()}"></label>
      ${type === 'expense' ? `<label class="pl full">Category<select id="pcat">${[1, 2, 3].map(t => `<optgroup label="${esc(skin().tiers[t][1])}">${D.cats.filter(c => c.tier === t).map(c => `<option value="${esc(c.id)}" ${c.id === preset.category ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</optgroup>`).join('')}</select></label>`
        : type === 'income' ? `<label class="pl full">Source<select id="psrc">${INCOME_SRC.map(s => `<option>${esc(s)}</option>`).join('')}</select></label>` : `<div class="full pmuted" style="font-size:13px;margin-top:8px">Transfers are recorded but never counted as spending, so nothing gets double-counted.</div>`}
-     <label class="pl">Account<select id="pacct"><option value="">(none / cash)</option>${mine.map(a => `<option value="${a.id}">${esc(a.name)}</option>`).join('')}</select></label><label class="pl">Note<input id="pnote" placeholder="Hannaford, Paltz Commons…"></label></div>
+     <label class="pl">Account<select id="pacct"><option value="">(none / cash)</option>${mine.map(a => `<option value="${a.id}">${esc(a.name)}</option>`).join('')}</select></label><label class="pl">Note<input id="pnote" placeholder="Hannaford, rent…"></label></div>
      <div class="prow psp" style="margin-top:14px"><span></span><button class="pbtn main" id="psv">Record it</button></div>`);
     $$('#ptt button', m).forEach(b => b.addEventListener('click', () => { type = b.dataset.t; draw(); }));
     $('#psv', m).addEventListener('click', async () => {
