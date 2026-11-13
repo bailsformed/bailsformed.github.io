@@ -115,8 +115,8 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--pink)}
 .lock{opacity:.5}
 pre.prompt{white-space:pre-wrap;word-break:break-word;background:#0d0810;border:2px solid var(--edge);border-radius:6px;padding:12px;font-size:14px;max-height:340px;overflow:auto;margin:0}
 /* toasts + modal */
-#toasts{position:fixed;left:50%;transform:translateX(-50%);bottom:max(16px,env(safe-area-inset-bottom,0px));z-index:50;display:flex;flex-direction:column;gap:8px;align-items:center;width:min(560px,92vw)}
-.toast{background:#0c1a17;border:2px solid var(--teal);color:#bff7ee;font-family:var(--px);padding:10px 14px;border-radius:6px;box-shadow:0 8px 30px #000;width:100%;animation:pop .3s}
+#toasts{position:fixed;left:50%;transform:translateX(-50%);top:max(12px,env(safe-area-inset-top,0px));z-index:50;display:flex;flex-direction:column;gap:8px;align-items:center;width:min(560px,92vw)}
+.toast{background:#0c1a17;border:2px solid var(--teal);color:#bff7ee;font-family:var(--px);padding:10px 14px;border-radius:6px;box-shadow:0 8px 30px #000;width:100%;animation:pop .3s;cursor:pointer}
 .toast.gold{border-color:var(--gold);color:var(--gold);background:#22180a}
 .modal-bg{position:fixed;inset:0;background:#000b;z-index:40;display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:24px 16px}
 .modal{width:min(680px,100%)}
@@ -674,7 +674,10 @@ const VIEWS = {
       $("#startBtn").onclick = () => openRoom("intro"); return;
     }
     const done = ORDER.filter(id => S.rooms[id] && S.rooms[id].done).length;
+    // the finale waits here if she tapped away before it played
+    const finaleWaiting = S.archiveDone && !(S.rooms.finale && S.rooms.finale.done);
     $("#main").innerHTML = `<section style="display:grid;gap:14px">
+      ${finaleWaiting ? `<button class="btn pink next" id="toFinaleMap">Something is happening in the Archive… ▸</button>` : ""}
       <div class="panel pad row"><div class="face">${face("v")}</div><div class="grow"><b class="disp" style="font-size:22px">The Lost Archive of Self</b>
         <div class="dim small">${done}/6 rooms restored. ${done === 6 ? "The Forge is open. Go make something weird." : tpl(pick(["Pick a door, {p}. I'll go first. Mostly so I can hold it open and watch you walk through.", "Six rooms. One of you. Zero chance any of this stays beige.", "Any room you want. I'm just here for moral support and, frankly, the view."]))}</div></div></div>
       <div class="rooms">${ORDER.map(id => { const r = ROOMS[id], s = S.rooms[id]; const status = s && s.done ? "✔ RESTORED (tap to replay)" : s && s.i > 0 ? "◐ IN PROGRESS" : "SEALED";
@@ -682,6 +685,7 @@ const VIEWS = {
         <button class="room forge ${S.archiveDone ? "" : "locked"}" data-r="forge" ${S.archiveDone ? "" : "disabled"}><span class="ic">🔥</span><h3>The Mashup Forge</h3><p>Smash two things you love onto something you can make.</p><span class="st">${S.archiveDone ? `${S.ideas.length} idea${S.ideas.length === 1 ? "" : "s"} forged` : "🔒 Restore all six rooms first"}</span></button>
       </div></section>`;
     $$(".room[data-r]").forEach(b => b.onclick = () => b.dataset.r === "forge" ? go("forge") : openRoom(b.dataset.r));
+    if ($("#toFinaleMap")) $("#toFinaleMap").onclick = () => openRoom("finale");
   },
 
   profile() {
@@ -927,7 +931,7 @@ function openScene(id) {
 
 /* ---------- helpers: toast, copy, download, backup ---------- */
 function toast(t, cls = "") {
-  const e = document.createElement("div"); e.className = "toast " + cls; e.textContent = t;
+  const e = document.createElement("div"); e.className = "toast " + cls; e.textContent = t; e.title = "Tap to close"; e.onclick = () => e.remove();
   const b = $("#toasts"); b.appendChild(e); while (b.children.length > 3) b.firstChild.remove(); setTimeout(() => e.remove(), 5200);
 }
 async function copyText(t, label, done) {
