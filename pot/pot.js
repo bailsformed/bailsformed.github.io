@@ -44,20 +44,19 @@ const DEFAULT_CATS = [
   ['dining', 'Dining out, coffee & delivery', 3], ['selfcare', 'Personal care & fitness', 3], ['shopping', 'Shopping & Amazon', 3],
   ['subs', 'Subscriptions & apps', 3], ['smoke', 'Smoke shop / hemp', 3], ['fun', 'Entertainment & fun', 3], ['gifts', 'Gifts, travel & misc', 3],
 ];
-/* Bailey's numbers from her New Paltz plan (lean column); PB starts at 0 and fills his own */
-const PRESET_BUDGET = { apothecary: { rent: 800, renters: 8, utilities: 75, internet: 30, phone: 35, carins: 385, debt: 450, groceries: 300, healthins: 190, medical: 50, gas: 50, carupkeep: 30, books: 112, household: 40, dining: 60, selfcare: 50, shopping: 40, subs: 20, smoke: 50, fun: 25, gifts: 25 }, dungeon: {} };
-const PRESET_BILLS = {
-  apothecary: [
-    { name: 'Rent: Paltz Commons (full)', amount: 1600, kind: 'bill', due_day: 1, category: 'rent' },
-    { name: 'Car insurance (Subaru)', amount: 385, kind: 'bill', due_day: 15, category: 'carins' },
-    { name: 'Wells Fargo card', amount: 450, kind: 'bill', due_day: 20, category: 'debt' },
-    { name: 'Phone', amount: 35, kind: 'bill', due_day: 10, category: 'phone' },
-    { name: 'Internet', amount: 30, kind: 'bill', due_day: 5, category: 'internet' },
-    { name: 'Electric & heat', amount: 75, kind: 'bill', due_day: 18, category: 'utilities' },
-    { name: 'Spring 2027 tuition', amount: 9582, kind: 'oneoff', due_date: '2027-01-15', category: 'tuition' },
-  ],
-  dungeon: [],
-};
+/* Setup starters. This file is public, so it holds bill names only, never real amounts:
+   everyone types their own numbers during setup and they're stored privately in the Pot. */
+const PRESET_BUDGET = { apothecary: {}, dungeon: {} };
+const STARTER_BILLS = [
+  { name: 'Rent', amount: '', kind: 'bill', due_day: '', category: 'rent' },
+  { name: 'Car insurance', amount: '', kind: 'bill', due_day: '', category: 'carins' },
+  { name: 'Card payment', amount: '', kind: 'bill', due_day: '', category: 'debt' },
+  { name: 'Phone', amount: '', kind: 'bill', due_day: '', category: 'phone' },
+  { name: 'Internet', amount: '', kind: 'bill', due_day: '', category: 'internet' },
+  { name: 'Electric & heat', amount: '', kind: 'bill', due_day: '', category: 'utilities' },
+  { name: 'Tuition', amount: '', kind: 'oneoff', due_date: '', category: 'tuition' },
+];
+const PRESET_BILLS = { apothecary: STARTER_BILLS, dungeon: [] };
 
 /* ---------- tiny helpers ---------- */
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));

@@ -37,8 +37,8 @@ This only adds new `pot_` tables. It doesn't touch anything in the village.
 - [ ] Name: Bailey · Game: The Underworld Apothecary · **Start our pot**.
 - [ ] **Write down the invite code** (it's shown once).
 - [ ] Enter your accounts with today's balances (for credit cards, type what you owe).
-- [ ] Your budget is pre-filled from your New Paltz plan. Adjust it, then **Next**.
-- [ ] Your bills are pre-filled. Untick anything wrong, fix the due days, then **Finish**.
+- [ ] Type your monthly budget for each category, then **Next**.
+- [ ] The usual bills are listed by name. Fill in each amount and due day, untick any you don't have, then **Finish**.
 
 ## Part 5: PB joins (5 min)
 

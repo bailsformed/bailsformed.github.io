@@ -91,7 +91,7 @@ const VILLAGER = {
 const S = {
   uid: null, myId: null, me: null,
   members: [], byId: {}, streaks: {}, memes: [], memeById: {},
-  tab: 'home', data: {}, picks: {}, draft: { kind: 'win', nsfh: false },
+  tab: 'home', data: {}, picks: {}, ns: {}, draft: { kind: 'win', nsfh: false },
   prevSeen: null, results: {}, trophies: null, categories: [],
   kitchenLastId: 0, timers: [],
 };
@@ -368,9 +368,10 @@ function memeImg(id) {
   return `<img src="${esc(imgUrl(m.path))}" alt="${esc(m.name)}" loading="lazy">`;
 }
 
+// 🍯 choices live in S.ns (not just on the button), so the 30-second refresh can't quietly reset them
 function nsfhToggle(id) {
   if (isHoney()) return '';
-  return `<button class="iconbtn" id="${id}" data-a="toggleNsfh" title="Not Safe For Honey">🍯</button>`;
+  return `<button class="iconbtn ${S.ns[id] ? 'on' : ''}" id="${id}" data-a="toggleNsfh" title="Not Safe For Honey">🍯</button>`;
 }
 
 function composer(target, placeholder) {
@@ -379,18 +380,17 @@ function composer(target, placeholder) {
       <button class="iconbtn" data-a="memePicker" data-target="${target}" title="Photo reaction">🖼️</button>
       ${nsfhToggle('ns-' + target)}
       <button class="iconbtn" data-a="send" data-target="${target}" id="send-${target}">➤</button>
-    </div><div id="pk-${target}"></div>`;
+    </div><div id="pk-${target}">${pickPreview(target)}</div>`;
 }
 
 function readComposer(target) {
   const input = $('#in-' + target);
   const body = input.value.trim();
-  const ns = $('#ns-' + target);
-  return { body: body || null, nsfh: !!(ns && ns.classList.contains('on')), reaction_image_id: S.picks[target] || null };
+  return { body: body || null, nsfh: !!S.ns['ns-' + target], reaction_image_id: S.picks[target] || null };
 }
 function clearComposer(target) {
   const input = $('#in-' + target); if (input) input.value = '';
-  const ns = $('#ns-' + target); if (ns) ns.classList.remove('on');
+  delete S.ns['ns-' + target]; const ns = $('#ns-' + target); if (ns) ns.classList.remove('on');
   delete S.picks[target]; const pk = $('#pk-' + target); if (pk) pk.innerHTML = '';
 }
 
@@ -1081,10 +1081,14 @@ async function doUpload(target) {
   } catch (e) { err('Upload failed: ' + (e.message || e)); }
 }
 
+function pickPreview(target) {
+  const m = S.memeById[S.picks[target]];
+  return m ? `<div class="pickedimg"><img src="${esc(imgUrl(m.path))}"> ${esc(m.name)} <button class="more" data-a="unpick" data-target="${target}">✕</button></div>` : '';
+}
 function setPick(target, id) {
   S.picks[target] = id;
-  const m = S.memeById[id], el = $('#pk-' + target);
-  if (el && m) el.innerHTML = `<div class="pickedimg"><img src="${esc(imgUrl(m.path))}"> ${esc(m.name)} <button class="more" data-a="unpick" data-target="${target}">✕</button></div>`;
+  const el = $('#pk-' + target);
+  if (el) el.innerHTML = pickPreview(target);
 }
 
 /* =====================================================================
@@ -1375,14 +1379,14 @@ const A = {
     $('#w-body').placeholder = S.draft.kind === 'win' ? 'What did you do? Brag. Go ahead.' : 'What did you work on today?'; },
   wmin: b => { $('#w-min').value = b.dataset.m; },
   htype: b => { S.draft.htype = b.dataset.h; b.parentElement.querySelectorAll('.chip').forEach(x => x.classList.toggle('on', x === b)); },
-  toggleNsfh: b => { b.classList.toggle('on'); if (b.classList.contains('on')) toast('🍯 Marked Not Safe For Honey. Grandma will see something sweet instead.'); },
+  toggleNsfh: b => { S.ns[b.id] = !S.ns[b.id]; if (!S.ns[b.id]) delete S.ns[b.id]; b.classList.toggle('on', !!S.ns[b.id]); if (S.ns[b.id]) toast('🍯 Marked Not Safe For Honey. Grandma will see something sweet instead.'); },
   async postWin() {
     const body = $('#w-body').value.trim();
     if (!body) return toast('Type something first. Even a small W counts.');
     const min = parseInt($('#w-min').value, 10);
-    const ns = $('#ns-win');
     const minutes = isNaN(min) ? null : min;
-    await q(sb.from('wins').insert({ kind: S.draft.kind, body, minutes, hours_type: minutes || S.draft.kind === 'checkin' ? htype() : null, nsfh: !!(ns && ns.classList.contains('on')), member_id: S.myId }));
+    await q(sb.from('wins').insert({ kind: S.draft.kind, body, minutes, hours_type: minutes || S.draft.kind === 'checkin' ? htype() : null, nsfh: !!S.ns['ns-win'], member_id: S.myId }));
+    delete S.ns['ns-win'];
     confetti(); $('#w-body').value = ''; $('#w-min').value = '';
     await loadCore(); go('ws', true);
   },
@@ -1440,6 +1444,8 @@ const A = {
   async promote(b) {
     const c = await q(sb.from('comments').select('*').eq('id', +b.dataset.id).single());
     if (!c.body) return toast("Photo-only roasts can't go on the wall (yet).");
+    const already = await q(sb.from('quotes').select('id').eq('source_comment_id', c.id).limit(1));
+    if (already.length) { closeModal(); return toast('💬 That roast is already on the Quotes Wall'); }
     const w = await q(sb.from('wins').select('nsfh').eq('id', c.win_id).maybeSingle());
     await q(sb.from('quotes').insert({ body: c.body, said_by: nameOf(c.member_id), said_by_member: c.member_id, source_comment_id: c.id, nsfh: c.nsfh || !!(w && w.nsfh), submitted_by: S.myId }));
     closeModal(); toast('💬 Immortalized on the Quotes Wall');
@@ -1551,7 +1557,15 @@ document.addEventListener('click', e => {
   const b = e.target.closest('[data-a]');
   if (!b || b.disabled) return;
   const fn = A[b.dataset.a];
-  if (fn) { e.preventDefault(); Promise.resolve(fn(b, e)).catch(err => console.error(err)); }
+  if (!fn) return;
+  e.preventDefault();
+  // a button stays locked while its save is running, so a double tap can't post twice
+  if (b.dataset.busy) return;
+  const r = fn(b, e);
+  if (r && typeof r.then === 'function') {
+    b.dataset.busy = '1'; b.setAttribute('aria-busy', 'true');
+    r.catch(err => console.error(err)).finally(() => { delete b.dataset.busy; b.removeAttribute('aria-busy'); });
+  }
 });
 document.addEventListener('change', e => {
   const el = e.target.closest('[data-change]');
