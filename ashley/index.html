@@ -10,7 +10,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
-<script src="../shared/cloudsave.js"></script>
 <style>
 :root{
   --ink:#4a3423;--ink2:#7a5f48;--parch:#fff6e2;--parch2:#f7e6c0;--edge:#e6c98e;
@@ -179,6 +178,7 @@ label.f{display:block;font-weight:800;font-size:14px;margin:10px 0 4px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{border:2px solid var(--woodd);background:#fffaf0;border-radius:99px;padding:5px 11px;cursor:pointer;font-size:15px;color:var(--ink)}
 .chip.on{background:var(--pink);font-weight:700}
+.keybox{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:19px;font-weight:700;letter-spacing:1px;background:#fff;border:3px dashed var(--wood);border-radius:10px;padding:10px 12px;text-align:center;user-select:all;-webkit-user-select:all;word-break:break-all;margin:8px 0}
 .amtin{font-family:"Pixelify Sans";font-size:34px;width:100%;text-align:center;padding:8px}
 
 /* onboarding */
@@ -345,36 +345,103 @@ let S = null, storageOK = true;
 try { const raw = localStorage.getItem(KEY); if (raw) { S = JSON.parse(raw); if (!S || !S.cats) S = null; } } catch (e) { storageOK = false; }
 function save() {
   S.updatedAt = Date.now();
-  try { localStorage.setItem(KEY, JSON.stringify(S)); }
-  catch (e) { if (storageOK && !cloud.ref) toast("This browser won't let me save 😿 Bury a backup bone in Settings!"); storageOK = false; }
+  saveQuiet();
   clearTimeout(cloudT); cloudT = setTimeout(cloudPush, 1000);
 }
+function saveQuiet() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch (e) { if (storageOK && !cloud.key) toast("This browser won't let me save 😿 Bury a backup bone in Settings!"); storageOK = false; }
+}
 
-/* ---------------- cloud save (Family Village account) ----------------
-   If someone is logged in to the Family Village on this browser, the farm
-   also saves to that account, so it survives a new phone or cleared data. */
-let cloud = {ref: null, busy: false, again: false, status: "Saved on this device"}, cloudT = null;
+/* ---------------- cloud save by private farm key ----------------
+   No account needed. The game makes a long random "farm key"; the farm saves
+   to Supabase under it (the database only keeps a hash of the key). On a new
+   phone, paste the key to bring the farm back. Newest save wins. */
+const SB_URL = "https://xsihxxwqbguxpvmhpdqo.supabase.co";
+const SB_KEY = "sb_publishable_mMfWPoSYDQUqkCM4rUaccA_6_n8u4XL";   // publishable key: safe to be public
+const FKEY = "sunbeamFarm.ashley.farmkey";
+const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+const lsSet = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} };
+const KEY_ABC = "ABCDEFGHJKMNPQRSTVWXYZ23456789";
+const cleanKey = k => String(k || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+const fmtKey = k => (k || "").match(/.{1,4}/g)?.join("-") || "";
+function makeKey() { const a = new Uint32Array(28); crypto.getRandomValues(a); return [...a].map(n => KEY_ABC[n % KEY_ABC.length]).join(""); }
+let sb = null;
+function sbc() {
+  if (!sb && window.supabase) sb = window.supabase.createClient(SB_URL, SB_KEY, {auth: {persistSession: false, autoRefreshToken: false, detectSessionInUrl: false}});
+  return sb;
+}
+let cloud = {key: lsGet(FKEY), busy: false, again: false, ok: false, status: "Saved on this device"}, cloudT = null;
+function setKey(k) { cloud.key = k || null; lsSet(FKEY, cloud.key); }
+function setSaveStat(t) { cloud.status = t; ["#saveStat", "#saveStat2"].forEach(q => { const e = $(q); if (e) e.textContent = t; }); }
+async function cloudGet(key) {
+  const c = sbc(); if (!c) throw new Error("offline");
+  const {data, error} = await c.rpc("key_save_get", {p_key: key, p_game: "ashley"});
+  if (error || !data || !data.ok) throw error || new Error("bad key");
+  return data;
+}
+function adopt(text) {
+  let d = null; try { d = JSON.parse(text); } catch (e) { return false; }
+  if (S) lsSet(KEY + "_before_sync", JSON.stringify(S));   // just in case
+  if (!d || !Array.isArray(d.cats)) {   // the farm was reset on another device
+    S = null; lsSet(KEY, null); setKey(null); return true;
+  }
+  S = normalize(d); saveQuiet(); OB = {step: 1, rows: []}; return true;
+}
+async function cloudPull() {
+  if (!cloud.key) return false;
+  try {
+    const r = await cloudGet(cloud.key);
+    cloud.ok = true;
+    if (r.state && (r.updated_ms || 0) > ((S && S.updatedAt) || 0)) { const took = adopt(r.state); setSaveStat(S ? "☁ Loaded your newest farm" : "Saved on this device"); return took; }
+    setSaveStat("☁ Saved to the cloud");
+  } catch (e) { setSaveStat("Saved on this device · cloud will retry"); }
+  return false;
+}
 async function cloudPush(payload) {
-  if (!cloud.ref || (!S && !payload)) return;
+  if (!cloud.key || (!S && !payload)) return;
   if (cloud.busy) { cloud.again = true; return; }
   cloud.busy = true;
-  const st = payload || S;
-  try { await cloud.ref.set({state: JSON.stringify(st), updatedAt: st.updatedAt}); } catch (e) {}
+  const st = payload || S, sent = Math.round(st.updatedAt || 0), key = cloud.key;
+  try {
+    const c = sbc(); if (!c) throw new Error("offline");
+    const {data, error} = await c.rpc("key_save_put", {p_key: key, p_game: "ashley", p_state: JSON.stringify(st), p_updated: sent});
+    if (error || !data || !data.ok) throw error || new Error("refused");
+    cloud.ok = true; setSaveStat("☁ Saved to the cloud");
+    // the cloud already had something newer (another device): load that instead
+    if (!payload && (data.updated_ms || 0) > sent && await cloudPull()) render();
+  } catch (e) { setSaveStat("Saved on this device · cloud will retry"); }
   cloud.busy = false; if (cloud.again) { cloud.again = false; cloudPush(); }
 }
-function setSaveStat(t) { cloud.status = t; const e = $("#saveStat"); if (e) e.textContent = t; }
-async function initCloud() {
-  if (!window.CloudSave) { setSaveStat("Saved on this device"); return; }
-  try {
-    const ref = await CloudSave.connect({game: "ashley", localKey: KEY, getState: () => S || {updatedAt: 0}, status: setSaveStat,
-      setState: d => {
-        if (!d || !Array.isArray(d.cats)) { S = null; try { localStorage.removeItem(KEY); } catch (e) {} }
-        else { S = normalize(d); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} OB = {step: 1, rows: []}; }
-        if (!$("#modal").hidden) closeModal();
-        render();
-      }});
-    if (ref) { cloud.ref = ref; if (S) cloudPush(); render(); }
-  } catch (e) { setSaveStat("Saved on this device"); }
+document.addEventListener("visibilitychange", async () => {
+  if (document.visibilityState === "visible" && S && cloud.key && $("#modal").hidden && await cloudPull()) render();
+});
+async function copyKey() {
+  try { await navigator.clipboard.writeText(fmtKey(cloud.key)); toast("Farm key copied! Paste it in your Notes app 📋"); }
+  catch (e) { toast("Couldn't copy. Press and hold the key to copy it."); }
+}
+const keyBox = () => `<div class="keybox" aria-label="Your farm key">${esc(fmtKey(cloud.key))}</div>`;
+function enterKey(fromSettings) {
+  modal(`<h2>🔑 Bring back a farm</h2>
+    <p class="muted">Paste the farm key you saved. ${fromSettings ? "<b>This replaces the farm on this device</b> with the one saved under that key." : ""}</p>
+    <input id="ekIn" style="width:100%;font-family:ui-monospace,Menlo,monospace;font-size:17px" placeholder="XXXX-XXXX-XXXX-…" autocomplete="off" autocapitalize="characters" spellcheck="false" autofocus>
+    <p id="ekErr" class="muted"></p>
+    <p style="text-align:right"><button class="btn green" id="ekGo">Find my farm 🌱</button></p>`, mm => {
+    const go = async () => {
+      const k = cleanKey(mm.querySelector("#ekIn").value), err = mm.querySelector("#ekErr");
+      if (k.length < 24) { err.textContent = "That key looks too short. It should be 28 letters and numbers."; return; }
+      err.textContent = "Looking… 🐾";
+      try {
+        const r = await cloudGet(k);
+        let d = null; try { d = JSON.parse(r.state || "null"); } catch (e) {}
+        if (!d || !Array.isArray(d.cats)) { err.textContent = "Sen couldn't find a farm under that key. Check for typos?"; return; }
+        setKey(k); S = null; adopt(r.state); S.keySaved = true; saveQuiet(); cloud.ok = true; setSaveStat("☁ Saved to the cloud");
+        closeModal(); tab = "today"; render(); toast("Welcome home, " + esc(S.name) + "! Your farm is back 🌾");
+      } catch (e) { err.textContent = "Couldn't reach the cloud. Check your internet and try again."; }
+    };
+    mm.querySelector("#ekGo").onclick = go;
+    mm.querySelector("#ekIn").addEventListener("keydown", e => e.key === "Enter" && go());
+  });
 }
 function newState(name, farm, cats) {
   return {v: 1, name, farm, created: today(), cats, months: {}, xp: 0, level: 1, stars: 3, owned: [], hidden: [],
@@ -630,7 +697,7 @@ function renderOnboard() {
       <div class="sen">${spr("sen", 5)}<div class="bubble">Mrrp! Hi, I'm Sen. 🐾 I'll be your farm guide. Let's make money feel cozy instead of scary.</div></div>
       <label class="f" for="obName">What should I call you?</label><input id="obName" value="${esc(OB.name || "Ashley")}" style="width:100%" autocomplete="given-name">
       <label class="f" for="obFarm">Name your farm</label><input id="obFarm" value="${esc(OB.farm || "Sunbeam Farm")}" style="width:100%">
-      <p style="text-align:right;margin-top:16px"><button class="btn green big" data-act="ob2">Next 🌱</button></p></div>`;
+      <div class="spread" style="margin-top:16px"><button class="btn link" data-act="enterKey">I already have a farm key 🔑</button><button class="btn green big" data-act="ob2">Next 🌱</button></div></div>`;
   } else if (OB.step === 2) {
     root.innerHTML = `<div class="panel" style="max-width:640px;margin:30px auto">
       <div class="sen">${spr("sen", 4)}<div class="bubble">Got a budget spreadsheet, ${esc(OB.name)}? Hand it over and I'll turn it into a garden. It never leaves this device, promise. 🔒</div></div>
@@ -728,6 +795,7 @@ function plantFarm() {
   if (!rows.length) return toast("Pick at least one row to plant 🌱");
   const cats = rows.map(r => ({id: uid(), name: String(r.name).trim(), type: r.type, amt: r2(r.amt), goal: 0}));
   S = newState(OB.name || "Ashley", OB.farm || "Sunbeam Farm", cats);
+  setKey(makeKey());
   if (OB.useActual) {
     const mk = curMK(), m = M(mk), d = today();
     rows.forEach((r, i) => {
@@ -741,7 +809,8 @@ function plantFarm() {
   OB = {step: 1, rows: []};
   tab = "today"; save(); render();
   modal(`<div class="sen">${spr("sen", 4)}<div class="bubble">Your farm is planted! 🌱 Every spending category is a little crop now. Log purchases with the big green button and watch them grow.</div></div>
-    <p class="muted" style="margin-top:12px">Tip: Charlie buries <b>backup bones</b> in Settings. A bone is a save file, in case this browser ever forgets.</p>
+    <h3>🔑 Your farm key</h3><p class="muted" style="margin:0">Your farm saves to the cloud under this secret key. <b>Save it somewhere safe</b>, like your Notes app. It's how you bring your farm to a new phone. (You can find it later in Settings.)</p>
+    ${keyBox()}<p style="margin:0"><button class="btn sm white" data-act="copyKey">📋 Copy key</button></p>
     <p style="text-align:right"><button class="btn green" data-act="close">Let's go!</button></p>`);
 }
 
@@ -792,7 +861,8 @@ function vToday() {
   const t = today(), d = D(t), aff = AFFIRMATIONS[hashStr(t + S.name) % AFFIRMATIONS.length];
   const qs = questState(), sm = summary(curMK());
   const ws = weekStart(t), ptN = S.pt.log.filter(p => p.kind === "pt" && weekStart(p.date) === ws).length;
-  const backupNudge = !cloud.ref && (!S.lastBackup ? daysBetween(S.created, t) >= 3 : daysBetween(S.lastBackup, t) >= 14);
+  const keyNudge = !!cloud.key && !S.keySaved;
+  const backupNudge = !cloud.key && !keyNudge && (!S.lastBackup ? daysBetween(S.created, t) >= 3 : daysBetween(S.lastBackup, t) >= 14);
   return `<div class="panel"><div class="sen">${spr("sen", 4)}<div class="bubble"><span class="muted" style="font-weight:800">Sen's affirmation for ${esc(S.name)}</span><br>${esc(aff)}</div></div></div>
   <div class="grid2">
     <div class="panel"><h2>🎁 Doorstep</h2>
@@ -809,6 +879,8 @@ function vToday() {
     <div class="tile"><div class="k">Hip PT this week</div><div class="v">${Math.min(ptN, 2)} / 2 ${ptN >= 2 ? "🎉" : "🦵"}</div><div class="muted">${ptN >= 2 ? "Goal met! Anything extra is a bonus." : "Twice a week, gentle and steady"}</div></div>
     <div class="tile"><div class="k">Water today</div><div class="v">${d.water || 0} / 8 💧</div><div class="muted">little sips count</div></div>
   </div>
+  ${keyNudge ? `<div class="panel"><div class="row">${spr("charlie", 3)}<p style="flex:1"><b>Charlie is guarding your farm key!</b> 🔑 Save it somewhere safe (like your Notes app) so your farm can follow you to a new phone.</p></div>${keyBox()}
+    <div class="row"><button class="btn sm white" data-act="copyKey">📋 Copy key</button><button class="btn sm green" data-act="keySaved">I saved it ✓</button></div></div>` : ""}
   ${backupNudge ? `<div class="panel row">${spr("charlie", 3)}<p style="flex:1"><b>Charlie wants to bury a backup bone!</b> 🦴 It's a little save file, just in case.</p><button class="btn" data-act="backup">Bury a bone</button></div>` : ""}`;
 }
 
@@ -1127,10 +1199,14 @@ function vSettings() {
       <button class="btn sm white" data-act="catDel" data-id="${c.id}" aria-label="Delete ${esc(c.name)}">✕</button></div>`).join("") || `<p class="muted">None yet.</p>`}
       <button class="btn sm white" data-act="catAdd" data-t="${g}">+ Add</button>`).join("")}
   </div>
+  <div class="panel"><h2>🔑 Farm key</h2>
+    ${cloud.key ? `<p class="muted">Your farm saves to the cloud under this secret key, automatically. On a new phone, open the farm and tap <b>"I already have a farm key"</b>. Keep it private: anyone with the key can open your farm.</p>
+    ${keyBox()}<div class="row"><button class="btn sm white" data-act="copyKey">📋 Copy key</button>${S.keySaved ? `<span class="muted">✓ You saved it</span>` : `<button class="btn sm green" data-act="keySaved">I saved it ✓</button>`}<button class="btn link" data-act="enterKey" data-s="1">Use a different key</button></div>` : `<p class="muted">No farm key on this device yet.</p><button class="btn sm" data-act="newKey">Make a farm key</button>`}
+    <p class="muted" style="font-weight:800" id="saveStat2">${esc(cloud.status)}</p></div>
   <div class="panel"><div class="row">${spr("charlie", 4)}<div style="flex:1"><h2>🦴 Charlie's backup bones</h2>
-    <p class="muted">${cloud.ref ? "☁️ Your farm is saving to " + esc(cloud.ref.where || "your Village account") + " automatically, so it's safe on a new phone too. A bone is an extra copy, just in case. " : "Log in to the <a href=\"../village/\">Family Village</a> on this browser and your farm backs up automatically. Until then, Charlie buries a save file on your device. "}${S.lastBackup ? "Last bone buried " + dLabel(S.lastBackup) + "." : "No bones buried yet."}</p></div></div>
+    <p class="muted">An extra copy, just in case: a save file on your device (it includes your farm key). ${S.lastBackup ? "Last bone buried " + dLabel(S.lastBackup) + "." : "No bones buried yet."}</p></div></div>
     <div class="row"><button class="btn" data-act="backup">🦴 Bury a bone (download)</button><label class="btn white" style="display:inline-block">⛏️ Dig up a bone<input type="file" id="restore" accept=".json,application/json" hidden></label></div></div>
-  <div class="panel"><h2>🌧️ Start over</h2><p class="muted">Clears the whole farm${cloud.ref ? ", here and in your Village backup" : " from this browser"}. Bury a bone first if you might want it back.</p><button class="btn white" data-act="reset">Reset farm</button></div>`;
+  <div class="panel"><h2>🌧️ Start over</h2><p class="muted">Clears the whole farm${cloud.key ? ", here and in the cloud" : " from this browser"}. Bury a bone first if you might want it back.</p><button class="btn white" data-act="reset">Reset farm</button></div>`;
 }
 
 /* ---------------- actions ---------------- */
@@ -1193,16 +1269,21 @@ const ACT = {
   catAdd: d => { S.cats.push({id: uid(), name: "New " + {income: "income", bill: "bill", spending: "crop", savings: "jar"}[d.t], type: d.t, amt: 0, goal: 0}); commit(); },
   catDel: d => { const c = cat(d.id); confirmBox(`Delete <b>${esc(c.name)}</b>? Past entries stay in your ledger.`, "Delete", () => { S.cats = S.cats.filter(x => x.id !== d.id); commit(); }); },
   backup: () => {
-    const blob = new Blob([JSON.stringify(S, null, 1)], {type: "application/json"});
+    const blob = new Blob([JSON.stringify(Object.assign({}, S, {_farmKey: cloud.key || undefined}), null, 1)], {type: "application/json"});
     const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "sunbeam-farm-bone-" + today() + ".json";
     document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
     S.lastBackup = today(); toast("Charlie buried a bone! 🦴 (It's in your downloads.)"); commit();
   },
-  reset: () => confirmBox("Really clear the whole farm" + (cloud.ref ? ", including the Village backup" : " from this browser") + "? This can't be undone unless you have a backup bone.", "Clear it", () => {
-    try { localStorage.removeItem(KEY); } catch (e) {}
+  reset: () => confirmBox("Really clear the whole farm" + (cloud.key ? ", including the cloud copy" : " from this browser") + "? This can't be undone unless you have a backup bone.", "Clear it", () => {
+    const k = cloud.key; clearTimeout(cloudT);
+    lsSet(KEY, null); setKey(null);
     S = null; OB = {step: 1, rows: []}; render();
-    if (cloud.ref) cloudPush({v: 1, reset: true, updatedAt: Date.now()});
-  })
+    if (k && sbc()) sbc().rpc("key_save_put", {p_key: k, p_game: "ashley", p_state: JSON.stringify({v: 1, reset: true}), p_updated: Date.now()}).then(() => {}, () => {});
+  }),
+  copyKey: () => copyKey(),
+  keySaved: () => { S.keySaved = true; toast("Charlie is relieved 🐾 Your farm is safe."); commit(); },
+  enterKey: d => enterKey(!!(d && d.s)),
+  newKey: () => { setKey(makeKey()); S.keySaved = false; commit(); }
 };
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-act]"); if (!b) return;
@@ -1216,7 +1297,7 @@ document.addEventListener("change", e => {
     const fr = new FileReader();
     fr.onload = () => {
       try { const d = JSON.parse(fr.result); if (!d || !Array.isArray(d.cats) || !d.months) throw 0;
-        confirmBox("Dig up this bone and replace the current farm with it?", "Dig it up", () => { S = normalize(d); save(); toast("Charlie found it! Farm restored 🦴✨"); render(); });
+        confirmBox("Dig up this bone and replace the current farm with it?", "Dig it up", () => { if (d._farmKey) setKey(cleanKey(d._farmKey)); else if (!cloud.key) setKey(makeKey()); delete d._farmKey; S = normalize(d); save(); toast("Charlie found it! Farm restored 🦴✨"); render(); });
       } catch (x) { toast("That doesn't look like one of Charlie's bones 🤔"); }
     };
     fr.readAsText(el.files[0]); return;
@@ -1243,10 +1324,17 @@ function normalize(d) {
   d.pt ||= {log: [], exercises: DEFAULT_EXERCISES.slice()};
   return d;
 }
-function boot() {
-  initCloud();
-  if (!S) { render(); return; }
-  normalize(S);
+async function boot() {
+  try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}
+  if (S) normalize(S);
+  render();
+  if (cloud.key) {
+    setSaveStat("☁ Checking the cloud…");
+    const took = await Promise.race([cloudPull(), new Promise(r => setTimeout(() => r(false), 6000))]);
+    if (took) render();
+  }
+  if (!S) return;
+  if (!cloud.key) { setKey(makeKey()); S.keySaved = false; }   // farms made before farm keys existed
   const t = today(), away = S.lastSeen ? daysBetween(S.lastSeen, t) : 0;
   if (S.lastSeen !== t) { S.visits = (S.visits || 0) + 1; }
   S.lastSeen = t; save(); render();
