@@ -226,8 +226,14 @@ function nextDue(b, from = new Date()) {
   if (billPaid(b, m) || (born && iso(d) < born)) d = mk(new Date(from.getFullYear(), from.getMonth() + 1, 1));
   return d;
 }
+// bills ticked paid on this page stay in the list (ticked) so a second tap undoes it
+const justMarked = new Set();
+function dueIn(b, m) { const [y, mo] = m.split('-').map(Number), last = new Date(y, mo, 0).getDate(); return new Date(y, mo - 1, Math.min(b.due_day, last), 12); }
 function upcoming(days = 35) {
   const now = new Date(), end = new Date(now.getTime() + days * 864e5), out = [];
+  D.bills.filter(b => b.active && b.kind !== 'oneoff' && b.due_day).forEach(b => {
+    [...justMarked].filter(k => k.startsWith(b.id + '|')).forEach(k => { const m = k.split('|')[1], paid = billPaid(b, m); if (paid) out.push({ b, d: dueIn(b, m), m, paid, late: false }); });
+  });
   D.bills.filter(b => b.active).forEach(b => {
     const d = nextDue(b, now); if (!d) return;
     const m = monthKey(iso(d)); const paid = billPaid(b, m);
@@ -454,22 +460,48 @@ async function commit(btn) {
 }
 
 /* ---------- manual entry ---------- */
+/* out_amt = money that LEFT the account. On a credit card a charge is + and a payment is −
+   (that's how card imports store it, and how estBalance counts it). A transfer has two
+   sides, so it asks "from" and "to" and records one entry for each account picked. */
+function transferRows(a, fromId, toId, base) {
+  const rows = [];
+  if (fromId) rows.push(Object.assign({}, base, { account_id: fromId, out_amt: r2(a) }));
+  if (toId) rows.push(Object.assign({}, base, { account_id: toId, out_amt: r2(-a) }));
+  if (!rows.length) rows.push(Object.assign({}, base, { account_id: null, out_amt: r2(a) }));
+  return rows;
+}
 function openAddTx(preset = {}) {
   const mine = D.accounts.filter(a => a.owner === D.user.id && !a.archived); let type = preset.type || 'expense';
+  const opts = (sel, none) => `<option value="">${none}</option>${mine.map(a => `<option value="${a.id}" ${a.id === sel ? 'selected' : ''}>${esc(a.name)}${isCredit(a) ? ' (card)' : ''}</option>`).join('')}`;
   const draw = () => {
+    const cash = mine.find(a => !isCredit(a)), card = mine.find(isCredit);
     const m = modal(`<h2>🪙 Log money</h2><div class="pseg" id="ptt">${[['expense', 'Spent'], ['income', 'Came in'], ['transfer', 'Transfer / card payment']].map(([k, l]) => `<button data-t="${k}" class="${type === k ? 'on' : ''}">${l}</button>`).join('')}</div>
      <div class="pf2"><label class="pl">Amount ($)<input id="pamt" type="number" step=".01" min="0" inputmode="decimal" placeholder="0.00"></label><label class="pl">Date<input id="pdate" type="date" value="${today()}"></label>
      ${type === 'expense' ? `<label class="pl full">Category<select id="pcat">${[1, 2, 3].map(t => `<optgroup label="${esc(skin().tiers[t][1])}">${D.cats.filter(c => c.tier === t).map(c => `<option value="${esc(c.id)}" ${c.id === preset.category ? 'selected' : ''}>${esc(c.name)}</option>`).join('')}</optgroup>`).join('')}</select></label>`
-       : type === 'income' ? `<label class="pl full">Source<select id="psrc">${INCOME_SRC.map(s => `<option>${esc(s)}</option>`).join('')}</select></label>` : `<div class="full pmuted" style="font-size:13px;margin-top:8px">Transfers are recorded but never counted as spending, so nothing gets double-counted.</div>`}
-     <label class="pl">Account<select id="pacct"><option value="">(none / cash)</option>${mine.map(a => `<option value="${a.id}">${esc(a.name)}</option>`).join('')}</select></label><label class="pl">Note<input id="pnote" placeholder="Hannaford, rent…"></label></div>
+       : type === 'income' ? `<label class="pl full">Source<select id="psrc">${INCOME_SRC.map(s => `<option>${esc(s)}</option>`).join('')}</select></label>` : ''}
+     ${type === 'transfer' ? `<label class="pl">From (where the money left)<select id="pfrom">${opts(cash && cash.id, '(outside / not tracked)')}</select></label><label class="pl">To (where it went, or the card you paid)<select id="pto">${opts(card && card.id, '(outside / not tracked)')}</select></label>
+       <div class="full pmuted" style="font-size:13px;margin-top:8px">Paying a card from checking? From = checking, To = the card. Checking goes down and what you owe goes down. Transfers never count as spending.</div>`
+       : `<label class="pl">Account<select id="pacct">${opts('', '(none / cash)')}</select></label>`}<label class="pl ${type === 'transfer' ? 'full' : ''}">Note<input id="pnote" placeholder="Hannaford, rent…"></label></div>
      <div class="prow psp" style="margin-top:14px"><span></span><button class="pbtn main" id="psv">Record it</button></div>`);
     $$('#ptt button', m).forEach(b => b.addEventListener('click', () => { type = b.dataset.t; draw(); }));
-    $('#psv', m).addEventListener('click', async () => {
+    const sv = $('#psv', m);
+    sv.addEventListener('click', async () => {
+      if (sv.disabled) return;
       const a = +$('#pamt', m).value; if (!(a > 0)) return toast('Enter an amount.');
-      const acct = D.accounts.find(x => x.id === $('#pacct', m).value); const outSign = type === 'income' ? -1 : 1;
-      const t = { household_id: D.me.household_id, owner: D.user.id, account_id: acct ? acct.id : null, date: $('#pdate', m).value, out_amt: r2(a * outSign), type, note: $('#pnote', m).value.trim() };
-      if (type === 'expense') t.category = $('#pcat', m).value; if (type === 'income') t.source = $('#psrc', m).value;
-      try { await q(sb.from('pot_tx').insert(t)); close(); toast(`Recorded ${money(a, 1)}`); loadAll(); } catch (e) { toast('Saving failed: ' + e.message); }
+      const base = { household_id: D.me.household_id, owner: D.user.id, date: $('#pdate', m).value, type, note: $('#pnote', m).value.trim() };
+      let rows;
+      if (type === 'transfer') {
+        const from = $('#pfrom', m).value, to = $('#pto', m).value;
+        if (from && from === to) return toast('From and To are the same account.');
+        rows = transferRows(a, from, to, base);
+      } else {
+        const t = Object.assign(base, { account_id: $('#pacct', m).value || null, out_amt: r2(type === 'income' ? -a : a) });
+        if (type === 'expense') t.category = $('#pcat', m).value; if (type === 'income') t.source = $('#psrc', m).value;
+        rows = [t];
+      }
+      sv.disabled = true; sv.textContent = 'Saving…';   // locked while saving, so a double-tap can't save it twice
+      try { await q(sb.from('pot_tx').insert(rows)); close(); toast(`Recorded ${money(a, 1)}`); loadAll(); }
+      catch (e) { sv.disabled = false; sv.textContent = 'Try again'; toast('Saving failed: ' + e.message); }
     });
   }; draw();
 }
@@ -553,6 +585,14 @@ function openBills(fromSetup, after) {
   $('#pbsv', m).addEventListener('click', async e => {
     e.target.disabled = true;
     try {
+      // a kept bill with no amount would save as a $0 bill: ask first, before saving anything
+      for (const r of $$('[data-bill]', m)) {
+        const g = n => $(`[name=${n}]`, r), name = g('n').value.trim();
+        if (r.dataset.del || !name || (r.dataset.preset && !g('keep').checked)) continue;
+        const or = r.dataset.preset ? ', or untick it' : ', or tap Remove';
+        if (!(+g('a').value > 0)) { e.target.disabled = false; g('a').focus(); return toast(`How much is ${name}? Type an amount${or}.`); }
+        if (!g('d').value) { e.target.disabled = false; g('d').focus(); return toast(r.dataset.kind === 'oneoff' ? `What date is ${name} due? Pick one${or}.` : `What day of the month is ${name} due? Type it${or}.`); }
+      }
       for (const r of $$('[data-bill]', m)) {
         const id = r.dataset.bill, g = n => $(`[name=${n}]`, r), name = g('n').value.trim();
         if (r.dataset.del) { if (id) await q(sb.from('pot_bills').update({ active: false }).eq('id', id)); continue; }
@@ -577,8 +617,8 @@ function billRow(b) {
 }
 async function togglePaid(billId, m) {
   const b = D.bills.find(x => x.id === billId); if (!b) return;
-  if (D.paid.some(p => p.bill_id === billId && p.month === m)) await q(sb.from('pot_bill_paid').delete().eq('bill_id', billId).eq('month', m));
-  else await q(sb.from('pot_bill_paid').insert({ bill_id: billId, month: m, household_id: D.me.household_id, paid_by: D.user.id }));
+  if (D.paid.some(p => p.bill_id === billId && p.month === m)) { await q(sb.from('pot_bill_paid').delete().eq('bill_id', billId).eq('month', m)); justMarked.delete(billId + '|' + m); }
+  else { await q(sb.from('pot_bill_paid').insert({ bill_id: billId, month: m, household_id: D.me.household_id, paid_by: D.user.id })); justMarked.add(billId + '|' + m); }
   await loadAll();
 }
 
@@ -689,7 +729,7 @@ function renderLedger(el, opts = {}) {
        return `<h3>${skin().tiers[t][0]} ${esc(skin().tiers[t][1])} <span class="pmuted" style="font-size:13px;font-family:var(--pf)">${money(ts)} of ${money(tb)}</span></h3><div class="pjars">${cs.map(c => { const s = spentIn(view, c.id, owner), b = budgetOf(c.id, owner), p = b ? s / b : (s > 0 ? 2 : 0);
          return `<div class="pjar" data-cat="${esc(c.id)}" tabindex="0"><div class="nm">${esc(c.name)}</div><div class="pbar"><i style="width:${Math.min(100, p * 100)}%;background:${p > 1 ? 'var(--pr)' : p > .85 ? 'var(--po)' : t === 1 ? 'var(--pa)' : 'var(--pg)'}"></i></div><div class="amt">${money(s)} of ${money(b)}${p > 1 ? ` · <span class="pbad">over ${money(s - b)}</span>` : b - s > 0 ? ` · ${money(b - s)} left` : ''}</div></div>`; }).join('')}</div>`; }).join('')}
      <h3>Entries <span class="pmuted" style="font-size:13px;font-family:var(--pf)">${T.length}</span></h3>
-     ${T.length ? `<div class="ptbl"><table><tr><th>Date</th><th>Amount</th><th>What</th><th>Note</th><th>Who</th><th></th></tr>${T.map(t => `<tr><td>${esc(t.date.slice(5))}</td><td class="${t.type === 'income' ? 'pok' : ''}">${t.type === 'transfer' ? '↔ ' : t.type === 'income' ? '+' : ''}${money(Math.abs(+t.out_amt), 1)}${t.type === 'expense' && +t.out_amt < 0 ? ' refund' : ''}</td><td>${esc(t.type === 'expense' ? catOf(t.category).name : t.type === 'income' ? t.source : 'Transfer')}</td><td>${esc(t.note || '')}</td><td>${esc(memberOf(t.owner).emoji)}</td><td>${t.owner === D.user.id ? `<button class="pbtn sm" data-del="${t.id}" aria-label="Delete">✕</button>` : ''}</td></tr>`).join('')}</table></div>` : `<p class="pmuted">Nothing for this month yet. Import a statement to fill it in.</p>`}`;
+     ${T.length ? `<div class="ptbl"><table><tr><th>Date</th><th>Amount</th><th>What</th><th>Note</th><th>Who</th><th></th></tr>${T.map(t => `<tr><td>${esc(t.date.slice(5))}</td><td class="${t.type === 'income' ? 'pok' : ''}">${t.type === 'transfer' ? '↔ ' : t.type === 'income' ? '+' : ''}${money(Math.abs(+t.out_amt), 1)}${t.type === 'expense' && +t.out_amt < 0 ? ' refund' : ''}${t.type === 'transfer' ? `<small class="pmuted" style="display:block">${+t.out_amt < 0 ? 'in' : 'out'}</small>` : ''}</td><td>${esc(t.type === 'expense' ? catOf(t.category).name : t.type === 'income' ? t.source : 'Transfer')}</td><td>${esc(t.note || '')}</td><td>${esc(memberOf(t.owner).emoji)}</td><td>${t.owner === D.user.id ? `<button class="pbtn sm" data-del="${t.id}" aria-label="Delete">✕</button>` : ''}</td></tr>`).join('')}</table></div>` : `<p class="pmuted">Nothing for this month yet. Import a statement to fill it in.</p>`}`;
     $$('[data-who]', el).forEach(b => b.addEventListener('click', () => { who = b.dataset.who; draw(); }));
     $$('[data-mv]', el).forEach(b => b.addEventListener('click', () => { view = shiftMonth(view, +b.dataset.mv); draw(); }));
     const act = { import: () => openImport(), add: () => openAddTx(), accts: () => openAccounts(), bud: () => openBudgets(), bills: () => openBills() };
