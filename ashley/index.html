@@ -9,6 +9,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
+<script src="../shared/cloudsave.js"></script>
 <style>
 :root{
   --ink:#4a3423;--ink2:#7a5f48;--parch:#fff6e2;--parch2:#f7e6c0;--edge:#e6c98e;
@@ -340,15 +342,44 @@ function num(v) {
 /* ---------------- state ---------------- */
 const KEY = "sunbeamFarm.ashley.v1";
 let S = null, storageOK = true;
-try { const raw = localStorage.getItem(KEY); if (raw) S = JSON.parse(raw); } catch (e) { storageOK = false; }
+try { const raw = localStorage.getItem(KEY); if (raw) { S = JSON.parse(raw); if (!S || !S.cats) S = null; } } catch (e) { storageOK = false; }
 function save() {
+  S.updatedAt = Date.now();
   try { localStorage.setItem(KEY, JSON.stringify(S)); }
-  catch (e) { if (storageOK) toast("This browser won't let me save 😿 Bury a backup bone in Settings!"); storageOK = false; }
+  catch (e) { if (storageOK && !cloud.ref) toast("This browser won't let me save 😿 Bury a backup bone in Settings!"); storageOK = false; }
+  clearTimeout(cloudT); cloudT = setTimeout(cloudPush, 1000);
+}
+
+/* ---------------- cloud save (Family Village account) ----------------
+   If someone is logged in to the Family Village on this browser, the farm
+   also saves to that account, so it survives a new phone or cleared data. */
+let cloud = {ref: null, busy: false, again: false, status: "Saved on this device"}, cloudT = null;
+async function cloudPush(payload) {
+  if (!cloud.ref || (!S && !payload)) return;
+  if (cloud.busy) { cloud.again = true; return; }
+  cloud.busy = true;
+  const st = payload || S;
+  try { await cloud.ref.set({state: JSON.stringify(st), updatedAt: st.updatedAt}); } catch (e) {}
+  cloud.busy = false; if (cloud.again) { cloud.again = false; cloudPush(); }
+}
+function setSaveStat(t) { cloud.status = t; const e = $("#saveStat"); if (e) e.textContent = t; }
+async function initCloud() {
+  if (!window.CloudSave) { setSaveStat("Saved on this device"); return; }
+  try {
+    const ref = await CloudSave.connect({game: "ashley", localKey: KEY, getState: () => S || {updatedAt: 0}, status: setSaveStat,
+      setState: d => {
+        if (!d || !Array.isArray(d.cats)) { S = null; try { localStorage.removeItem(KEY); } catch (e) {} }
+        else { S = normalize(d); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} OB = {step: 1, rows: []}; }
+        if (!$("#modal").hidden) closeModal();
+        render();
+      }});
+    if (ref) { cloud.ref = ref; if (S) cloudPush(); render(); }
+  } catch (e) { setSaveStat("Saved on this device"); }
 }
 function newState(name, farm, cats) {
   return {v: 1, name, farm, created: today(), cats, months: {}, xp: 0, level: 1, stars: 3, owned: [], hidden: [],
     days: {}, pt: {log: [], exercises: DEFAULT_EXERCISES.slice()}, journal: [], pendingLevels: [],
-    lastSeen: today(), visits: 1, lastBackup: null, lastCat: null};
+    lastSeen: today(), visits: 1, lastBackup: null, lastCat: null, updatedAt: Date.now()};
 }
 const M = mk => (S.months[mk] ||= {tx: [], inc: [], sav: [], bills: {}, nospend: [], harvested: false, billXP: {}});
 const D = ds => (S.days[ds ||= today()] ||= {});
@@ -732,7 +763,8 @@ function render() {
       <div class="starct" title="Stars to spend on decor">⭐ ${S.stars}</div>
     </div>
     <nav class="tabs">${tabs.map(([k, l]) => `<button class="tab ${tab === k ? "on" : ""}" data-act="tab" data-t="${k}">${l}</button>`).join("")}</nav>
-    ${body}`;
+    ${body}
+    <p class="muted" style="text-align:center;color:#2f4a1f;font-weight:800" id="saveStat">${esc(cloud.status)}</p>`;
   $("#root").querySelectorAll("canvas[data-spr]").forEach(drawSprite);
   afterRender();
 }
@@ -760,7 +792,7 @@ function vToday() {
   const t = today(), d = D(t), aff = AFFIRMATIONS[hashStr(t + S.name) % AFFIRMATIONS.length];
   const qs = questState(), sm = summary(curMK());
   const ws = weekStart(t), ptN = S.pt.log.filter(p => p.kind === "pt" && weekStart(p.date) === ws).length;
-  const backupNudge = (!S.lastBackup ? daysBetween(S.created, t) >= 3 : daysBetween(S.lastBackup, t) >= 14);
+  const backupNudge = !cloud.ref && (!S.lastBackup ? daysBetween(S.created, t) >= 3 : daysBetween(S.lastBackup, t) >= 14);
   return `<div class="panel"><div class="sen">${spr("sen", 4)}<div class="bubble"><span class="muted" style="font-weight:800">Sen's affirmation for ${esc(S.name)}</span><br>${esc(aff)}</div></div></div>
   <div class="grid2">
     <div class="panel"><h2>🎁 Doorstep</h2>
@@ -1096,9 +1128,9 @@ function vSettings() {
       <button class="btn sm white" data-act="catAdd" data-t="${g}">+ Add</button>`).join("")}
   </div>
   <div class="panel"><div class="row">${spr("charlie", 4)}<div style="flex:1"><h2>🦴 Charlie's backup bones</h2>
-    <p class="muted">Charlie buries a save file on your device. If this browser ever forgets your farm, dig it back up! ${S.lastBackup ? "Last bone buried " + dLabel(S.lastBackup) + "." : "No bones buried yet."}</p></div></div>
+    <p class="muted">${cloud.ref ? "☁️ Your farm is saving to " + esc(cloud.ref.where || "your Village account") + " automatically, so it's safe on a new phone too. A bone is an extra copy, just in case. " : "Log in to the <a href=\"../village/\">Family Village</a> on this browser and your farm backs up automatically. Until then, Charlie buries a save file on your device. "}${S.lastBackup ? "Last bone buried " + dLabel(S.lastBackup) + "." : "No bones buried yet."}</p></div></div>
     <div class="row"><button class="btn" data-act="backup">🦴 Bury a bone (download)</button><label class="btn white" style="display:inline-block">⛏️ Dig up a bone<input type="file" id="restore" accept=".json,application/json" hidden></label></div></div>
-  <div class="panel"><h2>🌧️ Start over</h2><p class="muted">Clears the whole farm from this browser. Bury a bone first if you might want it back.</p><button class="btn white" data-act="reset">Reset farm</button></div>`;
+  <div class="panel"><h2>🌧️ Start over</h2><p class="muted">Clears the whole farm${cloud.ref ? ", here and in your Village backup" : " from this browser"}. Bury a bone first if you might want it back.</p><button class="btn white" data-act="reset">Reset farm</button></div>`;
 }
 
 /* ---------------- actions ---------------- */
@@ -1166,9 +1198,10 @@ const ACT = {
     document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
     S.lastBackup = today(); toast("Charlie buried a bone! 🦴 (It's in your downloads.)"); commit();
   },
-  reset: () => confirmBox("Really clear the whole farm from this browser? This can't be undone unless you have a backup bone.", "Clear it", () => {
+  reset: () => confirmBox("Really clear the whole farm" + (cloud.ref ? ", including the Village backup" : " from this browser") + "? This can't be undone unless you have a backup bone.", "Clear it", () => {
     try { localStorage.removeItem(KEY); } catch (e) {}
     S = null; OB = {step: 1, rows: []}; render();
+    if (cloud.ref) cloudPush({v: 1, reset: true, updatedAt: Date.now()});
   })
 };
 document.addEventListener("click", e => {
@@ -1183,7 +1216,7 @@ document.addEventListener("change", e => {
     const fr = new FileReader();
     fr.onload = () => {
       try { const d = JSON.parse(fr.result); if (!d || !Array.isArray(d.cats) || !d.months) throw 0;
-        confirmBox("Dig up this bone and replace the current farm with it?", "Dig it up", () => { S = d; S.pendingLevels ||= []; S.hidden ||= []; save(); toast("Charlie found it! Farm restored 🦴✨"); render(); });
+        confirmBox("Dig up this bone and replace the current farm with it?", "Dig it up", () => { S = normalize(d); save(); toast("Charlie found it! Farm restored 🦴✨"); render(); });
       } catch (x) { toast("That doesn't look like one of Charlie's bones 🤔"); }
     };
     fr.readAsText(el.files[0]); return;
@@ -1205,9 +1238,15 @@ document.addEventListener("keydown", e => {
 });
 
 /* ---------------- boot ---------------- */
+function normalize(d) {
+  d.pendingLevels ||= []; d.hidden ||= []; d.owned ||= []; d.days ||= {}; d.journal ||= []; d.months ||= {};
+  d.pt ||= {log: [], exercises: DEFAULT_EXERCISES.slice()};
+  return d;
+}
 function boot() {
+  initCloud();
   if (!S) { render(); return; }
-  S.pendingLevels ||= []; S.hidden ||= []; S.pt ||= {log: [], exercises: DEFAULT_EXERCISES.slice()};
+  normalize(S);
   const t = today(), away = S.lastSeen ? daysBetween(S.lastSeen, t) : 0;
   if (S.lastSeen !== t) { S.visits = (S.visits || 0) + 1; }
   S.lastSeen = t; save(); render();
