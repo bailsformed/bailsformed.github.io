@@ -357,8 +357,12 @@ async function go(tab, silent) {
   try {
     if (!silent) { await loadCore(); sb.rpc('log_visit', { p_tab: tab }).then(() => {}, () => {}); }
     await VIEWS[tab].load();
-    if (S.tab === tab) $('#main').innerHTML = VIEWS[tab].render();
-    if (VIEWS[tab].after) VIEWS[tab].after();
+    const html = VIEWS[tab].render();
+    // a background refresh only redraws when something actually changed, so taps aren't swallowed
+    if (S.tab === tab && !(silent && html === S.shownHtml)) {
+      $('#main').innerHTML = html; S.shownHtml = html;
+      if (VIEWS[tab].after) VIEWS[tab].after();
+    }
   } catch (e) { console.error(e); if (!silent) $('#main').innerHTML = `<div class="panel pad">😬 ${esc(e.message || e)}</div>`; }
   if (!silent) window.scrollTo(0, 0);
 }
@@ -375,7 +379,7 @@ function startTimers() {
   S.timers = [
     setInterval(() => { if (!document.hidden && S.tab === 'kitchen') pollKitchen(); }, 6000),
     setInterval(async () => {
-      if (document.hidden || S.tab === 'kitchen' || busyTyping()) return;
+      if (document.hidden || S.tab === 'kitchen' || busyTyping() || Date.now() - (S.lastTap || 0) < 2500) return;
       try { await loadCore(); } catch (e) { return; }
       go(S.tab, true);
     }, 30000),
@@ -1595,6 +1599,7 @@ const A = {
   resultsPick: el => { S.resultsView = el.value; go('awards', true); },
 };
 
+document.addEventListener('pointerdown', () => { S.lastTap = Date.now(); }, true);
 document.addEventListener('click', e => {
   const b = e.target.closest('[data-a]');
   if (!b || b.disabled) return;

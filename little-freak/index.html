@@ -551,9 +551,12 @@ function showNext() {
   const c = $("#ctrl");
   c.innerHTML = `<button class="btn next" id="nextBtn">Continue ▸</button>`;
   const btn = $("#nextBtn"); btn.onclick = advance; btn.focus({ preventScroll: true });
+  // a double-tap on an answer shouldn't also skip the next line: ignore Continue for a moment
+  btn.disabled = true; setTimeout(() => { btn.disabled = false; }, 300);
 }
 function answer(b, value, opt) {
   const st = roomState(R.id);
+  if (ROOMS[R.id].script[st.i] !== b) return;   // already answered (a second tap): never skip the next question
   st.a[b.key] = value;
   if (b.key === "name" && R.id === "intro") S.name = String(value).trim().slice(0, 30);
   addLine({ w: "me", t: Array.isArray(value) ? value.join(" · ") : String(value) });
@@ -966,7 +969,7 @@ function renderAll() { renderHUD(); if (view !== "scene") VIEWS[view] ? VIEWS[vi
 
 $("#herFace").innerHTML = face("me");
 $$("#tabs button").forEach(b => b.onclick = () => go(b.dataset.v));
-if (new Date().getHours() >= 23) setTimeout(() => award("night"), 2000);
+{ const h = new Date().getHours(); if (h >= 23 || h < 4) setTimeout(() => award("night"), 2000); }   // 11 p.m. to 4 a.m.
 renderHUD(); VIEWS.map();
 window.addEventListener("load", initWebSave);   // waits for the cloud-save scripts below
 </script>
