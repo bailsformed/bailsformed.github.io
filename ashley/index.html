@@ -168,8 +168,6 @@ label.f{display:block;font-weight:800;font-size:14px;margin:10px 0 4px}
 .item .e{font-size:32px}
 .item .n{font-weight:900;font-size:14px;line-height:1.25;min-height:36px}
 .item.owned{background:var(--green2)}
-.letter{background:#fffdf5 repeating-linear-gradient(180deg,transparent 0 27px,#e8dcc6 27px 28px);border:3px solid #c9a46e;border-radius:6px;padding:18px 20px;font-size:17px;line-height:28px;font-style:italic}
-.letter .sig{text-align:right;font-weight:800}
 
 /* modal */
 #modal{position:fixed;inset:0;z-index:50;background:rgba(40,25,10,.55);display:flex;align-items:center;justify-content:center;padding:14px}
@@ -216,24 +214,19 @@ label.f{display:block;font-weight:800;font-size:14px;margin:10px 0 4px}
 /* ================================================================
    Sunbeam Farm: a cozy budget farm for Ashley.
    Everything is saved in this browser (localStorage). Nothing is uploaded.
-   ✏️ Personalize: edit LEO_LETTERS, AFFIRMATIONS, SEN_GIFTS below.
+   ✏️ Personalize: edit AFFIRMATIONS, SEN_GIFTS, LEVEL_CHEERS below.
    ================================================================ */
 
-// Leo's letters, shown when Ashley reaches each level (index = level).
-const LEO_LETTERS = {
-  2: "Ash,\nLook at you, planting a whole farm! I know spreadsheets are not your favorite thing, so I'm extra proud you're doing this. Sen already thinks she runs the place.",
-  3: "Hey sweetheart,\nLittle check-in: you're doing great. Not \"great for a beginner\", just great. Thank you for taking care of us and of you.",
-  4: "Ash,\nI was going to write something clever but mostly I just wanted to say I love you. Also Charlie buried something in the yard again. Probably fine.",
-  5: "To my favorite farmer,\nFive levels! Every little log is a little vote for future-us. I love building a life with you.",
-  6: "Ash,\nRemember: an over-budget month isn't a failure, it's information. You are allowed to be human. I'm on your team either way.",
-  7: "Sweetheart,\nYour hips, your heart, your budget: you've been showing up for all of it. Coffee's on me this weekend (from the fun budget, obviously).",
-  8: "Ash,\nSen has asked me to formally inform you that the sunbeam cushion is \"acceptable.\" High praise. I think you're amazing.",
-  9: "Hey you,\nI love watching you get a little more confident about money every month. Proud of you is an understatement.",
-  10: "Ash,\nLevel TEN. Honestly, the farm looks incredible and so do you. Thank you for being the kindest person I know, including to yourself.",
-  11: "Sweetheart,\nOne kind thing about you, from me: you make every room feel like home. Even the pixel ones.",
-  12: "Ash,\nQueen of the Valley! I'd follow you to any farm. Let's keep growing this little life together. Love you always."
-};
-const LEO_DEFAULT = "Ash,\nAnother level! I'm so proud of you and I love you more than Charlie loves that chew bone. And that's a lot.";
+// Sen's little cheers on level-up (one is picked at random).
+const LEVEL_CHEERS = [
+  "Sen did a happy loaf on the cushion. That's cat for \"I'm so proud of you.\"",
+  "Sen headbutted your hand twice. Big honor.",
+  "Sen brought you a level-up toy mouse. It is slightly damp. It is a gift.",
+  "Sen is purring so loud Charlie came to check on her.",
+  "Sen gave you the slowest, most loving blink. 😽",
+  "Charlie did zoomies. Sen pretended not to care, but she watched the whole time.",
+  "Leo looked up from the couch and said \"Look at you go!\" Sen agreed."
+];
 
 const AFFIRMATIONS = [
   "You are allowed to take up space, even the whole sunbeam.",
@@ -354,7 +347,7 @@ function save() {
 }
 function newState(name, farm, cats) {
   return {v: 1, name, farm, created: today(), cats, months: {}, xp: 0, level: 1, stars: 3, owned: [], hidden: [],
-    days: {}, pt: {log: [], exercises: DEFAULT_EXERCISES.slice()}, journal: [], letters: [], pendingLetters: [],
+    days: {}, pt: {log: [], exercises: DEFAULT_EXERCISES.slice()}, journal: [], pendingLevels: [],
     lastSeen: today(), visits: 1, lastBackup: null, lastCat: null};
 }
 const M = mk => (S.months[mk] ||= {tx: [], inc: [], sav: [], bills: {}, nospend: [], harvested: false, billXP: {}});
@@ -404,7 +397,7 @@ function floater(txt) {
 }
 function addXP(n) {
   S.xp += n; floater("+" + n + " XP");
-  while (S.xp >= xpNeed(S.level)) { S.xp -= xpNeed(S.level); S.level++; S.stars += 5; S.pendingLetters.push(S.level); }
+  while (S.xp >= xpNeed(S.level)) { S.xp -= xpNeed(S.level); S.level++; S.stars += 5; S.pendingLevels.push(S.level); }
 }
 function addStars(n) { S.stars += n; setTimeout(() => floater("+" + n + " ⭐"), 250); }
 function toast(msg, ms = 3200) {
@@ -413,24 +406,26 @@ function toast(msg, ms = 3200) {
 }
 function commit() { save(); render(); flush(); }
 function flush() {
-  if (!$("#modal").hidden || !S.pendingLetters.length) return;
-  const L = S.pendingLetters.shift(); if (!S.letters.includes(L)) S.letters.push(L); save();
-  showLetter(L, true);
-}
-function showLetter(L, fresh) {
-  modal(`<h2>${fresh ? "🎉 Level " + L + "! " : ""}${esc(title(L))}</h2>
-    ${fresh ? `<p class="muted">You earned 5 ⭐. And there's a letter on the doorstep, from Leo.</p>` : ""}
-    <div class="letter">${esc(LEO_LETTERS[L] || LEO_DEFAULT).replace(/\n/g, "<br>")}<div class="sig">♥ Leo</div></div>
-    <p style="text-align:right"><button class="btn green" data-act="close">Keep it forever 💌</button></p>`);
+  if (!$("#modal").hidden || !S.pendingLevels.length) return;
+  const L = S.pendingLevels.shift(); save();
+  modal(`<div class="sen">${spr("sen", 5)}<div class="bubble"><span class="px" style="font-size:22px">🎉 Level ${L}!</span><br>You're now a <b>${esc(title(L))}</b>. Here are 5 ⭐ for the shop.</div></div>
+    <p style="margin-top:12px">${esc(pick(LEVEL_CHEERS))}</p>
+    <p style="text-align:right"><button class="btn pink" data-act="close">Yay! 💕</button></p>`);
 }
 
 /* ---------------- pixel sprites ---------------- */
 const SPR = {
-  sen: {p: {o: "#6b5a70", w: "#ffffff", g: "#e4e0ec", p: "#f7a8c0", e: "#3a3350", n: "#e57f9c"}, g: [
-    "..o..........o..", ".owo........owo.", ".owpo......opwo.", ".owwwoooooowwwo.", ".o" + "w".repeat(12) + "o.",
-    ".owwewwwwwwewwo.", ".owwewwwwwwewwo.", ".oppwwwwwwwwppo.", ".owwwwwnnwwwwwo.", "..o" + "w".repeat(10) + "o..",
-    "...oowwwwwwoo...", "..o" + "w".repeat(10) + "o..", ".o" + "w".repeat(12) + "o.", ".o" + "w".repeat(12) + "oo",
-    ".owgwwwwwwwwgwow", "..oooooooooooooo"]},
+  // Sen: a sweet white-and-gray girl with green eyes
+  sen: {p: {o: "#5f5868", w: "#ffffff", g: "#e6e3ec", G: "#a7a3b3", D: "#8a8697", p: "#f7a8c0", e: "#7fd17a", k: "#2f6b3a", n: "#e57f9c", b: "#f7a8c0"}, g: [
+    "..o..........o..", ".oGo........oGo.", ".oGpo......opGo.", ".oGGGoooooowGGo.", ".oGGGGGwwwwwwGo.",
+    ".oGGewwwwwwewwo.", ".oGGkwwwwwwkwwo.", ".obbwwwwwwwwbbo.", ".owwwwwnnwwwwwo.", "..o" + "w".repeat(10) + "o..",
+    "...oowwwwwwoo...", "..oww" + "G".repeat(4) + "wwwwo..", ".owwGGDGGwwwwwo.", ".owwwGGGwwwwwwoo",
+    ".owgwwwwwwwwgwoG", "..oooooooooooooG"]},
+  // Leo: just hanging out
+  leo: {p: {H: "#5a3a22", S: "#f0c39a", e: "#2a1d17", M: "#c96a6a", T: "#6f9fd8", t: "#5884bd", P: "#4a4d6e", B: "#3b2f2a"}, g: [
+    "....HHHHHH....", "...HHHHHHHH...", "...HSSSSSSH...", "...SSeSSeSS...", "...SSSSSSSS...", "....SSMMSS....", ".....SSSS.....",
+    "...TTTTTTTT...", "..TTTttTTTTT..", "..STTTttTTTS..", "..STTTTTTTTS..", "...TTTTTTTT...", "...PPPPPPPP...", "...PPP..PPP...",
+    "...PPP..PPP...", "...BBB..BBB..."]},
   charlie: {p: {o: "#4a3326", b: "#7a4a2a", c: "#c98d52", w: "#f3dcb6", e: "#2a1d17", n: "#2a1d17", t: "#f48aa0", r: "#d94b4b", y: "#f2c94c"}, g: [
     "....oooooooo....", "...occcccccco...", ".oobccccccccboo.", "obbbceccccecbbbo", "obbbceccccecbbbo", "obbbccccccccbbbo",
     "obbocccnncccobbo", ".obocccttcccobo.", "..oo.occcco.oo..", "....orryyrro....", "...occcyyccco...", "..o" + "c".repeat(10) + "o..",
@@ -1072,16 +1067,15 @@ function vHome() {
       ${has("yarn") ? `<div class="it" style="left:30%;top:93%;font-size:.6em">🧶</div>` : ""}
       ${spr("sen", 4, `style="${senPos};width:10%"`)}
       ${spr("charlie", 4, `style="left:56%;top:96%;width:11%"`)}
+      ${spr("leo", 4, `style="left:82%;top:93%;width:9%" title="Leo, just hanging out"`)}
       ${has("bone") ? `<div class="it" style="left:67%;top:96%;font-size:.6em">🦴</div>` : ""}
       ${has("lights") ? `<div class="lights">${Array.from({length: 16}, (_, i) => `<b style="background:${lightColors[i % 5]};color:${lightColors[i % 5]};animation-delay:${(i % 4) * .4}s"></b>`).join("")}</div>` : ""}
     </div>
-    <p class="muted">${S.owned.length ? "Sen and Charlie love what you've done with the place." : "It's a little empty… earn ⭐ from quests, gifts and harvests to decorate!"}</p>
+    <p class="muted">${S.owned.length ? "Sen, Charlie and Leo love what you've done with the place." : "Leo, Sen and Charlie are hanging out. It's a little empty… earn ⭐ from quests, gifts and harvests to decorate!"}</p>
   </div>
   <div class="panel"><div class="spread"><h2>🛍️ Sen's Little Shop</h2><div class="starct">⭐ ${S.stars}</div></div>
     <div class="shop">${DECOR.map(it => { const o = S.owned.includes(it.id); return `<div class="item ${o ? "owned" : ""}"><div class="e">${it.e}</div><div class="n">${esc(it.n)}</div><div class="muted" style="font-size:12.5px">${esc(it.d)}</div>
-      ${o ? `<button class="btn sm white" data-act="hide" data-id="${it.id}">${S.hidden.includes(it.id) ? "Put out" : "Put away"}</button>` : `<button class="btn sm" data-act="buy" data-id="${it.id}" ${S.stars < it.c ? "disabled" : ""}>⭐ ${it.c}</button>`}</div>`; }).join("")}</div></div>
-  <div class="panel"><h2>💌 Leo's letters</h2>
-    ${S.letters.length ? `<div class="row">${S.letters.slice().sort((a, b) => a - b).map(L => `<button class="btn white" data-act="letter" data-l="${L}">✉️ Level ${L}</button>`).join("")}</div>` : `<p class="muted">Leo writes you a little letter every time you level up. The first one comes at level 2!</p>`}</div>`;
+      ${o ? `<button class="btn sm white" data-act="hide" data-id="${it.id}">${S.hidden.includes(it.id) ? "Put out" : "Put away"}</button>` : `<button class="btn sm" data-act="buy" data-id="${it.id}" ${S.stars < it.c ? "disabled" : ""}>⭐ ${it.c}</button>`}</div>`; }).join("")}</div></div>`;
 }
 
 /* ---------------- SETTINGS ---------------- */
@@ -1163,7 +1157,6 @@ const ACT = {
     S.stars -= it.c; S.owned.push(it.id); toast(`${it.e} ${esc(it.n)} is in the farmhouse now!`); commit();
   },
   hide: d => { S.hidden = S.hidden.includes(d.id) ? S.hidden.filter(x => x !== d.id) : [...S.hidden, d.id]; commit(); },
-  letter: d => showLetter(+d.l, false),
   stSave: () => { S.name = $("#stName").value.trim() || S.name; S.farm = $("#stFarm").value.trim() || S.farm; toast("Saved 🌱"); commit(); },
   catAdd: d => { S.cats.push({id: uid(), name: "New " + {income: "income", bill: "bill", spending: "crop", savings: "jar"}[d.t], type: d.t, amt: 0, goal: 0}); commit(); },
   catDel: d => { const c = cat(d.id); confirmBox(`Delete <b>${esc(c.name)}</b>? Past entries stay in your ledger.`, "Delete", () => { S.cats = S.cats.filter(x => x.id !== d.id); commit(); }); },
@@ -1190,7 +1183,7 @@ document.addEventListener("change", e => {
     const fr = new FileReader();
     fr.onload = () => {
       try { const d = JSON.parse(fr.result); if (!d || !Array.isArray(d.cats) || !d.months) throw 0;
-        confirmBox("Dig up this bone and replace the current farm with it?", "Dig it up", () => { S = d; S.pendingLetters ||= []; S.hidden ||= []; save(); toast("Charlie found it! Farm restored 🦴✨"); render(); });
+        confirmBox("Dig up this bone and replace the current farm with it?", "Dig it up", () => { S = d; S.pendingLevels ||= []; S.hidden ||= []; save(); toast("Charlie found it! Farm restored 🦴✨"); render(); });
       } catch (x) { toast("That doesn't look like one of Charlie's bones 🤔"); }
     };
     fr.readAsText(el.files[0]); return;
@@ -1214,7 +1207,7 @@ document.addEventListener("keydown", e => {
 /* ---------------- boot ---------------- */
 function boot() {
   if (!S) { render(); return; }
-  S.pendingLetters ||= []; S.hidden ||= []; S.pt ||= {log: [], exercises: DEFAULT_EXERCISES.slice()};
+  S.pendingLevels ||= []; S.hidden ||= []; S.pt ||= {log: [], exercises: DEFAULT_EXERCISES.slice()};
   const t = today(), away = S.lastSeen ? daysBetween(S.lastSeen, t) : 0;
   if (S.lastSeen !== t) { S.visits = (S.visits || 0) + 1; }
   S.lastSeen = t; save(); render();
