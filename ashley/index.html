@@ -45,7 +45,7 @@ canvas.spr{image-rendering:pixelated;image-rendering:crisp-edges;display:block}
 .btn.green{background:#9fdc7c}.btn.pink{background:var(--pink)}.btn.blue{background:#9ed2f2}.btn.white{background:#fffaf0}.btn.lav{background:var(--lav)}
 .btn.sm{font-size:14px;padding:4px 9px;border-width:2px;box-shadow:0 2px 0 var(--woodd)}
 .btn.big{font-size:21px;padding:12px 20px}
-.btn.link{background:none;border:none;box-shadow:none;padding:2px 4px;text-decoration:underline;color:var(--ink2);font-family:Nunito,sans-serif;font-size:14px}
+.btn.link{background:none;border:none;box-shadow:none;padding:2px 4px;text-decoration:underline;color:var(--ink2);font-family:Nunito,sans-serif;font-size:14px;min-height:44px;padding:10px 6px}
 input,select,textarea{font:inherit;color:var(--ink);background:#fffdf7;border:2px solid #c9a46e;border-radius:8px;padding:7px 9px;max-width:100%}
 input:focus,select:focus,textarea:focus{outline:3px solid var(--pink);outline-offset:1px}
 textarea{width:100%;min-height:70px;resize:vertical}
@@ -196,6 +196,8 @@ label.f{display:block;font-weight:800;font-size:14px;margin:10px 0 4px}
   h1{font-size:21px}
   .rv{grid-template-columns:26px 1fr 1fr}
   .rv .nmcell{grid-column:2/-1}
+  .rv select{grid-column:2;width:100%;min-width:0}
+  .rv input[inputmode]{grid-column:3}
   .rv .meta{grid-column:2/-1}
   .cat-ed{grid-template-columns:1fr 1fr 34px}
   .cat-ed .nmc{grid-column:1/-1}
@@ -215,7 +217,10 @@ label.f{display:block;font-weight:800;font-size:14px;margin:10px 0 4px}
 "use strict";
 /* ================================================================
    Sunbeam Farm: a cozy budget farm for Ashley.
-   Everything is saved in this browser (localStorage). Nothing is uploaded.
+   The farm saves in this browser (localStorage) and to the cloud under a
+   private random farm key (see "cloud save by private farm key" below).
+   An uploaded spreadsheet is read here in the browser; the file itself is
+   never sent anywhere, only the budget numbers parsed from it are saved.
    ✏️ Personalize: edit AFFIRMATIONS, SEN_GIFTS, LEVEL_CHEERS below.
    ================================================================ */
 
@@ -700,7 +705,7 @@ function renderOnboard() {
       <div class="spread" style="margin-top:16px"><button class="btn link" data-act="enterKey">I already have a farm key 🔑</button><button class="btn green big" data-act="ob2">Next 🌱</button></div></div>`;
   } else if (OB.step === 2) {
     root.innerHTML = `<div class="panel" style="max-width:640px;margin:30px auto">
-      <div class="sen">${spr("sen", 4)}<div class="bubble">Got a budget spreadsheet, ${esc(OB.name)}? Hand it over and I'll turn it into a garden. It never leaves this device, promise. 🔒</div></div>
+      <div class="sen">${spr("sen", 4)}<div class="bubble">Got a budget spreadsheet, ${esc(OB.name)}? Hand it over and I'll turn it into a garden. The file itself stays on your device. Only the budget numbers I pull out of it are saved, privately under your farm key. 🔒</div></div>
       <label class="drop" id="drop" style="display:block;margin-top:16px">
         <div style="font-size:40px">📄➡️🌱</div>
         <div class="px" style="font-size:20px;font-weight:700">Drop your spreadsheet here, or tap to pick it</div>
@@ -820,7 +825,7 @@ function plantFarm() {
 function render() {
   if (!S) return renderOnboard();
   if (OB.step === 3 && OB.mode === "merge") return renderReview();
-  $("#fab").hidden = false;
+  $("#fab").hidden = tab === "farm";   // the Farm tab has its own in-page Log button
   const need = xpNeed(S.level);
   const tabs = [["today", "☀️ Today"], ["farm", "🌱 Farm"], ["care", "💗 Self-care"], ["home", "🏡 Farmhouse"], ["settings", "⚙️ Settings"]];
   const body = {today: vToday, farm: vFarm, care: vCare, home: vHome, settings: vSettings}[tab]();

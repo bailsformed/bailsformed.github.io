@@ -76,6 +76,7 @@ const CSS = `
 .pot *{box-sizing:border-box}.pot h2,.pot h3{font-family:var(--phf);margin:4px 0 8px}.pot h3{color:var(--pa);font-size:19px}
 .pot .pbtn{font:inherit;font-weight:800;font-size:14px;border:1px solid var(--pe);border-radius:999px;padding:7px 14px;cursor:pointer;background:var(--pp2);color:var(--pk)}
 .pot .pbtn.main{background:var(--pa);color:#1a1320;border-color:var(--pa)}.pot .pbtn.sm{font-size:12px;padding:4px 10px}.pot .pbtn:disabled{opacity:.5;cursor:default}
+.pot .pbtn[data-mv]{min-width:44px;min-height:44px;font-size:20px;padding:4px 10px}
 .pot .pbtn:focus-visible,.pot [tabindex]:focus-visible{outline:2px solid var(--pa);outline-offset:2px}
 .pot input,.pot select,.pot textarea{font:inherit;font-size:15px;background:var(--pp2);color:var(--pk);border:1px solid var(--pe);border-radius:10px;padding:8px 10px;width:100%}
 .pot label.pl{display:block;font-weight:800;font-size:12px;letter-spacing:.8px;text-transform:uppercase;color:var(--pd);margin:10px 0 4px}

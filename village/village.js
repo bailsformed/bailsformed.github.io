@@ -336,14 +336,14 @@ function renderShell() {
     <div class="panel top">
       <span style="font-size:26px">🏡</span>
       <h1 class="px">${esc(CFG.name)}</h1>
-      <button class="me-btn help" data-a="guide" title="Village Guide">❓</button>
+      <button class="me-btn help love" data-a="loveMenu" title="psst" aria-label="Send someone an anonymous lowkey proud of you">🫶</button>
+      <button class="me-btn" data-a="guide" title="Village Guide" style="font-size:20px">❓</button>
       <button class="me-btn" data-a="profile" title="You">${esc(S.me.avatar)}</button>
     </div>
     <div id="hv"></div>
     <div id="main"></div>
   </div>
-  <nav class="tabs">${TABS.map(([k, ic, lb]) => `<button data-a="tab" data-t="${k}" id="tab-${k}"><span>${ic}</span>${lb}</button>`).join('')}</nav>
-  <button class="secret-love" data-a="loveMenu" title="psst">🫶</button>`;
+  <nav class="tabs">${TABS.map(([k, ic, lb]) => `<button data-a="tab" data-t="${k}" id="tab-${k}"><span>${ic}</span>${lb}</button>`).join('')}</nav>`;
 }
 
 async function go(tab, silent) {

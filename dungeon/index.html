@@ -211,6 +211,7 @@ td{border-bottom:1px dashed var(--edge);padding:6px;vertical-align:top}
 .boss{display:flex;gap:10px;align-items:center;border:2px solid var(--line);box-shadow:0 0 0 2px var(--edge);background:var(--panel2);padding:7px 10px;margin-top:8px;border-radius:3px}
 .boss .hp{flex:1;min-width:0}.boss .hp b{font-family:"Pixelify Sans",monospace}.boss .hp small{display:block;color:var(--dim)}
 .boss.dead{opacity:.55}.boss.dead b{text-decoration:line-through}
+#setBtn{min-width:44px;min-height:44px;font-size:20px;padding:4px 10px}
 </style>
 </head>
 <body>
@@ -1301,7 +1302,7 @@ $("#setBtn").addEventListener("click",()=>{
    <button class="btn ghost" id="bkLoad" style="margin-top:6px">Restore from code</button>
    <div class="dl" style="margin-top:10px;font-size:13px;font-weight:700">Or restore from a backup file: <input type="file" id="bkFile" accept=".json,application/json"></div>
    <h3 class="px">🔄 Replay</h3>
-   <button class="btn ghost" id="introBtn">Replay the intro</button> <button class="btn ghost" id="resetBtn">Reset all progress</button>
+   <button class="btn ghost" id="introBtn">Replay the intro</button> <button class="btn ghost" id="resetBtn">Reset all progress</button> <a class="btn ghost" href="guide.html" style="text-decoration:none;white-space:nowrap;display:inline-block">📖 Game guide</a>
    <div id="resetMsg" class="muted" style="font-size:13px;margin-top:6px"></div>`);
   $("#sname").addEventListener("input",e=>{S.stoat=e.target.value||"Lady Bailsworth";save();renderHUD();});
   $("#bkCopy").addEventListener("click",()=>copyText(JSON.stringify(S),"Backup code",markBackup));

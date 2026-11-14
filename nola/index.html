@@ -1016,7 +1016,7 @@ function openSettings(){const sw=(arr,key)=>arr.map((c,i)=>`<button class="sw ${
    <div class="row"><button class="btn sky dl" id="bkDl">⬇ Download backup</button><button class="btn ghost" id="bkCp">📋 Copy backup code</button></div>
    <label class="f dl">Restore from a backup file</label><input class="dl" type="file" id="bkF" accept=".json,application/json">
    <label class="f" for="bkT">Or paste a backup code</label><textarea id="bkT" rows="2"></textarea><button class="btn sm ghost" id="bkR" style="margin-top:6px">Restore</button>
-   <h3>🔄 Other</h3><div class="row"><button class="btn sm ghost" id="intro2">Replay Pip's hello</button><button class="btn sm ghost" id="rst">Start over</button></div>`);
+   <h3>🔄 Other</h3><div class="row"><button class="btn sm ghost" id="intro2">Replay Pip's hello</button><button class="btn sm ghost" id="rst">Start over</button><a class="btn sm ghost" href="guide.html" style="text-decoration:none">📖 Game guide</a></div>`);
   const seg=(sel,fn)=>$$(sel+" button").forEach(b=>b.addEventListener("click",()=>{$$(sel+" button").forEach(x=>x.classList.toggle("on",x===b));fn(b.dataset.v);save();SFX.tap();}));
   seg("#fsz",v=>{S.fs=+v;applyComfort();});seg("#fnt",v=>{S.font=v;applyComfort();});if(canSpeak)seg("#rate",v=>S.read_rate=+v);
   seg("#sty",v=>{S.me.style=+v;$("#avPrev").innerHTML=avatar();renderTop();renderIsland();});
