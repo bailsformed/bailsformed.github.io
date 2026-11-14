@@ -645,7 +645,7 @@ const GAME_INFO = {
 
 function parseGame(raw) {
   const t = raw.trim();
-  let m = t.match(/Wordle\s+([\d][\d,.\s]*?)\s+([1-6X])\/6/i);
+  let m = t.match(/Wordle\D{0,12}?([\d][\d,.\s]*?)\D{0,12}?([1-6X])\s*\/\s*6/i);
   if (m) return { game: 'wordle', puzzle: m[1].replace(/[^\d]/g, ''), score: m[2].toUpperCase() === 'X' ? 7 : +m[2] };
   m = t.match(/Connections[\s\S]*?Puzzle\s*#\s*([\d,]+)/i);
   if (m) {
@@ -662,6 +662,39 @@ function parseGame(raw) {
     return { game: 'mini', puzzle: dm ? dm[1] : today(), score: (+m[1]) * 60 + (+m[2]) };
   }
   return null;
+}
+
+// Tap-to-post word games: pick the game, tap your score, post. One score per game per day.
+const GAME_PICK = {
+  wordle: { ask: 'How many guesses did it take?', opts: [[1, '1'], [2, '2'], [3, '3'], [4, '4'], [5, '5'], [6, '6'], [7, 'X']] },
+  connections: { ask: 'How many mistakes?', opts: [[0, '0'], [1, '1'], [2, '2'], [3, '3'], [4, '💀']] },
+  strands: { ask: 'How many hints did you use?', opts: [[0, '0'], [1, '1'], [2, '2'], [3, '3'], [4, '4'], [5, '5+']] },
+  mini: { ask: 'What was your time?', time: true },
+};
+function gamePicker() {
+  const g = S.gamePick || 'wordle', gp = GAME_PICK[g];
+  const posted = ((S.data.daily && S.data.daily.scores) || []).some(x => x.member_id === S.myId && x.game === g);
+  const tabs = Object.keys(GAME_INFO).map(k => `<button class="chip ${k === g ? 'on' : ''}" data-a="pickGame" data-g="${k}">${GAME_INFO[k].em} ${GAME_INFO[k].name}</button>`).join('');
+  let body;
+  if (posted) body = `<p class="center" style="margin:12px 0 4px;font-weight:800">✅ You already posted today's ${GAME_INFO[g].name}.</p>`;
+  else if (gp.time) body = `<div class="tiny muted" style="margin:10px 0 6px">${gp.ask}</div>
+      <div class="row" style="align-items:center;gap:6px"><input id="g-min" class="gtime" inputmode="numeric" maxlength="2" placeholder="0" aria-label="Minutes"><b>:</b><input id="g-sec" class="gtime" inputmode="numeric" maxlength="2" placeholder="00" aria-label="Seconds"></div>
+      <button class="btn" style="margin-top:10px;width:100%" data-a="postPick">Post my time</button>`;
+  else body = `<div class="tiny muted" style="margin:10px 0 6px">${gp.ask}</div>
+      <div class="gscores">${gp.opts.map(([v, l]) => `<button class="gscore ${S.gameScore === v ? 'on' : ''}" data-a="pickScore" data-v="${v}">${l}</button>`).join('')}</div>
+      <button class="btn" style="margin-top:10px;width:100%" data-a="postPick" ${S.gameScore === undefined ? 'disabled' : ''}>Post my score</button>`;
+  return `<div class="row" style="flex-wrap:wrap;gap:6px">${tabs}</div>${body}
+    <details class="tiny" style="margin-top:10px"><summary class="muted">or paste your share text</summary>
+      <textarea id="g-raw" placeholder="Paste your Wordle, Connections, Strands, or Mini result here" style="margin-top:6px"></textarea>
+      <button class="btn plain" style="margin-top:6px;width:100%" data-a="postScore">Post pasted result</button></details>`;
+}
+async function saveScore(p, raw) {
+  const { error } = await sb.from('game_scores').insert({ game: p.game, score: p.score, puzzle: today(), raw: (raw || '').slice(0, 600), member_id: S.myId });
+  if (error) return toast(error.code === '23505' ? `You already posted today's ${GAME_INFO[p.game].name} 👀` : '😬 ' + error.message);
+  S.gameScore = undefined;
+  if (p.game === 'wordle' && p.score <= 2) confetti(30, ['🟩', '🤯', '✨']);
+  toast(`${GAME_INFO[p.game].em} Posted: ${GAME_INFO[p.game].fmt(p.score)}`);
+  await loadCore(); go('daily', true);
 }
 
 const Daily = {
@@ -716,11 +749,8 @@ const Daily = {
       <h2 class="title px">🧠 Daily Trivia <small>${new Date().toLocaleDateString(undefined, { timeZone: CFG.tz, weekday: 'long', month: 'short', day: 'numeric' })}</small></h2>
       ${tri}
       <button class="btn plain" style="width:100%" data-a="addTrivia">➕ Add a trivia question (family lore welcome)</button>
-      <h2 class="title px">🟩 Word Games <small>paste your share text</small></h2>
-      <div class="panel pad">
-        <textarea id="g-raw" placeholder="Paste your Wordle, Connections, Strands, or Mini result here"></textarea>
-        <button class="btn" style="margin-top:8px;width:100%" data-a="postScore">Post my score</button>
-      </div>
+      <h2 class="title px">🟩 Word Games <small>tap your score</small></h2>
+      <div class="panel pad" id="gpick">${gamePicker()}</div>
       ${boards || '<div class="panel pad center muted">No scores posted today. Cowards.</div>'}
     </div>`;
   },
@@ -1519,16 +1549,24 @@ const A = {
     await q(sb.rpc('add_trivia', { p_question: question, p_choices: choices, p_answer: map[okIdx], p_category: $('#t-cat').value }));
     closeModal(); toast('🧠 Added to the vault. Act natural.');
   },
+  pickGame(b) { S.gamePick = b.dataset.g; S.gameScore = undefined; $('#gpick').innerHTML = gamePicker(); },
+  pickScore(b) { S.gameScore = +b.dataset.v; $('#gpick').innerHTML = gamePicker(); },
+  async postPick() {
+    const g = S.gamePick || 'wordle';
+    let score = S.gameScore;
+    if (GAME_PICK[g].time) {
+      const mi = parseInt($('#g-min').value || '0', 10), se = parseInt($('#g-sec').value || '0', 10);
+      if (!(mi >= 0) || !(se >= 0) || se > 59 || mi * 60 + se <= 0) return toast('Type your time, like 1 : 42 ⏱️');
+      score = mi * 60 + se;
+    }
+    if (score === undefined) return toast('Tap your score first 👆');
+    await saveScore({ game: g, score });
+  },
   async postScore() {
     const raw = $('#g-raw').value.trim();
     const p = parseGame(raw);
-    if (!p) return toast("Couldn't read that. Paste the whole share text from Wordle, Connections, Strands, or the Mini.");
-    const { error } = await sb.from('game_scores').insert({ ...p, raw: raw.slice(0, 600), member_id: S.myId });
-    if (error) return toast(error.code === '23505' ? "You already posted that one 👀" : '😬 ' + error.message);
-    $('#g-raw').value = '';
-    if (p.game === 'wordle' && p.score <= 2) confetti(30, ['🟩', '🤯', '✨']);
-    toast(`${GAME_INFO[p.game].em} Posted: ${GAME_INFO[p.game].fmt(p.score)}`);
-    await loadCore(); go('daily', true);
+    if (!p) return toast("Couldn't read that one. Easier way: tap the game and your score above 👆");
+    await saveScore(p, raw);
   },
   // quotes
   addQuote() {
