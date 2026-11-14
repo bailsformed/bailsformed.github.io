@@ -1,0 +1,41 @@
+name: Site checks
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Site checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      # node and python3 come preinstalled on ubuntu-latest; nothing to install.
+      - name: Tool versions
+        run: node --version && python3 --version
+      - name: JavaScript parses
+        if: always()
+        run: python3 .github/scripts/check_site.py js
+      - name: App manifests and icons
+        if: always()
+        run: python3 .github/scripts/check_site.py manifest
+      - name: Local links exist
+        if: always()
+        run: python3 .github/scripts/check_site.py links
+      - name: HTML basics
+        if: always()
+        run: python3 .github/scripts/check_site.py html
+      - name: No secret keys committed
+        if: always()
+        run: python3 .github/scripts/check_site.py secrets
