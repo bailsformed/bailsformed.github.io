@@ -929,7 +929,7 @@ function openSettings(){openModal(`<button class="btn ghost sm x" onclick="close
   <button class="btn dl" id="bkD">⬇ Download backup</button> <button class="btn ghost" id="bkC">Copy backup code</button>
   <label class="f dl">Restore from file</label><input type="file" class="dl" id="bkF" accept=".json,application/json">
   <label class="f" for="bkT">Or paste backup code</label><textarea id="bkT" rows="2"></textarea><button class="btn ghost sm" id="bkR" style="margin-top:6px">Restore</button>
-  <h3 class="raj">Other</h3><button class="btn ghost sm" id="rb">Replay briefing</button> <button class="btn ghost sm" id="rs">Reset everything</button>`);
+  <h3 class="raj">Other</h3><button class="btn ghost sm" id="rb">Replay briefing</button> <button class="btn ghost sm" id="rs">Reset everything</button> <a class="btn ghost sm" href="guide.html" style="text-decoration:none">📖 Game guide</a>`);
   $("#snd").addEventListener("change",e=>{S.sound=e.target.checked;save();});
   const mark=()=>{S.lastBackup=Date.now();S.snooze=0;changed();};
   $("#bkD").addEventListener("click",async()=>{if(await download(`open-field-backup-${today()}.json`,JSON.stringify(S,null,1),"application/json")){toast("BACKUP SAVED","g");mark();}});

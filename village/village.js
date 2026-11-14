@@ -343,7 +343,7 @@ function renderShell() {
     <div id="main"></div>
   </div>
   <nav class="tabs">${TABS.map(([k, ic, lb]) => `<button data-a="tab" data-t="${k}" id="tab-${k}"><span>${ic}</span>${lb}</button>`).join('')}</nav>
-  <button class="secret-love" data-a="loveMenu" title="psst">🫶</button>`;
+  <button class="secret-love" data-a="loveMenu" title="psst" aria-label="Send someone an anonymous lowkey proud of you">🫶</button>`;
 }
 
 async function go(tab, silent) {
