@@ -3,6 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#120f18">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Dungeon">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>MED SCHOOL DUNGEON</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=VT323&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -913,11 +918,15 @@ async function pushCloud(){if(!cloud.ref)return;if(cloud.writing){cloud.pending=
   try{await cloud.ref.set({state:JSON.stringify(S),updatedAt:S.updatedAt});setSaveStat(cloud.ref.where?"☁ Saved to "+cloud.ref.where:"☁ Synced");}catch(e){setSaveStat("Saved on this device");}
   cloud.writing=false;if(cloud.pending){cloud.pending=false;pushCloud();}}
 function setSaveStat(t){const el=$("#savestat");if(el)el.textContent=t;}
+// Pot login from inside the game (for installed apps, which have their own storage on iPhone)
+window.potOpts={user:()=>window.Pot&&Pot.D.user?(Pot.D.user.email||"your Pot login"):null,
+  signIn:()=>{if(!window.Pot)return;Pot.start({skin:"dungeon",theme:"dungeon",prompt:true}).then(()=>location.reload());},
+  signOut:()=>{if(window.Pot)Pot.signOut();}};
 async function initCloud(){
   if(!(window.claude&&typeof window.claude.use==="function")){
     // on the website: save to PB's Pot login, or a Village account (shared/cloudsave.js)
     if(!window.CloudSave)return;
-    const ref=await CloudSave.connect({game:"dungeon",localKey:KEY,getState:()=>S,status:setSaveStat,
+    const ref=await CloudSave.connect({game:"dungeon",localKey:KEY,getState:()=>S,status:setSaveStat,pot:window.potOpts,
       potClient:()=>{if(!window.Pot)return null;window.Pot.start({skin:"dungeon",theme:"dungeon"});return window.Pot.client();},
       setState:d=>{S=Object.assign(freshState(),d);localStorage.setItem(KEY,JSON.stringify(S));renderAll();}});
     if(ref){cloud.ref=ref;const fs=$("#footSave");if(fs)fs.textContent="progress saves on this device + "+ref.where;await pushCloud();}
@@ -1295,6 +1304,8 @@ $("#setBtn").addEventListener("click",()=>{
   openModal(`<button class="btn sm ghost mclose" onclick="closeModal()">✕</button><h2 class="px">⚙︎ Save & settings</h2>
    <p style="font-size:14px">Progress saves automatically on this device, and to your account when you're signed in to the Loot Ledger or the Family Village on this browser (status at the top). No account here? Use the backup code below to move it.</p>
    <label style="font-weight:800;font-size:13px">Companion name<br><input id="sname" value="${esc(S.stoat)}" maxlength="28"></label>
+   <h3 class="px">☁ Cloud save</h3>
+   <button class="btn ghost" onclick="window.CloudSave&&CloudSave.account({pot:window.potOpts})">☁ Cloud save: log in or out</button>
    <h3 class="px">💾 Weekly backup</h3>
    <p class="muted" style="font-size:13px">A backup saves <b>everything</b>: hours, courses, grades, quests, notes and loot. Last full backup: <b>${S.lastBackup?new Date(S.lastBackup).toLocaleDateString():"never"}</b>.</p>
    <button class="btn dl" id="bkDl">⬇ Download backup file</button> <button class="btn ghost" id="bkCopy">📋 Copy backup code</button>

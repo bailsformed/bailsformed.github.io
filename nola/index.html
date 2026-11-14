@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Magnolia">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#bfe8ee">
 <title>Magnolia Isle 🌸</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1013,6 +1017,7 @@ function openSettings(){const sw=(arr,key)=>arr.map((c,i)=>`<button class="sw ${
    <p class="muted" style="font-size:.85rem">As you grow you'll unlock a bow (level 3), a stethoscope (level 5), and your white coat at the very end. 🥼</p>
    <h3>💾 Keep your island safe</h3>
    <p style="margin-top:0">Your island saves on this device, and to your Village account when you're logged in to the Family Village on this browser. A weekly backup is still a good idea. Last backup: <b>${S.lastBackup?new Date(S.lastBackup).toLocaleDateString():"not yet"}</b></p>
+   <div class="row" style="margin-bottom:8px"><button class="btn ghost" onclick="window.CloudSave&&CloudSave.account()">☁ Cloud save: log in or out</button></div>
    <div class="row"><button class="btn sky dl" id="bkDl">⬇ Download backup</button><button class="btn ghost" id="bkCp">📋 Copy backup code</button></div>
    <label class="f dl">Restore from a backup file</label><input class="dl" type="file" id="bkF" accept=".json,application/json">
    <label class="f" for="bkT">Or paste a backup code</label><textarea id="bkT" rows="2"></textarea><button class="btn sm ghost" id="bkR" style="margin-top:6px">Restore</button>

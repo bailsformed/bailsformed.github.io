@@ -3,6 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#160f1c">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Apothecary">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>The Underworld Apothecary</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1512,6 +1517,7 @@ function openSettings(){openModal(`<h2>Settings & Scrolls</h2>
  <h3>📜 The Scroll Room: every CSV</h3><div class="muted" style="font-size:13px;margin-bottom:6px">Download opens straight in Excel or Google Sheets. Copy pastes into cell A1.</div>
  <div style="display:grid;gap:6px">${Object.entries(EXPORTS).map(([k,E])=>`<div class="row sp" style="background:#1f1627;border:1px solid var(--edge);border-radius:10px;padding:6px 10px"><span>${esc(E.label)}</span><span class="row"><button class="btn sm ghost" data-copy="${k}">Copy</button><button class="btn sm gold" data-dl="${k}">⬇ CSV</button></span></div>`).join("")}</div>
  <h3>💾 Full backup</h3><div class="muted" style="font-size:13px">${IN_CLAUDE?"Saves everything to your Claude account automatically.":"Saves to your Village or Pot login when you're logged in on this browser."} A weekly backup file is extra peace of mind. Last: ${S.lastBackup?new Date(S.lastBackup).toLocaleDateString():"never"}.</div>
+ <div class="row" style="margin-top:6px"><button class="btn ghost" onclick="window.CloudSave&&CloudSave.account()">☁ Cloud save: log in or out</button></div>
  <div class="row" style="margin-top:6px"><button class="btn gold" id="bkd">⬇ Download backup</button><button class="btn ghost" id="bkc">Copy backup code</button></div>
  <label class="f">Restore from file</label><input type="file" id="bkf" accept=".json,application/json"><label class="f" for="bkt">Or paste a code</label><textarea id="bkt" rows="2"></textarea><button class="btn ghost sm" id="bkr" style="margin-top:6px">Restore</button>
  <h3>🔒 Private pack</h3><div class="muted" style="font-size:13px">${S.pack?"Loaded. Your personal rites, labels and the sealed letter are in your save.":"Not loaded. Load the private pack file from your Mac to bring in your personal rites, labels and numbers."}</div>

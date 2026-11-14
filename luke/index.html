@@ -3,6 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#121611">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Open Field">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>OPERATION: OPEN FIELD</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Saira+Stencil+One&family=Rajdhani:wght@500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -926,6 +931,7 @@ function restoreText(t){try{const d=JSON.parse(t);if(!d||!d.m)throw 0;S=Object.a
 function openSettings(){openModal(`<button class="btn ghost sm x" onclick="closeModal()">✕</button><h2 class="sten">SYSTEM</h2>
   <label class="raj" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="snd" style="width:auto" ${S.sound?"checked":""}> SOUND EFFECTS</label>
   <h3 class="raj">Secure your data</h3><p class="muted" style="margin-top:0">Progress saves on this device, and to your Village account when you're logged in to the Family Village on this browser. Back up weekly anyway. Last backup: <b>${S.lastBackup?new Date(S.lastBackup).toLocaleDateString():"never"}</b></p>
+  <div style="margin-bottom:8px"><button class="btn ghost" onclick="window.CloudSave&&CloudSave.account()">☁ Cloud save: log in or out</button></div>
   <button class="btn dl" id="bkD">⬇ Download backup</button> <button class="btn ghost" id="bkC">Copy backup code</button>
   <label class="f dl">Restore from file</label><input type="file" class="dl" id="bkF" accept=".json,application/json">
   <label class="f" for="bkT">Or paste backup code</label><textarea id="bkT" rows="2"></textarea><button class="btn ghost sm" id="bkR" style="margin-top:6px">Restore</button>

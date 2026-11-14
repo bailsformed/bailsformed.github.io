@@ -29,7 +29,10 @@ function fresh() {
 let S = fresh();
 try { const r = localStorage.getItem(KEY); if (r) S = Object.assign(fresh(), JSON.parse(r)); } catch (e) {}
 let cloud = {ref:null, w:false, p:false}, stT = null;
-function save() { S.updatedAt = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} clearTimeout(stT); stT = setTimeout(push, 1000); }
+// ask the browser not to clear this site's storage when space runs low (harmless if refused)
+let persistAsked = false;
+function save() { S.updatedAt = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+  if (!persistAsked) { persistAsked = true; try { navigator.storage && navigator.storage.persist && navigator.storage.persist().catch(() => {}); } catch (e) {} } clearTimeout(stT); stT = setTimeout(push, 1000); }
 async function push() { if (!cloud.ref) return; if (cloud.w) { cloud.p = true; return; } cloud.w = true;
   try { await cloud.ref.set({state:JSON.stringify(S), updatedAt:S.updatedAt}); } catch (e) {} cloud.w = false; if (cloud.p) { cloud.p = false; push(); } }
 function setSaveStat(t) { const e = $("#saveStat"); if (e) e.textContent = t; }
@@ -585,6 +588,7 @@ $("#setBtn").onclick = () => {
    <label class="f full" style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="sCalm" style="width:auto" ${S.calm ? "checked" : ""}> Calm mode (fewer animations)</label></div>
    <div class="foot"><span></span><button class="btn mint" id="sSave">Save</button></div>
    <h3>💾 Backup</h3><p class="muted small" style="margin-top:0">Your progress saves on this device${cloud.ref ? " and to your Village account" : ""}. Download a backup once in a while, just in case.</p>
+   <div class="row"><button class="btn white sm" onclick="window.CloudSave&&CloudSave.account()">☁ Cloud save: log in or out</button></div>
    <div class="row"><button class="btn white sm" id="bDl">⬇️ Download backup</button><label class="btn white sm" style="cursor:pointer">⬆️ Restore backup<input type="file" id="bUp" accept=".json,application/json" style="display:none"></label><button class="btn white sm" id="bIntro">👋 Replay intro</button><a class="btn white sm" href="guide.html" style="text-decoration:none">📖 Game guide</a></div>
    <p class="muted small">Want to keep progress if you switch phones? Log in to the <a href="../village/">Family Village</a> on this browser and it backs up automatically.</p>`);
   $("#sSave").onclick = () => { S.name = $("#sName").value.trim() || "Kyla Bug"; S.state = $("#sState").value; S.fandom = $("#sFan").value.trim(); S.hotMode = $("#sHot").value; S.sound = $("#sSnd").value === "1"; S.calm = $("#sCalm").checked;
