@@ -1,0 +1,28 @@
+{
+  "id": "/ashley/",
+  "name": "Sunbeam Farm",
+  "short_name": "Sunbeam Farm",
+  "start_url": "/ashley/",
+  "scope": "/ashley/",
+  "display": "standalone",
+  "background_color": "#fff6e2",
+  "theme_color": "#8cc56b",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
