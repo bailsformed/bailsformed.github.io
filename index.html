@@ -57,6 +57,12 @@ a.card:focus-visible{outline:3px dashed var(--pink);outline-offset:3px}
 .card.farm{background:linear-gradient(180deg,#fff6e2,#e4f4d4);box-shadow:0 4px 0 #5e3a1d,0 0 0 2px #8cc56b,0 0 18px #ffd45a66}
 .card.farm .name{color:#5e3a1d}
 
+.card.sq{display:flex;gap:16px;align-items:center;background:linear-gradient(180deg,#f3ecff,#ffe9f1);box-shadow:0 4px 0 #1d1629,0 0 0 2px #8a6fd1,0 0 18px #8a6fd166}
+.card.sq .big{font-size:34px;flex:none}
+.card.sq h3{margin:0 0 4px;font-size:22px}
+.card.sq p{margin:0 0 10px;font-size:14px;line-height:1.45;color:var(--ink2)}
+.card.sq .chip{background:#8a6fd1;color:#fff}
+
 /* welcome back banner (only when this browser is logged in to the Village) */
 .welcome{display:none;margin-top:14px;padding:12px 16px;font-size:15px;line-height:1.4}
 .welcome.on{display:block}
@@ -75,6 +81,7 @@ footer{color:#b9aacc;font-size:12px;text-align:center;margin-top:22px}
   .grid{grid-template-columns:1fr;gap:12px}
   .card.village{flex-direction:column;align-items:flex-start;gap:6px}
   .card.village .roofs{font-size:28px}
+  .card.sq{flex-direction:column;align-items:flex-start;gap:6px}
   .who .name{font-size:22px}
 }
 </style>
@@ -133,6 +140,18 @@ footer{color:#b9aacc;font-size:12px;text-align:center;margin-top:22px}
       <span class="chip yours">⭐ Your game</span>
     </a>
   </div>
+
+  <div class="stars">✦ ✦ ✦</div>
+  <h2 class="px">🎁 Want a game for your person?</h2>
+  <p class="hint">Play a free demo and put someone you love in it.</p>
+  <a class="card panel sq" href="demo/">
+    <div class="big" aria-hidden="true">🎮</div>
+    <div>
+      <h3 class="px">SideQuest free demo</h3>
+      <p>Type their name, pick their sidekick and the boss they're beating, then play a tiny adventure starring them. Custom games from SideQuest Game Studio.</p>
+      <span class="chip">▶ Play the demo</span>
+    </div>
+  </a>
 
   <div class="stars">✦ ✦ ✦</div>
   <h2 class="px">🏡 Family? Come on in</h2>
