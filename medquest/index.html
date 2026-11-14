@@ -1217,7 +1217,7 @@ $("#setBtn").addEventListener("click",()=>{
    <h3 class="px">🔄 Replay</h3>
    <button class="btn ghost" id="introBtn">Replay the Sage's intro</button>
    <button class="btn ghost" id="resetBtn" style="margin-left:6px">Reset all progress</button>
-   <a class="btn ghost" style="margin-left:6px;text-decoration:none" href="guide.html">📖 Game guide</a>
+   <a class="btn ghost" style="margin-left:6px;text-decoration:none;white-space:nowrap;display:inline-block" href="guide.html">📖 Game guide</a>
    <div id="resetMsg" class="muted" style="font-size:13px;margin-top:6px"></div>`);
   $("#bkCopy").addEventListener("click",()=>copyText(JSON.stringify(S),"Backup code",markBackup));
   $("#bkDl").addEventListener("click",async()=>{if(await download(`medquest-backup-${fileStamp()}.json`,JSON.stringify(S,null,1),"application/json")){markBackup();toast("💾 Backup file downloaded");}});

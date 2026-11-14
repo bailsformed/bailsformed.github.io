@@ -48,8 +48,8 @@ label.lbl{display:block;font-weight:800;margin:10px 0 4px}
 .err{color:var(--bad);font-weight:800;min-height:1.2em}
 /* top bar */
 .top{display:flex;align-items:center;gap:10px;padding:10px 14px}
-.top h1{font-size:22px}
-.me-btn{margin-left:6px;border:3px solid var(--ink);border-radius:50%;width:46px;height:46px;font-size:24px;background:#fff;display:grid;place-items:center}
+.top h1{font-size:22px;min-width:0}
+.me-btn{margin-left:6px;border:3px solid var(--ink);border-radius:50%;width:46px;height:46px;font-size:24px;background:#fff;display:grid;place-items:center;flex:none}
 /* bottom nav */
 nav.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--paper);border-top:3px solid var(--ink);display:flex;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom));z-index:20}
 nav.tabs button{background:none;border:0;display:flex;flex-direction:column;align-items:center;font-family:"Pixelify Sans";font-size:11px;padding:4px 6px;border-radius:6px;min-width:52px;position:relative}
@@ -134,8 +134,8 @@ nav.tabs button.on{background:#ffe7a6}
 .house .tags{font-size:13px;min-height:16px}
 .scholar-tag{margin:2px}
 .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:6px;z-index:60;font-weight:800;max-width:90vw;text-align:center}
-.secret-love{position:fixed;right:10px;bottom:80px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:#fff8;border:2px solid var(--ink);border-radius:50%;font-size:22px;opacity:.75;z-index:15;box-shadow:0 2px 0 var(--ink)}
-.secret-love:hover,.secret-love:focus-visible{opacity:1}
+.me-btn.love{font-size:20px}
+@media(max-width:420px){.top h1{font-size:18px}.me-btn{margin-left:4px}}
 /* phones: comfortable ~44px tap targets */
 @media(max-width:699px),(pointer:coarse){
   .emojis{gap:8px}

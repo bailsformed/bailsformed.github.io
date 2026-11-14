@@ -1302,7 +1302,7 @@ $("#setBtn").addEventListener("click",()=>{
    <button class="btn ghost" id="bkLoad" style="margin-top:6px">Restore from code</button>
    <div class="dl" style="margin-top:10px;font-size:13px;font-weight:700">Or restore from a backup file: <input type="file" id="bkFile" accept=".json,application/json"></div>
    <h3 class="px">🔄 Replay</h3>
-   <button class="btn ghost" id="introBtn">Replay the intro</button> <button class="btn ghost" id="resetBtn">Reset all progress</button> <a class="btn ghost" href="guide.html" style="text-decoration:none">📖 Game guide</a>
+   <button class="btn ghost" id="introBtn">Replay the intro</button> <button class="btn ghost" id="resetBtn">Reset all progress</button> <a class="btn ghost" href="guide.html" style="text-decoration:none;white-space:nowrap;display:inline-block">📖 Game guide</a>
    <div id="resetMsg" class="muted" style="font-size:13px;margin-top:6px"></div>`);
   $("#sname").addEventListener("input",e=>{S.stoat=e.target.value||"Lady Bailsworth";save();renderHUD();});
   $("#bkCopy").addEventListener("click",()=>copyText(JSON.stringify(S),"Backup code",markBackup));
