@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>bailsformed's workshop</title>
+<meta name="description" content="A showcase of the little pixel games and tools Bailey has made for herself, her family and her friends.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#3b2f4a;--ink2:#6b5a7a;--paper:#fffaf0;--muted:#e9dcc6;--pink:#f29bb5;--gold:#f6c453;--purple:#8a6fd1}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:Nunito,system-ui,sans-serif;
+  background:radial-gradient(circle at 20% 10%,#3d3057 0,transparent 40%),radial-gradient(circle at 80% 90%,#3a2d52 0,transparent 40%),#2b2240}
+.wrap{max-width:960px;margin:0 auto;padding:20px 16px 40px}
+.px{font-family:"Pixelify Sans",monospace}
+.panel{background:var(--paper);border:3px solid var(--ink);border-radius:4px;box-shadow:0 4px 0 #1d1629,inset 0 -4px 0 var(--muted)}
+.back{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;color:#e3d6f3;text-decoration:none;font-size:15px}
+.back:hover{color:#fff}
+.back:focus-visible,a.btn:focus-visible{outline:3px dashed var(--pink);outline-offset:3px}
+header{display:flex;gap:18px;align-items:center;padding:18px 20px;margin-top:6px}
+header svg{width:72px;image-rendering:pixelated;flex:none;background:#cfe8ff;border:3px solid var(--ink);border-radius:4px;padding:6px}
+h1{font-size:30px;margin:0;line-height:1.15}
+.sub{color:var(--ink2);margin:6px 0 0;font-size:15px;line-height:1.45}
+.stars{color:#f6c453;letter-spacing:6px;text-align:center;margin:22px 0 8px;font-size:14px}
+h2{color:#fff3dc;font-size:20px;margin:6px 0 4px}
+.hint{color:#c9b9d9;font-size:14px;margin:0 0 14px;line-height:1.4}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:16px}
+
+.show{padding:0;overflow:hidden;display:flex;flex-direction:column}
+.art{position:relative;aspect-ratio:16/10;display:flex;align-items:center;justify-content:center;border-bottom:3px solid var(--ink);background:var(--bg,#cfe8ff)}
+.art img{width:46%;max-width:150px;aspect-ratio:1;image-rendering:pixelated;border:3px solid var(--ink);border-radius:6px;box-shadow:0 4px 0 rgba(0,0,0,.25);background:#fff}
+.art .emo{display:none;font-size:68px;filter:drop-shadow(0 4px 0 rgba(0,0,0,.2))}
+.art.noimg img{display:none}.art.noimg .emo{display:block}
+.tag{position:absolute;top:10px;left:10px;font-family:"Pixelify Sans",monospace;font-size:12px;background:var(--paper);border:2px solid var(--ink);border-radius:3px;padding:2px 7px}
+.body{padding:14px 16px 16px;display:flex;flex-direction:column;flex:1}
+.body h3{margin:0 0 6px;font-size:21px;line-height:1.15}
+.body p{margin:0 0 10px;font-size:14px;line-height:1.5;color:var(--ink2)}
+.feat{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px;padding:0;list-style:none}
+.feat li{font-size:12px;background:#f3ebdc;border:1px solid var(--muted);border-radius:10px;padding:2px 8px;color:var(--ink)}
+a.btn{margin-top:auto;align-self:flex-start;display:inline-flex;align-items:center;min-height:44px;padding:0 14px;font-family:"Pixelify Sans",monospace;font-size:15px;
+  color:var(--ink);text-decoration:none;border:2px solid var(--ink);border-radius:3px;background:#ffe7a6;box-shadow:0 3px 0 var(--ink)}
+a.btn:hover{transform:translateY(-1px)}
+a.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+
+.mine-card{grid-column:1/-1}
+@media (min-width:640px){
+  .mine-card{flex-direction:row}
+  .mine-card .art{aspect-ratio:auto;width:40%;border-bottom:0;border-right:3px solid var(--ink)}
+}
+.note{margin-top:26px;padding:14px 16px;font-size:14px;line-height:1.5;color:var(--ink2)}
+.note b{color:var(--ink)}
+.home{display:flex;align-items:center;justify-content:center;min-height:44px;margin:18px auto 0;max-width:360px;padding:10px 16px;
+  color:#fff3dc;text-decoration:none;border:2px dashed #8a7aa3;border-radius:4px;font-size:16px}
+.home:hover{background:#3a2d52}
+.home:focus-visible{outline:3px dashed var(--pink);outline-offset:3px}
+footer{color:#b9aacc;font-size:12px;text-align:center;margin-top:22px}
+
+@media (max-width:480px){
+  header{padding:14px;gap:14px}
+  header svg{width:56px}
+  h1{font-size:24px}
+  .grid{grid-template-columns:1fr}
+  .art{aspect-ratio:2/1}
+  .art img{width:auto;height:72%}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back px" href="../">← Find your game</a>
+  <header class="panel">
+    <svg viewBox="0 0 12 16" shape-rendering="crispEdges" aria-hidden="true" id="me"></svg>
+    <div>
+      <h1 class="px">bailsformed's workshop</h1>
+      <p class="sub">Little pixel games I've built, one quest at a time ✨ Most were made as gifts, each one shaped around a real person's real goals.</p>
+    </div>
+  </header>
+
+  <div class="stars">✦ ✦ ✦</div>
+  <h2 class="px">🗂 My own quest</h2>
+  <div class="grid">
+    <article class="show panel mine-card">
+      <div class="art" style="--bg:linear-gradient(160deg,#cfe8ff,#e8dcff)">
+        <span class="tag">made for me</span>
+        <img src="../medquest/icon-512.png" alt="" loading="lazy" onerror="this.parentNode.classList.add('noimg')">
+        <span class="emo" aria-hidden="true">🩺</span>
+      </div>
+      <div class="body">
+        <h3 class="px">MedQuest</h3>
+        <p>A cozy pixel RPG that tracks my real road from transfer student to medical student. Study sessions earn XP, with boss fights along the way.</p>
+        <ul class="feat"><li>study XP</li><li>boss fights</li><li>cloud save</li></ul>
+        <a class="btn" href="../medquest/">▶ Peek inside</a>
+      </div>
+    </article>
+  </div>
+
+  <div class="stars">✦ ✦ ✦</div>
+  <h2 class="px">💝 Made for someone special</h2>
+  <p class="hint">Every one of these was a gift, themed around the person it's for.</p>
+  <div class="grid">
+    <article class="show panel">
+      <div class="art" style="--bg:linear-gradient(160deg,#2a1f33,#3d1f2b)">
+        <span class="tag">for PB</span>
+        <img src="../dungeon/icon-512.png" alt="" loading="lazy" onerror="this.parentNode.classList.add('noimg')">
+        <span class="emo" aria-hidden="true">⚔️</span>
+      </div>
+      <div class="body">
+        <h3 class="px">Med School Dungeon</h3>
+        <p>A pixel dungeon crawl to the white coat, with a very opinionated stoat companion and a loot ledger.</p>
+        <ul class="feat"><li>dungeon crawler</li><li>study game</li><li>stoat sidekick</li></ul>
+        <a class="btn" href="../dungeon/">▶ Peek inside</a>
+      </div>
+    </article>
+    <article class="show panel">
+      <div class="art" style="--bg:linear-gradient(160deg,#d9f3ef,#ffe3ea)">
+        <span class="tag">for Nola</span>
+        <img src="../nola/icon-512.png" alt="" loading="lazy" onerror="this.parentNode.classList.add('noimg')">
+        <span class="emo" aria-hidden="true">🌸</span>
+      </div>
+      <div class="body">
+        <h3 class="px">Magnolia Isle</h3>
+        <p>A cozy island where a pre-med journey grows one little flower at a time.</p>
+        <ul class="feat"><li>cozy island</li><li>pre-med goals</li><li>garden</li></ul>
+        <a class="btn" href="../nola/">▶ Peek inside</a>
+      </div>
+    </article>
+    <article class="show panel">
+      <div class="art" style="--bg:linear-gradient(160deg,#1b221a,#2f3a22)">
+        <span class="tag">for Luke</span>
+        <img src="../luke/icon-512.png" alt="" loading="lazy" onerror="this.parentNode.classList.add('noimg')">
+        <span class="emo" aria-hidden="true">🎖️</span>
+      </div>
+      <div class="body">
+        <h3 class="px">Operation: Open Field</h3>
+        <p>A tactical ops campaign for scouting med, law, or something else entirely. Rumor says there's hidden intel on the map.</p>
+        <ul class="feat"><li>mission map</li><li>career scouting</li><li>secrets</li></ul>
+        <a class="btn" href="../luke/">▶ Peek inside</a>
+      </div>
+    </article>
+    <article class="show panel">
+      <div class="art" style="--bg:linear-gradient(160deg,#f7efe0,#e6cfa6)">
+        <span class="tag">for Gage</span>
+        <img src="../feast/icon-512.png" alt="" loading="lazy" onerror="this.parentNode.classList.add('noimg')">
+        <span class="emo" aria-hidden="true">☕</span>
+      </div>
+      <div class="body">
+        <h3 style="font-family:Georgia,serif;letter-spacing:1px">The Moveable Feast</h3>
+        <p>A 1920s Left Bank café where grown-up quests (budgets, billable hours, tax day) earn your seat at the table. Café cat included.</p>
+        <ul class="feat"><li>life RPG</li><li>budgeting</li><li>Paris 1920s</li></ul>
+        <a class="btn" href="../feast/">▶ Peek inside</a>
+      </div>
+    </article>
+    <article class="show panel">
+      <div class="art" style="--bg:linear-gradient(160deg,#ffe0f0,#ddd2ff)">
+        <span class="tag">for Kyla</span>
+        <img src="../kyla/icon-512.png" alt="" loading="lazy" onerror="this.parentNode.classList.add('noimg')">
+        <span class="emo" aria-hidden="true">👾</span>
+      </div>
+      <div class="body">
+        <h3 class="px">Gremlin Town</h3>
+        <p>A cozy-chaotic anime town where six gremlins help with college prep and paychecks, and do very dumb tricks for every win.</p>
+        <ul class="feat"><li>college prep</li><li>budget</li><li>six gremlins</li></ul>
+        <a class="btn" href="../kyla/">▶ Peek inside</a>
+      </div>
+    </article>
+    <article class="show panel">
+      <div class="art" style="--bg:linear-gradient(160deg,#fff1cc,#d6efc2)">
+        <span class="tag">for Ashley</span>
+        <img src="../ashley/icon-512.png" alt="" loading="lazy" onerror="this.parentNode.classList.add('noimg')">
+        <span class="emo" aria-hidden="true">🌻</span>
+      </div>
+      <div class="body">
+        <h3 class="px" style="color:#5e3a1d">Sunbeam Farm</h3>
+        <p>A cozy farm where a budget grows as crops, Sen the cat hands out affirmations, and Charlie buries the backup bones.</p>
+        <ul class="feat"><li>budget farm</li><li>savings jars</li><li>a cat and a dog</li></ul>
+        <a class="btn" href="../ashley/">▶ Peek inside</a>
+      </div>
+    </article>
+  </div>
+
+  <div class="stars">✦ ✦ ✦</div>
+  <h2 class="px">🏡 For the whole family</h2>
+  <div class="grid">
+    <article class="show panel mine-card">
+      <div class="art" style="--bg:linear-gradient(160deg,#fff3dc,#ffd9b0)">
+        <span class="tag">for the family</span>
+        <img src="../village/icon-512.png" alt="" loading="lazy" onerror="this.parentNode.classList.add('noimg')">
+        <span class="emo" aria-hidden="true">🏘️</span>
+      </div>
+      <div class="body">
+        <h3 class="px">The Family Village</h3>
+        <p>Our private little social app: a house for everyone on the street, Ws and lovingly brutal roasts, daily trivia, a quotes wall, a group chat, and monthly awards. Family only: it takes a family code to get in.</p>
+        <ul class="feat"><li>Ws &amp; roasts</li><li>daily trivia</li><li>quotes wall</li><li>awards</li></ul>
+        <a class="btn" href="../village/">▶ Go to the gate</a>
+      </div>
+    </article>
+  </div>
+
+  <div class="note panel">
+    <b>Peeking is safe.</b> Nothing you do here touches anyone's real game: if you're not logged in, your progress stays on your own device. If one of these is <i>your</i> game, use the button below to find it.
+  </div>
+
+  <a class="home px" href="../">← Back to find your game</a>
+  <footer class="px">made with care · bailsformed.github.io</footer>
+</div>
+<script>
+const G=["...HHHHHH...","..HHHHHHHH..",".HHHHHHHHHH.",".HHSSSSSSHH.",".HSSSSSSSSH.",".HSESSSSESH.",".HRSSSSSSRH.","..SSSMMSSS..","...SSSSSS...","..TTTTTTTT..",".TTTTTTTTTT.",".STTTTTTTTS.","..TTTTTTTT..","..PPP..PPP..","..PPP..PPP..","..BBB..BBB.."];
+const P={H:"#4a2f23",S:"#f1c08f",E:"#2b2240",R:"#f4a3b4",M:"#c2566f",T:"#8a6fd1",P:"#4a4d6e",B:"#3b2f4a"};
+let o="";G.forEach((r,y)=>[...r].forEach((c,x)=>{if(P[c])o+=`<rect x="${x}" y="${y}" width="1" height="1" fill="${P[c]}"/>`;}));
+document.getElementById("me").innerHTML=o;
+</script>
+<script data-goatcounter="https://bailsformed.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
