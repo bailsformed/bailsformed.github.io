@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free Demo · Personalized Mini RPG · SideQuest Game Studio</title>
+<meta name="description" content="Play a free 3-minute mini RPG and put your person in it: their name, their look, their pet sidekick and the boss they're beating right now. Custom games from SideQuest Game Studio.">
+<meta name="theme-color" content="#2b2240">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Put your person in a video game (free demo)">
+<meta property="og:description" content="Type their name, pick their sidekick and the boss they're beating, and play a tiny RPG starring them. Custom versions from SideQuest Game Studio.">
+<meta property="og:url" content="https://bailsformed.github.io/demo/">
+<meta property="og:image" content="https://bailsformed.github.io/demo/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="og-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#3b2f4a;--ink2:#6b5a7a;--paper:#fffaf0;--muted:#e9dcc6;--pink:#f29bb5;--gold:#f6c453;--purple:#8a6fd1;--teal:#5fb8a8}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;color:var(--ink);font-family:Nunito,system-ui,sans-serif;
+  background:radial-gradient(circle at 20% 10%,#3d3057 0,transparent 40%),radial-gradient(circle at 80% 90%,#3a2d52 0,transparent 40%),#2b2240}
+.wrap{max-width:600px;margin:0 auto;padding:16px 14px 40px}
+.px{font-family:"Pixelify Sans",monospace}
+.panel{background:var(--paper);border:3px solid var(--ink);border-radius:4px;box-shadow:0 4px 0 #1d1629,inset 0 -4px 0 var(--muted)}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;color:#e3d6f3;font-size:14px;margin-bottom:10px}
+.brand{font-family:"Pixelify Sans",monospace;font-size:17px;color:#fff3dc;text-decoration:none}
+.saved{font-size:12px;color:#c9b9d9;opacity:0;transition:opacity .4s}
+.saved.on{opacity:1}
+button,.btn{font:inherit;cursor:pointer;min-height:46px;border:3px solid var(--ink);border-radius:4px;background:var(--gold);color:var(--ink);
+  font-family:"Pixelify Sans",monospace;font-size:18px;padding:8px 16px;box-shadow:0 3px 0 #1d1629;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+button:active,.btn:active{transform:translateY(2px);box-shadow:0 1px 0 #1d1629}
+button:focus-visible,.btn:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px dashed var(--pink);outline-offset:3px}
+button.alt{background:#fff}
+button.pink{background:var(--pink)}
+button[disabled]{opacity:.45;cursor:not-allowed}
+.hidden{display:none!important}
+
+/* title */
+.title{padding:22px 18px;text-align:center}
+.title h1{font-size:30px;line-height:1.1;margin:6px 0 8px}
+.title p{margin:0 auto 16px;max-width:430px;color:var(--ink2);line-height:1.5}
+.title .stage{display:flex;justify-content:center;align-items:flex-end;gap:10px;margin:8px 0 16px;min-height:110px}
+.title .btns{display:flex;flex-direction:column;gap:10px;max-width:340px;margin:0 auto}
+.badge{display:inline-block;font-family:"Pixelify Sans",monospace;font-size:13px;border:2px solid var(--ink);border-radius:3px;padding:2px 8px;background:#ffe7a6}
+.small{font-size:13px;color:var(--ink2)}
+
+/* builder */
+.builder{padding:16px}
+.builder h2{margin:0 0 4px;font-size:24px}
+.row{margin:16px 0 0}
+.row>label,.row>.lab{display:block;font-weight:800;margin-bottom:6px}
+input[type=text],textarea{width:100%;font:inherit;font-size:16px;padding:10px 12px;border:3px solid var(--ink);border-radius:4px;background:#fff;color:var(--ink)}
+textarea{min-height:76px;resize:vertical}
+.swatches{display:flex;flex-wrap:wrap;gap:8px}
+.sw{width:46px;height:46px;min-height:46px;padding:0;border-radius:50%;box-shadow:0 2px 0 #1d1629}
+.sw[aria-pressed=true]{outline:3px solid var(--purple);outline-offset:2px}
+.picks{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px}
+.pick{background:#fff;font-size:16px;flex-direction:column;gap:2px;padding:8px;min-height:64px;line-height:1.15}
+.pick .e{font-size:24px}
+.pick[aria-pressed=true]{background:#ffe7a6;outline:3px solid var(--purple);outline-offset:1px}
+.preview{display:flex;align-items:flex-end;justify-content:center;gap:14px;padding:12px;margin-top:6px;background:linear-gradient(180deg,#cfe8ff,#e8dcff);border:3px solid var(--ink);border-radius:4px;min-height:120px}
+.go{margin-top:18px;width:100%}
+
+/* game screen */
+.screen{overflow:hidden}
+.scene{position:relative;height:250px;border-bottom:3px solid var(--ink);overflow:hidden;background:var(--bg)}
+.scene .lbl{position:absolute;top:8px;left:8px;font-family:"Pixelify Sans",monospace;font-size:13px;background:var(--paper);border:2px solid var(--ink);border-radius:3px;padding:2px 8px;z-index:3}
+.actor{position:absolute;bottom:22px;image-rendering:pixelated;transition:transform .2s}
+.actor svg{display:block;width:100%;height:auto}
+.ground{position:absolute;left:0;right:0;bottom:0;height:30px;background:var(--gr,#9bd38a);border-top:3px solid rgba(0,0,0,.25)}
+.deco{position:absolute;font-size:30px;line-height:1}
+.hit{animation:hit .35s}
+@keyframes hit{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.bob{animation:bob 1.6s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.float{position:absolute;font-family:"Pixelify Sans",monospace;font-size:22px;font-weight:700;color:#fff;text-shadow:2px 2px 0 #1d1629;animation:up 1s forwards;z-index:4;pointer-events:none}
+@keyframes up{to{transform:translateY(-50px);opacity:0}}
+.bars{position:absolute;top:8px;right:8px;left:auto;display:flex;flex-direction:column;gap:5px;z-index:3;width:46%}
+.bar{background:var(--paper);border:2px solid var(--ink);border-radius:3px;padding:2px 6px;font-size:12px;font-weight:800}
+.bar .t{display:flex;justify-content:space-between;gap:6px;white-space:nowrap;overflow:hidden}
+.bar .t span:first-child{overflow:hidden;text-overflow:ellipsis}
+.bar .fill{height:8px;background:#e9dcc6;border:1px solid var(--ink);margin-top:2px}
+.bar .fill i{display:block;height:100%;background:var(--c,#7bc96f);transition:width .4s}
+.talk{padding:14px 16px 16px;min-height:170px;display:flex;flex-direction:column}
+.who{font-family:"Pixelify Sans",monospace;font-size:16px;color:var(--purple);margin-bottom:4px}
+.line{font-size:18px;line-height:1.5;margin:0 0 12px;min-height:54px}
+.choices{display:flex;flex-direction:column;gap:8px;margin-top:auto}
+.choices.two{display:grid;grid-template-columns:1fr 1fr}
+.inv{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.inv span{font-size:13px;background:#ffe7a6;border:2px solid var(--ink);border-radius:3px;padding:1px 7px}
+
+/* ending */
+.ending{padding:18px;text-align:center}
+.note{background:#fff;border:3px dashed var(--pink);border-radius:6px;padding:16px;margin:12px 0 4px;text-align:left;font-size:18px;line-height:1.55;white-space:pre-wrap;word-wrap:break-word}
+.note .from{display:block;text-align:right;margin-top:8px;font-family:"Pixelify Sans",monospace;color:var(--purple)}
+.cta{padding:18px;margin-top:16px}
+.cta h2{margin:0 0 6px;font-size:24px;line-height:1.15}
+.cta p{margin:0 0 12px;line-height:1.5;color:var(--ink2)}
+.pk{display:grid;gap:8px;margin:10px 0 14px}
+.pk div{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#fff;border:2px solid var(--ink);border-radius:4px;padding:8px 10px}
+.pk b{font-family:"Pixelify Sans",monospace;font-size:17px}
+.pk small{display:block;color:var(--ink2);font-size:13px}
+.pk .pr{font-family:"Pixelify Sans",monospace;font-size:20px;white-space:nowrap}
+.shop{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.shop .btn{font-size:17px}
+.shop .etsy{background:#f1641e;color:#fff}
+.shop .kofi{background:#72a4f2;color:#fff}
+.again{margin-top:12px;width:100%}
+.facts{list-style:none;padding:0;margin:12px 0 0;display:grid;gap:6px;font-size:14px;color:var(--ink2)}
+.confetti{position:fixed;top:-20px;width:10px;height:14px;z-index:50;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+footer{color:#b9aacc;font-size:12px;text-align:center;margin-top:22px;line-height:1.6}
+footer a{color:#e3d6f3}
+@media (max-width:420px){
+  .title h1{font-size:25px}
+  .scene{height:220px}
+  .line{font-size:17px}
+  .shop{grid-template-columns:1fr}
+  .choices.two{grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="brand" href="https://www.etsy.com/shop/SideQuestGameStudio" data-goatcounter-click="demo-brand-etsy">🎮 SideQuest Game Studio</a>
+    <span class="saved" id="saved" aria-live="polite">💾 saved</span>
+  </div>
+
+  <!-- TITLE -->
+  <section class="panel title" id="vTitle">
+    <span class="badge">FREE DEMO · 3 MINUTES</span>
+    <h1 class="px">Put your person in a video game</h1>
+    <p>Type their name, give them a pet sidekick, and pick the boss they're fighting right now. Then play the tiny adventure we build for them.</p>
+    <div class="stage" id="titleStage" aria-hidden="true"></div>
+    <div class="btns">
+      <button id="bContinue" class="pink hidden">▶ Continue your quest</button>
+      <button id="bMake">✏️ Make it about my person</button>
+      <button id="bSample" class="alt">▶ Just play the sample</button>
+    </div>
+    <p class="small" style="margin-top:14px">Works on any phone or computer. Nothing to install, and nothing you type leaves this device.</p>
+  </section>
+
+  <!-- BUILDER -->
+  <section class="panel builder hidden" id="vBuild">
+    <h2 class="px">Who's the hero?</h2>
+    <p class="small" style="margin:0">Takes about 30 seconds. You can change it all later.</p>
+
+    <div class="preview" id="preview" aria-hidden="true"></div>
+
+    <div class="row">
+      <label for="iName">Their name</label>
+      <input type="text" id="iName" maxlength="16" autocomplete="off" placeholder="Maya">
+    </div>
+    <div class="row"><span class="lab" id="lSkin">Skin</span><div class="swatches" id="sSkin" role="group" aria-labelledby="lSkin"></div></div>
+    <div class="row"><span class="lab" id="lHair">Hair</span><div class="swatches" id="sHair" role="group" aria-labelledby="lHair"></div></div>
+    <div class="row"><span class="lab" id="lFit">Outfit</span><div class="swatches" id="sFit" role="group" aria-labelledby="lFit"></div></div>
+
+    <div class="row">
+      <span class="lab" id="lPal">Their cheerleader</span>
+      <div class="picks" id="pPal" role="group" aria-labelledby="lPal"></div>
+    </div>
+    <div class="row">
+      <label for="iPal">Cheerleader's name</label>
+      <input type="text" id="iPal" maxlength="14" autocomplete="off" placeholder="Biscuit">
+    </div>
+
+    <div class="row">
+      <span class="lab" id="lBoss">The boss they're beating</span>
+      <div class="picks" id="pBoss" role="group" aria-labelledby="lBoss"></div>
+      <input type="text" id="iBoss" class="hidden" maxlength="22" autocomplete="off" placeholder="e.g. Tax Season, The Job Interview" aria-label="Your own boss" style="margin-top:8px">
+    </div>
+
+    <div class="row">
+      <label for="iMsg">Your message when they win <span class="small">(optional)</span></label>
+      <textarea id="iMsg" maxlength="280" placeholder="I'm so proud of you. You've got this!"></textarea>
+    </div>
+    <div class="row">
+      <label for="iFrom">From</label>
+      <input type="text" id="iFrom" maxlength="20" autocomplete="off" placeholder="Your name">
+    </div>
+
+    <button class="go pink" id="bStart">⚔️ Start the quest</button>
+  </section>
+
+  <!-- GAME -->
+  <section class="panel screen hidden" id="vGame">
+    <div class="scene" id="scene">
+      <span class="lbl" id="sceneLbl"></span>
+      <div class="bars hidden" id="bars">
+        <div class="bar"><div class="t"><span id="hName">Hero</span><span id="hHp"></span></div><div class="fill"><i id="hFill" style="--c:#7bc96f"></i></div></div>
+        <div class="bar"><div class="t"><span id="bName">Boss</span><span id="bHp"></span></div><div class="fill"><i id="bFill" style="--c:#e0607e"></i></div></div>
+      </div>
+      <div class="ground"></div>
+    </div>
+    <div class="talk">
+      <div class="who" id="who"></div>
+      <p class="line" id="line" aria-live="polite"></p>
+      <div class="inv" id="inv"></div>
+      <div class="choices" id="choices"></div>
+    </div>
+  </section>
+
+  <!-- ENDING -->
+  <section class="hidden" id="vEnd">
+    <div class="panel ending">
+      <span class="badge">🏆 QUEST COMPLETE</span>
+      <h2 class="px" style="font-size:26px;margin:10px 0 0" id="endTitle"></h2>
+      <div class="stage" id="endStage" style="display:flex;justify-content:center;align-items:flex-end;gap:10px;margin:12px 0;min-height:100px" aria-hidden="true"></div>
+      <div class="note" id="endNote"></div>
+    </div>
+
+    <div class="panel cta">
+      <h2 class="px">That was the 2-minute version. Imagine the real one.</h2>
+      <p>A real SideQuest game is written from scratch around one person: their actual pet, inside jokes, favorite places, and the thing they're fighting through right now. Every game comes with its own story, characters and ending.</p>
+      <div class="pk">
+        <div><span><b>Budget Quest</b><small>A short, sweet adventure</small></span><span class="pr">$39</span></div>
+        <div><span><b>Mini Quest</b><small>3 scenes, a sidekick, a boss and your message, like this demo but all about them</small></span><span class="pr">$69</span></div>
+        <div><span><b>Full Adventure</b><small>A bigger world with more quests and secrets</small></span><span class="pr">$129</span></div>
+      </div>
+      <p class="small" style="margin:-4px 0 12px">🎄 <b>Christmas order-by dates:</b> Full Adventure Dec 8 · Mini Quest Dec 13 · Budget Quest Dec 17</p>
+      <div class="shop">
+        <a class="btn etsy" href="https://www.etsy.com/shop/SideQuestGameStudio" data-goatcounter-click="demo-end-etsy" target="_blank" rel="noopener">🛍️ Order on Etsy</a>
+        <a class="btn kofi" href="https://ko-fi.com/sidequestgamestudio/commissions" data-goatcounter-click="demo-end-kofi" target="_blank" rel="noopener">☕ Order on Ko-fi</a>
+      </div>
+      <ul class="facts">
+        <li>📱 Plays in the browser on any phone or computer. They don't need to be a gamer.</li>
+        <li>📝 You fill out a short, mostly multiple-choice questionnaire after you order.</li>
+        <li>👀 You see a preview and get a round of changes before it's final.</li>
+      </ul>
+      <button class="again alt" id="bAgain">🔁 Try it with someone else</button>
+    </div>
+  </section>
+
+  <footer class="px">made with care by Bailey · <a href="https://www.etsy.com/shop/SideQuestGameStudio" data-goatcounter-click="demo-foot-etsy">Etsy</a> · <a href="https://ko-fi.com/sidequestgamestudio/commissions" data-goatcounter-click="demo-foot-kofi">Ko-fi</a><br>This demo is a sample. Characters here are made up.</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+/* ---------- pixel sprites ---------- */
+const HERO=["...HHHHHH...","..HHHHHHHH..",".HHHHHHHHHH.",".HHSSSSSSHH.",".HSSSSSSSSH.",".HSESSSSESH.",".HRSSSSSSRH.","..SSSMMSSS..","...SSSSSS...","..TTTTTTTT..",".TTTTTTTTTT.",".STTTTTTTTS.","..TTTTTTTT..","..PPP..PPP..","..PPP..PPP..","..BBB..BBB.."];
+const PALS={
+  dog:{label:"Dog",e:"🐶",def:"Biscuit",move:"Zoomies of Doom",grid:["OO........OO","OOO......OOO",".OOOOOOOOOO.",".OOEOOOOEOO.",".OOOOWWOOOO.","..OOWNNWOO..","..OOWWWWOO..","...OWTTWO...","..OOOOOOOO..",".OOWWWWWWOO.",".OOWWWWWWOO.",".OO.O..O.OO."],col:{O:"#e39a4b",W:"#fff3e2",E:"#2b2240",N:"#2b2240",T:"#f48fa6"}},
+  cat:{label:"Cat",e:"🐱",def:"Pickles",move:"The Judgmental Stare",grid:["G..........G","GG........GG","GGGGGGGGGGGG","GGEGGGGGGEGG","GGGGGPPGGGGG","WGGGGGGGGGGW",".GGGGGGGGGG.","..GGGGGGGG..",".GGGGGGGGGG.",".GGLLLLLLGG.",".GGLLLLLLGG.",".GG.G..G.GG."],col:{G:"#8b8fa8",L:"#d8d9e6",E:"#5fbf6a",P:"#f48fa6",W:"#ffffff"}},
+  frog:{label:"Frog",e:"🐸",def:"Sir Hops",move:"Ribbit of Resolve",grid:["..GG....GG..",".GEEG..GEEG.",".GEKG..GKEG.","GGGGGGGGGGGG","GGGGGGGGGGGG","GMMMMMMMMMMG",".GGGGGGGGGG.",".GLLLLLLLLG.",".GLLLLLLLLG.","GGLLLLLLLLGG","GG.GG..GG.GG","............"],col:{G:"#6cc36a",L:"#cdeeb0",E:"#ffffff",K:"#2b2240",M:"#2f6b3a"}},
+  bestie:{label:"Best friend",e:"🫶",def:"Jordan",move:"The Hype Speech",grid:HERO,col:{H:"#1f1b2e",S:"#8d5a3b",E:"#2b2240",R:"#d9776f",M:"#7a2f3f",T:"#f29bb5",P:"#3d4a6e",B:"#2b2240"}}
+};
+const BOSSES={
+  mcat:{label:"The MCAT",e:"🧪",col:"#8a6fd1",atk:"Flashcard Flurry",lines:["asks about the Krebs cycle. Again.","drops a 9-paragraph passage about mitochondria.","whispers: \"Have you even STARTED organic chem?\""]},
+  finals:{label:"Finals Week",e:"📚",col:"#e0607e",atk:"All-Nighter Combo",lines:["schedules three exams on the same day.","summons a surprise pop quiz.","makes the library Wi-Fi go down."]},
+  laundry:{label:"The Laundry Mountain",e:"🧺",col:"#6aa6e8",atk:"Fold-a-Thon",lines:["launches a single missing sock.","grows another hoodie out of nowhere.","hides the one shirt you actually wanted."]},
+  moving:{label:"Moving Day",e:"📦",col:"#c98a52",atk:"Tape Gun Blitz",lines:["hides the box cutter.","reveals ONE MORE closet.","drops a box labeled \"misc???\""]},
+  group:{label:"The Group Project",e:"👥",col:"#5fb8a8",atk:"Takes Charge",lines:["goes silent in the group chat.","edits the doc at 3am.","says \"I thought YOU were doing the slides.\""]},
+  own:{label:"Your own",e:"✏️",col:"#f29bb5",atk:"Main Character Energy",lines:["tries to look scarier than it is.","throws a pile of to-dos.","sends a passive-aggressive reminder."]}
+};
+const SKINS=["#fbd7b5","#f1c08f","#c68a5e","#8d5a3b"];
+const HAIRS=["#4a2f23","#1f1b2e","#d9a441","#c4553a"];
+const FITS=["#8a6fd1","#5fb8a8","#e0607e","#6aa6e8"];
+const BOSSGRID=["....KKKKKKKK....","..KKBBBBBBBBKK..",".KBBBBBBBBBBBBK.",".KBBWWBBBBWWBBK.","KBBBWEBBBBWEBBBK","KBBBBBBBBBBBBBBK","KBBBMMMMMMMMBBBK","KBBBMTMTTMTMBBBK","KBBBBBBBBBBBBBBK","KBBBBBBBBBBBBBBK",".KBBBBBBBBBBBBK.",".KBBKBBBBBBKBBK.","..KK.KKKKKK.KK.."];
+
+function sprite(grid,col){
+  const w=grid[0].length,h=grid.length;let o="";
+  grid.forEach((r,y)=>[...r].forEach((c,x)=>{if(col[c])o+=`<rect x="${x}" y="${y}" width="1.02" height="1.02" fill="${col[c]}"/>`;}));
+  return `<svg viewBox="0 0 ${w} ${h}" shape-rendering="crispEdges" aria-hidden="true">${o}</svg>`;
+}
+function heroCol(s){return{H:HAIRS[s.hair],S:SKINS[s.skin],E:"#2b2240",R:"#f4a3b4",M:"#c2566f",T:FITS[s.fit],P:"#4a4d6e",B:"#3b2f4a"};}
+function heroSvg(s){return sprite(HERO,heroCol(s));}
+function palSvg(s){const p=PALS[s.pal];return sprite(p.grid,p.col);}
+function bossSvg(s){const b=BOSSES[s.boss];return sprite(BOSSGRID,{K:"#1d1629",B:b.col,W:"#ffffff",E:"#1d1629",M:"#1d1629",T:"#ffffff"});}
+
+/* ---------- state + save ---------- */
+const KEY="sidequest_demo_v1";
+const DEFAULT={name:"Maya",skin:1,hair:0,fit:1,pal:"dog",palName:"Biscuit",boss:"mcat",bossOwn:"",msg:"",from:"",step:"title",gear:[],courage:0};
+let S=Object.assign({},DEFAULT);
+function load(){try{const v=JSON.parse(localStorage.getItem(KEY)||"null");if(v&&typeof v==="object")return v;}catch(e){}return null;}
+let savedT;
+function save(show){try{localStorage.setItem(KEY,JSON.stringify(S));if(show){const el=$("saved");el.classList.add("on");clearTimeout(savedT);savedT=setTimeout(()=>el.classList.remove("on"),1400);}}catch(e){}}
+function count(name){try{if(window.goatcounter&&window.goatcounter.count)window.goatcounter.count({path:name,title:name,event:true});}catch(e){}}
+
+/* ---------- helpers ---------- */
+function $(id){return document.getElementById(id);}
+function nm(){return (S.name||"").trim()||"Maya";}
+function pn(){return (S.palName||"").trim()||PALS[S.pal].def;}
+function bn(){return S.boss==="own"?((S.bossOwn||"").trim()||"The Big Deadline"):BOSSES[S.boss].label;}
+function show(id){["vTitle","vBuild","vGame","vEnd"].forEach(v=>$(v).classList.toggle("hidden",v!==id));window.scrollTo({top:0});}
+function el(tag,attrs,text){const e=document.createElement(tag);if(attrs)for(const k in attrs)e.setAttribute(k,attrs[k]);if(text!=null)e.textContent=text;return e;}
+
+/* ---------- title ---------- */
+function renderTitle(){
+  const t=$("titleStage");
+  t.innerHTML=`<div style="width:62px" class="bob">${heroSvg(S)}</div><div style="width:50px" class="bob">${palSvg(S)}</div><div style="width:96px;margin-left:16px" class="bob">${bossSvg(S)}</div>`;
+  const saved=load();
+  $("bContinue").classList.toggle("hidden",!(saved&&saved.step&&saved.step!=="title"&&saved.step!=="end"));
+}
+
+/* ---------- builder ---------- */
+function swatchRow(id,list,key,label){
+  const box=$(id);box.innerHTML="";
+  list.forEach((c,i)=>{const b=el("button",{class:"sw",type:"button","aria-label":label+" "+(i+1),"aria-pressed":String(S[key]===i)});b.style.background=c;
+    b.onclick=()=>{S[key]=i;swatchRow(id,list,key,label);renderPreview();};box.appendChild(b);});
+}
+function pickRow(id,obj,key,after){
+  const box=$(id);box.innerHTML="";
+  Object.keys(obj).forEach(k=>{const b=el("button",{class:"pick",type:"button","aria-pressed":String(S[key]===k)});
+    b.appendChild(el("span",{class:"e","aria-hidden":"true"},obj[k].e));b.appendChild(el("span",null,obj[k].label));
+    b.onclick=()=>{S[key]=k;pickRow(id,obj,key,after);if(after)after();renderPreview();};box.appendChild(b);});
+}
+function renderPreview(){
+  $("preview").innerHTML=`<div style="width:64px">${heroSvg(S)}</div><div style="width:52px">${palSvg(S)}</div><div style="width:84px;margin-left:10px">${bossSvg(S)}</div>`;
+}
+function openBuilder(){
+  $("iName").value=S.name===DEFAULT.name&&S.step==="title"?"":S.name;
+  $("iPal").value=S.palName===DEFAULT.palName&&S.step==="title"?"":S.palName;
+  $("iBoss").value=S.bossOwn||"";$("iMsg").value=S.msg||"";$("iFrom").value=S.from||"";
+  swatchRow("sSkin",SKINS,"skin","Skin tone");swatchRow("sHair",HAIRS,"hair","Hair color");swatchRow("sFit",FITS,"fit","Outfit color");
+  pickRow("pPal",PALS,"pal",()=>{$("iPal").placeholder=PALS[S.pal].def;});
+  pickRow("pBoss",BOSSES,"boss",()=>{$("iBoss").classList.toggle("hidden",S.boss!=="own");if(S.boss==="own")$("iBoss").focus();});
+  $("iBoss").classList.toggle("hidden",S.boss!=="own");$("iPal").placeholder=PALS[S.pal].def;
+  renderPreview();show("vBuild");count("demo-builder");
+}
+function startQuest(custom){
+  if(custom){
+    S.name=$("iName").value.trim()||"Maya";
+    S.palName=$("iPal").value.trim()||PALS[S.pal].def;
+    S.bossOwn=$("iBoss").value.trim();S.msg=$("iMsg").value.trim();S.from=$("iFrom").value.trim();
+  }
+  S.gear=[];S.courage=0;S.step="s1";save(false);count(custom?"demo-start-custom":"demo-start-sample");scene1();
+}
+
+/* ---------- game screen ---------- */
+let typing=null;
+function say(who,text,choices,opts){
+  opts=opts||{};
+  $("who").textContent=who||"";
+  const line=$("line");line.textContent="";
+  const box=$("choices");box.innerHTML="";box.className="choices"+(opts.two?" two":"");
+  clearInterval(typing);
+  const reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let i=0;
+  const done=()=>{clearInterval(typing);typing=null;line.textContent=text;line.onclick=null;
+    choices.forEach(c=>{const b=el("button",{type:"button",class:c.cls||""},c.t);if(c.dis)b.disabled=true;b.onclick=()=>{if(b.disabled)return;c.f();};box.appendChild(b);});
+    const first=box.querySelector("button:not([disabled])");if(first&&opts.focus!==false)first.focus({preventScroll:true});};
+  if(reduce){done();return;}
+  line.onclick=done;
+  typing=setInterval(()=>{i+=2;line.textContent=text.slice(0,i);if(i>=text.length)done();},18);
+}
+function setScene(label,bg,gr,parts){
+  const sc=$("scene");sc.style.setProperty("--bg",bg);sc.style.setProperty("--gr",gr);
+  $("sceneLbl").textContent=label;
+  sc.querySelectorAll(".actor,.deco,.float").forEach(n=>n.remove());
+  (parts||[]).forEach(p=>{const d=document.createElement("div");d.className=p.deco?"deco":"actor"+(p.bob?" bob":"");
+    if(p.id)d.id=p.id;Object.assign(d.style,p.style||{});if(p.deco)d.textContent=p.deco;else d.innerHTML=p.html;sc.appendChild(d);});
+  $("bars").classList.add("hidden");
+}
+function floatText(target,text,color){
+  const t=$(target);if(!t)return;const sc=$("scene");const r=t.getBoundingClientRect(),s=sc.getBoundingClientRect();
+  const f=el("div",{class:"float"},text);f.style.left=(r.left-s.left+r.width/2-20)+"px";f.style.top=(r.top-s.top-6)+"px";if(color)f.style.color=color;
+  sc.appendChild(f);setTimeout(()=>f.remove(),1000);
+}
+function invRender(){
+  const inv=$("inv");inv.innerHTML="";
+  S.gear.forEach(g=>inv.appendChild(el("span",null,GEAR[g].e+" "+GEAR[g].label)));
+}
+
+/* scene 1: wake up */
+function scene1(){
+  S.step="s1";save(true);show("vGame");invRender();
+  setScene("Scene 1 · Morning","linear-gradient(180deg,#ffd9b0,#ffe9c9 60%,#fff6e6)","#d9b48c",[
+    {deco:"☀️",style:{top:"30px",left:"38%"}},{deco:"🪟",style:{top:"56px",right:"16%",fontSize:"38px"}},{deco:"🛏️",style:{bottom:"26px",left:"6%",fontSize:"44px"}},
+    {id:"aHero",html:heroSvg(S),style:{left:"30%",width:"64px"}},
+    {id:"aPal",html:palSvg(S),bob:true,style:{left:"52%",width:"50px"}}
+  ]);
+  const p=PALS[S.pal];
+  say(pn()+" "+p.e, `${nm()}! WAKE UP! ${bn()} is coming TODAY, and we are NOT ready!`,[
+    {t:"😴 Five more minutes…",f:()=>{S.courage=0;say(pn(),`Absolutely not. I didn't practice my ${p.move.toLowerCase()} all week for nothing. Up, up, UP!`,[{t:"▶ Fine. I'm up.",f:scene2}]);}},
+    {t:"💪 I'm up. Let's go.",f:()=>{S.courage=1;floatText("aHero","+1 courage","#f6c453");say(pn(),`THAT'S my ${nm()}! Grab your gear. We leave in five.`,[{t:"▶ Grab the gear",f:scene2}]);}}
+  ],{two:true});
+}
+
+/* scene 2: gear */
+const GEAR={
+  coffee:{e:"☕",label:"Coffee",d:"+3 attack"},
+  playlist:{e:"🎧",label:"Hype playlist",d:"+3 attack"},
+  snack:{e:"🍪",label:"Emergency snack",d:"heals you once"},
+  note:{e:"💌",label:"Note from home",d:"blocks one hit"}
+};
+function scene2(){
+  S.step="s2";save(true);invRender();
+  setScene("Scene 2 · Gear up","linear-gradient(180deg,#cfe8ff,#e8f4ff 70%)","#9bd38a",[
+    {deco:"🌳",style:{bottom:"24px",left:"4%",fontSize:"52px"}},{deco:"☁️",style:{top:"40px",left:"20%"}},{deco:"☁️",style:{top:"28px",right:"10%"}},
+    {id:"aHero",html:heroSvg(S),style:{left:"38%",width:"64px"}},
+    {id:"aPal",html:palSvg(S),bob:true,style:{left:"60%",width:"50px"}}
+  ]);
+  gearPick();
+}
+function gearPick(){
+  const left=2-S.gear.length;
+  if(left<=0){say(pn(),`Packed and ready. Now let's go find ${bn()}.`,[{t:"⚔️ Head to the boss",f:scene3}]);return;}
+  const ch=Object.keys(GEAR).map(k=>({t:`${GEAR[k].e} ${GEAR[k].label} · ${GEAR[k].d}`,dis:S.gear.includes(k),cls:"alt",f:()=>{S.gear.push(k);save(true);invRender();floatText("aHero",GEAR[k].e,null);gearPick();}}));
+  say(pn(),left===2?`Okay, there's room in the bag for TWO things. Choose wisely, ${nm()}.`:`One more! Pick carefully.`,ch,{focus:S.gear.length===0});
+}
+
+/* scene 3: boss */
+let F=null;
+function scene3(){
+  S.step="s3";save(true);invRender();
+  const b=BOSSES[S.boss];
+  setScene("Scene 3 · Boss fight","linear-gradient(180deg,#3d3057,#5a4580 70%)","#4a3a66",[
+    {deco:"✨",style:{top:"70px",left:"10%",fontSize:"22px"}},{deco:"✨",style:{top:"110px",left:"44%",fontSize:"18px"}},
+    {id:"aHero",html:heroSvg(S),style:{left:"8%",width:"60px"}},
+    {id:"aPal",html:palSvg(S),style:{left:"28%",width:"46px"}},
+    {id:"aBoss",html:bossSvg(S),bob:true,style:{right:"6%",width:"124px"}},
+    {deco:b.e,style:{bottom:"128px",right:"18%",fontSize:"30px"}}
+  ]);
+  F={hp:30,max:30,bhp:44,bmax:44,atk:6+(S.gear.includes("coffee")?3:0)+(S.gear.includes("playlist")?3:0)+S.courage,snack:S.gear.includes("snack"),shield:S.gear.includes("note"),palReady:true,turn:0,busy:false};
+  $("hName").textContent=nm();$("bName").textContent=bn();$("bars").classList.remove("hidden");bars();
+  say(bn()+" "+b.e,`So, ${nm()}. You actually showed up. Cute. Let's see what you've got.`,[{t:"▶ Fight!",f:menu}]);
+}
+function bars(){
+  $("hHp").textContent=Math.max(0,F.hp)+"/"+F.max;$("bHp").textContent=Math.max(0,F.bhp)+"/"+F.bmax;
+  $("hFill").style.width=Math.max(0,F.hp/F.max*100)+"%";$("bFill").style.width=Math.max(0,F.bhp/F.bmax*100)+"%";
+}
+function atkName(){return S.boss==="own"?BOSSES.own.atk:BOSSES[S.boss].atk;}
+function menu(){
+  const p=PALS[S.pal];
+  const ch=[
+    {t:`⚔️ ${atkName()}`,f:()=>act("atk")},
+    {t:`${p.e} ${pn()}: ${p.move}`+(F.palReady?"":" (charging…)"),dis:!F.palReady,cls:"alt",f:()=>act("pal")}
+  ];
+  if(F.snack)ch.push({t:"🍪 Eat the emergency snack",cls:"alt",f:()=>act("snack")});
+  say("Your move, "+nm(),F.turn===0?"Pick an attack. Your cheerleader's move needs a turn to recharge after you use it.":"What next?",ch);
+}
+function hitAnim(id){const a=$(id);if(!a)return;a.classList.remove("hit");void a.offsetWidth;a.classList.add("hit");}
+function act(kind){
+  if(F.busy)return;F.busy=true;F.turn++;
+  let text="";const p=PALS[S.pal];
+  if(kind==="atk"){const d=F.atk+Math.floor(Math.random()*4);F.bhp-=d;hitAnim("aBoss");floatText("aBoss","-"+d,"#ffd166");text=`${nm()} uses ${atkName()}! It hits for ${d}.`;F.palReady=true;}
+  else if(kind==="pal"){const d=12+Math.floor(Math.random()*4);F.bhp-=d;F.palReady=false;hitAnim("aBoss");floatText("aBoss","-"+d,"#ff9ec0");
+    const flav={dog:`${pn()} does ZOOMIES around ${bn()} until it gets dizzy.`,cat:`${pn()} stares at ${bn()} without blinking. ${bn()} starts doubting itself.`,frog:`${pn()} lets out one mighty RIBBIT. ${bn()} wobbles.`,bestie:`${pn()} gives a hype speech so loud ${bn()} has to sit down.`}[S.pal];
+    text=`${flav} ${d} damage!`;}
+  else if(kind==="snack"){F.snack=false;S.gear=S.gear.filter(g=>g!=="snack");invRender();F.hp=Math.min(F.max,F.hp+14);floatText("aHero","+14","#9bf28a");text=`${nm()} eats the emergency snack. Crumbs everywhere, but HP is back up!`;F.palReady=true;}
+  bars();
+  say("",text,[]);
+  setTimeout(()=>{
+    if(F.bhp<=0){win();return;}
+    bossTurn();
+  },1300);
+}
+function bossTurn(){
+  const b=BOSSES[S.boss];const ln=b.lines[(F.turn-1)%b.lines.length];
+  let d=5+Math.floor(Math.random()*4);
+  let text=`${bn()} ${ln}`;
+  if(F.shield){F.shield=false;S.gear=S.gear.filter(g=>g!=="note");invRender();d=0;text+=` But the note from home blocks it! 💌`;floatText("aHero","blocked","#f6c453");}
+  else{
+    if(F.hp-d<=4){d=Math.max(0,F.hp-6);text+=` ${pn()} jumps in the way and takes most of it!`;}
+    F.hp-=d;hitAnim("aHero");floatText("aHero","-"+d,"#ff8a8a");text+=` (${d} damage)`;
+  }
+  bars();
+  say(bn()+" "+b.e,text,[{t:"▶ Keep going",f:()=>{F.busy=false;menu();}}]);
+}
+function win(){
+  hitAnim("aBoss");const a=$("aBoss");if(a){a.classList.remove("bob");a.style.transition="transform .8s, opacity .8s";a.style.transform="scale(.2) rotate(40deg)";a.style.opacity="0";}
+  say(bn(),`Nooo! Defeated by ${nm()} AND ${pn()}?! I'll be back next semester…`,[{t:"🏆 Claim your victory",f:ending}]);
+  count("demo-win");
+}
+
+/* ending */
+function ending(){
+  S.step="end";save(true);show("vEnd");
+  $("endTitle").textContent=`${nm()} defeated ${bn()}!`;
+  $("endStage").innerHTML=`<div style="width:66px" class="bob">${heroSvg(S)}</div><div style="width:52px" class="bob">${palSvg(S)}</div><div style="font-size:42px" class="bob">🏆</div>`;
+  const note=$("endNote");note.textContent="";
+  const msg=S.msg||`${nm()}, I made you a whole video game, because you deserve to see yourself the way I see you: the hero. Whatever ${bn()} throws at you, you've got this. And you've got ${pn()}.`;
+  note.appendChild(document.createTextNode(msg));
+  note.appendChild(el("span",{class:"from"},"– "+(S.from||"Someone who's very proud of you")));
+  confetti();
+}
+function confetti(){
+  if(window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  const cols=["#f6c453","#f29bb5","#8a6fd1","#5fb8a8","#6aa6e8"];
+  for(let i=0;i<60;i++){const c=el("div",{class:"confetti"});c.style.left=Math.random()*100+"vw";c.style.background=cols[i%cols.length];
+    c.style.animationDuration=(1.8+Math.random()*1.8)+"s";c.style.animationDelay=(Math.random()*.6)+"s";document.body.appendChild(c);setTimeout(()=>c.remove(),4200);}
+}
+
+/* ---------- wire up ---------- */
+$("bMake").onclick=()=>{openBuilder();};
+$("bSample").onclick=()=>{S=Object.assign({},DEFAULT);startQuest(false);};
+$("bStart").onclick=()=>startQuest(true);
+$("bAgain").onclick=()=>{S=Object.assign({},DEFAULT);save(false);openBuilder();};
+$("bContinue").onclick=()=>{const v=load();if(!v)return;S=Object.assign({},DEFAULT,v);
+  if(!PALS[S.pal])S.pal="dog";if(!BOSSES[S.boss])S.boss="mcat";if(!Array.isArray(S.gear))S.gear=[];
+  ({s1:scene1,s2:scene2,s3:scene3,end:ending}[S.step]||scene1)();};
+["iName","iPal"].forEach(id=>$(id).addEventListener("keydown",e=>{if(e.key==="Enter")e.preventDefault();}));
+
+const prev=load();
+if(prev){S=Object.assign({},DEFAULT,prev);if(!PALS[S.pal])S.pal="dog";if(!BOSSES[S.boss])S.boss="mcat";if(!Array.isArray(S.gear))S.gear=[];}
+renderTitle();
+})();
+</script>
+<script data-goatcounter="https://bailsformed.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
