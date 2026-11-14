@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       # node and python3 come preinstalled on ubuntu-latest; nothing to install.
       - name: Tool versions
         run: node --version && python3 --version
