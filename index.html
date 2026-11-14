@@ -175,9 +175,9 @@ document.getElementById("me").innerHTML=o;
       if(!session) return;
       const {data:id}=await client.rpc('my_member_id');
       if(!id) return;
-      const {data:m}=await client.from('members').select('display_name,face').eq('id',id).single();
+      const {data:m}=await client.from('members').select('display_name,avatar').eq('id',id).single();
       if(!m||!m.display_name) return;
-      greet(m.display_name,m.face);
+      greet(m.display_name,m.avatar);
     }catch(e){}
   };
   document.head.appendChild(s);
