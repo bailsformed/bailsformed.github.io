@@ -1,0 +1,28 @@
+{
+  "id": "/feast/",
+  "name": "The Moveable Feast",
+  "short_name": "Feast",
+  "start_url": "/feast/",
+  "scope": "/feast/",
+  "display": "standalone",
+  "background_color": "#18110d",
+  "theme_color": "#1b1410",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

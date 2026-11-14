@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Sunbeam Farm">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Sunbeam Farm</title>
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#8cc56b">
@@ -368,6 +372,8 @@ const FKEY = "sunbeamFarm.ashley.farmkey";
 const lsGet = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
 const lsSet = (k, v) => { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} };
 const KEY_ABC = "ABCDEFGHJKMNPQRSTVWXYZ23456789";
+// running as an installed home-screen app? (on iPhone it has its own storage, apart from Safari)
+function isApp() { try { return matchMedia("(display-mode: standalone)").matches || navigator.standalone === true; } catch (e) { return false; } }
 const cleanKey = k => String(k || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
 const fmtKey = k => (k || "").match(/.{1,4}/g)?.join("-") || "";
 function makeKey() { const a = new Uint32Array(28); crypto.getRandomValues(a); return [...a].map(n => KEY_ABC[n % KEY_ABC.length]).join(""); }
@@ -440,6 +446,7 @@ function enterKey(fromSettings) {
         const r = await cloudGet(k);
         let d = null; try { d = JSON.parse(r.state || "null"); } catch (e) {}
         if (!d || !Array.isArray(d.cats)) { err.textContent = "Sen couldn't find a farm under that key. Check for typos?"; return; }
+        if (S) lsSet(KEY + "_before_sync", JSON.stringify(S));   // keep the farm this key replaces, just in case
         setKey(k); S = null; adopt(r.state); S.keySaved = true; saveQuiet(); cloud.ok = true; setSaveStat("☁ Saved to the cloud");
         closeModal(); tab = "today"; render(); toast("Welcome home, " + esc(S.name) + "! Your farm is back 🌾");
       } catch (e) { err.textContent = "Couldn't reach the cloud. Check your internet and try again."; }
@@ -700,6 +707,7 @@ function renderOnboard() {
   if (OB.step === 1) {
     root.innerHTML = `<div class="panel" style="max-width:600px;margin:30px auto">
       <div class="sen">${spr("sen", 5)}<div class="bubble">Mrrp! Hi, I'm Sen. 🐾 I'll be your farm guide. Let's make money feel cozy instead of scary.</div></div>
+      ${isApp() ? `<p class="panel" style="margin:14px 0 0;background:var(--amber2)">📱 <b>Already have a farm</b> in Safari or on another phone? This app keeps its own storage, so tap <b>"I already have a farm key"</b> below and paste your key to bring it in.</p>` : ""}
       <label class="f" for="obName">What should I call you?</label><input id="obName" value="${esc(OB.name || "Ashley")}" style="width:100%" autocomplete="given-name">
       <label class="f" for="obFarm">Name your farm</label><input id="obFarm" value="${esc(OB.farm || "Sunbeam Farm")}" style="width:100%">
       <div class="spread" style="margin-top:16px"><button class="btn link" data-act="enterKey">I already have a farm key 🔑</button><button class="btn green big" data-act="ob2">Next 🌱</button></div></div>`;

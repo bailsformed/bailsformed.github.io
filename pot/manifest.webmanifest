@@ -1,0 +1,28 @@
+{
+  "id": "/pot/",
+  "name": "The Pot",
+  "short_name": "The Pot",
+  "start_url": "/pot/",
+  "scope": "/pot/",
+  "display": "standalone",
+  "background_color": "#150f1b",
+  "theme_color": "#150f1b",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

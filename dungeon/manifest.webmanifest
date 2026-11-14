@@ -1,0 +1,28 @@
+{
+  "id": "/dungeon/",
+  "name": "Med School Dungeon",
+  "short_name": "Dungeon",
+  "start_url": "/dungeon/",
+  "scope": "/dungeon/",
+  "display": "standalone",
+  "background_color": "#120f18",
+  "theme_color": "#120f18",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

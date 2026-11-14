@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-title" content="Little Freak">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#140c18">
 <title>Unmarketable Little Freak</title>
@@ -191,7 +195,10 @@ function fresh() {
 let S = fresh();
 try { const r = localStorage.getItem(KEY); if (r) S = Object.assign(fresh(), JSON.parse(r)); } catch (e) {}
 let cloud = { ref: null, w: false, p: false }, st = null;
-function save() { S.updatedAt = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} clearTimeout(st); st = setTimeout(push, 1200); }
+// ask the browser not to clear this site's storage when space runs low (harmless if refused)
+let persistAsked = false;
+function save() { S.updatedAt = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+  if (!persistAsked) { persistAsked = true; try { navigator.storage && navigator.storage.persist && navigator.storage.persist().catch(() => {}); } catch (e) {} } clearTimeout(st); st = setTimeout(push, 1200); }
 async function push() {
   if (!cloud.ref) return; if (cloud.w) { cloud.p = true; return; } cloud.w = true;
   try { await cloud.ref.set({ state: JSON.stringify(S), updatedAt: S.updatedAt }); setSave("☁ Saved to " + (cloud.ref.where || "your account")); } catch (e) { setSave("Saved on this device"); }
@@ -799,6 +806,7 @@ const VIEWS = {
       <div class="panel pad" style="display:grid;gap:10px"><h2 class="disp" style="font-size:30px">⚙️ Save & Settings</h2>
         <div><b>Status:</b> <span>${esc($("#saveStat").textContent)}</span></div>
         <p class="dim small" style="margin:0">Your progress saves on this device by itself, and to your Family Village account when you're logged in to the Village in this same browser. A backup now and then is still smart.</p>
+        <div class="row"><button class="btn ghost" onclick="window.CloudSave&&CloudSave.account()">☁ Cloud save: log in or out</button></div>
         <div class="row"><button class="btn" id="bkDl">⬇ Download a backup</button><button class="btn ghost" id="bkCp">📋 Copy backup code</button></div>
         <label class="small dim" for="bkIn">Restore from a backup code:</label><textarea id="bkIn" style="min-height:70px" placeholder="Paste a backup code here"></textarea>
         <div class="row"><button class="btn ghost" id="bkGo">Restore</button><label class="small dim">or from a file: <input type="file" id="bkFile" accept=".json,application/json"></label></div></div>
