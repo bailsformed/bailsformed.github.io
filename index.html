@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>bailsformed · projects</title>
+<title>bailsformed · find your game</title>
+<meta name="description" content="Little games made for family and friends. Find yours, or head into the Family Village.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
@@ -14,43 +15,68 @@ body{margin:0;min-height:100vh;color:var(--ink);font-family:Nunito,system-ui,san
 .wrap{max-width:900px;margin:0 auto;padding:28px 16px 40px}
 .px{font-family:"Pixelify Sans",monospace}
 .panel{background:var(--paper);border:3px solid var(--ink);border-radius:4px;box-shadow:0 4px 0 #1d1629,inset 0 -4px 0 var(--muted)}
-header{display:flex;gap:18px;align-items:center;padding:18px 20px;flex-wrap:wrap}
+header{display:flex;gap:18px;align-items:center;padding:18px 20px}
 header svg{width:72px;image-rendering:pixelated;flex:none;background:#cfe8ff;border:3px solid var(--ink);border-radius:4px;padding:6px}
-h1{font-size:30px;margin:0}
-.sub{color:var(--ink2);margin:4px 0 0;font-size:15px}
+h1{font-size:28px;margin:0;line-height:1.15}
+.sub{color:var(--ink2);margin:6px 0 0;font-size:15px;line-height:1.4}
 .stars{color:#f6c453;letter-spacing:6px;text-align:center;margin:22px 0 8px;font-size:14px}
-h2{color:#fff3dc;font-size:20px;margin:6px 0 12px}
+h2{color:#fff3dc;font-size:20px;margin:6px 0 4px}
+.hint{color:#c9b9d9;font-size:14px;margin:0 0 12px}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
 .card{padding:16px}
-a.card{display:block;text-decoration:none;color:inherit;transition:transform .1s}
+a.card{display:block;text-decoration:none;color:inherit;transition:transform .1s;min-height:44px}
 a.card:hover{transform:translateY(-3px)}
 a.card:focus-visible{outline:3px dashed var(--pink);outline-offset:3px}
-.card .ic{font-size:34px}
-.card h3{margin:6px 0 4px;font-size:20px}
-.card p{margin:0 0 10px;font-size:14px;line-height:1.45;color:var(--ink2)}
-.chip{display:inline-block;font-family:"Pixelify Sans",monospace;font-size:12px;border:2px solid var(--ink);border-radius:3px;padding:1px 7px;background:#ffe7a6}
-.card.soon{opacity:.6;border-style:dashed;cursor:default}
-.card.soon .chip{background:var(--muted)}
-.card.gift{background:#221b2b;color:#efe6d8;box-shadow:0 4px 0 #0a080e,0 0 0 2px #ff4d6d,0 0 16px #ff4d6d55}
-.card.gift p{color:#c9b9d9}
-.card.gift .chip{background:#ff4d6d;color:#fff}
-.card.isle{background:linear-gradient(180deg,#e8f6f4,#fff6ee);box-shadow:0 4px 0 #a9dbe3,0 0 0 2px #f4a7bb}
-.card.isle .chip{background:#f4a7bb}
-.card.ops{background:#1b221a;color:#e6ead9;box-shadow:0 4px 0 #0a0d09,0 0 0 2px #f0b43c}
-.card.ops p{color:#9aa88f}
-.card.ops .chip{background:#f0b43c;color:#1a1405}
-.card.feast{background:linear-gradient(180deg,#f7efe0,#efe3cd);box-shadow:0 4px 0 #1b1410,0 0 0 2px #c9a24a,0 0 16px #c9a24a55}
-.card.feast h3{font-family:Georgia,serif;letter-spacing:1px}
-.card.feast .chip{background:#7d2233;color:#f3e7d3}
-.card.village{background:linear-gradient(180deg,#fff3dc,#ffe7c2);box-shadow:0 4px 0 #c9955c,0 0 0 2px #e07a5f,0 0 18px #f6c45366}
+.chip{display:inline-block;font-family:"Pixelify Sans",monospace;font-size:13px;border:2px solid var(--ink);border-radius:3px;padding:2px 8px;background:#ffe7a6}
+
+/* the village gate */
+.card.village{display:flex;gap:16px;align-items:center;background:linear-gradient(180deg,#fff3dc,#ffe7c2);box-shadow:0 4px 0 #c9955c,0 0 0 2px #e07a5f,0 0 18px #f6c45366}
+.card.village .roofs{font-size:34px;letter-spacing:2px;flex:none}
+.card.village h3{margin:0 0 4px;font-size:22px}
+.card.village p{margin:0 0 10px;font-size:14px;line-height:1.45;color:var(--ink2)}
 .card.village .chip{background:#e07a5f;color:#fff}
-.card.village .roofs{font-size:26px;letter-spacing:2px}
+
+/* name → game buttons */
+.who{display:flex;gap:12px;align-items:center}
+.who .ic{font-size:30px;flex:none;width:44px;text-align:center}
+.who .name{font-size:24px;margin:0;line-height:1.1}
+.who .game{margin:3px 0 0;font-size:14px;color:var(--ink2);font-weight:600}
+.who .go{margin-left:auto;font-size:20px;flex:none;opacity:.7}
+.card.mine{transform:none;outline:3px solid var(--gold);outline-offset:3px}
+.card .yours{display:none;margin-top:10px}
+.card.mine .yours{display:inline-block;background:var(--gold)}
+
+.card.gift{background:#221b2b;color:#efe6d8;box-shadow:0 4px 0 #0a080e,0 0 0 2px #ff4d6d,0 0 16px #ff4d6d55}
+.card.gift .game{color:#c9b9d9}
+.card.isle{background:linear-gradient(180deg,#e8f6f4,#fff6ee);box-shadow:0 4px 0 #a9dbe3,0 0 0 2px #f4a7bb}
+.card.ops{background:#1b221a;color:#e6ead9;box-shadow:0 4px 0 #0a0d09,0 0 0 2px #f0b43c}
+.card.ops .game{color:#9aa88f}
+.card.feast{background:linear-gradient(180deg,#f7efe0,#efe3cd);box-shadow:0 4px 0 #1b1410,0 0 0 2px #c9a24a,0 0 16px #c9a24a55}
+.card.feast .game{font-family:Georgia,serif;letter-spacing:.5px}
 .card.gremlin{background:linear-gradient(180deg,#fff0f8,#efe8ff);box-shadow:4px 4px 0 #1d1629,0 0 0 2px #ff8fb8,0 0 18px #b8a1ff66}
-.card.gremlin .chip{background:#ff8fb8}
 .card.farm{background:linear-gradient(180deg,#fff6e2,#e4f4d4);box-shadow:0 4px 0 #5e3a1d,0 0 0 2px #8cc56b,0 0 18px #ffd45a66}
-.card.farm h3{color:#5e3a1d}
-.card.farm .chip{background:#8cc56b;color:#2f4a1f}
-footer{color:#b9aacc;font-size:12px;text-align:center;margin-top:28px}
+.card.farm .name{color:#5e3a1d}
+
+/* welcome back banner (only when this browser is logged in to the Village) */
+.welcome{display:none;margin-top:14px;padding:12px 16px;font-size:15px;line-height:1.4}
+.welcome.on{display:block}
+.welcome b{font-family:"Pixelify Sans",monospace;font-size:18px}
+
+.peek{display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;margin:26px auto 0;max-width:420px;padding:10px 16px;
+  color:#fff3dc;text-decoration:none;border:2px dashed #8a7aa3;border-radius:4px;font-size:16px}
+.peek:hover{background:#3a2d52}
+.peek:focus-visible{outline:3px dashed var(--pink);outline-offset:3px}
+footer{color:#b9aacc;font-size:12px;text-align:center;margin-top:22px}
+
+@media (max-width:480px){
+  header{padding:14px;gap:14px}
+  header svg{width:56px}
+  h1{font-size:23px}
+  .grid{grid-template-columns:1fr;gap:12px}
+  .card.village{flex-direction:column;align-items:flex-start;gap:6px}
+  .card.village .roofs{font-size:28px}
+  .who .name{font-size:22px}
+}
 </style>
 </head>
 <body>
@@ -58,80 +84,69 @@ footer{color:#b9aacc;font-size:12px;text-align:center;margin-top:28px}
   <header class="panel">
     <svg viewBox="0 0 12 16" shape-rendering="crispEdges" aria-hidden="true" id="me"></svg>
     <div>
-      <h1 class="px">bailsformed's workshop</h1>
-      <p class="sub">Little tools and games I'm building, one quest at a time ✨</p>
+      <h1 class="px">Hi friend! Find your game ✨</h1>
+      <p class="sub">Each game here was made for one special person. Tap your name to jump into yours.</p>
     </div>
   </header>
 
-  <div class="stars">✦ ✦ ✦</div>
-  <h2 class="px">🗂 My projects</h2>
+  <div class="welcome panel" id="welcome" role="status" aria-live="polite"></div>
 
-  <div class="grid">
-    <a class="card panel" href="medquest/">
-      <div class="ic">🩺</div>
-      <h3 class="px">MedQuest</h3>
-      <p>A cozy pixel RPG that tracks my real road from transfer student to medical student.</p>
-      <span class="chip">▶ Play</span>
+  <div class="stars">✦ ✦ ✦</div>
+  <h2 class="px">🙋 Who are you?</h2>
+  <p class="hint">Your game saves your progress, so stick to your own 💛</p>
+
+  <div class="grid" id="people">
+    <a class="card panel isle" href="nola/" data-who="nola">
+      <div class="who"><div class="ic" aria-hidden="true">🌸</div>
+        <div><h3 class="name px">Nola</h3><p class="game">Magnolia Isle</p></div>
+        <span class="go" aria-hidden="true">▶</span></div>
+      <span class="chip yours">⭐ Your game</span>
     </a>
-    <div class="card panel soon">
-      <div class="ic">🌱</div>
-      <h3 class="px">Next project</h3>
-      <p>Something new is growing here…</p>
-      <span class="chip">Coming soon</span>
-    </div>
+    <a class="card panel ops" href="luke/" data-who="luke">
+      <div class="who"><div class="ic" aria-hidden="true">🎖️</div>
+        <div><h3 class="name px">Luke</h3><p class="game">Operation: Open Field</p></div>
+        <span class="go" aria-hidden="true">▶</span></div>
+      <span class="chip yours">⭐ Your game</span>
+    </a>
+    <a class="card panel gremlin" href="kyla/" data-who="kyla">
+      <div class="who"><div class="ic" aria-hidden="true">👾</div>
+        <div><h3 class="name px">Kyla</h3><p class="game">Gremlin Town</p></div>
+        <span class="go" aria-hidden="true">▶</span></div>
+      <span class="chip yours">⭐ Your game</span>
+    </a>
+    <a class="card panel feast" href="feast/" data-who="gage">
+      <div class="who"><div class="ic" aria-hidden="true">☕</div>
+        <div><h3 class="name px">Gage</h3><p class="game">The Moveable Feast</p></div>
+        <span class="go" aria-hidden="true">▶</span></div>
+      <span class="chip yours">⭐ Your game</span>
+    </a>
+    <a class="card panel farm" href="ashley/" data-who="ashley">
+      <div class="who"><div class="ic" aria-hidden="true">🌻</div>
+        <div><h3 class="name px">Ashley</h3><p class="game">Sunbeam Farm</p></div>
+        <span class="go" aria-hidden="true">▶</span></div>
+      <span class="chip yours">⭐ Your game</span>
+    </a>
+    <a class="card panel gift" href="dungeon/" data-who="pb">
+      <div class="who"><div class="ic" aria-hidden="true">⚔️</div>
+        <div><h3 class="name px">PB</h3><p class="game">Med School Dungeon</p></div>
+        <span class="go" aria-hidden="true">▶</span></div>
+      <span class="chip yours">⭐ Your game</span>
+    </a>
   </div>
 
   <div class="stars">✦ ✦ ✦</div>
-  <h2 class="px">🏡 The family village</h2>
-  <div class="grid">
-    <a class="card panel village" href="village/">
-      <div class="roofs">🏠🏡🏘️</div>
+  <h2 class="px">🏡 Family? Come on in</h2>
+  <p class="hint">Bring your family code, your name and your PIN.</p>
+  <a class="card panel village" href="village/">
+    <div class="roofs" aria-hidden="true">🏠🏡🏘️</div>
+    <div>
       <h3 class="px">The Family Village</h3>
-      <p>Our own corner of the internet: post your Ws, roast each other lovingly, settle the trivia beef, and vote on the Quote of the Year. Bring your family code.</p>
+      <p>Post your Ws, roast each other lovingly, settle the trivia beef, and vote on the Quote of the Year. Logging in here also backs up your game.</p>
       <span class="chip">▶ Come home</span>
-    </a>
-  </div>
+    </div>
+  </a>
 
-  <div class="stars">✦ ✦ ✦</div>
-  <h2 class="px">💝 Made for someone special</h2>
-  <div class="grid">
-    <a class="card panel gift" href="dungeon/">
-      <div class="ic">⚔️</div>
-      <h3 class="px">MED SCHOOL DUNGEON</h3>
-      <p>Built for my boyfriend: a pixel dungeon crawl to the white coat, with a very opinionated stoat companion who may or may not be me.</p>
-      <span class="chip">▶ Enter the dungeon</span>
-    </a>
-    <a class="card panel isle" href="nola/">
-      <div class="ic">🌸</div>
-      <h3 class="px">Magnolia Isle</h3>
-      <p>Built for my cousin Nola: a cozy island where her pre-med journey grows one little flower at a time.</p>
-      <span class="chip">▶ Visit the island</span>
-    </a>
-    <a class="card panel ops" href="luke/">
-      <div class="ic">🎖️</div>
-      <h3 class="px">OPERATION: OPEN FIELD</h3>
-      <p>Built for my cousin Luke: a tactical ops campaign for scouting med, law, or something else entirely. Rumor says there's hidden intel on the map.</p>
-      <span class="chip">▶ Deploy</span>
-    </a>
-    <a class="card panel feast" href="feast/">
-      <div class="ic">☕</div>
-      <h3>THE MOVEABLE FEAST</h3>
-      <p>Built for my brother Gage: a 1920s Left Bank café where grown-up quests earn your seat at the table, with a very opinionated café cat.</p>
-      <span class="chip">▶ Take your seat</span>
-    </a>
-    <a class="card panel gremlin" href="kyla/">
-      <div class="ic">👾</div>
-      <h3 class="px">GREMLIN TOWN</h3>
-      <p>Built for my sister Kyla Bug: a cozy-chaotic anime town where six gremlins get her to college, budget her paychecks, and do very dumb tricks when she wins.</p>
-      <span class="chip">▶ Enter town</span>
-    </a>
-    <a class="card panel farm" href="ashley/">
-      <div class="ic">🌻</div>
-      <h3 class="px">SUNBEAM FARM</h3>
-      <p>Built for my friend Ashley: a cozy farm where her budget grows as crops, Sen the cat hands out affirmations, and Charlie buries the backup bones.</p>
-      <span class="chip">▶ Visit the farm</span>
-    </a>
-  </div>
+  <a class="peek px" href="portfolio/">✨ Just visiting? See everything Bailey's made →</a>
 
   <footer class="px">made with care · bailsformed.github.io</footer>
 </div>
@@ -140,6 +155,52 @@ const G=["...HHHHHH...","..HHHHHHHH..",".HHHHHHHHHH.",".HHSSSSSSHH.",".HSSSSSSSS
 const P={H:"#4a2f23",S:"#f1c08f",E:"#2b2240",R:"#f4a3b4",M:"#c2566f",T:"#8a6fd1",P:"#4a4d6e",B:"#3b2f4a"};
 let o="";G.forEach((r,y)=>[...r].forEach((c,x)=>{if(P[c])o+=`<rect x="${x}" y="${y}" width="1" height="1" fill="${P[c]}"/>`;}));
 document.getElementById("me").innerHTML=o;
+</script>
+<script>
+/* "Welcome back": if this browser is already logged in to the Family Village
+   (the shared 'family-village-auth' session the games use), greet that member
+   and float their game to the top. Read-only: it never signs anyone in or out,
+   and visitors with no Village login never load Supabase at all. */
+(function(){
+  let has=false;
+  try{ has=!!localStorage.getItem('family-village-auth'); }catch(e){}
+  if(!has) return;
+  const s=document.createElement('script');
+  s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js';
+  s.onload=async function(){
+    try{
+      const client=window.supabase.createClient('https://xsihxxwqbguxpvmhpdqo.supabase.co','sb_publishable_mMfWPoSYDQUqkCM4rUaccA_6_n8u4XL',{
+        auth:{persistSession:true,autoRefreshToken:true,storageKey:'family-village-auth',detectSessionInUrl:false}});
+      const {data:{session}}=await client.auth.getSession();
+      if(!session) return;
+      const {data:id}=await client.rpc('my_member_id');
+      if(!id) return;
+      const {data:m}=await client.from('members').select('display_name,face').eq('id',id).single();
+      if(!m||!m.display_name) return;
+      greet(m.display_name,m.face);
+    }catch(e){}
+  };
+  document.head.appendChild(s);
+
+  function esc(t){return String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function greet(name,face){
+    const key=name.toLowerCase().replace(/[^a-z ]/g,'').trim().split(/\s+/)[0]||'';
+    const w=document.getElementById('welcome');
+    const card=document.querySelector('#people [data-who="'+key+'"]');
+    let msg='<b>Welcome back, '+esc(name)+' '+esc(face||'👋')+'</b><br>';
+    if(card){
+      card.classList.add('mine');
+      card.parentNode.prepend(card);
+      msg+='Your game is right up top, ready when you are.';
+    }else if(key==='bails'||key==='bailey'){
+      msg+='The workshop misses you. <a href="portfolio/">Your projects →</a>';
+    }else{
+      msg+='Your village is waiting below. 🏡';
+    }
+    w.innerHTML=msg;
+    w.classList.add('on');
+  }
+})();
 </script>
 <script data-goatcounter="https://bailsformed.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
