@@ -391,7 +391,7 @@ const GEAR={
   note:{e:"💌",label:"Note from home",d:"blocks one hit"}
 };
 function scene2(){
-  S.step="s2";save(true);invRender();
+  S.step="s2";save(true);show("vGame");invRender();
   setScene("Scene 2 · Gear up","linear-gradient(180deg,#cfe8ff,#e8f4ff 70%)","#9bd38a",[
     {deco:"🌳",style:{bottom:"24px",left:"4%",fontSize:"52px"}},{deco:"☁️",style:{top:"40px",left:"20%"}},{deco:"☁️",style:{top:"28px",right:"10%"}},
     {id:"aHero",html:heroSvg(S),style:{left:"38%",width:"64px"}},
@@ -409,7 +409,7 @@ function gearPick(){
 /* scene 3: boss */
 let F=null;
 function scene3(){
-  S.step="s3";save(true);invRender();
+  S.step="s3";save(true);show("vGame");invRender();
   const b=BOSSES[S.boss];
   setScene("Scene 3 · Boss fight","linear-gradient(180deg,#3d3057,#5a4580 70%)","#4a3a66",[
     {deco:"✨",style:{top:"70px",left:"10%",fontSize:"22px"}},{deco:"✨",style:{top:"110px",left:"44%",fontSize:"18px"}},
