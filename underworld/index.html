@@ -243,6 +243,42 @@ label.f{font-weight:600;letter-spacing:1.5px}
 .soul{transform-box:fill-box;transform-origin:50% 100%;animation:soul 1.9s ease-in-out infinite alternate}
 @keyframes soul{0%{transform:scale(1,1)}50%{transform:scale(.93,1.06) translateY(-1px)}100%{transform:scale(1.05,.97)}}
 .soulglow{animation:emb 2.6s ease-in-out infinite alternate}
+/* ===== rooms ===== */
+.lead{margin-top:0}.small{font-size:14px}.big{font-size:21px}
+small,.chip{font-size:13px}label.f{font-size:13px}.qi .t small,.bed small,.tile small,.jar .amt,.aqi .tx small{font-size:13.5px}.days div{font-size:12.5px}
+.chip{font-weight:600;background:#140e12}
+details.ch{background:#140e12;border-radius:12px}details.ch.fold{margin-top:14px}
+details.ch>summary{min-height:48px}details.ch>summary::after{content:"›";color:var(--gold);font-size:20px;margin-left:auto;transition:transform .2s}details.ch[open]>summary::after{transform:rotate(90deg)}
+details.ch>summary .pbar{flex:1 1 60px;min-width:60px}
+.qi{min-height:52px}.qi .chev,.rowc .chev{color:var(--gold);font-size:20px}
+.rows{display:grid;gap:6px}
+.rowc{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:#1c141a;border:1px solid var(--edge);border-radius:12px;padding:9px 12px}
+.rowc .t{flex:1 1 180px;min-width:0}.rowc .t b{display:block;line-height:1.25}.rowc .t small{display:block;color:var(--dim);line-height:1.3}
+.rowc[role=button]{cursor:pointer}
+.rowc .ctl{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.rowc .ctl input{width:62px;padding:6px}.rowc .ctl select{width:auto;padding:6px}
+.exp{margin-top:10px}
+.torches{display:flex;justify-content:space-between;align-items:flex-end;gap:2px;margin:8px 0 12px;padding:10px 6px 0;border-bottom:2px solid #4d3a2c;background:linear-gradient(0deg,#2e0b1233,transparent)}
+.torch{background:none;border:none;padding:0 0 2px;cursor:pointer;flex:1;max-width:46px;min-height:48px;opacity:.9}.torch svg{width:100%;height:auto;display:block}.torch.cur{transform:scale(1.25);transform-origin:bottom}.torch.todo{opacity:.55}
+.torch:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+#pathNext{margin-bottom:8px}#pathNext small{display:block;font-weight:600;font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold)}
+.beds{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}.bed b{display:block;font-family:"Cormorant Garamond",Georgia,serif;font-size:20px;line-height:1.15;margin-top:4px}.bed .pl{min-height:44px}.bed.grown{border-color:#4f7a60;background:linear-gradient(180deg,#1c141a,#16211b)}
+.pics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 4px}
+.pic{background:#140e12;border:1px solid var(--edge);border-radius:14px;padding:10px 6px;color:var(--ink);cursor:pointer;font-family:Spectral,Georgia,serif;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-height:150px}
+.pic b{font-family:"Cormorant Garamond",Georgia,serif;font-size:20px;line-height:1.1;margin-top:6px}.pic small{color:var(--dim);font-size:13.5px}
+.pic svg{max-width:100%;height:auto}.cndrow{display:flex;gap:2px;align-items:flex-end;justify-content:center;flex-wrap:wrap;min-height:62px;align-content:flex-end}
+.pic:focus-visible,.bed:focus-visible,.jar:focus-visible,.rowc:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.seed{animation:seed 2.6s ease-in-out infinite alternate}@keyframes seed{to{fill:#ff6a7c}}
+.links{justify-content:space-between;margin-top:6px}
+.jar.unset{opacity:.6}.jar .nm svg{vertical-align:-4px;height:18px;width:auto}
+.altarHero{display:flex;gap:12px;align-items:flex-start;overflow:hidden}
+.hfull{width:38%;max-width:190px;height:auto;flex:none;margin:-4px 0 -18px -8px;filter:drop-shadow(0 0 24px #7a162677)}
+.oathBox{flex:1;min-width:0}.oathBox h2{margin-top:4px}
+.quietRow .ic{width:30px;height:30px;flex:none;fill:none;stroke:var(--gold);stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.closeup{width:104px;height:auto;flex:none;align-self:flex-start;filter:drop-shadow(0 0 16px #7a162666)}
+.bub{background:linear-gradient(180deg,#dbc9b6,#c6af9a);color:#24161a;border:1px solid #6a4a2a;border-radius:12px;box-shadow:inset 0 0 0 2px #dbc9b6,inset 0 0 0 3px #9a7a50;font-weight:500}
+.bub b.who{color:#6a1220}
+.who-row .face{border-color:#8a6a44;background:#0a0807}
+.hearth button{min-height:76px}.seg button{min-height:40px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -290,66 +326,72 @@ label.f{font-weight:600;letter-spacing:1.5px}
   <section class="view" id="v-quiet"><button class="link back" onclick="go('tonight')">‹ Tonight</button><div class="card" id="quiet"></div></section>
 
   <section class="view" id="v-path">
-    <div class="card"><h2>The Path</h2><p class="muted" style="margin-top:0">Your road from New Paltz to the white coat, plus the life rites that make it possible. Tap any quest.</p><div id="pathList"></div></div>
-    <div class="card" style="margin-top:14px"><div class="row sp"><h2 style="margin:0">Grimoire: classes & GPA</h2><div class="row"><button class="btn sm ghost" data-copy="courses">Copy for Sheets</button><button class="btn sm gold dl" data-dl="courses">⬇ CSV</button></div></div>
-      <p class="muted">Every college class counts. Science classes (Bio/Chem/Phys/Math) make your BCPM GPA. The math is done for you.</p>
-      <div class="hero" id="gpaTiles"></div><div class="tbl" style="max-height:none;margin-top:10px"><table id="courses"></table></div>
-      <form class="f2" id="courseForm" style="margin-top:8px"><label class="f">Class<input name="name" required placeholder="Abnormal Psychology"></label><label class="f">Type<select name="cat"><option value="O">Non-science</option><option value="B">Biology</option><option value="C">Chemistry</option><option value="P">Physics</option><option value="M">Math</option></select></label>
-      <label class="f">Credits<input name="cr" type="number" step=".5" value="3"></label><div class="foot full" style="margin-top:28px"><span></span><button class="btn sm">Add class</button></div></form></div>
+    <div class="card"><h2>The Path</h2><p class="muted lead" id="pathIntro">Your road to the white coat, plus the life rites that make it possible.</p>
+      <div class="torches" id="torchRoad" role="list" aria-label="The eight chapters"></div>
+      <button class="quietRow" id="pathNext"></button>
+      <div class="muted small" id="mqNote"></div>
+      <div id="pathList"></div>
+      <details class="ch" id="grimoire"><summary><b class="serif big">Grimoire</b><span class="chip">classes &amp; grades</span></summary><div class="inner">
+        <p class="muted">Every college class counts. Science classes (Bio/Chem/Phys/Math) make your science GPA. The math is done for you.</p>
+        <div class="hero" id="gpaTiles"></div><div class="rows" id="courses" style="margin-top:10px"></div>
+        <form class="f2" id="courseForm" style="margin-top:8px"><label class="f">Class<input name="name" required placeholder="Abnormal Psychology"></label><label class="f">Type<select name="cat"><option value="O">Non-science</option><option value="B">Biology</option><option value="C">Chemistry</option><option value="P">Physics</option><option value="M">Math</option></select></label>
+        <label class="f">Credits<input name="cr" type="number" step=".5" value="3"></label><div class="foot full" style="margin-top:28px"><span></span><button class="btn sm">Add class</button></div></form>
+        <div class="row exp"><button class="btn sm ghost" data-copy="courses">Copy for Sheets</button><button class="btn sm ghost dl" data-dl="courses">⬇ CSV</button></div></div></details>
+    </div>
   </section>
 
   <section class="view" id="v-garden">
-    <div class="g2">
-      <div class="card"><div class="row sp"><h2 style="margin:0">Apothecary Garden</h2><button class="btn sage" id="logHoursBtn">+ Log hours</button></div>
-        <p class="muted">Every hour you log grows a real medicinal plant. Tap a bed to read its lore.</p><div class="beds" id="beds"></div></div>
-      <div class="card"><h3 style="margin-top:0">The ledger of hours</h3><div class="row"><button class="btn sm ghost" data-copy="hours">Copy for Sheets</button><button class="btn sm gold dl" data-dl="hours">⬇ CSV</button></div><div class="tbl" id="hoursList" style="margin-top:8px"></div></div>
-    </div>
+    <div class="card"><div class="row sp"><h2 style="margin:0">Apothecary Garden</h2><button class="btn sage" id="logHoursBtn">+ Log hours</button></div>
+      <p class="muted lead">Every hour you log grows a real medicinal plant. Tap a bed for its lore and its hours.</p><div class="beds" id="beds"></div></div>
+    <details class="ch fold"><summary><b class="serif big">The ledger of hours</b><span class="chip">every entry</span></summary><div class="inner"><div class="row exp"><button class="btn sm ghost" data-copy="hours">Copy for Sheets</button><button class="btn sm ghost dl" data-dl="hours">⬇ CSV</button></div><div class="rows" id="hoursList" style="margin-top:8px"></div></div></details>
   </section>
 
   <section class="view" id="v-treasury">
     <div class="card">
-      <div class="row sp"><h2 style="margin:0">The Treasury</h2><div class="row"><button class="btn ghost sm" id="mPrev">‹</button><b id="mLabel" class="serif" style="font-size:20px"></b><button class="btn ghost sm" id="mNext">›</button></div></div>
-      <div class="hero" id="treasHero" style="margin-top:10px"></div>
-      <div class="row" style="margin-top:12px"><button class="btn gold" id="logSpendBtn">+ Log money</button><button class="btn sage" id="impBtn">📥 Import statements</button><button class="btn ghost sm" id="finSet">Vault & budget settings</button></div>
+      <div class="row sp"><h2 style="margin:0">The Treasury</h2><div class="row"><button class="btn ghost sm" id="mPrev" aria-label="Previous month">‹</button><button class="link serif" id="mLabel" style="font-size:20px" aria-label="Back to this month"></button><button class="btn ghost sm" id="mNext" aria-label="Next month">›</button></div></div>
+      <div class="pics" id="treasHero"></div>
+      <button class="btn gold big" id="logSpendBtn">Log money</button>
+      <div class="row links"><button class="link" id="impBtn">Import statements</button><button class="link" id="finSet">Vault &amp; budget</button><button class="link" id="toWar">The War Chest ›</button></div>
       <div id="tiers"></div>
     </div>
-    <div class="card" style="margin-top:14px"><div class="row sp"><h3 style="margin:0">This month's entries</h3><div class="row"><button class="btn sm ghost" data-copy="money">Copy for Sheets</button><button class="btn sm gold dl" data-dl="money">⬇ All transactions CSV</button><button class="btn sm gold dl" data-dl="month">⬇ Month summary CSV</button></div></div><div class="tbl" id="txList" style="margin-top:8px"></div></div>
+    <details class="ch fold"><summary><b class="serif big">This month's entries</b><span class="chip" id="txCount"></span></summary><div class="inner"><div class="row exp"><button class="btn sm ghost" data-copy="money">Copy for Sheets</button><button class="btn sm ghost dl" data-dl="money">⬇ CSV</button><button class="btn sm ghost dl" data-dl="month">⬇ Month summary</button></div><div class="rows" id="txList" style="margin-top:8px"></div></div></details>
   </section>
 
   <section class="view" id="v-war">
+    <button class="link back" onclick="go('treasury')">‹ Treasury</button>
     <div class="g2">
-      <div class="card"><h2>The War Chest</h2><p class="muted" style="margin-top:0">HRIS / HCM implementation contract work: consultant money that buys you time for school, shadowing, and life.</p>
+      <div class="card"><h2>The War Chest</h2><p class="muted lead" id="warIntro">Contract work: money that buys you time for school, shadowing, and life.</p>
         <div class="hero" id="warHero"></div><h3>Battle plan</h3><ul class="steps" id="warQuests"></ul></div>
       <div class="card"><div class="row sp"><h3 style="margin:0">Opportunities</h3><button class="btn" id="addOpp">+ Add</button></div>
-        <div class="row" style="margin-top:6px"><button class="btn sm ghost" data-copy="pipeline">Copy for Sheets</button><button class="btn sm gold dl" data-dl="pipeline">⬇ CSV</button></div>
-        <div id="pipeline" style="margin-top:8px"></div></div>
+        <div id="pipeline" style="margin-top:8px"></div><div class="row exp"><button class="btn sm ghost" data-copy="pipeline">Copy for Sheets</button><button class="btn sm ghost dl" data-dl="pipeline">⬇ CSV</button></div></div>
     </div>
   </section>
 
   <section class="view" id="v-hearth">
     <button class="link back" onclick="go('tonight')">‹ Tonight</button>
     <div class="g2">
-      <div class="card"><h2>The Hearth</h2><p class="muted" style="margin-top:0">Hestia keeps the fire. Tap what you did for <b>yourself</b> today. Honest, not perfect.</p>
-        <div class="row" style="margin-bottom:8px"><input type="date" id="hDate" style="max-width:180px"></div><div class="hearth" id="hearthBtns"></div>
+      <div class="card"><h2>The Hearth</h2><p class="muted lead">Hestia keeps the fire. Tap what you did for <b>yourself</b>. Honest, not perfect.</p>
+        <div class="row" style="margin-bottom:8px"><input type="date" id="hDate" style="max-width:190px" aria-label="Day"></div><div class="hearth" id="hearthBtns"></div>
         <label class="f" for="hNote">A note for today (optional)</label><textarea id="hNote" rows="2" placeholder="How are you, really?"></textarea></div>
-      <div class="card"><h3 style="margin-top:0">The fire this week</h3><div id="fireBox"></div><div class="days" id="hDays" style="margin-top:10px"></div>
-        <div class="row" style="margin-top:10px"><button class="btn sm ghost" data-copy="hearth">Copy for Sheets</button><button class="btn sm gold dl" data-dl="hearth">⬇ CSV</button></div></div>
+      <div class="card"><h3 style="margin-top:0">The fire this week</h3><div id="fireBox"></div><div class="days" id="hDays" style="margin-top:10px"></div><div class="row exp"><button class="btn sm ghost" data-copy="hearth">Copy for Sheets</button><button class="btn sm ghost dl" data-dl="hearth">⬇ CSV</button></div></div>
     </div>
   </section>
 
   <section class="view" id="v-games">
-    <div class="card"><h2>The Olympian Games</h2><p class="muted" style="margin-top:0">Breaks that secretly count as studying. Up to 100 XP a day from games.</p>
-      <div class="seg" id="gameSel"><button data-g="pantheon" class="on">⚡ Pantheon Trivia</button><button data-g="cards">🃏 My Flashcards</button><button data-g="scroll">📜 Scrambled Scrolls</button></div>
+    <button class="link back" onclick="go('altar')">‹ Altar</button>
+    <div class="card"><h2>The Olympian Games</h2><p class="muted lead">Breaks that secretly count as studying.</p>
+      <div class="seg" id="gameSel"><button data-g="pantheon" class="on">Pantheon Trivia</button><button data-g="cards">My Flashcards</button><button data-g="scroll">Scrambled Scrolls</button></div>
       <div id="gameBox" style="margin-top:12px"></div></div>
-    <div class="card" style="margin-top:14px"><div class="row sp"><h3 style="margin:0">My flashcard deck</h3><div class="row"><button class="btn sm ghost" data-copy="cards">Copy for Sheets</button><button class="btn sm gold dl" data-dl="cards">⬇ CSV</button></div></div>
+    <details class="ch fold"><summary><b class="serif big">My flashcard deck</b><span class="chip" id="cardCount"></span></summary><div class="inner">
       <form class="f2" id="cardForm"><label class="f">Front (question)<input name="f" required placeholder="What does the nephron do?"></label><label class="f">Back (answer)<input name="b" required placeholder="Filters blood to make urine"></label>
-      <label class="f">Deck<input name="d" placeholder="Bio 1"></label><div class="foot" style="margin-top:28px"><span></span><button class="btn sm">Add card</button></div></form><div id="cardList" class="tbl" style="margin-top:8px"></div></div>
+      <label class="f">Deck<input name="d" placeholder="Bio 1"></label><div class="foot" style="margin-top:28px"><span></span><button class="btn sm">Add card</button></div></form><div id="cardList" class="rows" style="margin-top:8px"></div><div class="row exp"><button class="btn sm ghost" data-copy="cards">Copy for Sheets</button><button class="btn sm ghost dl" data-dl="cards">⬇ CSV</button></div></div></details>
   </section>
 
   <section class="view" id="v-altar">
     <div class="g2">
       <div class="stack">
-        <div class="card"><h2>The Oath</h2><p class="muted" style="margin-top:0">The values you'd live and die for. When you forget you're a firecracker, read these.</p><div id="oath"></div></div>
+        <button class="quietRow" id="toGames"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9l8-5 8 5M5 9v9M9.5 9v9M14.5 9v9M19 9v9M3 20h18"/></svg><span class="qt"><b>The Olympian Games</b><small>Breaks that secretly count as studying.</small></span><span class="chev" aria-hidden="true">›</span></button>
+        <div class="card altarHero"><img class="hfull" src="art/hades-full.webp" width="506" height="960" alt="Hades, lord of the underworld" loading="lazy"><div class="oathBox"><h2>The Oath</h2><p class="muted" style="margin-top:0">The values you'd live and die for. When you forget you're a firecracker, read these.</p><div id="oath"></div></div></div>
         <div class="card" id="letterBox"></div>
       </div>
       <div class="stack">
@@ -1136,7 +1178,7 @@ function chibiInner(o){const sk=o.skin||"#f6d5c2",h=o.hair,e=o.eye||"#5a3a26";le
 const ME=()=>{const o=OUTFITS[S.outfit]||OUTFITS[0];return {style:"halfup",hair:"#8a4a2c",skin:"#f6d2bd",eye:"#6a4228",outfit:o.c,sleeve:o.sleeve,patches:o.patches,roses:o.roses,freckles:true,hoops:true,lashes:true,tattoo:!o.sleeve,lip:o.roses?"#8e1f2e":"#c0566f",coat:isDone("q7_5")};};
 const PB=()=>({style:"curly",hair:"#8b5536",skin:"#f4cdb2",eye:"#4a6a8a",outfit:"#5a6aa8",plaid:true,stache:true,stubble:true,mouth:"kiss",cap:S.pbCap,brow:"#6a4028"});
 const HADES_O={style:"slick",hair:"#1c1424",skin:"#e8dcd6",eye:"#7a6aa8",outfit:"#16101c",robeInner:"#6e1d29",mouth:"smirk",crown:"silver",brooch:true,brow:"#1c1424"};
-const HECATE_O={style:"long",hair:"#d8d4e4",skin:"#e8d8cc",eye:"#8a6ab8",outfit:"#3a2458",robeInner:"#1c1230",crown:"moon",torches:true,lashes:true,brow:"#a89ab8"};
+const HECATE_O={style:"long",hair:"#d8d4e4",skin:"#e8d8cc",eye:"#8a6ab8",outfit:"#2e2132",robeInner:"#5a1220",crown:"moon",torches:true,lashes:true,brow:"#a89ab8"};
 const FORTUNA_O={style:"long",hair:"#e8c66a",skin:"#f6dcc6",eye:"#4a8a7a",outfit:"#f6ead8",robeInner:"#e8c66a",crown:"laurel",wheel:true,lashes:true,lip:"#d06a7a"};
 const chibi=(o,w,h)=>`<svg viewBox="0 0 120 160" ${w?`width="${w}" height="${h}"`:""} xmlns="http://www.w3.org/2000/svg">${chibiInner(o)}</svg>`;
 const face=o=>`<svg viewBox="16 18 88 88" xmlns="http://www.w3.org/2000/svg">${chibiInner(o)}</svg>`;
@@ -1162,7 +1204,8 @@ function moonPhase(d=new Date()){const syn=29.530588853,ref=Date.UTC(2000,0,6,18
  const names=["New Moon","Waxing Crescent","First Quarter","Waxing Gibbous","Full Moon","Waning Gibbous","Last Quarter","Waning Crescent"];return {p,name:names[Math.floor((p*8+.5))%8]};}
 // ---------- progress ----------
 const LV=[0,120,300,550,850,1250,1750,2350,3050,3900,4900,6000];
-const isDone=id=>!!(S.q[id]&&S.q[id].d);
+let MQ={};const mqDone=id=>/^q\d/.test(id)&&!!(MQ[id]&&MQ[id].d);
+const isDone=id=>!!(S.q[id]&&S.q[id].d)||mqDone(id);
 const qs=id=>S.q[id]||(S.q[id]={d:0,s:[],n:""});
 const sumH=f=>S.hours.filter(f).reduce((a,h)=>a+(+h.hrs||0),0);
 const GP={"A":4,"A-":3.7,"B+":3.3,"B":3,"B-":2.7,"C+":2.3,"C":2,"C-":1.7,"D+":1.3,"D":1,"F":0};
@@ -1170,7 +1213,7 @@ function gpa(sci){let p=0,c=0;S.courses.forEach(k=>{if(k.status!=="done"||!(k.gr
 function hearthScore(d){const h=S.hearth[d];if(!h)return 0;return HEARTH_ITEMS.filter(([k])=>h[k]).length/HEARTH_ITEMS.length;}
 function lastDays(n){const out=[];const d=new Date();for(let i=n-1;i>=0;i--){const x=new Date(d);x.setDate(d.getDate()-i);out.push(`${x.getFullYear()}-${pad(x.getMonth()+1)}-${pad(x.getDate())}`);}return out;}
 const fire7=()=>{const ks=Object.keys(S.hearth).sort();if(!ks.length)return 0;let ds=lastDays(7).filter(d=>d>=ks[0]);if(!ds.length)ds=[today()];return ds.reduce((a,d)=>a+hearthScore(d),0)/ds.length;};
-function xp(){let x=0;ALLQ.forEach(q=>{const s=S.q[q.id];if(!s)return;if(s.d)x+=q.xp||100;x+=(s.s||[]).filter(Boolean).length*10;});
+function xp(){let x=0;ALLQ.forEach(q=>{const s=S.q[q.id]||{};if(isDone(q.id))x+=q.xp||100;x+=(s.s||[]).filter(Boolean).length*10;});
  x+=Math.min(sumH(()=>true),1000)*2+Math.min(S.tx.length,300)*2+Object.values(S.hearth).reduce((a,h)=>a+Object.values(h).filter(v=>v===true).length,0)*2+S.courses.filter(c=>c.status==="done").length*40+(S.war.q||[]).filter(Boolean).length*20+S.war.opps.length*10+Object.values(S.games).reduce((a,v)=>a+v,0);return Math.round(x);}
 function levelInfo(){const x=xp();let lv=1;LV.forEach((t,i)=>{if(x>=t)lv=i+1;});return {x,lv,cur:LV[lv-1],nxt:LV[lv]??null,name:isDone("q7_5")?"Dr. Bailey, White Coat Apothecary":LEVELS[lv-1]};}
 const chProg=ch=>{const q=ALLQ.filter(x=>x.ch===ch);return {d:q.filter(x=>isDone(x.id)).length,t:q.length};};
@@ -1178,6 +1221,9 @@ function curChapter(){for(let i=0;i<CHAPTERS.length;i++){const p=chProg(i);if(p.
 function nextQuest(){const r=RITES.find(r=>!isDone(r.id));const c=curChapter();const q=QUESTS.find(q=>q.ch===c&&!isDone(q.id));return q||r||null;}
 // ---------- money ----------
 const catById=Object.fromEntries(BUDGET_CATS.map(c=>[c.id,c]));
+const pk=(k,d)=>(S.pack&&S.pack.strings&&S.pack.strings[k])||d;
+// Must-pay bills that actually have an amount. A $0 bill (say, a waived insurance) isn't owed, so it gets no candle.
+const dueMusts=()=>BUDGET_CATS.filter(c=>c.tier===1&&budgetOf(c.id)>0);
 // ---------- private pack: your personal content lives in your save, not in this public code ----------
 let CARD_LABEL="Card";
 const _base={rites:RITES.slice(),accounts:ACCOUNTS.slice(),names:Object.fromEntries(BUDGET_CATS.map(c=>[c.id,c.name]))};let _packLines=[];
@@ -1228,7 +1274,7 @@ let lastLv=null,lastCh=null;
 function changed(){const b=lastLv,bc=lastCh;save();const li=levelInfo();if(b!==null&&li.lv>b)setTimeout(()=>{toast(`✨ You rose: <b>${esc(li.name)}</b>`);SFX.lvl();petals(90);},250);
  const c=curChapter();if(bc!==null&&c>bc){S.hecateUntil=Date.now()+36e5*12;save();setTimeout(()=>crossroads(CHAPTERS[bc],CHAPTERS[c]),600);}renderAll();}
 // Five rooms. Old tab names still work (links, #hashes, All Quiet's "Open" buttons).
-const ROOMS={tonight:["cottage"],path:["path"],garden:["garden"],treasury:["treasury","war"],altar:["altar","games"]},SUBVIEW={quiet:"tonight",hearth:"tonight"},OLDTAB={cottage:"tonight",war:"treasury",games:"altar"};
+const ROOMS={tonight:["cottage"],path:["path"],garden:["garden"],treasury:["treasury"],altar:["altar"]},SUBVIEW={quiet:"tonight",hearth:"tonight",war:"treasury",games:"altar"},OLDTAB={cottage:"tonight"};
 function go(v){v=OLDTAB[v]||v;const room=SUBVIEW[v]||v;if(!ROOMS[room])return;const show=SUBVIEW[v]?[v]:ROOMS[room];
  $$(".tab").forEach(t=>{const on=t.dataset.v===room;t.classList.toggle("on",on);if(on)t.setAttribute("aria-current","page");else t.removeAttribute("aria-current");});
  $$(".view").forEach(x=>x.classList.toggle("on",show.includes(x.id.slice(2))));SFX.tap();try{history.replaceState(null,"","#"+v);}catch(e){}scrollTo({top:0,behavior:"smooth"});}
@@ -1238,33 +1284,7 @@ function renderTop(){const li=levelInfo();$("#meAv").innerHTML=face(ME());$("#lv
 function hadesContext(){const h=new Date().getHours();if(fire7()<.3&&Object.keys(S.hearth).length)return pick(HADES.hearthLow);const m=monthKey();
  const over=BUDGET_CATS.filter(c=>c.tier===3&&spentIn(m,c.id)>budgetOf(c.id)&&budgetOf(c.id)>0);if(over.length&&Math.random()<.5)return pick(HADES.spendOver);
  const t=tod(h);if(t==="night")return pick(HADES.night);if(t==="morning")return pick(HADES.morning);if(t==="evening")return pick(Math.random()<.3?HADES.random:HADES.evening);return pick(Math.random()<.25?HADES.random:Math.random()<.3?HADES.study:HADES.day);}
-// The earlier shadowed Hades: still used for the small portraits in dialogs until the new one is approved.
-function hadesFigure(){return `<defs><radialGradient id="hAura" cx=".5" cy=".45" r=".5"><stop offset="0" stop-color="#8a202c" stop-opacity=".6"/><stop offset=".55" stop-color="#3a0d14" stop-opacity=".3"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
- <linearGradient id="hRobe" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#211719"/><stop offset=".45" stop-color="#0e0a0c"/><stop offset="1" stop-color="#050405"/></linearGradient>
- <linearGradient id="hFace" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e6dfd4"/><stop offset=".42" stop-color="#c4bbb0"/><stop offset=".72" stop-color="#4a3f42"/><stop offset="1" stop-color="#181216"/></linearGradient></defs>
- <ellipse class="aura" cx="60" cy="104" rx="60" ry="100" fill="url(#hAura)"/>
- <g class="smoke" fill="#070506"><ellipse cx="22" cy="180" rx="22" ry="9" opacity=".75"/><ellipse cx="98" cy="183" rx="24" ry="8" opacity=".75"/><ellipse cx="60" cy="192" rx="38" ry="8" opacity=".8"/></g>
- <path d="M100 22 V197" stroke="#2b2327" stroke-width="2.6" stroke-linecap="round"/><path d="M99.4 30 V190" stroke="#8a6f3a" stroke-width=".6" opacity=".7"/>
- <path d="M93 8 V24 Q93 34 100 36 Q107 34 107 24 V8" fill="none" stroke="#b8975a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
- <path d="M47 26 Q40 48 42 74 H78 Q80 48 73 26Z" fill="#070506"/>
- <path d="M60 46 C42 48 31 58 28 74 C22 112 15 160 10 198 H110 C105 160 98 112 92 74 C89 58 78 48 60 46Z" fill="url(#hRobe)"/>
- <path d="M57 76 L50 198 H70 L63 76Z" fill="#4a0f18"/><path d="M60 76 V198" stroke="#2a070c" stroke-width=".8"/>
- <path d="M40 82 Q34 140 26 198 M48 80 Q44 140 40 198 M72 80 Q76 140 82 198 M82 82 Q90 140 96 198" stroke="#2c1e23" stroke-width=".9" fill="none"/>
- <path d="M86 76 Q94 88 98 102" stroke="#100c0e" stroke-width="10" stroke-linecap="round" fill="none"/><ellipse cx="99" cy="106" rx="4.2" ry="5.4" fill="#cfc7bc"/>
- <path d="M30 70 Q60 58 90 70 Q76 82 60 80 Q44 82 30 70Z" fill="#141013" stroke="#3a2a2e" stroke-width=".6"/>
- <rect x="56" y="45" width="8" height="10" fill="#8f867d"/>
- <path d="M45 53 L42 40 Q60 57 78 40 L75 53 Q60 65 45 53Z" fill="#0c090b" stroke="#3a2a2e" stroke-width=".5"/>
- <circle cx="60" cy="72" r="4.2" fill="#b8975a"/><circle cx="60" cy="72" r="2.4" fill="#8a1c28"/>
- <circle cx="45" cy="118" r="3" fill="none" stroke="#b8975a" stroke-width="1"/><path d="M45 121 V133 M45 129 h3 M45 132 h2.4" stroke="#b8975a" stroke-width="1" fill="none"/>
- <ellipse cx="60" cy="34" rx="12" ry="15.5" fill="url(#hFace)"/>
- <path d="M47.5 34 Q45 16 60 15.5 Q75 16 72.5 34 Q71 24 62 22 Q52 22 47.5 34Z" fill="#070506"/>
- <path d="M50.5 31.5 L57.5 33" stroke="#1a1214" stroke-width="1.3" stroke-linecap="round"/><path d="M69.5 31.5 L62.5 33" stroke="#050304" stroke-width="1.3" stroke-linecap="round"/>
- <path d="M51 36 q3.2 -2.2 6.4 0 q-3.2 1.8 -6.4 0z" fill="#191113"/><circle cx="54.3" cy="36" r="1" fill="#c9a765"/>
- <circle class="ember" cx="66" cy="36" r="2.8" fill="#e0703a" opacity=".35"/><circle cx="66" cy="36" r="1.1" fill="#f0a060"/>
- <path d="M60 35 L59.2 42 L61.4 42.6" stroke="#7d746c" stroke-width=".8" fill="none" stroke-linecap="round"/>
- <path d="M55.5 46 Q60 47.6 65 44.8" stroke="#4a2a2e" stroke-width="1.1" fill="none" stroke-linecap="round"/>
- <path d="M47 23 L48.5 9 L53 19 L56.5 5 L60 18 L63.5 5 L67 19 L71.5 9 L73 23 Q60 18 47 23Z" fill="#151113" stroke="#8a6f3a" stroke-width=".7" stroke-linejoin="round"/><circle cx="60" cy="20.5" r="1.6" fill="#8a1c28"/>`;}
-const hadesBust=()=>`<svg viewBox="36 6 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${hadesFigure()}</svg>`;
+const hadesFace=(m="calm")=>`<img src="art/hades-${m}.webp" alt="Hades" style="width:100%;height:100%;object-fit:cover">`;
 const candle=on=>`<svg viewBox="0 0 10 26" width="10" height="26" aria-hidden="true"><rect x="2.5" y="10" width="5" height="16" rx="1" fill="${on?"#e6dcc6":"#5a5248"}"/>${on?`<circle cx="5" cy="6" r="5" fill="#e8c66a" opacity=".22"/><path class="flame" d="M5 10 q-3.4 -4.5 0 -9 q3.4 4.5 0 9z" fill="#e8c66a"/>`:`<path d="M5 10 v-2.5" stroke="#3a342e" stroke-width="1"/>`}</svg>`;
 function renderScene(){const T=tod(),m=monthKey(),musts=BUDGET_CATS.filter(c=>c.tier===1),rw=runway(),fire=fire7(),mp=moonPhase(),hec=Date.now()<S.hecateUntil;
  const cats=HOUR_CATS.filter(c=>S.hours.some(h=>h.cat===c.id));
@@ -1358,70 +1378,88 @@ function renderQuiet(){const it=allQuietItems(),bad=it.filter(i=>i.st==="warn");
  $$("[data-ver]").forEach(b=>b.addEventListener("click",()=>{const i=it.find(x=>x.k===b.dataset.ver);S.verified[i.k]={at:Date.now(),sig:i.sig};SFX.ok();save();renderQuiet();}));
  $$("[data-goto]").forEach(b=>b.addEventListener("click",()=>{const g=b.dataset.goto;if(g==="settings")openSettings();else go(g);}));}
 // ---------- Path ----------
-function qRow(q){const s=S.q[q.id]||{},d=!!s.d,n=(s.s||[]).filter(Boolean).length;return `<li class="qi ${d?"done":""}" data-q="${q.id}" tabindex="0"><span class="ck">${d?"✓":""}</span><span class="t">${esc(q.title)}<small>${esc(q.when)}${q.steps&&!d?` · ${n}/${q.steps.length}`:""}</small></span><span class="chip">+${q.xp||100}</span></li>`;}
-function renderPath(){const cur=curChapter();const sec=(title,sub,list,open,quip)=>{const d=list.filter(q=>isDone(q.id)).length;return `<details class="ch" ${open?"open":""}><summary><b class="serif" style="font-size:20px">${title}</b><span class="chip">${esc(sub)}</span><div class="pbar"><i style="width:${list.length?d/list.length*100:0}%"></i></div><span class="muted">${d}/${list.length}</span></summary><div class="inner">${quip?`<div class="muted" style="font-style:italic;margin-bottom:6px">${esc(quip)}</div>`:""}<ul class="ql">${list.map(qRow).join("")}</ul></div></details>`;};
- $("#pathList").innerHTML=sec("🌑 Life Rites","Money, home & family",RITES.map(r=>QM[r.id]),true,"")+CHAPTERS.map((c,i)=>sec(`${i===cur?"🔥 ":""}${esc(c.name)}`,c.when,QUESTS.filter(q=>q.ch===i),i===cur,CHAPTER_QUIPS[i])).join("")
-  +`<details class="ch"><summary><b class="serif" style="font-size:20px">📅 Key Dates</b><span class="chip">dates marked ~ are estimates</span></summary><div class="inner">${KEY_DATES.map(k=>`<div class="row" style="padding:4px 0;border-bottom:1px dashed var(--edge)"><b style="min-width:105px">${k.est?"~":""}${new Date(k.d+"T12:00").toLocaleDateString("en-US",{month:"short",year:"numeric"})}</b><span>${esc(k.t)}</span></div>`).join("")}</div></details>`
-  +`<details class="ch"><summary><b class="serif" style="font-size:20px">📖 The Lexicon</b><span class="chip">every pre-med term, plainly</span></summary><div class="inner">${CODEX.map(([t,d])=>`<p style="margin:6px 0"><b class="status-ok">${esc(t)}</b><br><span class="muted">${esc(d)}</span></p>`).join("")}</div></details>`;
- $$("#pathList .qi").forEach(li=>{li.addEventListener("click",()=>openQuest(li.dataset.q));li.addEventListener("keydown",e=>{if(e.key==="Enter")openQuest(li.dataset.q);});});}
-function openQuest(id){const q=QM[id],s=qs(id);if(!Array.isArray(s.s))s.s=[];const d=!!s.d;
+function qRow(q){const s=S.q[q.id]||{},d=isDone(q.id),n=(s.s||[]).filter(Boolean).length;return `<li class="qi ${d?"done":""}" data-q="${q.id}" tabindex="0"><span class="ck">${d?"✓":""}</span><span class="t">${esc(q.title)}<small>${esc(q.when)}${q.steps&&!d&&n?` · ${n} of ${q.steps.length} steps`:""}</small></span><span class="chev" aria-hidden="true">›</span></li>`;}
+const torchSVG=(st)=>`<svg viewBox="0 0 24 40" aria-hidden="true">${st!=="todo"?`<circle cx="12" cy="9" r="${st==="cur"?10:7}" fill="#e8a04a" opacity=".18"/><path class="flame" d="M12 17 q-6 -6 0 -14 q6 8 0 14z" fill="${st==="cur"?"#e8c66a":"#c8643a"}"/>`:""}<path d="M8 17 h8 l-1.6 6 h-4.8z" fill="${st==="todo"?"#4d3a2c":"#a8824a"}"/><path d="M11 23 l-.6 15 h3.2 l-.6 -15z" fill="${st==="todo"?"#3a2a22":"#6a4a2a"}"/></svg>`;
+const gcal=(t,d)=>{const a=d.replace(/-/g,""),x=new Date(d+"T12:00");x.setDate(x.getDate()+1);const b=`${x.getFullYear()}${pad(x.getMonth()+1)}${pad(x.getDate())}`;return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(t)}&dates=${a}/${b}`;};
+function renderPath(){const cur=curChapter(),nq=nextQuest();
+ $("#pathIntro").textContent=pk("pathIntro","Your road to the white coat, plus the life rites that make it possible.");
+ $("#torchRoad").innerHTML=CHAPTERS.map((c,i)=>{const p=chProg(i),st=p.d>=p.t?"done":i===cur?"cur":"todo";return `<button class="torch ${st}" data-ch="${i}" role="listitem" aria-label="${esc(c.name)}: ${st==="done"?"complete":st==="cur"?"where you are":"ahead"}">${torchSVG(st)}</button>`;}).join("");
+ $("#pathNext").innerHTML=nq?`<span class="qt"><small>The next torch</small><b>${esc(nq.title)}</b></span><span class="chev" aria-hidden="true">›</span>`:`<span class="qt"><b>Every rite complete.</b></span>`;$("#pathNext").onclick=()=>nq&&openQuest(nq.id);
+ const n=Object.keys(MQ).filter(k=>MQ[k]&&MQ[k].d&&QM[k]&&!(S.q[k]&&S.q[k].d)).length;$("#mqNote").textContent=n?`${n} rite${n>1?"s":""} already finished in MedQuest ${n>1?"are":"is"} counted here.`:"";
+ const sec=(id,title,sub,list,open,quip)=>{const d=list.filter(q=>isDone(q.id)).length;return `<details class="ch" id="${id}" ${open?"open":""}><summary><b class="serif big">${title}</b><span class="chip">${esc(sub)}</span><div class="pbar" role="img" aria-label="${d} of ${list.length} done"><i style="width:${list.length?d/list.length*100:0}%"></i></div></summary><div class="inner">${quip?`<div class="muted" style="font-style:italic;margin-bottom:6px">${esc(quip)}</div>`:""}<ul class="ql">${list.map(qRow).join("")}</ul></div></details>`;};
+ $("#pathList").innerHTML=sec("ch-rites","Life Rites","Money, home & family",RITES.map(r=>QM[r.id]),false,"")+CHAPTERS.map((c,i)=>sec("ch-"+i,esc(c.name),c.when,QUESTS.filter(q=>q.ch===i),i===cur,CHAPTER_QUIPS[i])).join("")
+  +(KEY_DATES.length?`<details class="ch"><summary><b class="serif big">Key Dates</b><span class="chip">~ means an estimate</span></summary><div class="inner">${KEY_DATES.map(k=>`<div class="rowc"><div class="t"><b>${k.est?"~":""}${new Date(k.d+"T12:00").toLocaleDateString("en-US",{month:"short",year:"numeric"})}</b><small>${esc(k.t)}</small></div><a class="btn sm ghost" href="${gcal(k.t,k.d)}" target="_blank" rel="noopener">+ Calendar</a></div>`).join("")}</div></details>`:"")
+  +`<details class="ch"><summary><b class="serif big">The Lexicon</b><span class="chip">every pre-med term, plainly</span></summary><div class="inner">${CODEX.map(([t,d])=>`<p style="margin:8px 0"><b class="status-ok">${esc(t)}</b><br><span class="muted">${esc(d)}</span></p>`).join("")}</div></details>`;
+ $$("#pathList .qi").forEach(li=>{li.addEventListener("click",()=>openQuest(li.dataset.q));li.addEventListener("keydown",e=>{if(e.key==="Enter")openQuest(li.dataset.q);});});
+ $$("#torchRoad .torch").forEach(b=>b.addEventListener("click",()=>{const el=$("#ch-"+b.dataset.ch);if(el){el.open=true;el.scrollIntoView({behavior:"smooth",block:"start"});}}));}
+function openQuest(id){const q=QM[id],s=qs(id);if(!Array.isArray(s.s))s.s=[];const mq=mqDone(id)&&!s.d,d=!!s.d||mq;
  openModal(`<div class="muted" style="font-size:12px;font-weight:700;letter-spacing:1px">${q.ch>=0?esc(CHAPTERS[q.ch].name).toUpperCase():"LIFE RITE"} · ${esc(q.when)}</div><h2>${d?"✓ ":""}${esc(q.title)}</h2>
-  <div class="who-row"><div class="face">${hadesBust()}</div><div class="bub" style="flex:1"><b class="who">Hades</b>${q.what}</div></div>
+  <div class="who-row"><img class="closeup" src="art/hades-closeup.webp" width="446" height="688" alt="Hades"><div class="bub" style="flex:1"><b class="who">Hades</b>${q.what}</div></div>
   <h3>Why it matters</h3><div>${q.why}</div>
   ${q.steps?`<h3>The rite</h3><ul class="steps">${q.steps.map((t,i)=>`<li class="${s.s[i]?"ok":""}" data-i="${i}" tabindex="0"><span class="cb">${s.s[i]?"✓":""}</span><span class="tx">${esc(t)}</span></li>`).join("")}</ul>`:""}
   ${q.tip?`<div class="tip" style="margin-top:10px">🗝️ ${esc(q.tip)}</div>`:""}
   ${q.links?`<div style="margin-top:8px">${q.links.map(l=>`<a href="${esc(l.u)}" target="_blank" rel="noopener" style="color:var(--gold)">${esc(l.l)} ↗</a>`).join("<br>")}</div>`:""}
   <label class="f" for="qn">Your notes</label><textarea id="qn" rows="2">${esc(s.n||"")}</textarea>
-  <div class="foot"><span class="muted">${d?"Completed "+esc(s.at||""):"+"+(q.xp||100)+" XP"}</span>${d?`<button class="btn ghost sm" id="qu">Mark not done</button>`:`<button class="btn" id="qd">Complete the rite</button>`}</div>`);
+  <div class="foot"><span class="muted">${mq?"":d?"Completed "+esc(s.at||""):"+"+(q.xp||100)+" XP"}</span>${mq?`<span class="chip">Done in MedQuest</span>`:d?`<button class="btn ghost sm" id="qu">Mark not done</button>`:`<button class="btn" id="qd">Complete the rite</button>`}</div>`);
  $$("#modal .steps li").forEach(li=>{const t=()=>{const i=+li.dataset.i;s.s[i]=!s.s[i];li.classList.toggle("ok",s.s[i]);li.querySelector(".cb").textContent=s.s[i]?"✓":"";SFX.tap();changed();};li.addEventListener("click",t);li.addEventListener("keydown",e=>{if(e.key===" "||e.key==="Enter"){e.preventDefault();t();}});});
  $("#qn").addEventListener("input",e=>{s.n=e.target.value;save();});
  const qd=$("#qd");if(qd)qd.addEventListener("click",()=>{s.d=1;s.at=today();SFX.done();petals(60);closeModal();hadesSays(pick(HADES.quest));toast(`🗝️ Rite complete · +${q.xp||100} XP`);changed();});
  const qu=$("#qu");if(qu)qu.addEventListener("click",()=>{s.d=0;closeModal();changed();});}
 function renderCourses(){const g=gpa(false),sc=gpa(true),d=S.courses.filter(c=>c.status==="done").length;
  $("#gpaTiles").innerHTML=`<div class="tile"><div class="big">${g===null?"–":g.toFixed(2)}</div><small>Overall GPA (estimate)</small></div><div class="tile"><div class="big">${sc===null?"–":sc.toFixed(2)}</div><small>Science GPA (estimate)</small></div><div class="tile"><div class="big">${d}/${S.courses.length}</div><small>Classes done</small></div>`;
- const opt=v=>`<option value=""${v?"":" selected"}>–</option>`+Object.keys(GP).concat(["P","W"]).map(x=>`<option${x===v?" selected":""}>${x}</option>`).join("");
- $("#courses").innerHTML=`<tr><th>Class</th><th>Cr</th><th>Status</th><th>Grade</th><th></th></tr>`+S.courses.map(c=>`<tr data-id="${c.id}"><td>${esc(c.name)}</td><td><input data-f="cr" type="number" step=".5" value="${esc(c.cr)}" style="width:60px;padding:4px"></td>
-  <td><select data-f="status" style="padding:4px"><option value="todo"${c.status==="todo"?" selected":""}>Not yet</option><option value="doing"${c.status==="doing"?" selected":""}>Taking</option><option value="done"${c.status==="done"?" selected":""}>✓ Done</option></select></td><td><select data-f="grade" style="padding:4px;width:70px">${opt(c.grade)}</select></td><td><button class="btn ghost sm" data-rm="${c.id}">✕</button></td></tr>`).join("");
- $$("#courses [data-f]").forEach(el=>el.addEventListener("change",()=>{const c=S.courses.find(x=>x.id===el.closest("tr").dataset.id),f=el.dataset.f;c[f]=f==="cr"?(+el.value||0):el.value;if(f==="grade"&&el.value){c.status="done";hadesSays(pick(HADES.study));}changed();}));
+ const opt=v=>`<option value=""${v?"":" selected"}>Grade</option>`+Object.keys(GP).concat(["P","W"]).map(x=>`<option${x===v?" selected":""}>${x}</option>`).join("");
+ $("#courses").innerHTML=S.courses.map(c=>`<div class="rowc" data-id="${c.id}"><div class="t"><b>${esc(c.name)}</b><small>${{B:"Biology",C:"Chemistry",P:"Physics",M:"Math",O:"Non-science"}[c.cat]||""}</small></div>
+  <div class="ctl"><input data-f="cr" type="number" step=".5" value="${esc(c.cr)}" aria-label="Credits" title="Credits"><select data-f="status" aria-label="Status"><option value="todo"${c.status==="todo"?" selected":""}>Not yet</option><option value="doing"${c.status==="doing"?" selected":""}>Taking</option><option value="done"${c.status==="done"?" selected":""}>✓ Done</option></select><select data-f="grade" aria-label="Grade">${opt(c.grade)}</select><button class="btn ghost sm" data-rm="${c.id}" aria-label="Remove ${esc(c.name)}">✕</button></div></div>`).join("");
+ $$("#courses [data-f]").forEach(el=>el.addEventListener("change",()=>{const c=S.courses.find(x=>x.id===el.closest("[data-id]").dataset.id),f=el.dataset.f;c[f]=f==="cr"?(+el.value||0):el.value;if(f==="grade"&&el.value){c.status="done";hadesSays(pick(HADES.study));}changed();}));
  $$("#courses [data-rm]").forEach(b=>b.addEventListener("click",()=>{if(b.dataset.c){S.courses=S.courses.filter(c=>c.id!==b.dataset.rm);changed();}else{b.dataset.c=1;b.textContent="Sure?";}}));}
 $("#courseForm").addEventListener("submit",e=>{e.preventDefault();const f=e.target;S.courses.push({id:uid(),name:f.name.value.trim(),cat:f.cat.value,cr:+f.cr.value||0,status:"todo",grade:""});f.name.value="";changed();});
 // ---------- Garden ----------
-function renderGarden(){$("#beds").innerHTML=HOUR_CATS.map(c=>{const n=S.hours.filter(h=>h.cat===c.id).length,t=sumH(h=>h.cat===c.id);
-  return `<div class="bed" data-b="${c.id}" tabindex="0"><div class="pl">${n?Array.from({length:Math.min(n,14)},()=>plantSVG(c.color,c.id)).join("")+(n>14?`<span class="muted">+${n-14}</span>`:""):`<span class="muted" style="font-size:12px">🌱 waiting</span>`}</div>
-   <div class="h">${+t.toFixed(1)}<span style="font-size:14px"> hrs</span></div><small><b>${esc(c.plant)}</b> · ${esc(c.label)}</small></div>`;}).join("");
- $$("#beds .bed").forEach(b=>b.addEventListener("click",()=>{const c=HOUR_CATS.find(x=>x.id===b.dataset.b);openModal(`<h2>${esc(c.plant)}</h2><div style="width:80px;height:120px">${plantSVG(c.color,c.id)}</div><p>${esc(c.lore)}</p><p class="muted">Logged here: ${esc(c.label)} · ${+sumH(h=>h.cat===c.id).toFixed(1)} hours</p>`);}));
+const hourRow=h=>`<div class="rowc"><div class="t"><b>${esc(h.date)} · ${esc(h.hrs)} hr${+h.hrs===1?"":"s"}</b><small>${esc((HOUR_CATS.find(c=>c.id===h.cat)||{}).label||h.cat)}${h.place?" · "+esc(h.place):""}${h.contact?" · "+esc(h.contact):""}</small>${h.note?`<small style="font-style:italic">${esc(h.note)}</small>`:""}</div><button class="btn ghost sm" data-dh="${h.id}" aria-label="Delete entry">✕</button></div>`;
+function renderGarden(){$("#beds").innerHTML=HOUR_CATS.map(c=>{const n=S.hours.filter(h=>h.cat===c.id).length;
+  return `<div class="bed ${n?"grown":""}" data-b="${c.id}" tabindex="0" role="button"><div class="pl">${n?Array.from({length:Math.min(n,10)},()=>plantSVG(c.color,c.id)).join(""):`<span class="muted" style="font-size:13px">bare earth</span>`}</div><b>${esc(c.plant)}</b><small>${esc(c.label)}</small></div>`;}).join("");
+ $$("#beds .bed").forEach(b=>{const open=()=>{const c=HOUR_CATS.find(x=>x.id===b.dataset.b),L=S.hours.filter(h=>h.cat===c.id).sort((a,b)=>b.date.localeCompare(a.date));openModal(`<h2>${esc(c.plant)}</h2><div style="display:flex;gap:14px;align-items:center"><div style="width:72px;height:108px;flex:none">${plantSVG(c.color,c.id)}</div><div><div class="serif" style="font-size:34px;font-weight:700;line-height:1">${+sumH(h=>h.cat===c.id).toFixed(1)} <span style="font-size:17px">hours</span></div><div class="muted">${esc(c.label)}</div></div></div><p>${esc(c.lore)}</p>${L.length?`<h3>Entries</h3><div class="rows">${L.map(hourRow).join("")}</div>`:""}<div class="foot"><span></span><button class="btn sage" id="bedLog">+ Log hours here</button></div>`);$("#bedLog").addEventListener("click",()=>openHours(c.id));bindHourDel();};b.addEventListener("click",open);b.addEventListener("keydown",e=>{if(e.key==="Enter")open();});});
  const L=[...S.hours].sort((a,b)=>b.date.localeCompare(a.date));
- $("#hoursList").innerHTML=L.length?`<table><tr><th>Date</th><th>Type</th><th>Hrs</th><th>Where</th><th>Contact</th><th></th></tr>${L.map(h=>`<tr><td>${esc(h.date)}</td><td>${esc((HOUR_CATS.find(c=>c.id===h.cat)||{}).label||h.cat)}</td><td>${esc(h.hrs)}</td><td>${esc(h.place)}</td><td>${esc(h.contact)}</td><td><button class="btn ghost sm" data-dh="${h.id}">✕</button></td></tr>${h.note?`<tr><td></td><td colspan="5" class="muted" style="font-size:13px">${esc(h.note)}</td></tr>`:""}`).join("")}</table>`:`<p class="muted">No hours yet. Your first plant is waiting.</p>`;
- $$("[data-dh]").forEach(b=>b.addEventListener("click",()=>{if(b.dataset.c){S.hours=S.hours.filter(h=>h.id!==b.dataset.dh);changed();}else{b.dataset.c=1;b.textContent="Sure?";}}));}
-function openHours(){openModal(`<h2>🌿 Log hours</h2><form class="f2" id="hf"><label class="f full">Type<select name="cat">${HOUR_CATS.map(c=>`<option value="${c.id}">${esc(c.label)} → ${esc(c.plant)}</option>`).join("")}</select></label>
+ $("#hoursList").innerHTML=L.length?L.map(hourRow).join(""):`<p class="muted">No hours yet. Your first plant is waiting.</p>`;bindHourDel();}
+function bindHourDel(){$$("[data-dh]").forEach(b=>{if(b._b)return;b._b=1;b.addEventListener("click",()=>{if(b.dataset.c){S.hours=S.hours.filter(h=>h.id!==b.dataset.dh);closeModal();changed();}else{b.dataset.c=1;b.textContent="Sure?";}});});}
+function openHours(pre){openModal(`<h2>Log hours</h2><form class="f2" id="hf"><label class="f full">Type<select name="cat">${HOUR_CATS.map(c=>`<option value="${c.id}"${c.id===pre?" selected":""}>${esc(c.label)} → ${esc(c.plant)}</option>`).join("")}</select></label>
   <label class="f">Date<input type="date" name="date" value="${today()}" required></label><label class="f">Hours<input type="number" name="hrs" step=".25" min=".25" required placeholder="3"></label>
   <label class="f">Where<input name="place" placeholder="${esc((S.pack&&S.pack.gardenPlace)||"Clinic or hospital")}"></label><label class="f">Contact (name / email)<input name="contact"></label>
   <label class="f full">What happened / what you felt<textarea name="note" rows="2"></textarea></label>
   <div class="foot full"><span class="muted">${esc((S.pack&&S.pack.gardenNote)||"")}</span><button class="btn sage">Plant it</button></div></form>`);
  $("#hf").addEventListener("submit",e=>{e.preventDefault();const f=e.target,h=+f.hrs.value;if(!(h>0))return;S.hours.push({id:uid(),date:f.date.value,cat:f.cat.value,hrs:h,place:f.place.value.trim(),contact:f.contact.value.trim(),note:f.note.value.trim()});
   closeModal();SFX.done();petals(40);hadesSays(pick(HADES.garden));toast(`🌿 A ${esc(HOUR_CATS.find(c=>c.id===f.cat.value).plant)} sprouted · +${Math.round(h*2)} XP`);changed();});}
-$("#logHoursBtn").addEventListener("click",openHours);
+$("#logHoursBtn").addEventListener("click",()=>openHours());
 // ---------- Treasury ----------
 let viewMonth=monthKey();
 const shiftMonth=(m,d)=>{const [y,mo]=m.split("-").map(Number);const x=new Date(y,mo-1+d,1);return `${x.getFullYear()}-${pad(x.getMonth()+1)}`;};
 $("#mPrev").addEventListener("click",()=>{viewMonth=shiftMonth(viewMonth,-1);renderTreasury();});$("#mNext").addEventListener("click",()=>{viewMonth=shiftMonth(viewMonth,1);renderTreasury();});
+const txRow=t=>`<div class="rowc"><div class="t"><b class="${t.type==="income"?"status-ok":""}">${t.type==="transfer"?"↔ ":t.type==="income"?"+":""}${money(+t.amt)} <span class="muted" style="font-weight:400">· ${esc(t.date.slice(5))}</span></b><small>${esc(t.type==="expense"?(catById[t.cat]||{}).name:t.type==="income"?t.src:"Transfer (not spending)")}${t.acct?" · "+esc(t.acct):""}</small>${t.note?`<small>${esc(t.note)}</small>`:""}</div><button class="btn ghost sm" data-dt="${t.id}" aria-label="Delete entry">✕</button></div>`;
+function treasuryFacts(m){const musts=dueMusts(),paid=musts.filter(c=>isPaid(m,c.id)).length,rw=runway(),T=monthTx(m),spent=T.filter(t=>t.type==="expense").reduce((a,t)=>a+(+t.amt||0),0),inc=T.filter(t=>t.type==="income").reduce((a,t)=>a+(+t.amt||0),0),bud=totalBudget();return {musts,paid,rw,T,spent,inc,bud,nt:nextTuition(),pct:bud?spent/bud:0};}
 function renderTreasury(){const m=viewMonth,[y,mo]=m.split("-").map(Number);$("#mLabel").textContent=new Date(y,mo-1,1).toLocaleDateString("en-US",{month:"long",year:"numeric"});
- const musts=BUDGET_CATS.filter(c=>c.tier===1),paid=musts.filter(c=>isPaid(m,c.id)).length,rw=runway(),T=monthTx(m);
- const spent=T.filter(t=>t.type==="expense").reduce((a,t)=>a+(+t.amt||0),0),inc=T.filter(t=>t.type==="income").reduce((a,t)=>a+(+t.amt||0),0),bud=totalBudget(),nt=nextTuition();
- const candles=musts.map(c=>`<rect x="${4+musts.indexOf(c)*14}" y="22" width="8" height="22" fill="#f2efe4"/>${isPaid(m,c.id)?`<path class="flame" d="M${8+musts.indexOf(c)*14} 22 q-4 -6 0 -12 q4 6 0 12z" fill="#e8c66a"/>`:""}`).join("");
- const seedsN=Math.max(0,Math.min(12,rw.months));let pom=`<circle cx="40" cy="30" r="24" fill="#9a1f30"/><circle cx="40" cy="30" r="17" fill="#5a0f1a"/>`;for(let i=0;i<12;i++){const a=i/12*Math.PI*2,r=i%2?11:6;pom+=`<circle cx="${40+Math.cos(a)*r}" cy="${30+Math.sin(a)*r}" r="2.8" fill="${i<seedsN?"#ff4d6a":"#3a0a12"}"/>`;}
- const pct=bud?spent/bud:0;
- $("#treasHero").innerHTML=`<div class="tile"><svg viewBox="0 0 ${musts.length*14+4} 46" width="${musts.length*14+4}" height="46">${candles}</svg><div class="big">${paid}/${musts.length}</div><small>Tributes paid (must-pay bills)</small></div>
-  <div class="tile"><svg viewBox="0 0 80 60" width="80" height="60">${pom}</svg><div class="big ${rw.months<3?"status-bad":rw.months<6?"status-warn":"status-ok"}">${rw.months} mo</div><small>Full months covered after this one, counting tuition${rw.inc?` and ${money(rw.inc)}/mo income`:" (no income counted yet)"} · each seed is one month${rw.out?`<br><b>Cash runs short in ${rw.out.toLocaleDateString("en-US",{month:"long",year:"numeric"})}</b> unless money comes in or the vault grows`:""}</small></div>
-  <div class="tile"><div class="jbar" style="height:18px"><i style="width:${Math.min(100,pct*100)}%;background:${pct>1?"var(--bad)":pct>.85?"var(--warn)":"var(--sage)"}"></i></div><div class="big">${money(spent)}</div><small>spent of ${money(bud)} budget this month${inc?` · ${money(inc)} came in`:""}</small></div>
-  <div class="tile"><div class="big">⚔️</div><small><b>Next tuition boss:</b> ${nt?nt.toLocaleDateString("en-US",{month:"short",year:"numeric"}):"–"} · ${money(+S.fin.tuitionSem)}<br><b>${esc(CARD_LABEL)} hydra falls:</b> ${esc(S.fin.wfEnd||"–")}</small></div>`;
- $("#tiers").innerHTML=[1,2,3].map(t=>{const cs=BUDGET_CATS.filter(c=>c.tier===t),T_=TIERS[t],ts=cs.reduce((a,c)=>a+spentIn(m,c.id),0),tb=tierBudget(t);
-  return `<h3>${T_.icon} ${T_.name} <span class="muted" style="font-size:14px;font-family:Spectral,Georgia,serif">${T_.sub} · ${money(ts)} of ${money(tb)}</span></h3><div class="jars">${cs.map(c=>{const s=spentIn(m,c.id),b=budgetOf(c.id),p=b?s/b:0,pd=t===1&&isPaid(m,c.id);
-   return `<div class="jar ${pd?"paid":""}" data-cat="${c.id}" tabindex="0"><div class="nm">${pd?"🕯️ ":""}${esc(c.name)}</div><div class="jbar"><i style="width:${Math.min(100,p*100)}%;background:${p>1?"var(--bad)":p>.85?"var(--warn)":t===1?"var(--gold)":"var(--sage)"}"></i></div>
-    <div class="amt">${pd&&s<b?`<span class="status-ok">✓ Paid</span> · ${money(s)} logged`:`${money(s)} of ${money(b)}`}${pd&&s<b?"":p>1?` · <span class="status-bad">over by ${money(s-b)}</span>`:b-s>0?` · ${money(b-s)} left`:""}</div></div>`;}).join("")}</div>`;}).join("");
+ const F=treasuryFacts(m),{musts,paid,rw,T,pct}=F,set=totalBudget()>0||+S.fin.cash>0;
+ const seedsN=Math.max(0,Math.min(12,Math.floor(rw.months)));let pom=`<circle cx="40" cy="34" r="27" fill="#7a1626"/><path d="M31 9 l9 -8 l9 8" fill="#c59d5f"/><circle cx="40" cy="34" r="19.5" fill="#2a070c"/>`;for(let i=0;i<12;i++){const a=i/12*Math.PI*2-Math.PI/2,r=i%2?13:7;pom+=`<circle class="${i<seedsN?"seed":""}" cx="${40+Math.cos(a)*r}" cy="${34+Math.sin(a)*r}" r="3.1" fill="${i<seedsN?"#e0455a":"#3a0a12"}"/>`;}
+ const cw=musts.length?Math.min(13,150/musts.length):13;
+ $("#treasHero").innerHTML=`<button class="pic" data-fact="runway"><svg viewBox="0 0 80 64" width="104" height="83" aria-hidden="true">${pom}</svg><b>Runway</b><small class="${!set?"":rw.months<3?"status-bad":rw.months<6?"status-warn":"status-ok"}">${!set?"not set up yet":rw.months<3?"critical":rw.months<6?"getting short":"comfortable"}</small></button>
+  <button class="pic" data-fact="bills"><span class="cndrow">${musts.length?musts.map(c=>candle(isPaid(m,c.id))).join(""):candle(false)}</span><b>Tributes</b><small class="${musts.length&&paid===musts.length?"status-ok":""}">${!musts.length?"none set up":paid===musts.length?"every candle lit":paid?"some still dark":"none lit yet"}</small></button>
+  <button class="pic" data-fact="spend"><span class="jbar" style="height:16px;width:100%;margin-top:22px"><i style="width:${Math.min(100,pct*100)}%;background:${pct>1?"var(--bad)":pct>.85?"var(--warn)":"var(--sage)"}"></i></span><b style="margin-top:21px">This month</b><small class="${pct>1?"status-bad":pct>.85?"status-warn":""}">${!F.bud?"no budget yet":pct>1?"over budget":pct>.85?"nearly spent":"on pace"}</small></button>`;
+ $$("#treasHero [data-fact]").forEach(b=>b.addEventListener("click",()=>openFacts(b.dataset.fact)));
+ $("#tiers").innerHTML=[1,2,3].map(t=>{const cs=BUDGET_CATS.filter(c=>c.tier===t),T_=TIERS[t],ts=cs.reduce((a,c)=>a+spentIn(m,c.id),0),tb=tierBudget(t),tp=tb?ts/tb:0;
+  return `<details class="ch tier"><summary><b class="serif big">${T_.name}</b><span class="chip">${T_.sub}</span><div class="pbar"><i style="width:${Math.min(100,tp*100)}%;background:${tp>1?"var(--bad)":tp>.85?"var(--warn)":t===1?"var(--gold)":"var(--sage)"}"></i></div></summary><div class="inner"><div class="jars">${cs.map(c=>{const s=spentIn(m,c.id),b=budgetOf(c.id),p=b?s/b:0,pd=t===1&&b>0&&isPaid(m,c.id);
+   return `<div class="jar ${pd?"paid":""} ${!b&&!s?"unset":""}" data-cat="${c.id}" tabindex="0" role="button"><div class="nm">${pd?candle(true)+" ":""}${esc(c.name)}</div><div class="jbar"><i style="width:${Math.min(100,p*100)}%;background:${p>1?"var(--bad)":p>.85?"var(--warn)":t===1?"var(--gold)":"var(--sage)"}"></i></div><div class="amt">${!b&&!s?"not set":pd?"paid":p>1?`<span class="status-bad">over</span>`:p>.85?"nearly spent":s?"on pace":"untouched"}</div></div>`;}).join("")}</div></div></details>`;}).join("");
  $$(".jar[data-cat]").forEach(j=>{j.addEventListener("click",()=>openCat(j.dataset.cat));j.addEventListener("keydown",e=>{if(e.key==="Enter")openCat(j.dataset.cat);});});
- $("#txList").innerHTML=T.length?`<table><tr><th>Date</th><th>Amount</th><th>Category / source</th><th>Note</th><th>Account</th><th></th></tr>${[...T].sort((a,b)=>b.date.localeCompare(a.date)).map(t=>`<tr><td>${esc(t.date.slice(5))}</td><td class="${t.type==="income"?"status-ok":""}">${t.type==="transfer"?"↔ ":""}${money(+t.amt)}</td><td>${esc(t.type==="expense"?(catById[t.cat]||{}).name:t.type==="income"?t.src:"Transfer (not spending)")}</td><td>${esc(t.note)}</td><td>${esc(t.acct)}</td><td><button class="btn ghost sm" data-dt="${t.id}">✕</button></td></tr>`).join("")}</table>`:`<p class="muted">Nothing logged for this month yet.</p>`;
+ $("#txCount").textContent=T.length?`${T.length} this month`:"none yet";
+ $("#txList").innerHTML=T.length?[...T].sort((a,b)=>b.date.localeCompare(a.date)).map(txRow).join(""):`<p class="muted">Nothing logged for this month yet.</p>`;
  $$("[data-dt]").forEach(b=>b.addEventListener("click",()=>{if(b.dataset.c){S.tx=S.tx.filter(t=>t.id!==b.dataset.dt);changed();}else{b.dataset.c=1;b.textContent="Sure?";}}));}
+// The figures behind the three pictures, one tap down.
+function openFacts(k){const m=viewMonth,F=treasuryFacts(m),{musts,paid,rw,spent,inc,bud,nt}=F;
+ if(k==="runway")openModal(`<h2>Runway</h2><div class="hero"><div class="tile"><div class="big ${rw.months<3?"status-bad":rw.months<6?"status-warn":"status-ok"}">${rw.months} mo</div><small>full months covered after this one</small></div><div class="tile"><div class="big">${money(rw.cash)}</div><small>in the vault · updated ${esc(S.fin.cashDate||"never")}</small></div></div>
+  <p class="muted">Each lit seed is one month. This counts tuition${rw.inc?` and ${money(rw.inc)} a month coming in`:", and no income yet"}. Living costs are ${money(rw.liv)} a month.${rw.out?` <b class="status-warn">Cash runs short in ${rw.out.toLocaleDateString("en-US",{month:"long",year:"numeric"})}</b> unless money comes in or the vault grows.`:""}</p>
+  <p class="muted"><b>Next tuition:</b> ${nt?nt.toLocaleDateString("en-US",{month:"short",year:"numeric"}):"–"} · ${money(+S.fin.tuitionSem)}<br><b>${esc(CARD_LABEL)} paid off:</b> ${esc(S.fin.wfEnd||"–")}</p><div class="foot"><span></span><button class="btn" id="fv">Update the vault</button></div>`);
+ else if(k==="bills")openModal(`<h2>Tributes</h2><p class="muted">Your must-pay bills for ${esc($("#mLabel").textContent)}. ${paid} of ${musts.length} paid. Tap one to mark it.</p><div class="rows">${musts.map(c=>`<div class="rowc" data-cat2="${c.id}" role="button" tabindex="0"><div class="t"><b>${esc(c.name)}</b><small>${money(budgetOf(c.id))}</small></div>${candle(isPaid(m,c.id))}</div>`).join("")||`<p class="muted">No must-pay bills have an amount yet. Set them under Vault &amp; budget.</p>`}</div>`);
+ else openModal(`<h2>This month</h2><div class="hero"><div class="tile"><div class="big">${money(spent)}</div><small>spent</small></div><div class="tile"><div class="big">${money(bud)}</div><small>budget</small></div>${inc?`<div class="tile"><div class="big status-ok">${money(inc)}</div><small>came in</small></div>`:""}</div>
+  <div class="rows" style="margin-top:10px">${[1,2,3].map(t=>`<div class="rowc"><div class="t"><b>${TIERS[t].name}</b><small>${TIERS[t].sub}</small></div><span>${money(BUDGET_CATS.filter(c=>c.tier===t).reduce((a,c)=>a+spentIn(m,c.id),0))} of ${money(tierBudget(t))}</span></div>`).join("")}</div>`);
+ const fv=$("#fv");if(fv)fv.addEventListener("click",()=>$("#finSet").click());$$("[data-cat2]").forEach(r=>r.addEventListener("click",()=>openCat(r.dataset.cat2)));}
+$("#mLabel").addEventListener("click",()=>{viewMonth=monthKey();renderTreasury();});$("#toWar").addEventListener("click",()=>go("war"));$("#toGames").addEventListener("click",()=>go("games"));
 function openCat(id){const c=catById[id],m=viewMonth,T=monthTx(m).filter(t=>t.type==="expense"&&t.cat===id),pd=isPaid(m,id),manual=!!(S.paid[m]&&S.paid[m][id]);
  openModal(`<h2>${esc(c.name)}</h2><div class="muted">${esc(TIERS[c.tier].name)} · ${esc(viewMonth)}</div>
   <div class="hero" style="margin-top:10px"><div class="tile"><div class="big">${money(spentIn(m,id))}</div><small>spent</small></div><div class="tile"><div class="big">${money(budgetOf(id))}</div><small>budget</small></div></div>
@@ -1524,7 +1562,7 @@ function readStatement(text,acct){
  rows.forEach(r=>{r.out=flip?r.raw:-r.raw;});return {rows,card:isCard};}
 const fp=(acct,date,amt,desc)=>`${acct}|${date}|${(+amt).toFixed(2)}|${normDesc(desc).slice(0,40)}`;
 function existingFP(){const s=new Set();S.tx.forEach(t=>{if(t.fp)s.add(t.fp);});return s;}
-function openImport(){openModal(`<h2>📥 Charon's Ledger</h2><div class="who-row"><div class="face">${hadesBust()}</div><div class="bub" style="flex:1"><b class="who">Hades</b>Hand me the whole statement. I'll sort what's obvious and only ask you about the ones that are actually unclear. Duplicates get skipped, so re-uploading the same file is harmless.</div></div>
+function openImport(){openModal(`<h2>📥 Charon's Ledger</h2><div class="who-row"><div class="face">${hadesFace("smirk")}</div><div class="bub" style="flex:1"><b class="who">Hades</b>Hand me the whole statement. I'll sort what's obvious and only ask you about the ones that are actually unclear. Duplicates get skipped, so re-uploading the same file is harmless.</div></div>
  <label class="f" for="ia">Which account is this file from?</label><select id="ia">${ACCOUNTS.map(a=>`<option>${a}</option>`).join("")}</select>
  <label class="f" for="if">Statement file (CSV from your bank or card, or a file Claude made for you)</label><input type="file" id="if" accept=".csv,.txt,.json,text/csv,application/json" multiple>
  <label class="f" for="ip">Or paste it</label><textarea id="ip" rows="3" placeholder="Date,Description,Amount…"></textarea>
@@ -1618,8 +1656,8 @@ function renderGame(){const box=$("#gameBox");
    <div class="tiles6">${letters.map((l,k)=>`<button data-k="${k}" class="${picked.includes(k)?"used":""}">${l}</button>`).join("")}</div><div class="row" style="justify-content:center"><button class="btn ghost sm" id="undo">Undo</button><button class="btn ghost sm" id="skip">Reveal</button><button class="btn sm" id="next">New scroll</button></div>`;
    $$(".tiles6 button").forEach(b=>b.addEventListener("click",()=>{const k=+b.dataset.k;if(picked.includes(k))return;picked.push(k);SFX.tap();if(picked.length===w.length){const guess=picked.map(x=>letters[x]).join("");if(guess===w){const g=award(10);SFX.done();toast(`📜 ${w}! ${g?`+${g} XP`:""}`);changed();setTimeout(renderGame,700);}else{toast("Not quite. The scroll resists.");setTimeout(()=>{picked=[];show();},500);}}else show();}));
    $("#undo").addEventListener("click",()=>{picked.pop();show();});$("#skip").addEventListener("click",()=>{toast(`It was ${w}`);setTimeout(renderGame,900);});$("#next").addEventListener("click",renderGame);};show();}}
-function renderCards(){$("#cardList").innerHTML=S.cards.length?`<table><tr><th>Front</th><th>Back</th><th>Deck</th><th></th></tr>${S.cards.map(c=>`<tr><td>${esc(c.f)}</td><td>${esc(c.b)}</td><td>${esc(c.d)}</td><td><button class="btn ghost sm" data-dc="${c.id}">✕</button></td></tr>`).join("")}</table>`:`<p class="muted">No cards yet.</p>`;
- $$("[data-dc]").forEach(b=>b.addEventListener("click",()=>{S.cards=S.cards.filter(c=>c.id!==b.dataset.dc);changed();}));}
+function renderCards(){$("#cardCount").textContent=S.cards.length?`${S.cards.length} card${S.cards.length>1?"s":""}`:"empty";$("#cardList").innerHTML=S.cards.length?S.cards.map(c=>`<div class="rowc"><div class="t"><b>${esc(c.f)}</b><small>${esc(c.b)}${c.d?" · "+esc(c.d):""}</small></div><button class="btn ghost sm" data-dc="${c.id}" aria-label="Delete card">✕</button></div>`).join(""):`<p class="muted">No cards yet.</p>`;
+ $$("[data-dc]").forEach(b=>b.addEventListener("click",()=>{if(b.dataset.c){S.cards=S.cards.filter(c=>c.id!==b.dataset.dc);changed();}else{b.dataset.c=1;b.textContent="Sure?";}}));}
 $("#cardForm").addEventListener("submit",e=>{e.preventDefault();const f=e.target;S.cards.push({id:uid(),f:f.f.value.trim(),b:f.b.value.trim(),d:f.d.value.trim()});f.f.value="";f.b.value="";SFX.ok();toast(`🃏 ${esc(pick(HADES.study))}`);changed();});
 // ---------- Altar ----------
 function letterState(){if(!S.ceremony)return isDone("q7_5")?"open":"sealed";const now=new Date(),c=new Date(S.ceremony+"T17:00");return now>=c?"open":"sealed";}
@@ -1684,7 +1722,7 @@ function openSettings(){openModal(`<h2>Settings & Scrolls</h2>
 $("#setBtn").addEventListener("click",openSettings);$("#meAv").addEventListener("click",openSettings);$("#meAv").addEventListener("keydown",e=>{if(e.key==="Enter")openSettings();});
 // ---------- intro ----------
 const INTRO=[
- ()=>`<div class="who-row"><div class="face" style="width:80px;height:80px">${hadesBust()}</div><div class="bub" style="flex:1"><b class="who">Hades</b>Welcome home, little witch. This is <b>your</b> apothecary. Not your cousins', not your boyfriend's. Yours. I've been waiting. Patiently. (Impatiently.)</div></div>`,
+ ()=>`<div class="who-row"><div class="face" style="width:84px;height:84px">${hadesFace("warm")}</div><div class="bub" style="flex:1"><b class="who">Hades</b>Welcome home, little witch. This is <b>your</b> apothecary. Not your cousins', not your boyfriend's. Yours. I've been waiting. Patiently. (Impatiently.)</div></div>`,
  ()=>`<div class="bub"><b class="who">Hades</b>Here's how it works. Your hours grow real medicinal plants in the <b>Garden</b>. Your bills light candles on the <b>Altar</b> in the <b>Treasury</b>. Your runway is counted in pomegranate seeds. I chose that. Obviously.</div>`,
  ()=>`<div class="bub"><b class="who">Hades</b>When everything feels like it's on fire, go to <b>All Quiet</b>. It tells you the truth, no sugar, and it remembers what you've already checked so you don't have to check it again.</div>`,
  ()=>`<div class="who-row"><div class="face" style="width:72px;height:72px">${face(HECATE_O)}</div><div class="bub" style="flex:1"><b class="who">Hecate</b>I come at the crossroads, and whenever you call. Quincy keeps watch with me. Rest is not a detour. It's part of the road.</div></div>`,
