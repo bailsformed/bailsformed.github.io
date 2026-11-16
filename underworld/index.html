@@ -2,74 +2,74 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#160f1c">
+<meta name="theme-color" content="#0e0c0b">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="Apothecary">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>The Underworld Apothecary</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#160f1c;--plum:#241a2e;--plum2:#2f2239;--edge:#4a3757;--ink:#f4ead9;--dim:#bba9c4;--red:#c23b4a;--orange:#e8743b;--gold:#e8c66a;--sage:#8fb89a;--rose:#e7a3c9;--sky:#8fb4e0;--warn:#e8743b;--bad:#e05a6a;--ok:#8fd19a}
+:root{--bg:#0e0c0b;--plum:#15110f;--plum2:#1c1714;--edge:#3a3026;--ink:#ece0c8;--dim:#b9ab90;--red:#8a202c;--orange:#c8643a;--gold:#c9a765;--brass:#b8975a;--forest:#1f3a2d;--sage:#93b39a;--rose:#d9a0b4;--sky:#9ab0c4;--warn:#e0a458;--bad:#e2707c;--ok:#9dc7a4}
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Nunito,system-ui,sans-serif;font-size:16px;line-height:1.6}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:Spectral,Georgia,serif;font-size:16px;line-height:1.6}
 body{background:radial-gradient(ellipse at 50% -10%,#3a1f3e 0,transparent 55%),radial-gradient(ellipse at 100% 100%,#2a1a2e 0,transparent 50%),var(--bg);min-height:100vh;padding-bottom:30px}
 .serif,h1,h2,h3{font-family:"Cormorant Garamond",Georgia,serif;font-weight:700;letter-spacing:.3px}
 .wrap{max-width:1100px;margin:0 auto;padding:12px}
 .card{background:linear-gradient(180deg,var(--plum2),var(--plum));border:1px solid var(--edge);border-radius:18px;padding:16px 18px;box-shadow:0 10px 30px #0007}
-.btn{font-family:Nunito,sans-serif;font-weight:800;font-size:15px;border:none;border-radius:999px;padding:9px 16px;cursor:pointer;background:var(--red);color:#fff;box-shadow:0 3px 0 #6e1d29;transition:transform .06s}
+.btn{font-family:Spectral,Georgia,serif;font-weight:700;font-size:15px;border:none;border-radius:999px;padding:9px 16px;cursor:pointer;background:var(--red);color:#fff;box-shadow:0 3px 0 #6e1d29;transition:transform .06s}
 .btn:active{transform:translateY(2px);box-shadow:0 1px 0 #6e1d29}
 .btn.gold{background:var(--gold);color:#2a1a10;box-shadow:0 3px 0 #9c7f2e}
 .btn.sage{background:var(--sage);color:#14261a;box-shadow:0 3px 0 #557562}
 .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--edge);box-shadow:none}
 .btn.sm{font-size:13px;padding:5px 11px}
 .btn:focus-visible,.tab:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-input,select,textarea{font-family:Nunito,sans-serif;font-size:15px;background:#1b1322;color:var(--ink);border:1px solid var(--edge);border-radius:10px;padding:8px 10px;width:100%}
+input,select,textarea{font-family:Spectral,Georgia,serif;font-size:15px;background:#120f0d;color:var(--ink);border:1px solid var(--edge);border-radius:10px;padding:8px 10px;width:100%}
 textarea{resize:vertical}
-label.f{display:block;font-weight:800;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--dim);margin:10px 0 4px}
+label.f{display:block;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--dim);margin:10px 0 4px}
 .muted{color:var(--dim)}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .sp{justify-content:space-between}
 /* header */
 .top{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-.av{width:62px;height:62px;border-radius:50%;background:#3a2a44;border:2px solid var(--gold);overflow:hidden;flex:none;cursor:pointer}
+.av{width:62px;height:62px;border-radius:50%;background:#241d18;border:2px solid var(--gold);overflow:hidden;flex:none;cursor:pointer}
 .av svg{width:100%;height:100%}
 .title{font-family:"Cormorant Garamond",serif;font-size:26px;font-weight:700;line-height:1.05}
 .lvl{font-size:13px;color:var(--gold)}
-.xp{height:8px;background:#1b1322;border-radius:9px;overflow:hidden;margin-top:5px;border:1px solid var(--edge)}
+.xp{height:8px;background:#120f0d;border-radius:9px;overflow:hidden;margin-top:5px;border:1px solid var(--edge)}
 .xp i{display:block;height:100%;background:linear-gradient(90deg,var(--red),var(--orange),var(--gold));transition:width .6s}
 .tabs{display:flex;gap:6px;overflow-x:auto;margin:12px 0;padding-bottom:4px;scrollbar-width:thin}
-.tab{flex:none;background:var(--plum);color:var(--dim);border:1px solid var(--edge);border-radius:999px;padding:7px 13px;font-weight:800;font-size:14px;cursor:pointer;font-family:Nunito}
+.tab{flex:none;background:var(--plum);color:var(--dim);border:1px solid var(--edge);border-radius:999px;padding:7px 13px;font-weight:700;font-size:14px;cursor:pointer;font-family:Spectral,Georgia,serif}
 .tab.on{background:var(--red);color:#fff;border-color:var(--red)}
 .view{display:none}.view.on{display:block}
 .g2{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,1fr);gap:14px;align-items:start}
 @media(max-width:860px){.g2{grid-template-columns:1fr}}
 .stack{display:grid;gap:14px}
 #scene{width:100%;height:auto;display:block;border-radius:16px;border:1px solid var(--edge)}
-.bub{background:#f6ead8;color:#2a1a24;border-radius:16px;padding:10px 14px;position:relative;font-weight:600}
+.bub{background:#eadfc6;color:#2a1a24;border-radius:16px;padding:10px 14px;position:relative;font-weight:600}
 .bub b.who{display:block;font-family:"Cormorant Garamond",serif;font-size:17px;color:var(--red)}
 .who-row{display:flex;gap:10px;align-items:flex-start}
-.who-row .face{width:58px;height:58px;flex:none;border-radius:50%;background:#3a2a44;overflow:hidden;border:2px solid var(--edge)}
+.who-row .face{width:58px;height:58px;flex:none;border-radius:50%;background:#241d18;overflow:hidden;border:2px solid var(--edge)}
 .who-row .face svg{width:100%;height:100%}
 h2{font-size:26px;margin:2px 0 6px}
 h3{font-size:20px;margin:12px 0 6px;color:var(--gold)}
-.chip{display:inline-block;font-size:12px;font-weight:800;padding:2px 9px;border-radius:999px;border:1px solid var(--edge);background:#1b1322;margin:0 4px 4px 0}
+.chip{display:inline-block;font-size:12px;font-weight:700;padding:2px 9px;border-radius:999px;border:1px solid var(--edge);background:#120f0d;margin:0 4px 4px 0}
 /* quests */
 .ql{list-style:none;margin:0;padding:0}
-.qi{display:flex;gap:10px;align-items:center;padding:9px 10px;border:1px solid var(--edge);border-radius:12px;margin-bottom:6px;background:#1f1627;cursor:pointer}
+.qi{display:flex;gap:10px;align-items:center;padding:9px 10px;border:1px solid var(--edge);border-radius:12px;margin-bottom:6px;background:#1a1512;cursor:pointer}
 .qi:hover{border-color:var(--gold)}
 .qi.done{background:#1c2a20;border-color:#3d6b4a}
 .qi .ck{width:24px;height:24px;border-radius:50%;border:2px solid var(--edge);display:flex;align-items:center;justify-content:center;flex:none;font-size:13px}
 .qi.done .ck{background:var(--sage);border-color:var(--sage);color:#14261a}
 .qi .t{flex:1;font-weight:700;line-height:1.25}.qi .t small{display:block;color:var(--dim);font-weight:600;font-size:12px}
-details.ch{border:1px solid var(--edge);border-radius:14px;margin-bottom:10px;background:#1b1322}
+details.ch{border:1px solid var(--edge);border-radius:14px;margin-bottom:10px;background:#120f0d}
 details.ch>summary{cursor:pointer;padding:10px 14px;list-style:none;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 details.ch>summary::-webkit-details-marker{display:none}
 details.ch .inner{padding:0 12px 10px}
-.pbar{flex:1;min-width:100px;height:8px;background:#120c17;border-radius:9px;overflow:hidden}
+.pbar{flex:1;min-width:100px;height:8px;background:#0a0807;border-radius:9px;overflow:hidden}
 .pbar i{display:block;height:100%;background:var(--sage)}
 /* modal */
 .scrim{position:fixed;inset:0;background:#0b060ecc;display:none;align-items:flex-start;justify-content:center;z-index:50;padding:22px 12px;overflow:auto}
@@ -78,7 +78,7 @@ details.ch .inner{padding:0 12px 10px}
 @keyframes pop{from{transform:scale(.96);opacity:.4}to{transform:none;opacity:1}}
 .x{position:absolute;top:10px;right:12px}
 .steps{list-style:none;margin:0;padding:0}
-.steps li{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--edge);border-radius:12px;margin-bottom:6px;cursor:pointer;background:#1f1627}
+.steps li{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--edge);border-radius:12px;margin-bottom:6px;cursor:pointer;background:#1a1512}
 .steps li.ok{background:#1c2a20;border-color:#3d6b4a}.steps li.ok .tx{color:var(--dim);text-decoration:line-through}
 .steps .cb{width:20px;height:20px;border-radius:6px;border:2px solid var(--edge);flex:none;margin-top:2px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900}
 .steps li.ok .cb{background:var(--sage);border-color:var(--sage);color:#14261a}
@@ -86,21 +86,21 @@ details.ch .inner{padding:0 12px 10px}
 .foot{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-top:14px;flex-wrap:wrap}
 /* garden */
 .beds{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
-.bed{background:#1f1627;border:1px solid var(--edge);border-radius:14px;padding:10px;cursor:pointer}
+.bed{background:#1a1512;border:1px solid var(--edge);border-radius:14px;padding:10px;cursor:pointer}
 .bed .pl{display:flex;flex-wrap:wrap;gap:2px;min-height:38px;align-items:flex-end}
 .bed .pl svg{width:24px;height:36px}
 .bed .h{font-family:"Cormorant Garamond",serif;font-size:30px;font-weight:700;line-height:1}
 .bed small{display:block;color:var(--dim);font-size:12px;line-height:1.3}
 /* treasury */
 .hero{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
-.tile{background:#1f1627;border:1px solid var(--edge);border-radius:14px;padding:12px;text-align:center}
+.tile{background:#1a1512;border:1px solid var(--edge);border-radius:14px;padding:12px;text-align:center}
 .tile .big{font-family:"Cormorant Garamond",serif;font-size:34px;font-weight:700;line-height:1.05}
 .tile small{display:block;color:var(--dim);font-size:12px;line-height:1.3}
 .tile svg{display:block;margin:0 auto}
 .jars{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
-.jar{background:#1f1627;border:1px solid var(--edge);border-radius:12px;padding:8px 10px;cursor:pointer}
+.jar{background:#1a1512;border:1px solid var(--edge);border-radius:12px;padding:8px 10px;cursor:pointer}
 .jar .nm{font-weight:700;font-size:13px;line-height:1.25;min-height:32px}
-.jbar{height:12px;background:#120c17;border-radius:9px;overflow:hidden;margin:4px 0}
+.jbar{height:12px;background:#0a0807;border-radius:9px;overflow:hidden;margin:4px 0}
 .jbar i{display:block;height:100%}
 .jar .amt{font-size:12px;color:var(--dim)}
 .jar.paid{border-color:#3d6b4a}
@@ -110,13 +110,13 @@ th{text-align:left;color:var(--gold);font-size:12px;letter-spacing:1px;text-tran
 td{border-bottom:1px dashed var(--edge);padding:6px;vertical-align:top}
 .tbl{overflow:auto;max-height:420px}
 .seg{display:flex;gap:6px;flex-wrap:wrap}
-.seg button{background:#1f1627;color:var(--ink);border:1px solid var(--edge);border-radius:999px;padding:6px 12px;font-weight:800;cursor:pointer;font-family:Nunito}
+.seg button{background:#1a1512;color:var(--ink);border:1px solid var(--edge);border-radius:999px;padding:6px 12px;font-weight:700;cursor:pointer;font-family:Spectral,Georgia,serif}
 .seg button.on{background:var(--gold);color:#2a1a10;border-color:var(--gold)}
 .f2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 10px}.f2 .full{grid-column:1/-1}
 @media(max-width:560px){.f2{grid-template-columns:1fr}}
 /* hearth */
 .hearth{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
-.hearth button{background:#1f1627;color:var(--ink);border:2px solid var(--edge);border-radius:14px;padding:10px 6px;cursor:pointer;font-weight:800;font-family:Nunito;font-size:14px;line-height:1.2}
+.hearth button{background:#1a1512;color:var(--ink);border:2px solid var(--edge);border-radius:14px;padding:10px 6px;cursor:pointer;font-weight:700;font-family:Spectral,Georgia,serif;font-size:14px;line-height:1.2}
 .hearth button span{display:block;font-size:26px}
 .hearth button.on{border-color:var(--orange);background:#3a2316}
 .days{display:flex;gap:6px;flex-wrap:wrap}
@@ -124,26 +124,26 @@ td{border-bottom:1px dashed var(--edge);padding:6px;vertical-align:top}
 .days i{display:block;width:40px;height:40px;border-radius:50%;margin-bottom:2px;border:1px solid var(--edge)}
 /* games */
 .opts{display:grid;gap:8px}
-.opts button{text-align:left;background:#1f1627;color:var(--ink);border:1px solid var(--edge);border-radius:12px;padding:10px 12px;font-weight:700;cursor:pointer;font-family:Nunito;font-size:15px}
+.opts button{text-align:left;background:#1a1512;color:var(--ink);border:1px solid var(--edge);border-radius:12px;padding:10px 12px;font-weight:700;cursor:pointer;font-family:Spectral,Georgia,serif;font-size:15px}
 .opts button.right{background:#1c2a20;border-color:var(--ok)}.opts button.wrong{background:#3a1820;border-color:var(--bad)}
 .tiles6{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:10px 0}
-.tiles6 button{width:44px;height:52px;font-family:"Cormorant Garamond",serif;font-size:26px;font-weight:700;background:#f6ead8;color:#2a1a24;border:none;border-radius:8px;cursor:pointer;box-shadow:0 3px 0 #9c8a72}
+.tiles6 button{width:44px;height:52px;font-family:"Cormorant Garamond",serif;font-size:26px;font-weight:700;background:#eadfc6;color:#2a1a24;border:none;border-radius:8px;cursor:pointer;box-shadow:0 3px 0 #9c8a72}
 .tiles6 button.used{opacity:.25}
 .answer{min-height:52px;display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
 .answer span{width:44px;height:52px;border-bottom:3px solid var(--gold);font-family:"Cormorant Garamond",serif;font-size:28px;font-weight:700;display:flex;align-items:center;justify-content:center}
 /* all quiet */
 .aq{display:grid;gap:8px}
-.aqi{display:flex;gap:12px;align-items:center;background:#1f1627;border:1px solid var(--edge);border-radius:14px;padding:10px 12px;flex-wrap:wrap}
+.aqi{display:flex;gap:12px;align-items:center;background:#1a1512;border:1px solid var(--edge);border-radius:14px;padding:10px 12px;flex-wrap:wrap}
 .aqi .ic{font-size:24px}
 .aqi .tx{flex:1;min-width:180px}
 .aqi .tx b{display:block}
 .aqi .tx small{color:var(--dim)}
 .aqi.ok{border-color:#3d6b4a}.aqi.warn{border-color:var(--warn)}
 .aqhead{font-family:"Cormorant Garamond",serif;font-size:30px;font-weight:700;text-align:center;line-height:1.1;margin:6px 0}
-.letter{white-space:pre-line;background:#f6ead8;color:#2a1a24;border-radius:6px;padding:20px;font-family:"Cormorant Garamond",serif;font-size:19px;line-height:1.6;box-shadow:inset 0 0 40px #d8c4a0}
+.letter{white-space:pre-line;background:#eadfc6;color:#2a1a24;border-radius:6px;padding:20px;font-family:"Cormorant Garamond",serif;font-size:19px;line-height:1.6;box-shadow:inset 0 0 40px #d8c4a0}
 .seal{width:90px;height:90px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#e05a6a,#8a1f2c);margin:10px auto;display:flex;align-items:center;justify-content:center;font-size:36px;box-shadow:0 4px 0 #4a0f18}
 #toasts{position:fixed;right:12px;bottom:12px;display:flex;flex-direction:column;gap:6px;z-index:80;align-items:flex-end;max-width:92vw}
-.toast{background:#f6ead8;color:#2a1a24;border-radius:14px;padding:8px 14px;font-weight:700;box-shadow:0 6px 20px #000a;animation:sl .2s;max-width:360px}
+.toast{background:#eadfc6;color:#2a1a24;border-radius:14px;padding:8px 14px;font-weight:700;box-shadow:0 6px 20px #000a;animation:sl .2s;max-width:360px}
 @keyframes sl{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
 #petals{position:fixed;inset:0;pointer-events:none;z-index:90}
 .inclaude .dl{display:none}
@@ -151,48 +151,132 @@ td{border-bottom:1px dashed var(--edge);padding:6px;vertical-align:top}
 @keyframes fl{to{transform:scaleY(1.12) scaleX(.94)}}
 .float{animation:flo 3s ease-in-out infinite alternate}@keyframes flo{to{transform:translateY(-3px)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* ===== revamp: candlelit dark academia ===== */
+html,body{font-size:17px}
+body{background:radial-gradient(ellipse at 50% -8%,#3a1a14 0,transparent 52%),radial-gradient(ellipse at 100% 100%,#14231b 0,transparent 50%),var(--bg);background-attachment:fixed;padding-bottom:calc(88px + env(safe-area-inset-bottom))}
+.card{border-radius:14px;box-shadow:0 10px 30px #000a;outline:1px solid #b8975a1f;outline-offset:-5px}
+.btn{border-radius:10px;font-weight:600;font-size:16px;letter-spacing:.3px;padding:10px 16px;background:var(--red);color:var(--ink);border:1px solid #b04a56;box-shadow:0 2px 0 #0008;min-height:44px}
+.btn:active{transform:translateY(1px);box-shadow:0 1px 0 #0008}
+.btn.gold{background:linear-gradient(180deg,#d2b274,#a8854a);color:#1a130a;border-color:#e6cd90;box-shadow:0 2px 0 #0008}
+.btn.sage{background:#2c4a39;color:var(--ink);border-color:#4f7a60;box-shadow:0 2px 0 #0008}
+.btn.ghost{background:#120f0d;border:1px solid #4a3c26;box-shadow:none}
+.btn.sm{font-size:14px;padding:6px 12px;min-height:36px}
+.btn.big{width:100%;font-size:18px;padding:13px;margin-top:14px}
+input,select,textarea{font-size:16px}
+label.f{font-weight:600;letter-spacing:1.5px}
+.eyebrow{font-weight:600;font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold)}
+.link{background:none;border:none;color:var(--gold);font:600 15px Spectral,Georgia,serif;cursor:pointer;padding:8px 4px;min-height:40px}
+.link.back{margin-bottom:4px}
+.link:focus-visible,.gear:focus-visible,.quietRow:focus-visible,.hs button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+/* header */
+.top{display:flex;gap:12px;align-items:center;flex-wrap:nowrap;padding:6px 2px 12px}
+.top .tt{flex:1;min-width:0}
+.av{width:50px;height:50px;border:1px solid var(--brass);box-shadow:0 0 0 3px var(--bg),0 0 0 4px #4a3c26}
+.title{font-size:20px;letter-spacing:.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lvl{font-size:14px;font-style:italic}
+.xp{height:5px;border-color:#4a3c26;margin-top:4px}
+.xp i{background:linear-gradient(90deg,#6a1620,var(--orange),var(--gold))}
+#saveStat{font-size:12px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gear{flex:none;width:44px;height:44px;border-radius:50%;background:#120f0d;border:1px solid #4a3c26;color:var(--gold);cursor:pointer;display:flex;align-items:center;justify-content:center}
+.gear svg,.tab svg,.quick svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+/* five rooms: bottom bar on phones, a bar under the header on wide screens */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:40;display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin:0;padding:6px 6px calc(6px + env(safe-area-inset-bottom));background:linear-gradient(180deg,#15110f,#0a0807);border-top:1px solid #4a3c26;overflow:visible}
+.tab{flex:1;background:none;border:none;border-radius:10px;color:var(--dim);padding:6px 2px 5px;display:flex;flex-direction:column;align-items:center;gap:2px;font:600 12.5px Spectral,Georgia,serif;letter-spacing:.6px;min-height:54px}
+.tab.on{background:none;border:none;color:var(--gold)}
+.tab.on svg{filter:drop-shadow(0 0 6px #c9a76599)}
+.tab::after{content:"";width:18px;height:2px;border-radius:2px;background:transparent}
+.tab.on::after{background:var(--gold)}
+@media(min-width:861px){body{padding-bottom:30px}.tabs{position:sticky;top:8px;bottom:auto;margin:0 0 14px;border:1px solid #4a3c26;border-radius:14px;padding:6px}.tab{flex-direction:row;justify-content:center;gap:8px;font-size:15px;min-height:44px}.tab::after{display:none}}
+.view.on+.view.on{margin-top:14px}
+/* Tonight */
+.sceneWrap{position:relative}
+#scene{border-radius:14px;border:1px solid #4a3c26;box-shadow:0 12px 34px #000b}
+#moonLine{position:absolute;left:12px;bottom:8px;font:italic 500 15px "Cormorant Garamond",Georgia,serif;color:#dccfb2;text-shadow:0 1px 5px #000;pointer-events:none}
+.oracle{display:flex;gap:14px;align-items:flex-start;padding:2px 4px}
+.oracle .face{width:64px;height:64px;flex:none;border-radius:50%;overflow:hidden;cursor:pointer;background:#070506;border:1px solid #6a5632;box-shadow:0 0 0 3px var(--bg),0 0 0 4px #4a3c26,0 0 26px #8a202c66}
+.oracle .face svg{width:100%;height:100%;display:block}
+.oracle .say{flex:1;border-left:2px solid #6a5632;padding:1px 0 3px 13px}
+.oracle .who{display:block;font-weight:600;font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold)}
+#hadesSay{display:block;font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-weight:500;font-size:22px;line-height:1.28;color:var(--ink)}
+#hadesSay.in{animation:sayin .6s ease-out}
+@keyframes sayin{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.next{background:linear-gradient(180deg,#221a15,#15110f);border-color:#5a4a30}
+.next h2{font-size:30px;line-height:1.1;margin:6px 0 4px}
+.quick{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.quick .btn{display:flex;align-items:center;justify-content:center;gap:8px;color:var(--ink)}
+.quick svg{color:var(--gold);width:20px;height:20px}
+.hs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.hs button{background:#120f0d;border:1px solid var(--edge);border-radius:12px;color:var(--dim);padding:8px 2px 6px;min-height:68px;cursor:pointer;font-family:Spectral,Georgia,serif}
+.hs button span{display:block;font-size:22px;line-height:1.2;filter:grayscale(.9) brightness(.65);transition:filter .3s}
+.hs button small{display:block;font-size:12.5px;line-height:1.15;margin-top:3px}
+.hs button.on{border-color:var(--orange);background:radial-gradient(circle at 50% 30%,#4a2412,#1c120c);color:var(--ink);box-shadow:0 0 14px #c8643a44}
+.hs button.on span{filter:none}
+.hs button.just{animation:kindle .55s ease-out}
+@keyframes kindle{0%{transform:scale(.92)}45%{transform:scale(1.07);box-shadow:0 0 28px #e8a04a99}100%{transform:none}}
+#hearthStrip{padding:10px 14px 14px}
+.quietRow{display:flex;gap:14px;align-items:center;width:100%;text-align:left;background:#120f0d;border:1px solid var(--edge);border-radius:14px;padding:10px 14px;color:var(--ink);cursor:pointer;font-family:Spectral,Georgia,serif}
+.quietRow .cnd{display:flex;gap:3px;align-items:flex-end;flex:none}
+.quietRow .qt{flex:1;min-width:0}
+.quietRow b{display:block;font-family:"Cormorant Garamond",Georgia,serif;font-size:21px;line-height:1.15}
+.quietRow small{color:var(--dim);font-size:14px}
+.quietRow .chev{color:var(--gold);font-size:22px}
+.who-row .face{background:#070506;border-color:#6a5632}
+.bub b.who{color:#7a1c26}
+#toasts{bottom:calc(92px + env(safe-area-inset-bottom))}
+@media(min-width:861px){#toasts{bottom:16px}}
+/* Hades's aura */
+.aura{transform-box:fill-box;transform-origin:center;animation:aura 5s ease-in-out infinite alternate}
+@keyframes aura{from{opacity:.6;transform:scale(.95)}to{opacity:1;transform:scale(1.05)}}
+.smoke ellipse{animation:smk 7s ease-in-out infinite alternate}
+.smoke ellipse:nth-child(2){animation-duration:9s;animation-direction:alternate-reverse}
+@keyframes smk{to{transform:translate(5px,-5px)}}
+.ember{animation:emb 2.4s ease-in-out infinite alternate}
+@keyframes emb{to{opacity:.75}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="card top">
+  <header class="top">
     <div class="av" id="meAv" role="button" tabindex="0" aria-label="Wardrobe and settings"></div>
-    <div style="flex:1;min-width:200px">
+    <div class="tt">
       <div class="title">The Underworld Apothecary</div>
       <div class="lvl" id="lvl"></div>
       <div class="xp"><i id="xpbar" style="width:0"></i></div>
-      <div class="muted" id="saveStat" style="font-size:12px;margin-top:4px"></div>
+      <div class="muted" id="saveStat"></div>
     </div>
-    <button class="btn ghost sm" id="setBtn">⚙ Settings & Scrolls</button>
-  </div>
+    <button class="gear" id="setBtn" aria-label="Settings and scrolls"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M18.7 5.3l-2.1 2.1M7.4 16.6l-2.1 2.1"/></svg></button>
+  </header>
 
-  <div class="tabs" role="tablist">
-    <button class="tab on" data-v="cottage">🏚️ Cottage</button>
-    <button class="tab" data-v="quiet">🕊️ All Quiet</button>
-    <button class="tab" data-v="path">🗝️ Path</button>
-    <button class="tab" data-v="garden">🌿 Garden</button>
-    <button class="tab" data-v="treasury">🪙 Treasury</button>
-    <button class="tab" data-v="war">⚔️ War Chest</button>
-    <button class="tab" data-v="hearth">🔥 Hearth</button>
-    <button class="tab" data-v="games">🏛️ Games</button>
-    <button class="tab" data-v="altar">🕯️ Altar</button>
-  </div>
+  <nav class="tabs" aria-label="Rooms">
+    <button class="tab on" data-v="tonight" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 4a8.5 8.5 0 1 0 4 15.5A7 7 0 0 1 16 4z"/></svg><span>Tonight</span></button>
+    <button class="tab" data-v="path"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="8" r="4"/><path d="M11 11l9 9M16 16l2.5-2.5M18.5 18.5l2-2"/></svg><span>Path</span></button>
+    <button class="tab" data-v="garden"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21V8M12 12c-3 0-5-2-5-5 3 0 5 2 5 5zM12 15c3 0 5-2 5-5-3 0-5 2-5 5zM12 8c-1.5-1.5-1.5-3.5 0-5 1.5 1.5 1.5 3.5 0 5z"/></svg><span>Garden</span></button>
+    <button class="tab" data-v="treasury"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13.5" r="7"/><path d="M9.5 6.5L10 3.5l2 1.5 2-1.5.5 3"/><path d="M10 13h.01M14 13h.01M12 16h.01"/></svg><span>Treasury</span></button>
+    <button class="tab" data-v="altar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 10c-2.5-2-2-5 0-7 2 2 2.5 5 0 7zM9 11h6l-1.5 4h-3zM11 15l-.5 6h3l-.5-6"/></svg><span>Altar</span></button>
+  </nav>
 
   <section class="view on" id="v-cottage">
     <div class="g2">
-      <div class="stack"><svg id="scene" viewBox="0 0 400 250" role="img" aria-label="Your cottage"></svg>
-        <div class="card"><div class="who-row"><div class="face" id="hadesFace"></div><div class="bub" style="flex:1"><b class="who">Hades</b><span id="hadesSay" style="cursor:pointer"></span><small style="display:block;font-size:11px;color:#8a7a8a">tap him for another line</small></div></div></div></div>
       <div class="stack">
-        <div class="card" id="todayCard"></div>
-        <div class="card"><h3 style="margin-top:0">Quick rites</h3><div class="row">
-          <button class="btn sage" data-quick="hours">🌿 Log hours</button><button class="btn gold" data-quick="spend">🪙 Log spending</button><button class="btn ghost" data-quick="hearth">🔥 Hearth check-in</button></div>
-          <div style="margin-top:10px"><button class="btn ghost" id="hecateBtn" style="width:100%">🌙 Hard day? Call Hecate</button></div></div>
+        <div class="sceneWrap"><svg id="scene" viewBox="0 0 400 250" role="img" aria-label="Your apothecary study"></svg><div id="moonLine"></div></div>
+        <div class="oracle"><div class="face" id="hadesFace" role="button" tabindex="0" aria-label="Hades. Tap for another line"></div><div class="say"><b class="who">Hades</b><span id="hadesSay"></span></div></div>
+      </div>
+      <div class="stack">
+        <div class="card next" id="todayCard"></div>
+        <div class="quick">
+          <button class="btn ghost" data-quick="hours"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21V8M12 12c-3 0-5-2-5-5 3 0 5 2 5 5zM12 15c3 0 5-2 5-5-3 0-5 2-5 5zM12 8c-1.5-1.5-1.5-3.5 0-5 1.5 1.5 1.5 3.5 0 5z"/></svg>Log hours</button>
+          <button class="btn ghost" data-quick="spend"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4.5"/></svg>Log money</button>
+        </div>
+        <div class="card" id="hearthStrip"></div>
+        <button class="btn ghost" id="hecateBtn" style="width:100%">🌙 Hard day? Call Hecate</button>
+        <button class="quietRow" id="quietRow" aria-label="All Quiet. Open the full list"></button>
         <div id="fortunaCard"></div>
       </div>
     </div>
   </section>
 
-  <section class="view" id="v-quiet"><div class="card" id="quiet"></div></section>
+  <section class="view" id="v-quiet"><button class="link back" onclick="go('tonight')">‹ Tonight</button><div class="card" id="quiet"></div></section>
 
   <section class="view" id="v-path">
     <div class="card"><h2>The Path</h2><p class="muted" style="margin-top:0">Your road from New Paltz to the white coat, plus the life rites that make it possible. Tap any quest.</p><div id="pathList"></div></div>
@@ -232,6 +316,7 @@ td{border-bottom:1px dashed var(--edge);padding:6px;vertical-align:top}
   </section>
 
   <section class="view" id="v-hearth">
+    <button class="link back" onclick="go('tonight')">‹ Tonight</button>
     <div class="g2">
       <div class="card"><h2>The Hearth</h2><p class="muted" style="margin-top:0">Hestia keeps the fire. Tap what you did for <b>yourself</b> today. Honest, not perfect.</p>
         <div class="row" style="margin-bottom:8px"><input type="date" id="hDate" style="max-width:180px"></div><div class="hearth" id="hearthBtns"></div>
@@ -1118,63 +1203,112 @@ function nextTuition(){const now=new Date();const tm=S.fin.tuitionMonths||[1,8];
 // ---------- ui helpers ----------
 function toast(t){const e=document.createElement("div");e.className="toast";e.innerHTML=t;const b=$("#toasts");b.appendChild(e);while(b.children.length>3)b.firstChild.remove();setTimeout(()=>{e.style.transition="opacity .4s";e.style.opacity=0;setTimeout(()=>e.remove(),450);},3600);}
 const cv=$("#petals"),cx=cv.getContext("2d");let P=[],raf=null;
-function petals(n=50){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;cv.width=innerWidth;cv.height=innerHeight;const cols=["#c23b4a","#e8743b","#e8c66a","#e7a3c9","#8a5a9e"];for(let i=0;i<n;i++)P.push({x:Math.random()*innerWidth,y:-20-Math.random()*200,vx:(Math.random()-.5)*1.4,vy:1.6+Math.random()*2.4,r:3+Math.random()*4,a:Math.random()*6,c:cols[i%5]});if(!raf)loop();}
+function petals(n=50){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;cv.width=innerWidth;cv.height=innerHeight;const cols=["#8a202c","#c8643a","#c9a765","#e0455a","#3f6a50"];for(let i=0;i<n;i++)P.push({x:Math.random()*innerWidth,y:-20-Math.random()*200,vx:(Math.random()-.5)*1.4,vy:1.6+Math.random()*2.4,r:3+Math.random()*4,a:Math.random()*6,c:cols[i%5]});if(!raf)loop();}
 function loop(){cx.clearRect(0,0,cv.width,cv.height);P.forEach(p=>{p.x+=p.vx+Math.sin(p.a)*.6;p.y+=p.vy;p.a+=.05;cx.fillStyle=p.c;cx.beginPath();cx.ellipse(p.x,p.y,p.r,p.r*.7,p.a,0,7);cx.fill();});P=P.filter(p=>p.y<cv.height+20);raf=P.length?requestAnimationFrame(loop):(cx.clearRect(0,0,cv.width,cv.height),null);}
 function openModal(h){$("#modal").innerHTML=`<button class="btn ghost sm x" onclick="closeModal()" aria-label="Close">✕</button>`+h;$("#scrim").classList.add("on");$("#scrim").scrollTop=0;}
 function closeModal(){$("#scrim").classList.remove("on");}
 $("#scrim").addEventListener("click",e=>{if(e.target.id==="scrim")closeModal();});document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
-function hadesSays(t){$("#hadesSay").textContent=t;}
-document.addEventListener("click",e=>{if(e.target.closest("#hadesSay")||e.target.closest("#hadesFace")){hadesSays(hadesContext());SFX.tap();}});
+function hadesSays(t){const e=$("#hadesSay");e.textContent=t;e.classList.remove("in");void e.offsetWidth;e.classList.add("in");}
+document.addEventListener("click",e=>{if(e.target.closest("#hadesSay")||e.target.closest("#hadesFace")||e.target.closest("#sceneHades")){hadesSays(hadesContext());SFX.tap();}});
 let lastLv=null,lastCh=null;
 function changed(){const b=lastLv,bc=lastCh;save();const li=levelInfo();if(b!==null&&li.lv>b)setTimeout(()=>{toast(`✨ You rose: <b>${esc(li.name)}</b>`);SFX.lvl();petals(90);},250);
  const c=curChapter();if(bc!==null&&c>bc){S.hecateUntil=Date.now()+36e5*12;save();setTimeout(()=>crossroads(CHAPTERS[bc],CHAPTERS[c]),600);}renderAll();}
-function go(v){$$(".tab").forEach(t=>t.classList.toggle("on",t.dataset.v===v));$$(".view").forEach(x=>x.classList.toggle("on",x.id==="v-"+v));SFX.tap();try{history.replaceState(null,"","#"+v);}catch(e){}scrollTo({top:0,behavior:"smooth"});}
+// Five rooms. Old tab names still work (links, #hashes, All Quiet's "Open" buttons).
+const ROOMS={tonight:["cottage"],path:["path"],garden:["garden"],treasury:["treasury","war"],altar:["altar","games"]},SUBVIEW={quiet:"tonight",hearth:"tonight"},OLDTAB={cottage:"tonight",war:"treasury",games:"altar"};
+function go(v){v=OLDTAB[v]||v;const room=SUBVIEW[v]||v;if(!ROOMS[room])return;const show=SUBVIEW[v]?[v]:ROOMS[room];
+ $$(".tab").forEach(t=>{const on=t.dataset.v===room;t.classList.toggle("on",on);if(on)t.setAttribute("aria-current","page");else t.removeAttribute("aria-current");});
+ $$(".view").forEach(x=>x.classList.toggle("on",show.includes(x.id.slice(2))));SFX.tap();try{history.replaceState(null,"","#"+v);}catch(e){}scrollTo({top:0,behavior:"smooth"});}
 $$(".tab").forEach(t=>t.addEventListener("click",()=>go(t.dataset.v)));
 // ---------- header & scene ----------
 function renderTop(){const li=levelInfo();$("#meAv").innerHTML=face(ME());$("#lvl").textContent=`Level ${li.lv} · ${li.name}`;$("#xpbar").style.width=(li.nxt?Math.max(2,(li.x-li.cur)/(li.nxt-li.cur)*100):100)+"%";lastLv=li.lv;lastCh=curChapter();}
 function hadesContext(){const h=new Date().getHours();if(fire7()<.3&&Object.keys(S.hearth).length)return pick(HADES.hearthLow);const m=monthKey();
  const over=BUDGET_CATS.filter(c=>c.tier===3&&spentIn(m,c.id)>budgetOf(c.id)&&budgetOf(c.id)>0);if(over.length&&Math.random()<.5)return pick(HADES.spendOver);
  const t=tod(h);if(t==="night")return pick(HADES.night);if(t==="morning")return pick(HADES.morning);if(t==="evening")return pick(Math.random()<.3?HADES.random:HADES.evening);return pick(Math.random()<.25?HADES.random:Math.random()<.3?HADES.study:HADES.day);}
-function renderScene(){const T=tod(),m=monthKey(),musts=BUDGET_CATS.filter(c=>c.tier===1),paid=musts.filter(c=>isPaid(m,c.id)).length,rw=runway(),fire=fire7(),mp=moonPhase(),hec=Date.now()<S.hecateUntil;
- const cats=HOUR_CATS.filter(c=>S.hours.some(h=>h.cat===c.id));let o=`<defs><linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a1a34"/><stop offset="1" stop-color="#3a2440"/></linearGradient><radialGradient id="glow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#e8743b" stop-opacity=".45"/><stop offset="1" stop-color="#e8743b" stop-opacity="0"/></radialGradient></defs>
- <rect width="400" height="250" fill="url(#wall)"/>${T==="night"?"":`<rect width="400" height="250" fill="${T==="morning"?"#f6d9a8":T==="day"?"#fff1d6":"#e8743b"}" opacity=".1"/>`}<rect y="186" width="400" height="64" fill="#2a1a16"/>${[0,1,2,3,4,5,6,7].map(i=>`<line x1="0" y1="${190+i*8}" x2="400" y2="${190+i*8}" stroke="#3a261e" stroke-width="1"/>`).join("")}
- <ellipse cx="200" cy="222" rx="150" ry="20" fill="#5a2230" opacity=".7"/><ellipse cx="200" cy="222" rx="128" ry="14" fill="none" stroke="#e8c66a" stroke-opacity=".35"/>`;
- // window + moon
- const SKY={morning:["#f7c6a3","#fbe6c4"],day:["#8fc3e8","#d6ecf7"],evening:["#e8743b","#7a3a6a"],night:["#141026","#241a3e"]}[T];
- o+=`<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${SKY[0]}"/><stop offset="1" stop-color="${SKY[1]}"/></linearGradient></defs><rect x="30" y="24" width="70" height="66" rx="34" fill="url(#sky)" stroke="#5a4268" stroke-width="4"/>`;
+// Hades: a tall shadowed figure (original art). hadesBust() is the same drawing cropped to the head.
+function hadesFigure(){return `<defs><radialGradient id="hAura" cx=".5" cy=".45" r=".5"><stop offset="0" stop-color="#8a202c" stop-opacity=".6"/><stop offset=".55" stop-color="#3a0d14" stop-opacity=".3"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+ <linearGradient id="hRobe" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#211719"/><stop offset=".45" stop-color="#0e0a0c"/><stop offset="1" stop-color="#050405"/></linearGradient>
+ <linearGradient id="hFace" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e6dfd4"/><stop offset=".42" stop-color="#c4bbb0"/><stop offset=".72" stop-color="#4a3f42"/><stop offset="1" stop-color="#181216"/></linearGradient></defs>
+ <ellipse class="aura" cx="60" cy="104" rx="60" ry="100" fill="url(#hAura)"/>
+ <g class="smoke" fill="#070506"><ellipse cx="22" cy="180" rx="22" ry="9" opacity=".75"/><ellipse cx="98" cy="183" rx="24" ry="8" opacity=".75"/><ellipse cx="60" cy="192" rx="38" ry="8" opacity=".8"/></g>
+ <path d="M100 22 V197" stroke="#2b2327" stroke-width="2.6" stroke-linecap="round"/><path d="M99.4 30 V190" stroke="#8a6f3a" stroke-width=".6" opacity=".7"/>
+ <path d="M93 8 V24 Q93 34 100 36 Q107 34 107 24 V8" fill="none" stroke="#b8975a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+ <path d="M47 26 Q40 48 42 74 H78 Q80 48 73 26Z" fill="#070506"/>
+ <path d="M60 46 C42 48 31 58 28 74 C22 112 15 160 10 198 H110 C105 160 98 112 92 74 C89 58 78 48 60 46Z" fill="url(#hRobe)"/>
+ <path d="M57 76 L50 198 H70 L63 76Z" fill="#4a0f18"/><path d="M60 76 V198" stroke="#2a070c" stroke-width=".8"/>
+ <path d="M40 82 Q34 140 26 198 M48 80 Q44 140 40 198 M72 80 Q76 140 82 198 M82 82 Q90 140 96 198" stroke="#2c1e23" stroke-width=".9" fill="none"/>
+ <path d="M86 76 Q94 88 98 102" stroke="#100c0e" stroke-width="10" stroke-linecap="round" fill="none"/><ellipse cx="99" cy="106" rx="4.2" ry="5.4" fill="#cfc7bc"/>
+ <path d="M30 70 Q60 58 90 70 Q76 82 60 80 Q44 82 30 70Z" fill="#141013" stroke="#3a2a2e" stroke-width=".6"/>
+ <rect x="56" y="45" width="8" height="10" fill="#8f867d"/>
+ <path d="M45 53 L42 40 Q60 57 78 40 L75 53 Q60 65 45 53Z" fill="#0c090b" stroke="#3a2a2e" stroke-width=".5"/>
+ <circle cx="60" cy="72" r="4.2" fill="#b8975a"/><circle cx="60" cy="72" r="2.4" fill="#8a1c28"/>
+ <circle cx="45" cy="118" r="3" fill="none" stroke="#b8975a" stroke-width="1"/><path d="M45 121 V133 M45 129 h3 M45 132 h2.4" stroke="#b8975a" stroke-width="1" fill="none"/>
+ <ellipse cx="60" cy="34" rx="12" ry="15.5" fill="url(#hFace)"/>
+ <path d="M47.5 34 Q45 16 60 15.5 Q75 16 72.5 34 Q71 24 62 22 Q52 22 47.5 34Z" fill="#070506"/>
+ <path d="M50.5 31.5 L57.5 33" stroke="#1a1214" stroke-width="1.3" stroke-linecap="round"/><path d="M69.5 31.5 L62.5 33" stroke="#050304" stroke-width="1.3" stroke-linecap="round"/>
+ <path d="M51 36 q3.2 -2.2 6.4 0 q-3.2 1.8 -6.4 0z" fill="#191113"/><circle cx="54.3" cy="36" r="1" fill="#c9a765"/>
+ <circle class="ember" cx="66" cy="36" r="2.8" fill="#e0703a" opacity=".35"/><circle cx="66" cy="36" r="1.1" fill="#f0a060"/>
+ <path d="M60 35 L59.2 42 L61.4 42.6" stroke="#7d746c" stroke-width=".8" fill="none" stroke-linecap="round"/>
+ <path d="M55.5 46 Q60 47.6 65 44.8" stroke="#4a2a2e" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+ <path d="M47 23 L48.5 9 L53 19 L56.5 5 L60 18 L63.5 5 L67 19 L71.5 9 L73 23 Q60 18 47 23Z" fill="#151113" stroke="#8a6f3a" stroke-width=".7" stroke-linejoin="round"/><circle cx="60" cy="20.5" r="1.6" fill="#8a1c28"/>`;}
+const hadesBust=()=>`<svg viewBox="36 6 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">${hadesFigure()}</svg>`;
+const candle=on=>`<svg viewBox="0 0 10 26" width="10" height="26" aria-hidden="true"><rect x="2.5" y="10" width="5" height="16" rx="1" fill="${on?"#e6dcc6":"#5a5248"}"/>${on?`<circle cx="5" cy="6" r="5" fill="#e8c66a" opacity=".22"/><path class="flame" d="M5 10 q-3.4 -4.5 0 -9 q3.4 4.5 0 9z" fill="#e8c66a"/>`:`<path d="M5 10 v-2.5" stroke="#3a342e" stroke-width="1"/>`}</svg>`;
+function renderScene(){const T=tod(),m=monthKey(),musts=BUDGET_CATS.filter(c=>c.tier===1),rw=runway(),fire=fire7(),mp=moonPhase(),hec=Date.now()<S.hecateUntil;
+ const cats=HOUR_CATS.filter(c=>S.hours.some(h=>h.cat===c.id));
+ const SKY={morning:["#b98f6a","#e6cfa6"],day:["#6f8f9c","#c9d3c4"],evening:["#8a3a2a","#2e1c2a"],night:["#090b16","#17182a"]}[T];
+ let o=`<defs><linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#15110f"/><stop offset="1" stop-color="#201913"/></linearGradient>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${SKY[0]}"/><stop offset="1" stop-color="${SKY[1]}"/></linearGradient>
+  <radialGradient id="glow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#d8703a" stop-opacity=".5"/><stop offset="1" stop-color="#d8703a" stop-opacity="0"/></radialGradient>
+  <radialGradient id="cglow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#e8c66a" stop-opacity=".5"/><stop offset="1" stop-color="#e8c66a" stop-opacity="0"/></radialGradient>
+  <radialGradient id="vig" cx=".5" cy=".55" r=".75"><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".72"/></radialGradient></defs>
+ <rect width="400" height="250" fill="url(#wall)"/>${T==="night"?"":`<rect width="400" height="250" fill="${T==="morning"?"#e6c79a":T==="day"?"#e9dcc0":"#c8643a"}" opacity=".07"/>`}
+ <rect y="150" width="400" height="38" fill="#16241c"/>${[0,1,2,3,4,5,6,7,8,9].map(i=>`<line x1="${i*44+10}" y1="152" x2="${i*44+10}" y2="186" stroke="#0f1a14" stroke-width="1.5"/>`).join("")}<rect y="148" width="400" height="2.5" fill="#6a5632"/>
+ <rect y="186" width="400" height="64" fill="#16100c"/>${[0,1,2,3,4,5,6,7].map(i=>`<line x1="0" y1="${190+i*8}" x2="400" y2="${190+i*8}" stroke="#241912" stroke-width="1"/>`).join("")}
+ <ellipse cx="200" cy="224" rx="150" ry="19" fill="#4a1119" opacity=".8"/><ellipse cx="200" cy="224" rx="128" ry="13" fill="none" stroke="#b8975a" stroke-opacity=".35"/>`;
+ // arched window + the real moon phase
+ o+=`<rect x="30" y="24" width="70" height="66" rx="34" fill="url(#sky)" stroke="#4a3c26" stroke-width="4"/>`;
  if(T==="night"||T==="evening")o+=[[42,44],[88,40],[50,74],[84,70],[60,34]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1" fill="#fff" opacity="${T==="night"?1:.6}"/>`).join("");
- if(T==="morning"||T==="day")o+=`<circle cx="${T==="morning"?46:72}" cy="${T==="morning"?72:46}" r="9" fill="#ffd36a"/><circle cx="${T==="morning"?46:72}" cy="${T==="morning"?72:46}" r="13" fill="#ffd36a" opacity=".3"/><ellipse cx="80" cy="76" rx="12" ry="4" fill="#fff" opacity=".8"/><ellipse cx="50" cy="44" rx="9" ry="3" fill="#fff" opacity=".7"/>`;
- const mx=72,my=56,mr=11,ph=mp.p;const lit=Math.cos(ph*2*Math.PI);if(T==="night"||T==="evening")o+=`<circle cx="${mx}" cy="${my}" r="${mr}" fill="#2a2440"/><path d="M${mx} ${my-mr} A${mr} ${mr} 0 0 ${ph<.5?1:0} ${mx} ${my+mr} A${Math.abs(lit)*mr} ${mr} 0 0 ${(ph<.5)===(lit>0)?0:1} ${mx} ${my-mr}Z" fill="#f2efe4"/>`;
- o+=`<line x1="65" y1="24" x2="65" y2="90" stroke="#5a4268" stroke-width="3"/>`;
- // shelf with plants
- o+=`<rect x="286" y="40" width="96" height="5" fill="#5a3a2a"/><rect x="286" y="84" width="96" height="5" fill="#5a3a2a"/>`;
- cats.slice(0,8).forEach((c,i)=>{const x=290+(i%4)*23,y=i<4?14:58;o+=`<rect x="${x+4}" y="${y+18}" width="14" height="10" rx="2" fill="#8a5a3a"/>${nest(plantSVG(c.color,c.id).replace(/^<svg[^>]*>|<\/svg>$/g,""),x,y,22,30,"0 0 24 36")}`;});
- if(!cats.length)o+=`<text x="334" y="68" text-anchor="middle" font-size="8" fill="#bba9c4" font-family="Nunito">plants grow here</text>`;
- // fireplace
- const fs=.4+fire*.9;o+=`<rect x="20" y="118" width="74" height="70" fill="#4a3040"/><rect x="30" y="134" width="54" height="54" fill="#120a10"/><rect x="14" y="112" width="86" height="8" fill="#5a3a4a"/>
-  <ellipse cx="57" cy="176" rx="40" ry="26" fill="url(#glow)"/><g transform="translate(57 186) scale(${fs})"><path class="flame" d="M0 0 q-20 -12 -6 -36 q4 12 10 6 q8 -14 2 -26 q22 16 10 44 q-6 12 -16 12z" fill="#e8743b"/><path class="flame" d="M0 0 q-10 -8 -2 -22 q4 8 8 2 q8 12 0 20z" fill="#e8c66a"/></g>`;
- // altar with candles + pomegranate
- o+=`<rect x="240" y="138" width="100" height="10" fill="#4a2a34"/><rect x="246" y="148" width="88" height="40" fill="#3a2028"/><path d="M246 148 h88 v8 h-88z" fill="#6e1d29"/>`;
- musts.forEach((c,i)=>{const x=248+i*8.6,on=isPaid(m,c.id);o+=`<rect x="${x}" y="${124}" width="5" height="14" fill="#f2efe4"/>${on?`<path class="flame" d="M${x+2.5} 124 q-3 -4 0 -8 q3 4 0 8z" fill="#e8c66a"/>`:""}`;});
- const seeds=Math.max(0,Math.min(12,Math.floor(rw.months)));o+=`<circle cx="292" cy="104" r="16" fill="#9a1f30"/><path d="M286 89 l6 -6 l6 6" fill="#c9a24a"/><circle cx="292" cy="104" r="11" fill="#5a0f1a"/>`;
- for(let i=0;i<12;i++){const a=i/12*Math.PI*2,r=i%2?7:4;o+=`<circle cx="${292+Math.cos(a)*r}" cy="${104+Math.sin(a)*r}" r="2" fill="${i<seeds?"#ff4d6a":"#3a0a12"}"/>`;}
- // couch with Bailey & PB
- o+=`<rect x="110" y="168" width="140" height="34" rx="12" fill="#5d6b3e"/><rect x="104" y="150" width="152" height="30" rx="14" fill="#6b7a48"/><rect x="100" y="164" width="20" height="40" rx="9" fill="#55623a"/><rect x="240" y="164" width="20" height="40" rx="9" fill="#55623a"/>`;
+ if(T==="morning"||T==="day")o+=`<circle cx="${T==="morning"?46:72}" cy="${T==="morning"?72:46}" r="9" fill="#f0cf8a"/><circle cx="${T==="morning"?46:72}" cy="${T==="morning"?72:46}" r="13" fill="#f0cf8a" opacity=".3"/><ellipse cx="80" cy="76" rx="12" ry="4" fill="#fff" opacity=".6"/><ellipse cx="50" cy="44" rx="9" ry="3" fill="#fff" opacity=".5"/>`;
+ const mx=72,my=56,mr=11,ph=mp.p;const lit=Math.cos(ph*2*Math.PI);if(T==="night"||T==="evening")o+=`<circle cx="${mx}" cy="${my}" r="${mr+5}" fill="#f2efe4" opacity=".08"/><circle cx="${mx}" cy="${my}" r="${mr}" fill="#22203a"/><path d="M${mx} ${my-mr} A${mr} ${mr} 0 0 ${ph<.5?1:0} ${mx} ${my+mr} A${Math.abs(lit)*mr} ${mr} 0 0 ${(ph<.5)===(lit>0)?0:1} ${mx} ${my-mr}Z" fill="#f2efe4"/>`;
+ o+=`<line x1="65" y1="24" x2="65" y2="90" stroke="#4a3c26" stroke-width="3"/>`;
+ // a shelf of old books
+ o+=`<rect x="160" y="46" width="112" height="3" fill="#3a2a1c"/>`+Array.from({length:13},(_,i)=>{const h=14+((i*7)%9);return `<rect x="${163+i*8.2}" y="${46-h}" width="6.6" height="${h}" fill="${["#5a1820","#1f3a2d","#3a2a1c","#6a5632","#2a1c22"][i%5]}"/><rect x="${163+i*8.2}" y="${46-h+3}" width="6.6" height="1" fill="#b8975a" opacity=".5"/>`;}).join("");
+ // apothecary shelves: one plant per kind of hours logged
+ o+=`<rect x="284" y="40" width="92" height="4" fill="#3a2a1c"/><rect x="284" y="84" width="92" height="4" fill="#3a2a1c"/><rect x="284" y="43.4" width="92" height=".8" fill="#6a5632"/><rect x="284" y="87.4" width="92" height=".8" fill="#6a5632"/>`;
+ cats.slice(0,8).forEach((c,i)=>{const x=288+(i%4)*21,y=i<4?14:58;o+=`<rect x="${x+4}" y="${y+18}" width="14" height="10" rx="2" fill="#6a4630"/>${nest(plantSVG(c.color,c.id).replace(/^<svg[^>]*>|<\/svg>$/g,""),x,y,22,30,"0 0 24 36")}`;});
+ if(!cats.length)o+=`<text x="330" y="68" text-anchor="middle" font-size="8" fill="#b9ab90" font-family="Spectral,serif" font-style="italic">plants grow here</text>`;
+ // fireplace: the fire is as big as this week's hearth
+ const fs=.4+fire*.9;o+=`<rect x="20" y="118" width="74" height="70" fill="#2a2320"/><path d="M20 136 h74 M20 154 h10 M84 154 h10 M20 172 h10 M84 172 h10 M44 118 v18 M70 118 v18" stroke="#1a1513" stroke-width="1"/><rect x="30" y="134" width="54" height="54" rx="3" fill="#070505"/><rect x="14" y="112" width="86" height="8" fill="#3a2f28"/><rect x="14" y="118.6" width="86" height="1" fill="#6a5632"/>
+  <ellipse cx="57" cy="176" rx="40" ry="26" fill="url(#glow)"/><g transform="translate(57 186) scale(${fs})"><path class="flame" d="M0 0 q-20 -12 -6 -36 q4 12 10 6 q8 -14 2 -26 q22 16 10 44 q-6 12 -16 12z" fill="#c8643a"/><path class="flame" d="M0 0 q-10 -8 -2 -22 q4 8 8 2 q8 12 0 20z" fill="#e8c66a"/></g>
+  ${[[44,150],[68,140],[58,126]].map(([x,y],i)=>`<circle class="float" cx="${x}" cy="${y}" r=".9" fill="#e8a04a" opacity="${.7-i*.2}"/>`).join("")}`;
+ // altar: one candle per must-pay bill, lit when it's paid; pomegranate seeds are months of runway
+ o+=`<rect x="240" y="138" width="100" height="10" fill="#2a1c16"/><rect x="246" y="148" width="88" height="40" fill="#1c1512"/><path d="M246 148 h88 v9 h-88z" fill="#5a141c"/><path d="M246 157 h88" stroke="#b8975a" stroke-width=".6" opacity=".6"/>`;
+ const cw=Math.min(8.6,84/Math.max(1,musts.length));musts.forEach((c,i)=>{const x=248+i*cw,on=isPaid(m,c.id);o+=`${on?`<circle cx="${x+2.5}" cy="119" r="8" fill="url(#cglow)"/>`:""}<rect x="${x}" y="122" width="5" height="16" fill="${on?"#e6dcc6":"#6a6258"}"/>${on?`<path class="flame" d="M${x+2.5} 122 q-3 -4 0 -8 q3 4 0 8z" fill="#e8c66a"/>`:""}`;});
+ const seeds=Math.max(0,Math.min(12,Math.floor(rw.months)));o+=`<circle cx="292" cy="102" r="16" fill="#7a1c26"/><path d="M286 87 l6 -6 l6 6" fill="#b8975a"/><circle cx="292" cy="102" r="11" fill="#2a070c"/>`;
+ for(let i=0;i<12;i++){const a=i/12*Math.PI*2,r=i%2?7:4;o+=`<circle cx="${292+Math.cos(a)*r}" cy="${102+Math.sin(a)*r}" r="2" fill="${i<seeds?"#e0455a":"#3a0a12"}"/>`;}
+ // the green couch
+ o+=`<rect x="110" y="168" width="140" height="34" rx="12" fill="#2f4a38"/><rect x="104" y="150" width="152" height="30" rx="14" fill="#37573f"/><rect x="100" y="164" width="20" height="40" rx="9" fill="#27402f"/><rect x="240" y="164" width="20" height="40" rx="9" fill="#27402f"/>`;
  o+=nest(chibiInner(ME()),118,112,58,77);o+=nest(chibiInner(PB()),180,110,58,77);
  if(S.fortuna[today()])o+=`<text x="232" y="118" font-size="14" class="float">✨</text>`;
- // Hades by fireplace side
- o+=nest(chibiInner(HADES_O),336,104,64,85);
- // Hecate + Quincy
- if(hec){o+=`<rect x="108" y="40" width="44" height="110" rx="22" fill="#120a1e" opacity=".6"/>`+nest(chibiInner(HECATE_O),104,62,52,69)+nest(quincy(),150,150,30,40);}
- if(T==="night")o+=`<rect width="400" height="250" fill="#0a0614" opacity=".22"/><ellipse cx="57" cy="170" rx="90" ry="60" fill="url(#glow)"/>`;
- $("#scene").setAttribute("aria-label",`Your cottage, ${T}`);$("#scene").innerHTML=o;}
-function renderCottage(){renderScene();$("#hadesFace").innerHTML=face(HADES_O);if(!$("#hadesSay").textContent)hadesSays(hadesContext());
+ o+=`<g id="sceneHades" style="cursor:pointer">${nest(hadesFigure(),328,70,74,123,"0 0 120 200")}</g>`;
+ if(hec){o+=`<rect x="108" y="40" width="44" height="110" rx="22" fill="#0a0810" opacity=".6"/>`+nest(chibiInner(HECATE_O),104,62,52,69)+nest(quincy(),150,150,30,40);}
+ o+=`<rect width="400" height="250" fill="url(#vig)" pointer-events="none"/>`;
+ if(T==="night")o+=`<rect width="400" height="250" fill="#05040a" opacity=".2" pointer-events="none"/><ellipse cx="57" cy="170" rx="90" ry="60" fill="url(#glow)" pointer-events="none"/>`;
+ $("#scene").setAttribute("aria-label",`Your apothecary study, ${T}`);$("#scene").innerHTML=o;}
+let _justHs=null;
+function renderHearthStrip(){const h=S.hearth[today()]||{};
+ $("#hearthStrip").innerHTML=`<div class="row sp"><div class="eyebrow">The hearth · today</div><button class="link" id="hWeek">this week ›</button></div><div class="hs">${HEARTH_ITEMS.map(([k,ic,l])=>`<button data-hs="${k}" class="${h[k]?"on":""}${_justHs===k&&h[k]?" just":""}" aria-pressed="${!!h[k]}"><span aria-hidden="true">${ic}</span><small>${esc(l)}</small></button>`).join("")}</div>`;_justHs=null;
+ $$("[data-hs]").forEach(b=>b.addEventListener("click",()=>{const t=today(),k=b.dataset.hs;S.hearth[t]=S.hearth[t]||{};S.hearth[t][k]=!S.hearth[t][k];_justHs=k;S.hearth[t][k]?SFX.ok():SFX.tap();changed();}));
+ $("#hWeek").addEventListener("click",()=>go("hearth"));}
+function renderQuietRow(){const it=allQuietItems(),bad=it.filter(i=>i.st==="warn").length;
+ $("#quietRow").innerHTML=`<span class="cnd">${it.map(i=>candle(i.st!=="warn")).join("")}</span><span class="qt"><b>${bad?`${bad} thing${bad>1?"s":""} need${bad>1?"":"s"} you`:"All quiet"}</b><small>${bad?"Everything else is quiet.":"Every candle is lit."}</small></span><span class="chev" aria-hidden="true">›</span>`;}
+function renderCottage(){renderScene();$("#hadesFace").innerHTML=hadesBust();if(!$("#hadesSay").textContent)hadesSays(hadesContext());
  const q=nextQuest(),c=CHAPTERS[curChapter()];
- $("#todayCard").innerHTML=q?`<div class="muted" style="font-size:12px;font-weight:800;letter-spacing:1px">NEXT ON THE PATH</div><h2 style="margin:2px 0">${esc(q.title)}</h2>
-  <div class="muted" style="font-size:14px">${q.ch>=0?esc(c.name)+" · ":"Life rite · "}${esc(q.when)}</div><div style="margin-top:10px"><button class="btn" id="goQ" style="width:100%">Begin the rite</button></div>
-  <div class="muted" style="font-size:13px;margin-top:8px">🌙 ${moonPhase().name} tonight</div>`:`<h2>Every rite complete.</h2>`;
+ $("#todayCard").innerHTML=q?`<div class="eyebrow">The next torch</div><h2>${esc(q.title)}</h2>
+  <div class="muted">${q.ch>=0?esc(c.name)+" · ":"Life rite · "}${esc(q.when)}</div><button class="btn gold big" id="goQ">Begin the rite</button>`:`<div class="eyebrow">The next torch</div><h2>Every rite complete.</h2>`;
  const g=$("#goQ");if(g)g.addEventListener("click",()=>openQuest(q.id));
+ $("#moonLine").textContent=`${moonPhase().name} tonight`;renderHearthStrip();renderQuietRow();
  const fo=S.fortuna[today()];$("#fortunaCard").innerHTML=fo?`<div class="card"><div class="who-row"><div class="face">${face(FORTUNA_O)}</div><div class="bub" style="flex:1"><b class="who">Fortuna</b>${esc(fo)}</div></div></div>`:"";}
+$("#quietRow").addEventListener("click",()=>go("quiet"));
 $$("[data-quick]").forEach(b=>b.addEventListener("click",()=>{const k=b.dataset.quick;if(k==="hours")openHours();else if(k==="spend")openTx();else go("hearth");}));
 $("#hecateBtn").addEventListener("click",callHecate);
 function callHecate(){S.hecateUntil=Date.now()+36e5*6;save();renderScene();const a=allQuietItems().filter(i=>i.st!=="ok");
@@ -1217,8 +1351,8 @@ function renderPath(){const cur=curChapter();const sec=(title,sub,list,open,quip
   +`<details class="ch"><summary><b class="serif" style="font-size:20px">📖 The Lexicon</b><span class="chip">every pre-med term, plainly</span></summary><div class="inner">${CODEX.map(([t,d])=>`<p style="margin:6px 0"><b class="status-ok">${esc(t)}</b><br><span class="muted">${esc(d)}</span></p>`).join("")}</div></details>`;
  $$("#pathList .qi").forEach(li=>{li.addEventListener("click",()=>openQuest(li.dataset.q));li.addEventListener("keydown",e=>{if(e.key==="Enter")openQuest(li.dataset.q);});});}
 function openQuest(id){const q=QM[id],s=qs(id);if(!Array.isArray(s.s))s.s=[];const d=!!s.d;
- openModal(`<div class="muted" style="font-size:12px;font-weight:800;letter-spacing:1px">${q.ch>=0?esc(CHAPTERS[q.ch].name).toUpperCase():"LIFE RITE"} · ${esc(q.when)}</div><h2>${d?"✓ ":""}${esc(q.title)}</h2>
-  <div class="who-row"><div class="face">${face(HADES_O)}</div><div class="bub" style="flex:1"><b class="who">Hades</b>${q.what}</div></div>
+ openModal(`<div class="muted" style="font-size:12px;font-weight:700;letter-spacing:1px">${q.ch>=0?esc(CHAPTERS[q.ch].name).toUpperCase():"LIFE RITE"} · ${esc(q.when)}</div><h2>${d?"✓ ":""}${esc(q.title)}</h2>
+  <div class="who-row"><div class="face">${hadesBust()}</div><div class="bub" style="flex:1"><b class="who">Hades</b>${q.what}</div></div>
   <h3>Why it matters</h3><div>${q.why}</div>
   ${q.steps?`<h3>The rite</h3><ul class="steps">${q.steps.map((t,i)=>`<li class="${s.s[i]?"ok":""}" data-i="${i}" tabindex="0"><span class="cb">${s.s[i]?"✓":""}</span><span class="tx">${esc(t)}</span></li>`).join("")}</ul>`:""}
   ${q.tip?`<div class="tip" style="margin-top:10px">🗝️ ${esc(q.tip)}</div>`:""}
@@ -1268,7 +1402,7 @@ function renderTreasury(){const m=viewMonth,[y,mo]=m.split("-").map(Number);$("#
   <div class="tile"><div class="jbar" style="height:18px"><i style="width:${Math.min(100,pct*100)}%;background:${pct>1?"var(--bad)":pct>.85?"var(--warn)":"var(--sage)"}"></i></div><div class="big">${money(spent)}</div><small>spent of ${money(bud)} budget this month${inc?` · ${money(inc)} came in`:""}</small></div>
   <div class="tile"><div class="big">⚔️</div><small><b>Next tuition boss:</b> ${nt?nt.toLocaleDateString("en-US",{month:"short",year:"numeric"}):"–"} · ${money(+S.fin.tuitionSem)}<br><b>${esc(CARD_LABEL)} hydra falls:</b> ${esc(S.fin.wfEnd||"–")}</small></div>`;
  $("#tiers").innerHTML=[1,2,3].map(t=>{const cs=BUDGET_CATS.filter(c=>c.tier===t),T_=TIERS[t],ts=cs.reduce((a,c)=>a+spentIn(m,c.id),0),tb=tierBudget(t);
-  return `<h3>${T_.icon} ${T_.name} <span class="muted" style="font-size:14px;font-family:Nunito">${T_.sub} · ${money(ts)} of ${money(tb)}</span></h3><div class="jars">${cs.map(c=>{const s=spentIn(m,c.id),b=budgetOf(c.id),p=b?s/b:0,pd=t===1&&isPaid(m,c.id);
+  return `<h3>${T_.icon} ${T_.name} <span class="muted" style="font-size:14px;font-family:Spectral,Georgia,serif">${T_.sub} · ${money(ts)} of ${money(tb)}</span></h3><div class="jars">${cs.map(c=>{const s=spentIn(m,c.id),b=budgetOf(c.id),p=b?s/b:0,pd=t===1&&isPaid(m,c.id);
    return `<div class="jar ${pd?"paid":""}" data-cat="${c.id}" tabindex="0"><div class="nm">${pd?"🕯️ ":""}${esc(c.name)}</div><div class="jbar"><i style="width:${Math.min(100,p*100)}%;background:${p>1?"var(--bad)":p>.85?"var(--warn)":t===1?"var(--gold)":"var(--sage)"}"></i></div>
     <div class="amt">${pd&&s<b?`<span class="status-ok">✓ Paid</span> · ${money(s)} logged`:`${money(s)} of ${money(b)}`}${pd&&s<b?"":p>1?` · <span class="status-bad">over by ${money(s-b)}</span>`:b-s>0?` · ${money(b-s)} left`:""}</div></div>`;}).join("")}</div>`;}).join("");
  $$(".jar[data-cat]").forEach(j=>{j.addEventListener("click",()=>openCat(j.dataset.cat));j.addEventListener("keydown",e=>{if(e.key==="Enter")openCat(j.dataset.cat);});});
@@ -1376,7 +1510,7 @@ function readStatement(text,acct){
  rows.forEach(r=>{r.out=flip?r.raw:-r.raw;});return {rows,card:isCard};}
 const fp=(acct,date,amt,desc)=>`${acct}|${date}|${(+amt).toFixed(2)}|${normDesc(desc).slice(0,40)}`;
 function existingFP(){const s=new Set();S.tx.forEach(t=>{if(t.fp)s.add(t.fp);});return s;}
-function openImport(){openModal(`<h2>📥 Charon's Ledger</h2><div class="who-row"><div class="face">${face(HADES_O)}</div><div class="bub" style="flex:1"><b class="who">Hades</b>Hand me the whole statement. I'll sort what's obvious and only ask you about the ones that are actually unclear. Duplicates get skipped, so re-uploading the same file is harmless.</div></div>
+function openImport(){openModal(`<h2>📥 Charon's Ledger</h2><div class="who-row"><div class="face">${hadesBust()}</div><div class="bub" style="flex:1"><b class="who">Hades</b>Hand me the whole statement. I'll sort what's obvious and only ask you about the ones that are actually unclear. Duplicates get skipped, so re-uploading the same file is harmless.</div></div>
  <label class="f" for="ia">Which account is this file from?</label><select id="ia">${ACCOUNTS.map(a=>`<option>${a}</option>`).join("")}</select>
  <label class="f" for="if">Statement file (CSV from your bank or card, or a file Claude made for you)</label><input type="file" id="if" accept=".csv,.txt,.json,text/csv,application/json" multiple>
  <label class="f" for="ip">Or paste it</label><textarea id="ip" rows="3" placeholder="Date,Description,Amount…"></textarea>
@@ -1411,7 +1545,7 @@ function askNext(){const left=IMP.items.filter(x=>!x.ans);if(!left.length){summa
 function askOne(it,then,nLeft){const out=it.out>0,mk=merchKey(it.desc);
  const catBtns=[1,2,3].map(t=>`<div class="muted" style="font-size:12px;margin-top:8px">${TIERS[t].icon} ${TIERS[t].name}</div><div class="seg">${BUDGET_CATS.filter(c=>c.tier===t).map(c=>`<button data-a="${c.id}">${esc(c.name)}</button>`).join("")}</div>`).join("");
  openModal(`<div class="row sp" style="padding-right:44px"><h2 style="margin:0">One question</h2>${nLeft?`<span class="chip">${nLeft} left</span>`:""}</div>
-  <div class="tile" style="margin-top:10px;text-align:left"><div class="muted" style="font-size:13px">${esc(it.date)} · ${esc(it.acct)}</div><div style="font-weight:800;font-size:17px;word-break:break-word">${esc(it.desc)}</div><div class="big ${out?"":"status-ok"}">${out?"":"+"}${money(Math.abs(it.out))}</div><small>${out?"money went out":"money came in"}</small></div>
+  <div class="tile" style="margin-top:10px;text-align:left"><div class="muted" style="font-size:13px">${esc(it.date)} · ${esc(it.acct)}</div><div style="font-weight:700;font-size:17px;word-break:break-word">${esc(it.desc)}</div><div class="big ${out?"":"status-ok"}">${out?"":"+"}${money(Math.abs(it.out))}</div><small>${out?"money went out":"money came in"}</small></div>
   <div style="margin-top:8px">${out?catBtns+`<div class="seg" style="margin-top:10px"><button data-a="transfer">↔ Transfer / card payment</button><button data-a="skip">Ignore it</button></div>`
    :`<div class="seg">${INCOME_SRC.map(s=>`<button data-a="income:${esc(s)}">${esc(s)}</button>`).join("")}</div><div class="muted" style="font-size:12px;margin-top:8px">Or it was a refund / someone paying you back:</div>${catBtns}<div class="seg" style="margin-top:10px"><button data-a="transfer">↔ Transfer between my accounts</button><button data-a="skip">Ignore it</button></div>`}</div>
   <label class="row" style="margin-top:12px;font-weight:700"><input type="checkbox" id="ilearn" style="width:auto" ${it.learn?"checked":""}> Always sort “${esc(mk||it.desc.slice(0,20))}” this way</label>
@@ -1515,7 +1649,7 @@ function openSettings(){openModal(`<h2>Settings & Scrolls</h2>
  <label class="row" style="margin-top:8px;font-weight:700"><input type="checkbox" id="pbc" style="width:auto" ${S.pbCap?"checked":""}> PB wears his cap</label>
  <label class="row" style="margin-top:6px;font-weight:700"><input type="checkbox" id="snd" style="width:auto" ${S.sound?"checked":""}> Soft sounds</label>
  <h3>📜 The Scroll Room: every CSV</h3><div class="muted" style="font-size:13px;margin-bottom:6px">Download opens straight in Excel or Google Sheets. Copy pastes into cell A1.</div>
- <div style="display:grid;gap:6px">${Object.entries(EXPORTS).map(([k,E])=>`<div class="row sp" style="background:#1f1627;border:1px solid var(--edge);border-radius:10px;padding:6px 10px"><span>${esc(E.label)}</span><span class="row"><button class="btn sm ghost" data-copy="${k}">Copy</button><button class="btn sm gold" data-dl="${k}">⬇ CSV</button></span></div>`).join("")}</div>
+ <div style="display:grid;gap:6px">${Object.entries(EXPORTS).map(([k,E])=>`<div class="row sp" style="background:#1a1512;border:1px solid var(--edge);border-radius:10px;padding:6px 10px"><span>${esc(E.label)}</span><span class="row"><button class="btn sm ghost" data-copy="${k}">Copy</button><button class="btn sm gold" data-dl="${k}">⬇ CSV</button></span></div>`).join("")}</div>
  <h3>💾 Full backup</h3><div class="muted" style="font-size:13px">${IN_CLAUDE?"Saves everything to your Claude account automatically.":"Saves to your Village or Pot login when you're logged in on this browser."} A weekly backup file is extra peace of mind. Last: ${S.lastBackup?new Date(S.lastBackup).toLocaleDateString():"never"}.</div>
  <div class="row" style="margin-top:6px"><button class="btn ghost" onclick="window.CloudSave&&CloudSave.account()">☁ Cloud save: log in or out</button></div>
  <div class="row" style="margin-top:6px"><button class="btn gold" id="bkd">⬇ Download backup</button><button class="btn ghost" id="bkc">Copy backup code</button></div>
@@ -1536,7 +1670,7 @@ function openSettings(){openModal(`<h2>Settings & Scrolls</h2>
 $("#setBtn").addEventListener("click",openSettings);$("#meAv").addEventListener("click",openSettings);$("#meAv").addEventListener("keydown",e=>{if(e.key==="Enter")openSettings();});
 // ---------- intro ----------
 const INTRO=[
- ()=>`<div class="who-row"><div class="face" style="width:80px;height:80px">${face(HADES_O)}</div><div class="bub" style="flex:1"><b class="who">Hades</b>Welcome home, little witch. This is <b>your</b> apothecary. Not your cousins', not your boyfriend's. Yours. I've been waiting. Patiently. (Impatiently.)</div></div>`,
+ ()=>`<div class="who-row"><div class="face" style="width:80px;height:80px">${hadesBust()}</div><div class="bub" style="flex:1"><b class="who">Hades</b>Welcome home, little witch. This is <b>your</b> apothecary. Not your cousins', not your boyfriend's. Yours. I've been waiting. Patiently. (Impatiently.)</div></div>`,
  ()=>`<div class="bub"><b class="who">Hades</b>Here's how it works. Your hours grow real medicinal plants in the <b>Garden</b>. Your bills light candles on the <b>Altar</b> in the <b>Treasury</b>. Your runway is counted in pomegranate seeds. I chose that. Obviously.</div>`,
  ()=>`<div class="bub"><b class="who">Hades</b>When everything feels like it's on fire, go to <b>All Quiet</b>. It tells you the truth, no sugar, and it remembers what you've already checked so you don't have to check it again.</div>`,
  ()=>`<div class="who-row"><div class="face" style="width:72px;height:72px">${face(HECATE_O)}</div><div class="bub" style="flex:1"><b class="who">Hecate</b>I come at the crossroads, and whenever you call. Quincy keeps watch with me. Rest is not a detour. It's part of the road.</div></div>`,
@@ -1550,7 +1684,7 @@ function intro(i){openModal(`${INTRO[i]()}<div class="foot"><span class="muted">
 function renderAll(){renderTop();renderCottage();renderQuiet();renderPath();renderCourses();renderGarden();renderTreasury();renderWar();renderHearth();renderGame();renderCards();renderAltar();
  try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});}catch(e){}}
 renderAll();hadesSays(hadesContext());
-const hh=(location.hash||"").slice(1);if($(`.tab[data-v="${hh}"]`))go(hh);
+const hh=(location.hash||"").slice(1);if(hh&&hh!=="cottage"&&hh!=="tonight")go(hh);
 if(!S.seenIntro)setTimeout(()=>intro(0),400);
 window.addEventListener("load",initClaude);   // waits for the cloud-save scripts below
 let _tod=tod();setInterval(()=>{if(tod()!==_tod){_tod=tod();renderScene();hadesSays(hadesContext());}},60000);
