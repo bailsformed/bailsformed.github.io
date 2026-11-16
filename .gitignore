@@ -1,2 +1,7 @@
 .DS_Store
 sidequest-demo/
+
+# Never commit game backups or private packs (this repo is public)
+*backup*.json
+*private-pack*.json
+*private_pack*.json
