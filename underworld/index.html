@@ -279,6 +279,13 @@ details.ch>summary .pbar{flex:1 1 60px;min-width:60px}
 .bub b.who{color:#6a1220}
 .who-row .face{border-color:#8a6a44;background:#0a0807}
 .hearth button{min-height:76px}.seg button{min-height:40px}
+.av{background:#0a0807}
+.next{position:relative;overflow:hidden;min-height:150px}
+.next .eyebrow,.next h2,.next .muted{margin-right:96px}
+.next h2{font-size:27px}
+.mecomp{position:absolute;right:-6px;top:6px;width:108px;height:auto;pointer-events:none;filter:drop-shadow(0 0 18px #7a162655)}
+.next .btn.big{position:relative}
+.pbcomp{width:84px;height:auto;flex:none;align-self:flex-end;margin:-6px -8px -18px 0;filter:drop-shadow(0 0 14px #7a162655)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -1282,7 +1289,7 @@ function show(v){v=OLDTAB[v]||v;const room=SUBVIEW[v]||v;if(!ROOMS[room])return 
 function go(v){v=OLDTAB[v]||v;const was=_view;if(!show(v))return;SFX.tap();if(v!==was){try{history.pushState({v},"","#"+v);}catch(e){}}scrollTo({top:0,behavior:"smooth"});}
 $$(".tab").forEach(t=>t.addEventListener("click",()=>go(t.dataset.v)));
 // ---------- header & scene ----------
-function renderTop(){const li=levelInfo();$("#meAv").innerHTML=face(ME());$("#lvl").textContent=`Level ${li.lv} · ${li.name}`;$("#xpbar").style.width=(li.nxt?Math.max(2,(li.x-li.cur)/(li.nxt-li.cur)*100):100)+"%";lastLv=li.lv;lastCh=curChapter();}
+function renderTop(){const li=levelInfo();$("#meAv").innerHTML=`<img src="art/bailey-calm.webp" alt="" style="width:100%;height:100%;object-fit:cover">`;$("#lvl").textContent=`Level ${li.lv} · ${li.name}`;$("#xpbar").style.width=(li.nxt?Math.max(2,(li.x-li.cur)/(li.nxt-li.cur)*100):100)+"%";lastLv=li.lv;lastCh=curChapter();}
 function hadesContext(){const h=new Date().getHours();if(fire7()<.3&&Object.keys(S.hearth).length)return pick(HADES.hearthLow);const m=monthKey();
  const over=BUDGET_CATS.filter(c=>c.tier===3&&spentIn(m,c.id)>budgetOf(c.id)&&budgetOf(c.id)>0);if(over.length&&Math.random()<.5)return pick(HADES.spendOver);
  const t=tod(h);if(t==="night")return pick(HADES.night);if(t==="morning")return pick(HADES.morning);if(t==="evening")return pick(Math.random()<.3?HADES.random:HADES.evening);return pick(Math.random()<.25?HADES.random:Math.random()<.3?HADES.study:HADES.day);}
@@ -1321,9 +1328,8 @@ function renderScene(){const T=tod(),m=monthKey(),musts=dueMusts(),rw=runway(),f
  const cw=Math.min(8.6,84/Math.max(1,musts.length));musts.forEach((c,i)=>{const x=248+i*cw,on=isPaid(m,c.id);o+=`${on?`<circle cx="${x+2.5}" cy="119" r="8" fill="url(#cglow)"/>`:""}<rect x="${x}" y="122" width="5" height="16" fill="${on?"#e6dcc6":"#6a6258"}"/>${on?`<path class="flame" d="M${x+2.5} 122 q-3 -4 0 -8 q3 4 0 8z" fill="#e8c66a"/>`:""}`;});
  const seeds=Math.max(0,Math.min(12,Math.floor(rw.months)));o+=`<circle cx="292" cy="102" r="16" fill="#7a1c26"/><path d="M286 87 l6 -6 l6 6" fill="#b8975a"/><circle cx="292" cy="102" r="11" fill="#2a070c"/>`;
  for(let i=0;i<12;i++){const a=i/12*Math.PI*2,r=i%2?7:4;o+=`<circle cx="${292+Math.cos(a)*r}" cy="${102+Math.sin(a)*r}" r="2" fill="${i<seeds?"#e0455a":"#3a0a12"}"/>`;}
- // the green couch
- o+=`<rect x="110" y="168" width="140" height="34" rx="12" fill="#2f4a38"/><rect x="104" y="150" width="152" height="30" rx="14" fill="#37573f"/><rect x="100" y="164" width="20" height="40" rx="9" fill="#27402f"/><rect x="240" y="164" width="20" height="40" rx="9" fill="#27402f"/>`;
- o+=nest(chibiInner(ME()),118,112,58,77);o+=nest(chibiInner(PB()),180,110,58,77);
+ // the couch, with Bailey and PB (art from her own sheet)
+ o+=`<ellipse cx="186" cy="204" rx="92" ry="9" fill="#000" opacity=".35"/><image href="art/couch-us.webp" x="104" y="92" width="166" height="114"/>`;
  if(S.fortuna[today()])o+=`<text x="232" y="118" font-size="14" class="float">✨</text>`;
  o+=`<defs><radialGradient id="haura" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#8a1c2c" stop-opacity=".55"/><stop offset="1" stop-color="#8a1c2c" stop-opacity="0"/></radialGradient></defs><g id="sceneHades" style="cursor:pointer"><ellipse class="aura" cx="366" cy="140" rx="40" ry="62" fill="url(#haura)"/><image href="art/hades-small.webp" x="336" y="94" width="58" height="98"/></g>`;
  if(hec){o+=`<rect x="108" y="40" width="44" height="110" rx="22" fill="#0a0810" opacity=".6"/>`+nest(chibiInner(HECATE_O),104,62,52,69)+nest(quincy(),150,150,30,40);}
@@ -1339,11 +1345,11 @@ function renderQuietRow(){const it=allQuietItems(),bad=it.filter(i=>i.st==="warn
  $("#quietRow").innerHTML=`<span class="cnd">${it.map(i=>candle(i.st!=="warn")).join("")}</span><span class="qt"><b>${bad?`${bad} thing${bad>1?"s":""} need${bad>1?"":"s"} you`:"All quiet"}</b><small>${bad?"Everything else is quiet.":"Every candle is lit."}</small></span><span class="chev" aria-hidden="true">›</span>`;}
 function renderCottage(){renderScene();if(!$("#hadesSay").textContent)hadesSays(hadesContext());
  const q=nextQuest(),c=CHAPTERS[curChapter()];
- $("#todayCard").innerHTML=q?`<div class="eyebrow">The next torch</div><h2>${esc(q.title)}</h2>
-  <div class="muted">${q.ch>=0?esc(c.name)+" · ":"Life rite · "}${esc(q.when)}</div><button class="btn gold big" id="goQ">Begin the rite</button>`:`<div class="eyebrow">The next torch</div><h2>Every rite complete.</h2>`;
+ $("#todayCard").innerHTML=`<img class="mecomp" src="art/bailey-companion.webp" width="255" height="334" alt="">`+(q?`<div class="eyebrow">The next torch</div><h2>${esc(q.title)}</h2>
+  <div class="muted">${q.ch>=0?esc(c.name)+" · ":"Life rite · "}${esc(q.when)}</div><button class="btn gold big" id="goQ">Begin the rite</button>`:`<div class="eyebrow">The next torch</div><h2>Every rite complete.</h2>`);
  const g=$("#goQ");if(g)g.addEventListener("click",()=>openQuest(q.id));
  $("#moonLine").textContent=`${moonPhase().name} tonight`;renderHearthStrip();renderQuietRow();
- const fo=S.fortuna[today()];$("#fortunaCard").innerHTML=fo?`<div class="card"><div class="who-row"><div class="face">${face(FORTUNA_O)}</div><div class="bub" style="flex:1"><b class="who">Fortuna</b>${esc(fo)}</div></div></div>`:"";}
+ const fo=S.fortuna[today()];$("#fortunaCard").innerHTML=fo?`<div class="card"><div class="who-row"><div class="face">${face(FORTUNA_O)}</div><div class="bub" style="flex:1"><b class="who">Fortuna</b>${esc(fo)}</div><img class="pbcomp" src="art/pb-companion.webp" width="276" height="382" alt="PB"></div></div>`:"";}
 $("#quietRow").addEventListener("click",()=>go("quiet"));
 $$("[data-quick]").forEach(b=>b.addEventListener("click",()=>{const k=b.dataset.quick;if(k==="hours")openHours();else if(k==="spend")openTx();else go("hearth");}));
 $("#hecateBtn").addEventListener("click",callHecate);
@@ -1676,7 +1682,7 @@ function renderAltar(){$("#oath").innerHTML=S.oath.map((v,i)=>`<input data-oath=
   <div class="muted" style="text-align:center">🌙 Tonight: ${moonPhase().name}</div><button class="btn ghost" id="hec2" style="width:100%;margin-top:10px">Call Hecate</button>`;
  $("#hec2").addEventListener("click",callHecate);
  const L=[...S.pbLuck].reverse(),fo=Object.entries(S.fortuna).filter(([d,t])=>t).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,5);
- $("#pbList").innerHTML=`<div class="who-row"><div class="face">${face(FORTUNA_O)}</div><div class="face">${face(PB())}</div></div>`+(L.length?L.map(x=>`<div class="muted" style="margin-top:6px">✨ ${esc(x.date)}: ${esc(x.t)}</div>`).join(""):`<p class="muted">Log PB's real-life lucky moments here. Fortuna is keeping score.</p>`)+(fo.length?`<h3 style="font-size:16px">Fortuna's recent gifts</h3>${fo.map(([d,t])=>`<div class="muted">${esc(d)}: ${esc(t)}</div>`).join("")}`:"");}
+ $("#pbList").innerHTML=`<div class="who-row"><div class="face">${face(FORTUNA_O)}</div><div class="face"><img src="art/pb-calm.webp" alt="PB" style="width:100%;height:100%;object-fit:cover"></div></div>`+(L.length?L.map(x=>`<div class="muted" style="margin-top:6px">✨ ${esc(x.date)}: ${esc(x.t)}</div>`).join(""):`<p class="muted">Log PB's real-life lucky moments here. Fortuna is keeping score.</p>`)+(fo.length?`<h3 style="font-size:16px">Fortuna's recent gifts</h3>${fo.map(([d,t])=>`<div class="muted">${esc(d)}: ${esc(t)}</div>`).join("")}`:"");}
 $("#pbLuck").addEventListener("click",()=>{openModal(`<h2>✨ PB got lucky</h2><input id="pl" placeholder="Found $20 on the subway"><div class="foot"><span></span><button class="btn gold" id="plok">Tell Fortuna</button></div>`);$("#plok").addEventListener("click",()=>{const t=$("#pl").value.trim();if(!t)return;S.pbLuck.push({date:today(),t});closeModal();SFX.ok();changed();});});
 // ---------- exports ----------
 async function download(name,text,type){if(dlCap){try{await dlCap.save({filename:name,data:text});return true;}catch(e){if(e&&e.code!=="declined")toast("Download didn't go through. Try Copy instead.");return false;}}
