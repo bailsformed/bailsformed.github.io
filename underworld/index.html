@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0e0c0b">
+<meta name="theme-color" content="#0a0807">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="Apothecary">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -1097,7 +1097,7 @@ const _last=new Map();const pick=a=>{if(!a||!a.length)return "";let x,n=0;do{x=a
 const tod=(h=new Date().getHours())=>h>=5&&h<11?"morning":h<17&&h>=11?"day":h>=17&&h<22?"evening":"night";
 const money=n=>(n<0?"-":"")+"$"+Math.abs(Math.round(n*100)/100).toLocaleString("en-US",{minimumFractionDigits:Math.abs(n)%1?2:0,maximumFractionDigits:2});
 // ---------- reskin MedQuest quests ----------
-const sw=t=>String(t).replace(/Hoo-hoo! Welcome, traveler\./g,"Welcome to the underworld, little witch.").replace(/Adventure Journal/g,"Apothecary Garden").replace(/\bJournal\b/g,"Garden").replace(/Spellbook/g,"Grimoire").replace(/the Codex/g,"the Lexicon").replace(/World Map/g,"Path").replace(/8 chapters/g,"8 chapters of the Path");
+const sw=t=>String(t).replace(/Hoo-hoo! Welcome, traveler\./g,"Welcome to the underworld, little witch.").replace(/Adventure Journal/g,"Apothecary Garden").replace(/\bJournal\b/g,"Garden").replace(/Spellbook/g,"Grimoire").replace(/the Codex/g,"the Lexicon").replace(/World Map/g,"Path").replace(/8 chapters/g,"8 chapters of the Path").replace(/(Grimoire|Lexicon) tab/g,"$1 (at the bottom of the Path)").replace(/Garden tab/g,"Garden").replace(/Path tab/g,"Path");
 QUESTS.forEach(q=>{["what","why","tip"].forEach(k=>{if(q[k])q[k]=sw(q[k]);});if(q.steps)q.steps=q.steps.map(sw);});
 CHAPTERS.forEach((c,i)=>{if(APOTH_CHAPTERS[i])c.name=APOTH_CHAPTERS[i];});
 const q01=QUESTS.find(q=>q.id==="q0_1");if(q01){q01.title="Meet the God of the Dead";}if(q01)q01.steps=["Read the five pillars above","Peek at every chapter of the Path","Visit All Quiet and verify something"];
@@ -1204,7 +1204,8 @@ function moonPhase(d=new Date()){const syn=29.530588853,ref=Date.UTC(2000,0,6,18
  const names=["New Moon","Waxing Crescent","First Quarter","Waxing Gibbous","Full Moon","Waning Gibbous","Last Quarter","Waning Crescent"];return {p,name:names[Math.floor((p*8+.5))%8]};}
 // ---------- progress ----------
 const LV=[0,120,300,550,850,1250,1750,2350,3050,3900,4900,6000];
-let MQ={};const mqDone=id=>/^q\d/.test(id)&&!!(MQ[id]&&MQ[id].d);
+let MQ={};function readMedQuest(){try{const r=localStorage.getItem("medquest_bailey_v1"),d=r?JSON.parse(r):null;MQ=d&&d.q&&typeof d.q==="object"?d.q:{};}catch(e){MQ={};}}
+readMedQuest();const mqDone=id=>/^q\d/.test(id)&&!!(MQ[id]&&MQ[id].d);
 const isDone=id=>!!(S.q[id]&&S.q[id].d)||mqDone(id);
 const qs=id=>S.q[id]||(S.q[id]={d:0,s:[],n:""});
 const sumH=f=>S.hours.filter(f).reduce((a,h)=>a+(+h.hrs||0),0);
@@ -1240,9 +1241,7 @@ function loadPack(text){let P;try{P=JSON.parse(text);}catch(e){toast("That file 
  if(!P||P.kind!=="underworld-private-pack"){toast("That file isn't your Underworld pack.");return;}
  delete P.kind;S.pack=P;
  // first time: fill in your real numbers wherever this save is still blank
- Object.entries(P.budget||{}).forEach(([k,v])=>{if(!+S.budget[k])S.budget[k]=v;});
- Object.entries(P.fin||{}).forEach(([k,v])=>{const cur=S.fin[k];if(cur===undefined||cur===""||cur===0)S.fin[k]=v;});
- applyPack();closeModal();changed();toast("🔒 Your private pack is in. It saves with your account, not in the public code.");}
+ fillFromPack();applyPack();closeModal();changed();toast("🔒 Your private pack is in. It saves with your account, not in the public code.");}
 applyPack();
 
 const monthTx=m=>S.tx.filter(t=>monthKey(t.date)===m);
@@ -1262,8 +1261,12 @@ function toast(t){const e=document.createElement("div");e.className="toast";e.in
 const cv=$("#petals"),cx=cv.getContext("2d");let P=[],raf=null;
 function petals(n=50){if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;cv.width=innerWidth;cv.height=innerHeight;const cols=["#8a202c","#c8643a","#c9a765","#e0455a","#3f6a50"];for(let i=0;i<n;i++)P.push({x:Math.random()*innerWidth,y:-20-Math.random()*200,vx:(Math.random()-.5)*1.4,vy:1.6+Math.random()*2.4,r:3+Math.random()*4,a:Math.random()*6,c:cols[i%5]});if(!raf)loop();}
 function loop(){cx.clearRect(0,0,cv.width,cv.height);P.forEach(p=>{p.x+=p.vx+Math.sin(p.a)*.6;p.y+=p.vy;p.a+=.05;cx.fillStyle=p.c;cx.beginPath();cx.ellipse(p.x,p.y,p.r,p.r*.7,p.a,0,7);cx.fill();});P=P.filter(p=>p.y<cv.height+20);raf=P.length?requestAnimationFrame(loop):(cx.clearRect(0,0,cv.width,cv.height),null);}
-function openModal(h){$("#modal").innerHTML=`<button class="btn ghost sm x" onclick="closeModal()" aria-label="Close">✕</button>`+h;$("#scrim").classList.add("on");$("#scrim").scrollTop=0;}
-function closeModal(){$("#scrim").classList.remove("on");}
+let _mOpen=false,_skipPop=0;
+function openModal(h){$("#modal").innerHTML=`<button class="btn ghost sm x" onclick="closeModal()" aria-label="Close">✕</button>`+h;$("#scrim").classList.add("on");$("#scrim").scrollTop=0;
+ if(!_mOpen){_mOpen=true;if(!_skipPop){try{history.pushState({modal:1},"");}catch(e){}}}}
+function closeModal(fromBack){$("#scrim").classList.remove("on");if(!_mOpen)return;_mOpen=false;if(fromBack!==true){_skipPop++;try{history.back();}catch(e){_skipPop--;}}}
+window.addEventListener("popstate",e=>{if(_skipPop>0){_skipPop--;if(_mOpen){try{history.pushState({modal:1},"");}catch(x){}}return;}
+ if(_mOpen){closeModal(true);return;}show((e.state&&e.state.v)||"tonight");});
 $("#scrim").addEventListener("click",e=>{if(e.target.id==="scrim")closeModal();});document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
 // His face follows what he's saying: each bank of lines has a mood (the art is in /underworld/art/).
 const HADES_MOOD={morning:"warm",day:"smirk",evening:"warm",night:"calm",quest:"proud",garden:"warm",spendOver:"thinking",paid:"proud",hearthLow:"thinking",study:"amused",random:"smirk"};
@@ -1275,9 +1278,11 @@ function changed(){const b=lastLv,bc=lastCh;save();const li=levelInfo();if(b!==n
  const c=curChapter();if(bc!==null&&c>bc){S.hecateUntil=Date.now()+36e5*12;save();setTimeout(()=>crossroads(CHAPTERS[bc],CHAPTERS[c]),600);}renderAll();}
 // Five rooms. Old tab names still work (links, #hashes, All Quiet's "Open" buttons).
 const ROOMS={tonight:["cottage"],path:["path"],garden:["garden"],treasury:["treasury"],altar:["altar"]},SUBVIEW={quiet:"tonight",hearth:"tonight",war:"treasury",games:"altar"},OLDTAB={cottage:"tonight"};
-function go(v){v=OLDTAB[v]||v;const room=SUBVIEW[v]||v;if(!ROOMS[room])return;const show=SUBVIEW[v]?[v]:ROOMS[room];
+let _view="tonight";
+function show(v){v=OLDTAB[v]||v;const room=SUBVIEW[v]||v;if(!ROOMS[room])return false;const list=SUBVIEW[v]?[v]:ROOMS[room];
  $$(".tab").forEach(t=>{const on=t.dataset.v===room;t.classList.toggle("on",on);if(on)t.setAttribute("aria-current","page");else t.removeAttribute("aria-current");});
- $$(".view").forEach(x=>x.classList.toggle("on",show.includes(x.id.slice(2))));SFX.tap();try{history.replaceState(null,"","#"+v);}catch(e){}scrollTo({top:0,behavior:"smooth"});}
+ $$(".view").forEach(x=>x.classList.toggle("on",list.includes(x.id.slice(2))));_view=v;return true;}
+function go(v){v=OLDTAB[v]||v;const was=_view;if(!show(v))return;SFX.tap();if(v!==was){try{history.pushState({v},"","#"+v);}catch(e){}}scrollTo({top:0,behavior:"smooth"});}
 $$(".tab").forEach(t=>t.addEventListener("click",()=>go(t.dataset.v)));
 // ---------- header & scene ----------
 function renderTop(){const li=levelInfo();$("#meAv").innerHTML=face(ME());$("#lvl").textContent=`Level ${li.lv} · ${li.name}`;$("#xpbar").style.width=(li.nxt?Math.max(2,(li.x-li.cur)/(li.nxt-li.cur)*100):100)+"%";lastLv=li.lv;lastCh=curChapter();}
@@ -1286,7 +1291,7 @@ function hadesContext(){const h=new Date().getHours();if(fire7()<.3&&Object.keys
  const t=tod(h);if(t==="night")return pick(HADES.night);if(t==="morning")return pick(HADES.morning);if(t==="evening")return pick(Math.random()<.3?HADES.random:HADES.evening);return pick(Math.random()<.25?HADES.random:Math.random()<.3?HADES.study:HADES.day);}
 const hadesFace=(m="calm")=>`<img src="art/hades-${m}.webp" alt="Hades" style="width:100%;height:100%;object-fit:cover">`;
 const candle=on=>`<svg viewBox="0 0 10 26" width="10" height="26" aria-hidden="true"><rect x="2.5" y="10" width="5" height="16" rx="1" fill="${on?"#e6dcc6":"#5a5248"}"/>${on?`<circle cx="5" cy="6" r="5" fill="#e8c66a" opacity=".22"/><path class="flame" d="M5 10 q-3.4 -4.5 0 -9 q3.4 4.5 0 9z" fill="#e8c66a"/>`:`<path d="M5 10 v-2.5" stroke="#3a342e" stroke-width="1"/>`}</svg>`;
-function renderScene(){const T=tod(),m=monthKey(),musts=BUDGET_CATS.filter(c=>c.tier===1),rw=runway(),fire=fire7(),mp=moonPhase(),hec=Date.now()<S.hecateUntil;
+function renderScene(){const T=tod(),m=monthKey(),musts=dueMusts(),rw=runway(),fire=fire7(),mp=moonPhase(),hec=Date.now()<S.hecateUntil;
  const cats=HOUR_CATS.filter(c=>S.hours.some(h=>h.cat===c.id));
  const SKY={morning:["#b98f6a","#e6cfa6"],day:["#6f8f9c","#c9d3c4"],evening:["#8a3a2a","#2e1c2a"],night:["#090b16","#17182a"]}[T];
  let o=`<defs><linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#15110f"/><stop offset="1" stop-color="#201913"/></linearGradient>
@@ -1356,11 +1361,11 @@ function crossroads(done,next){petals(120);SFX.lvl();openModal(`<h2>The Crossroa
 // fortuna daily
 (function(){const t=today();if(!(t in S.fortuna)){S.fortuna[t]=Math.random()<.3?pick(FORTUNA):"";save();}if(S.fortuna[t]===""&&false){}})();
 // ---------- All Quiet ----------
-function allQuietItems(){const m=monthKey(),musts=BUDGET_CATS.filter(c=>c.tier===1),unpaid=musts.filter(c=>!isPaid(m,c.id)),day=new Date().getDate(),rw=runway(),f=fire7();
+function allQuietItems(){const m=monthKey(),musts=dueMusts(),unpaid=musts.filter(c=>!isPaid(m,c.id)),day=new Date().getDate(),rw=runway(),f=fire7();
  const lastH=S.hours.length?[...S.hours].sort((a,b)=>b.date.localeCompare(a.date))[0].date:null,daysSince=d=>d?Math.max(0,Math.round((new Date(today()+"T12:00")-new Date(d+"T12:00"))/864e5)):null;
  const over=BUDGET_CATS.filter(c=>budgetOf(c.id)>0&&spentIn(m,c.id)>budgetOf(c.id));const cashAge=daysSince(S.fin.cashDate);const nq=nextQuest();
  const items=[
-  {k:"bills",ic:"🕯️",t:unpaid.length?`${unpaid.length} tribute${unpaid.length>1?"s":""} not marked paid this month`:"Every must-pay bill is marked paid",st:!unpaid.length?"ok":day>=20?"warn":"info",d:unpaid.length?unpaid.map(c=>c.name).join(", "):"All candles lit.",go:"treasury"},
+  {k:"bills",ic:"🕯️",t:!musts.length?"No must-pay bills have an amount yet":unpaid.length?`${unpaid.length} tribute${unpaid.length>1?"s":""} not marked paid this month`:"Every must-pay bill is marked paid",st:!musts.length?"info":!unpaid.length?"ok":day>=20?"warn":"info",d:!musts.length?"Set them under Vault & budget in the Treasury.":unpaid.length?unpaid.map(c=>c.name).join(", "):"All candles lit.",go:"treasury"},
   {k:"over",ic:"🍇",t:over.length?`${over.length} categor${over.length>1?"ies are":"y is"} over budget`:"No category is over budget",st:over.length?"warn":"ok",d:over.length?over.map(c=>`${c.name}: ${money(spentIn(m,c.id))} of ${money(budgetOf(c.id))}`).join(" · "):"Dionysus is behaving.",go:"treasury"},
   {k:"runway",ic:"🍎",t:rw.months>=6?`Runway: about ${rw.months} months, counting tuition`:rw.months>=3?`Runway is getting short: about ${rw.months} months`:`Runway is critical: about ${rw.months} month${rw.months===1?"":"s"}`,st:rw.months>=6?"ok":"warn",d:`Vault ${money(rw.cash)} (updated ${S.fin.cashDate||"never"}). Living costs ${money(rw.liv)}/mo${rw.inc?`, expected income ${money(rw.inc)}/mo`:", no income counted yet"}. Tuition ${money(+S.fin.tuitionSem)} each Jan & Aug.`,go:"treasury"},
   {k:"vault",ic:"🏦",t:cashAge===null||cashAge>14?"Vault balance is stale. Update it":"Vault balance is fresh",st:cashAge===null||cashAge>14?"warn":"ok",d:`Last updated ${S.fin.cashDate||"never"}.`,go:"treasury"},
@@ -1468,7 +1473,7 @@ function openCat(id){const c=catById[id],m=viewMonth,T=monthTx(m).filter(t=>t.ty
   <h3>Entries</h3>${T.length?T.map(t=>`<div class="muted">${esc(t.date)} · ${money(+t.amt)} · ${esc(t.acct)} ${t.note?"· "+esc(t.note):""}</div>`).join(""):`<div class="muted">None this month.</div>`}
   <div class="foot"><button class="btn ghost" id="addHere">+ Log to this category</button><button class="btn" onclick="closeModal()">Done</button></div>`);
  $("#cb").addEventListener("change",e=>{S.budget[id]=+e.target.value||0;changed();});
- const mp=$("#markPaid");if(mp)mp.addEventListener("click",()=>{S.paid[m]=S.paid[m]||{};S.paid[m][id]=!manual;if(!manual){SFX.ok();if(BUDGET_CATS.filter(c=>c.tier===1).every(c=>isPaid(m,c.id)||(c.id===id))){hadesSays(pick(HADES.paid));petals(60);}}closeModal();changed();});
+ const mp=$("#markPaid");if(mp)mp.addEventListener("click",()=>{S.paid[m]=S.paid[m]||{};S.paid[m][id]=!manual;if(!manual){SFX.ok();if(dueMusts().every(c=>isPaid(m,c.id)||(c.id===id))){hadesSays(pick(HADES.paid));petals(60);}}closeModal();changed();});
  $("#addHere").addEventListener("click",()=>openTx(id));}
 function openTx(presetCat){let type="expense";const draw=()=>{openModal(`<h2>🪙 Log money</h2><div class="seg" id="tt">${[["expense","Spent"],["income","Came in"],["transfer","Transfer / card payment"]].map(([k,l])=>`<button data-t="${k}" class="${type===k?"on":""}">${l}</button>`).join("")}</div>
   <form class="f2" id="tf"><label class="f">Amount ($)<input name="amt" type="number" step=".01" min="0" required inputmode="decimal" placeholder="0.00"></label><label class="f">Date<input name="date" type="date" value="${today()}" required></label>
@@ -1695,7 +1700,20 @@ async function doExport(k,copy){const E=EXPORTS[k],rows=E.r(),nm=typeof E.name==
  if(await download(`${nm}-${today()}.csv`,toCSV(E.h,rows),"text/csv;charset=utf-8"))toast(`⬇ ${esc(E.label)} downloaded`);}
 document.addEventListener("click",e=>{const d=e.target.closest("[data-dl]"),c=e.target.closest("[data-copy]");if(d)doExport(d.dataset.dl,false);if(c)doExport(c.dataset.copy,true);});
 // ---------- settings ----------
-function restore(t){try{const d=JSON.parse(t);if(!d||!d.q)throw 0;const keep=S.pack;S=Object.assign(fresh(),d);if(!S.pack&&keep)S.pack=keep;applyPack();closeModal();changed();toast("✨ Restored");}catch(e){toast("That backup didn't work.");}}
+const SAFE=KEY+"_before_change";   // an extra copy kept on this device; the main save key is unchanged
+function keepBefore(why){try{localStorage.setItem(SAFE,JSON.stringify({at:Date.now(),why,state:JSON.stringify(S)}));}catch(e){}}
+function readBefore(){try{const b=JSON.parse(localStorage.getItem(SAFE));return b&&b.state?b:null;}catch(e){return null;}}
+function fillFromPack(){const P=S.pack||{};Object.entries(P.budget||{}).forEach(([k,v])=>{if(!+S.budget[k])S.budget[k]=v;});Object.entries(P.fin||{}).forEach(([k,v])=>{const cur=S.fin[k];if(cur===undefined||cur===""||cur===0)S.fin[k]=v;});}
+function restore(t){let d;try{d=JSON.parse(t);if(!d||typeof d!=="object"||!d.q||typeof d.q!=="object")throw 0;}catch(e){toast("That backup didn't work.");return;}
+ const when=d.updatedAt?new Date(d.updatedAt).toLocaleString([],{dateStyle:"medium",timeStyle:"short"}):"an unknown date",n=a=>Array.isArray(a)?a.length:0;
+ openModal(`<h2>Replace your game with this backup?</h2><p>This backup was last saved <b>${esc(when)}</b>. It holds ${Object.values(d.q).filter(x=>x&&x.d).length} finished rites, ${n(d.hours)} hour entries and ${n(d.tx)} money entries.</p>
+  <p class="muted">Your game as it is right now is kept on this device as a "before" copy. You can bring it back from Settings.</p><div class="foot"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" id="rsOk">Yes, replace it</button></div>`);
+ $("#rsOk").addEventListener("click",()=>{keepBefore("restore");const keep=S.pack;S=Object.assign(fresh(),d);if(!S.pack&&keep)S.pack=keep;applyPack();closeModal();changed();toast("✨ Restored");});}
+function askReset(){openModal(`<h2>Erase everything and start over?</h2><p>This clears your rites, hours, money entries, hearth and classes on this device and in your cloud save.</p>
+  <p class="muted">Your private pack stays. Your game as it is right now is kept on this device as a "before" copy, which you can bring back from Settings.</p><div class="foot"><button class="btn ghost" onclick="closeModal()">Cancel</button><button class="btn" id="rstOk">Yes, start over</button></div>`);
+ $("#rstOk").addEventListener("click",()=>{keepBefore("reset");const keep=S.pack;S=fresh();S.seenIntro=true;if(keep)S.pack=keep;fillFromPack();applyPack();closeModal();changed();toast("Started over. Your earlier game is kept as a before copy.");});}
+function undoChange(){const b=readBefore();if(!b)return;const cur=JSON.stringify(S);try{S=Object.assign(fresh(),JSON.parse(b.state));}catch(e){toast("That copy couldn't be read.");return;}
+ try{localStorage.setItem(SAFE,JSON.stringify({at:Date.now(),why:"undo",state:cur}));}catch(e){}applyPack();closeModal();changed();toast("Your earlier game is back");}
 function openSettings(){openModal(`<h2>Settings & Scrolls</h2>
  <h3>Wardrobe</h3><div class="seg" id="ow">${OUTFITS.map((o,i)=>`<button data-i="${i}" class="${S.outfit===i?"on":""}">${esc(o.name)}</button>`).join("")}</div>
  <label class="row" style="margin-top:8px;font-weight:700"><input type="checkbox" id="pbc" style="width:auto" ${S.pbCap?"checked":""}> PB wears his cap</label>
@@ -1709,7 +1727,7 @@ function openSettings(){openModal(`<h2>Settings & Scrolls</h2>
  <h3>🔒 Private pack</h3><div class="muted" style="font-size:13px">${S.pack?"Loaded. Your personal rites, labels and the sealed letter are in your save.":"Not loaded. Load the private pack file from your Mac to bring in your personal rites, labels and numbers."}</div>
  <input type="file" id="pkf" accept=".json,application/json" style="margin-top:6px"><label class="f" for="pkt">Or paste it</label><textarea id="pkt" rows="2"></textarea><button class="btn ghost sm" id="pkr" style="margin-top:6px">Load pack</button>
  <h3>🧾 Sorting rules I've learned</h3><div class="muted" style="font-size:13px">From your answers during imports. Remove one if it's sorting things wrong.</div><div id="rulesBox">${Object.keys(S.rules||{}).length?Object.entries(S.rules).map(([k,v])=>`<div class="row sp" style="padding:3px 0;border-bottom:1px dashed var(--edge)"><span style="font-size:13px">${esc(k)} → <b>${esc(labelOf(v))}</b></span><button class="btn ghost sm" data-rr="${esc(k)}">✕</button></div>`).join(""):`<div class="muted" style="font-size:13px">None yet.</div>`}</div>
- <h3>Other</h3><button class="btn ghost sm" id="intro2">Replay the welcome</button> <button class="btn ghost sm" id="rst">Reset everything</button>`);
+ <h3>Other</h3><button class="btn ghost sm" id="intro2">Replay the welcome</button> <button class="btn ghost sm" id="rst">Reset everything</button>${readBefore()?`<div style="margin-top:8px"><button class="btn ghost sm" id="undo1">Bring back my game from before the last ${esc(readBefore().why==="reset"?"reset":readBefore().why==="undo"?"undo":"restore")} (${new Date(readBefore().at).toLocaleDateString()})</button></div>`:""}`);
  $$("#ow button").forEach(b=>b.addEventListener("click",()=>{S.outfit=+b.dataset.i;$$("#ow button").forEach(x=>x.classList.toggle("on",x===b));SFX.tap();changed();}));
  $("#pbc").addEventListener("change",e=>{S.pbCap=e.target.checked;changed();});$("#snd").addEventListener("change",e=>{S.sound=e.target.checked;save();});
  const mark=()=>{S.lastBackup=Date.now();changed();};
@@ -1718,7 +1736,7 @@ function openSettings(){openModal(`<h2>Settings & Scrolls</h2>
  $("#bkf").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>restore(r.result);r.readAsText(f);});$("#bkr").addEventListener("click",()=>restore($("#bkt").value));
  $("#pkf").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>loadPack(r.result);r.readAsText(f);});$("#pkr").addEventListener("click",()=>loadPack($("#pkt").value));
  $("#intro2").addEventListener("click",()=>{closeModal();intro(0);});$$("[data-rr]").forEach(b=>b.addEventListener("click",()=>{delete S.rules[b.dataset.rr];save();b.parentElement.remove();}));
- $("#rst").addEventListener("click",e=>{const b=e.target;if(b.dataset.c){S=fresh();S.seenIntro=true;applyPack();save();closeModal();renderAll();}else{b.dataset.c=1;b.textContent="Tap again to erase everything";}});}
+ $("#rst").addEventListener("click",askReset);const u1=$("#undo1");if(u1)u1.addEventListener("click",()=>{if(u1.dataset.c)undoChange();else{u1.dataset.c=1;u1.textContent="Tap again to swap back";}});}
 $("#setBtn").addEventListener("click",openSettings);$("#meAv").addEventListener("click",openSettings);$("#meAv").addEventListener("keydown",e=>{if(e.key==="Enter")openSettings();});
 // ---------- intro ----------
 const INTRO=[
@@ -1736,10 +1754,15 @@ function intro(i){openModal(`${INTRO[i]()}<div class="foot"><span class="muted">
 function renderAll(){renderTop();renderCottage();renderQuiet();renderPath();renderCourses();renderGarden();renderTreasury();renderWar();renderHearth();renderGame();renderCards();renderAltar();
  try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});}catch(e){}}
 renderAll();hadesSays(hadesContext());
-const hh=(location.hash||"").slice(1);if(hh&&hh!=="cottage"&&hh!=="tonight")go(hh);
+const hh=(location.hash||"").slice(1);if(hh)show(hh);try{history.replaceState({v:_view},"",location.pathname+"#"+_view);}catch(e){}
+// Home-screen shortcuts (long-press the app icon): /underworld/?do=spend | hours | hearth
+const _do=new URLSearchParams(location.search).get("do");if(_do&&S.seenIntro)setTimeout(()=>{if(_do==="spend")openTx();else if(_do==="hours")openHours();else if(_do==="hearth")go("hearth");},350);
+// A new day while the app stayed open: move the Hearth and Treasury on to today.
+let _day=today();function dayCheck(){if(today()===_day)return;const old=_day;_day=today();$("#hDate").value=_day;if(viewMonth===monthKey(old))viewMonth=monthKey();renderAll();hadesSays(hadesContext());}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState!=="visible")return;dayCheck();const was=JSON.stringify(MQ);readMedQuest();if(JSON.stringify(MQ)!==was)renderAll();});
 if(!S.seenIntro)setTimeout(()=>intro(0),400);
 window.addEventListener("load",initClaude);   // waits for the cloud-save scripts below
-let _tod=tod();setInterval(()=>{if(tod()!==_tod){_tod=tod();renderScene();hadesSays(hadesContext());}},60000);
+let _tod=tod();setInterval(()=>{dayCheck();if(tod()!==_tod){_tod=tod();renderScene();hadesSays(hadesContext());}},60000);
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script src="../shared/cloudsave.js"></script>
