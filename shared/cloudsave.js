@@ -273,5 +273,17 @@ async function connect(opts) {
   };
 }
 
-window.CloudSave = { connect, account, isApp };
+/* Read another game's cloud save for the logged-in Village member, without connecting to it.
+   Read-only: game_save_get is a STABLE select (it can't create or change a row), and nothing is
+   written to this device. Returns the saved game, or null (not logged in, offline, or no save). */
+async function peek(game) {
+  if (!window.supabase) return null;
+  try {
+    const hit = await tryAccount(villageClient(), game);
+    if (!hit || !hit.remote || !hit.remote.state) return null;
+    return JSON.parse(hit.remote.state);
+  } catch (e) { return null; }
+}
+
+window.CloudSave = { connect, account, isApp, peek };
 })();

@@ -8,7 +8,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="apple-mobile-web-app-title" content="MedQuest">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>MedQuest: Bailey's Road to the White Coat</title>
+<title>MedQuest: The Road to the White Coat</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -189,7 +189,7 @@ td{border-bottom:1px dashed #d8c9ad;padding:6px;vertical-align:top}
   <div class="panel hud">
     <div class="portrait" id="portrait" title="Customize your character" role="button" tabindex="0"></div>
     <div class="hud-main">
-      <div class="hud-name px"><span id="heroName">Bailey</span><span class="lvl" id="lvl">LV 1</span><span class="title-tag" id="titleTag"></span></div>
+      <div class="hud-name px"><span id="heroName">Adventurer</span><span class="lvl" id="lvl">LV 1</span><span class="title-tag" id="titleTag"></span></div>
       <div class="xpbar"><div class="xpfill" id="xpfill" style="width:0"></div></div>
       <div class="xptext" id="xptext"></div>
     </div>
@@ -220,7 +220,7 @@ td{border-bottom:1px dashed #d8c9ad;padding:6px;vertical-align:top}
     <div class="panel side" style="margin-top:12px">
       <h3 class="px" style="margin-top:0">📅 Key dates on your route</h3>
       <ul class="dates" id="dates"></ul>
-      <div class="muted" style="font-size:12px;margin-top:6px">≈ = estimated from last cycle's published pattern. Always confirm on the official AAMC, AACOM and New Paltz sites. (Dates checked Nov 2026.)</div>
+      <div class="muted" id="datesNote" style="font-size:12px;margin-top:6px">≈ = estimated from last cycle's published pattern. Always confirm on the official AAMC and AACOM sites and with your school. (Dates checked Nov 2026.)</div>
     </div></div>
       <div class="panel side" id="chapterSide" style="align-self:start"></div>
     </div>
@@ -270,7 +270,7 @@ td{border-bottom:1px dashed #d8c9ad;padding:6px;vertical-align:top}
   <section class="view" id="v-spell">
     <div class="panel side">
       <h2 class="px" style="margin-top:0">📘 Spellbook: courses & GPA</h2>
-      <p class="muted" style="margin-top:0;font-size:14px">Med schools count <b>every</b> college course you've taken, including Lone Star. Mark each prereq's status and grade. Science courses (B/C/P/M) count toward your <b>BCPM GPA</b>.</p>
+      <p class="muted" id="spellIntro" style="margin-top:0;font-size:14px">Med schools count <b>every</b> college course you've taken, including any from earlier colleges. Mark each prereq's status and grade. Science courses (B/C/P/M) count toward your <b>BCPM GPA</b>.</p>
       <div class="exrow" style="margin-bottom:10px"><button class="btn sm ghost" id="copyCourses">📋 Copy courses for Sheets/Excel</button><button class="btn sm dl" id="dlCourses">⬇ Download courses CSV</button></div>
       <div class="gpabox">
         <div class="gpa"><div class="n" id="gpaAll">–</div><div class="l">CUMULATIVE GPA (est.)</div></div>
@@ -278,12 +278,12 @@ td{border-bottom:1px dashed #d8c9ad;padding:6px;vertical-align:top}
         <div class="gpa"><div class="n" id="prereqPct">0/0</div><div class="l">PREREQS COMPLETE</div></div>
       </div>
       <div class="tbl" style="max-height:none;margin-top:12px"><table class="course" id="courseTable"></table></div>
-      <h3 class="px">➕ Add another course (psych major, Lone Star, electives…)</h3>
+      <h3 class="px" id="addCourseHead">➕ Add another course (your major, earlier colleges, electives…)</h3>
       <form class="form" id="courseForm" style="grid-template-columns:2fr 1fr 1fr 1fr auto;align-items:end">
         <label>Course name<input name="name" required placeholder="Abnormal Psychology"></label>
         <label>Type<select name="cat"><option value="O">Non-science</option><option value="B">Biology</option><option value="C">Chemistry</option><option value="P">Physics</option><option value="M">Math</option></select></label>
         <label>Credits<input type="number" name="cr" min="0" step="0.5" value="3"></label>
-        <label>School<input name="school" placeholder="New Paltz"></label>
+        <label>School<input name="school" placeholder="Your school"></label>
         <button class="btn" type="submit">Add</button>
       </form>
       <p class="muted" style="font-size:12px">Estimates only. AMCAS and AACOMAS use their own grade conversions. Each med school sets its own prerequisite list, so confirm with your advisor and in MSAR.</p>
@@ -306,7 +306,7 @@ td{border-bottom:1px dashed #d8c9ad;padding:6px;vertical-align:top}
     </div>
   </section>
 
-  <div class="footer px">MedQuest · built for Bailey · Progress saves automatically</div>
+  <div class="footer px" id="footer">MedQuest · Progress saves automatically</div>
 </div>
 
 <div class="scrim" id="scrim"><div class="panel modal" id="modal" role="dialog" aria-modal="true"></div></div>
@@ -316,21 +316,21 @@ td{border-bottom:1px dashed #d8c9ad;padding:6px;vertical-align:top}
 <script>
 // ===================== GAME CONTENT =====================
 const CHAPTERS = [
-  {id:0, name:"Moving Day Meadow", when:"Now → Jan 2027", season:"Prologue",
+  {id:0, name:"Moving Day Meadow", when:"Prologue", season:"Prologue",
    blurb:"Unpack, gather your records, and meet your guide. Everything here sets up the whole adventure."},
-  {id:1, name:"Hawk Hollow", when:"Spring 2027", season:"Semester 1",
-   blurb:"Your first New Paltz semester: first lab sciences, first professors, and your first clinical hours."},
-  {id:2, name:"Summer Glade", when:"Summer 2027", season:"Summer",
+  {id:1, name:"Hawk Hollow", when:"Semester 1", season:"Semester 1",
+   blurb:"Your first semester at your new school: first lab sciences, first professors, and your first clinical hours."},
+  {id:2, name:"Summer Glade", when:"Summer", season:"Summer",
    blurb:"Summer classes keep you on pace while you start shadowing physicians, including a DO."},
-  {id:3, name:"Laboratory Lagoon", when:"Fall 2027", season:"Semester 2",
+  {id:3, name:"Laboratory Lagoon", when:"Semester 2", season:"Semester 2",
    blurb:"Orgo, physics, research, and recruiting the people who will write your letters."},
-  {id:4, name:"MCAT Mountain", when:"Spring 2028", season:"Semester 3",
+  {id:4, name:"MCAT Mountain", when:"Semester 3", season:"Semester 3",
    blurb:"The hardest climb: finish the last prereqs, defeat the MCAT, and write your story."},
-  {id:5, name:"Application Castle", when:"May → Sept 2028", season:"Application Summer",
+  {id:5, name:"Application Castle", when:"Application Summer", season:"Application Summer",
    blurb:"Submit AMCAS (MD) and AACOMAS (DO) early, then conquer the secondaries."},
-  {id:6, name:"Interview Tower", when:"Fall 2028 → Winter 2029", season:"Senior Year",
+  {id:6, name:"Interview Tower", when:"Senior Year", season:"Senior Year",
    blurb:"Practice, interview, send your thank-yous, and keep your grades strong."},
-  {id:7, name:"White Coat Summit", when:"Spring → Summer 2029", season:"Finale",
+  {id:7, name:"White Coat Summit", when:"Finale", season:"Finale",
    blurb:"Acceptance, graduation, and the White Coat Ceremony. You become a medical student."}
 ];
 
@@ -346,27 +346,26 @@ const QUESTS = [
 {id:"q0_2", ch:0, title:"MD or DO? Know your classes", xp:60, when:"Before spring 2027",
  what:`There are two kinds of U.S. physicians. <b>MD</b> (allopathic) schools use the <b>AMCAS</b> application. <b>DO</b> (osteopathic) schools use <b>AACOMAS</b>. Both become fully licensed physicians, both match into the same residencies, and both can practice any specialty. DO training adds <b>OMM</b> (osteopathic manipulative medicine), a hands-on, whole-person approach.`,
  why:`You're applying to <b>both</b>, so you'll file two applications in the same cycle. DO schools often want to see that you've shadowed a DO, and many want a letter from one. Knowing this now means you'll plan for it.`,
- steps:["Write down one thing that appeals to you about MD","Write down one thing that appeals to you about DO","Name 2–3 MD and 2–3 DO schools in NY you're curious about"],
+ steps:["Write down one thing that appeals to you about MD","Write down one thing that appeals to you about DO","Name 2–3 MD and 2–3 DO schools in your state you're curious about"],
  tip:`Applying to both widens your options. It isn't a "backup" move: DO schools want applicants who truly understand osteopathic philosophy, so learn it for real.`},
 
 {id:"q0_3", ch:0, title:"Gather your scrolls (transcripts)", xp:60, when:"Nov–Dec 2026",
- what:`Your <b>transcripts</b> are your official grade records. New Paltz needs your Lone Star College transcript to award transfer credit. Later, AMCAS and AACOMAS will need an official transcript from <b>every college you've ever attended</b>, even one class.`,
- why:`Med schools recalculate your GPA from <b>all</b> of your college coursework. Lone Star grades count toward your med school GPA even though your New Paltz GPA starts fresh.`,
- steps:["Order an official Lone Star transcript sent to SUNY New Paltz (if you haven't)","Download an unofficial copy for yourself","Make a “Med School” folder (cloud drive) and save it there","List any OTHER college you ever took a class at, even dual credit"],
+ what:`Your <b>transcripts</b> are your official grade records. Your new school needs the transcript from your earlier college to award transfer credit. Later, AMCAS and AACOMAS will need an official transcript from <b>every college you've ever attended</b>, even one class.`,
+ why:`Med schools recalculate your GPA from <b>all</b> of your college coursework. Grades from your earlier college count toward your med school GPA even though your GPA at your new school starts fresh.`,
+ steps:["Order an official transcript from your earlier college, sent to your new school (if you haven't)","Download an unofficial copy for yourself","Make a “Med School” folder (cloud drive) and save it there","List any OTHER college you ever took a class at, even dual credit"],
  tip:`Keep a single “Med School” folder for everything: transcripts, job dates, supervisor contacts, journal exports. Future-you will be grateful in May 2028.`},
 
-{id:"q0_4", ch:0, title:"Appraise your inherited loot", xp:80, when:"When New Paltz posts your credit evaluation",
- what:`Your ~48 Lone Star credits are “inherited loot.” Some may already count as med school <b>prerequisites</b> (biology, chemistry, math, English, psychology). The rest count toward your bachelor's.`,
+{id:"q0_4", ch:0, title:"Appraise your inherited loot", xp:80, when:"When your school posts your credit evaluation",
+ what:`Your transfer credits are “inherited loot.” Some may already count as med school <b>prerequisites</b> (biology, chemistry, math, English, psychology). The rest count toward your bachelor's.`,
  why:`Knowing exactly which prereqs you've already finished decides whether the straight-through route fits. Each finished science course is a semester you don't have to repeat.`,
- steps:["Find your transfer credit evaluation / degree audit at New Paltz","Open the Spellbook tab and mark any prereqs already completed","Enter your Lone Star grades for those courses in the Spellbook","Add your other Lone Star courses (so your GPA estimate is accurate)"],
- tip:`Some med schools prefer core sciences to be taken at a 4-year school. Taking upper-level sciences at New Paltz (biochem, genetics) shows you can handle 4-year rigor. Ask your advisor whether to retake anything.`},
+ steps:["Find your transfer credit evaluation / degree audit at your school","Open the Spellbook tab and mark any prereqs already completed","Enter your earlier grades for those courses in the Spellbook","Add your other earlier courses (so your GPA estimate is accurate)"],
+ tip:`Some med schools prefer core sciences to be taken at a 4-year school. Taking upper-level sciences at your 4-year school (biochem, genetics) shows you can handle 4-year rigor. Ask your advisor whether to retake anything.`},
 
 {id:"q0_5", ch:0, title:"Summon your Guide", xp:100, when:"Dec 2026 – Jan 2027",
- what:`New Paltz has a <b>Health Career Advisement</b> program. The pre-med advisor (listed as <b>Debra Adair, Ph.D.</b>) helps students plan for medical school. They ask you to fill out a pre-health meeting form before your first meeting.`,
- why:`Your advisor knows New Paltz's course sequencing, how letters work there, and how past students got in. This is the most valuable 1-hour meeting of your first year.`,
- steps:["Visit the Health Career Advisement page (link below)","Fill out the pre-health meeting form","Email to request a meeting (adaird@newpaltz.edu, per the site)","Bring these questions: Which of my transfer credits count as prereqs? Is applying in May 2028 realistic? Does New Paltz write a committee or composite letter? Which physics and math should I take?","Write down what you learned in the quest notes below"],
- tip:`Say you're a non-traditional transfer, a psychology major, working part-time, aiming for both MD and DO, and hoping to apply straight through. Advisors give much better advice with the whole picture.`,
- links:[{l:"New Paltz Health Career Advisement",u:"https://www.newpaltz.edu/healthcareeradvisement/"}]},
+ what:`Most colleges have a <b>pre-health advising</b> office. The pre-med advisor helps students plan for medical school. They ask you to fill out a pre-health meeting form before your first meeting.`,
+ why:`Your advisor knows your school's course sequencing, how letters work there, and how past students got in. This is the most valuable 1-hour meeting of your first year.`,
+ steps:["Visit your school's pre-health advising page","Fill out the pre-health meeting form","Email to request a meeting (the address is on the advising page)","Bring these questions: Which of my transfer credits count as prereqs? Is applying in May 2028 realistic? Does the school write a committee or composite letter? Which physics and math should I take?","Write down what you learned in the quest notes below"],
+ tip:`Say you're a non-traditional transfer, working part-time, aiming for both MD and DO, and hoping to apply straight through. Advisors give much better advice with the whole picture.`},
 
 {id:"q0_6", ch:0, title:"Claim your AAMC ID", xp:40, when:"Anytime now",
  what:`The <b>AAMC</b> (Association of American Medical Colleges) runs the MCAT, AMCAS, and the Fee Assistance Program. You need one free AAMC account for all of it.`,
@@ -375,7 +374,7 @@ const QUESTS = [
  links:[{l:"AAMC for Students",u:"https://students-residents.aamc.org/"}]},
 
 {id:"q0_7", ch:0, title:"Recall your past lives", xp:80, when:"Before spring 2027",
- what:`Your earlier careers are <b>real experience points</b>. Implementation analyst, HR lead, store manager, and customer care supervisor all go in the application's Work & Activities section.`,
+ what:`Your earlier careers are <b>real experience points</b>. Every job you've held can go in the application's Work & Activities section.`,
  why:`Schools look for teamwork, reliability, communication, and leadership. You've done these for years. Non-traditional applicants who explain their path well stand out.`,
  steps:["List each past job with start/end dates and hours per week","For each, write down a supervisor or contact who could confirm it","Write 2–3 sentences about a moment you grew or led someone","Log them in the Adventure Journal (category: Leadership or Work)"],
  tip:`AMCAS asks for a contact person for each experience. Collect names and emails now while they're easy to find.`},
@@ -384,36 +383,36 @@ const QUESTS = [
  what:`<b>Your route, “Straight Through”:</b><br>• Spring 2027: Gen Bio I, Gen Chem I (+ psych/stats)<br>• Summer 2027: Bio II / Chem II (summer session)<br>• Fall 2027: Orgo I, Physics I<br>• Spring 2028: Orgo II, Physics II, Biochem, <b>MCAT</b><br>• May–June 2028: <b>Apply</b> (MD + DO)<br>• Fall 2028–Spring 2029: interviews, finish your degree<br>• Summer/Fall 2029: <b>Start med school</b>`,
  why:`Be honest with yourself: this route is <b>fast</b>. It packs most of the science sequence into about 3 semesters plus a summer, while you work. It can be done, but there's a checkpoint (The Fork in the Road) in Jan 2028. If you need more time, a gap year is normal, not a failure.`,
  steps:["Draft your semester-by-semester plan with your advisor","Decide which classes to take in summer 2027","Put the Key Dates from the map panel into your calendar"],
- tip:`If Lone Star already covered Gen Bio or Gen Chem, the route gets much easier. That's why the Inherited Loot quest matters.`},
+ tip:`If your earlier college already covered Gen Bio or Gen Chem, the route gets much easier. That's why the Inherited Loot quest matters.`},
 
 // ---------- CHAPTER 1 ----------
 {id:"q1_1", ch:1, title:"Equip your first spells", xp:80, when:"Registration for Spring 2027",
- what:`Register for your first pre-med courses. The usual first-semester pair is <b>General Biology I + lab</b> and <b>General Chemistry I + lab</b>, plus psych major courses and <b>Statistics</b>.`,
+ what:`Register for your first pre-med courses. The usual first-semester pair is <b>General Biology I + lab</b> and <b>General Chemistry I + lab</b>, plus your major's courses and <b>Statistics</b>.`,
  why:`Bio and chem are the foundation everything else builds on. Organic chemistry, biochem, and the MCAT all assume you know them.`,
- steps:["Confirm your exact course list with your advisor","Register for Gen Bio I + lab and Gen Chem I + lab (unless already done)","Add psych major courses and Statistics","Check your total load works with your part-time job"],
+ steps:["Confirm your exact course list with your advisor","Register for Gen Bio I + lab and Gen Chem I + lab (unless already done)","Add your major's courses and Statistics","Check your total load works with your part-time job"],
  tip:`Two lab sciences plus work is a full load. It's better to take fewer courses and earn A's than to take more and earn B-minuses.`},
 
 {id:"q1_2", ch:1, title:"Learn the GPA arts", xp:70, when:"Week 1",
  what:`Med schools look at two GPAs: your <b>cumulative GPA</b> (everything) and your <b>science GPA</b>, called <b>BCPM</b> (Biology, Chemistry, Physics, Math). Both AMCAS and AACOMAS count <b>every attempt</b> of a course, so a retake doesn't erase the first grade.`,
  why:`Your first try at each science course matters. A strong upward trend also helps a lot, and non-trads often show one.`,
- steps:["Find New Paltz's tutoring/learning center","Block out weekly study hours in your calendar (about 2–3 hours per credit hour)","Go to office hours in the first 3 weeks of every class","Track your grades in the Spellbook tab"],
+ steps:["Find your school's tutoring/learning center","Block out weekly study hours in your calendar (about 2–3 hours per credit hour)","Go to office hours in the first 3 weeks of every class","Track your grades in the Spellbook tab"],
  tip:`Use active recall (flashcards, practice problems) instead of re-reading. It's also exactly how you'll study for the MCAT.`},
 
 {id:"q1_3", ch:1, title:"Befriend the professors", xp:60, when:"All semester",
  what:`Your future <b>letters of recommendation</b> come from professors who actually know you. A letter that says “earned an A” is weak. A letter that says “asked thoughtful questions all semester” is strong.`,
  why:`You'll need roughly 3–5 letters, including science professors. Relationships take time to build, so start now.`,
  steps:["Go to office hours at least twice per class this semester","Ask a real question about the material (not just about grades)","Mention you're pre-med and a career-changer","Write down each professor's name in your notes"],
- tip:`Your management background makes you comfortable talking with professors. Use that strength.`},
+ tip:`If you've worked before, you're already comfortable talking with professors. Use that strength.`},
 
 {id:"q1_4", ch:1, title:"Join a guild", xp:50, when:"Early in semester",
- what:`Join New Paltz's pre-med or pre-health student club.`,
+ what:`Join your school's pre-med or pre-health student club.`,
  why:`Clubs share shadowing leads, volunteer events, and talks from doctors. Later, an officer role becomes <b>leadership</b> experience.`,
  steps:["Find the pre-health club (student involvement page or ask your advisor)","Attend 2 meetings","Sign up for their email list or group chat"]},
 
 {id:"q1_5", ch:1, title:"Side-quest: the clinical job", xp:120, when:"Spring 2027",
  what:`<b>Power move for you:</b> make your part-time job a <b>clinical</b> one, so you earn money and clinical hours at the same time. Common options: <b>medical scribe</b> (often trains you on the job), <b>EMT-Basic</b> (needs a certification course), <b>CNA</b> (state-approved training program), <b>patient care tech</b>, <b>medical assistant</b>, or <b>hospice aide</b>.`,
  why:`“Clinical experience” means direct patient contact, and it's one of the most important parts of your application. Many successful applicants have a few hundred hours. A paid clinical job gets you there steadily.`,
- steps:["Pick 1–2 roles that fit your class schedule","Research openings or training programs around New Paltz, Kingston and Poughkeepsie","Apply (your HR background makes your résumé strong!)","Work your first shift and log it in the Journal"],
+ steps:["Pick 1–2 roles that fit your class schedule","Research openings or training programs near your school","Apply","Work your first shift and log it in the Journal"],
  tip:`Scribing teaches medical language and shows you how doctors think. EMT and CNA give you hands-on patient care. Any of them is great.`},
 
 {id:"q1_6", ch:1, title:"First clinical volunteering", xp:80, when:"Apply early in semester",
@@ -434,7 +433,7 @@ const QUESTS = [
  tip:`Write down the feeling and the lesson, not just the task. “I held a patient's hand during a scary scan” beats “escorted patients.”`},
 
 {id:"q1_9", ch:1, title:"Boss fight: Finals", xp:100, when:"May 2027",
- what:`Finish your first New Paltz semester strong.`,
+ what:`Finish your first semester strong.`,
  why:`Your first semester sets the tone, and your grades go straight into your BCPM GPA.`,
  steps:["Make a study plan two weeks before finals","Take every final","Enter your final grades in the Spellbook"]},
 
@@ -442,14 +441,14 @@ const QUESTS = [
 {id:"q2_1", ch:2, title:"Summer session spells", xp:80, when:"Summer 2027",
  what:`To stay on the straight-through route, you'll likely take the second half of a sequence over summer, such as <b>Gen Bio II</b> or <b>Gen Chem II</b>.`,
  why:`Orgo needs Gen Chem II. The MCAT (spring 2028) tests bio, chem, orgo, physics, biochem, psych and sociology. Summer is how you fit it all in.`,
- steps:["Confirm which summer course(s) with your advisor","Register (New Paltz summer session if possible)","Finish and enter your grade"],
+ steps:["Confirm which summer course(s) with your advisor","Register (your own school's summer session if possible)","Finish and enter your grade"],
  tip:`A summer course packs 15 weeks into about 5–6. Lighten your work hours during it if you can.`},
 
 {id:"q2_2", ch:2, title:"Find your first shadow", xp:120, when:"Summer 2027",
  what:`<b>Shadowing</b> means quietly following a physician through their day to see what being a doctor is really like. You observe; you don't do patient care.`,
  why:`Schools want proof that you understand a physician's real day. A common target is around 40–60 hours spread across several doctors.`,
  steps:["List 10 possible physicians (your own doctor, family network, alumni, advisor leads)","Send 5 short, polite emails asking to shadow (template in tip)","Complete any forms the clinic requires (privacy/HIPAA, vaccines)","Do your first shadowing day and log it in the Journal"],
- tip:`Template: “Dear Dr. ___, I'm a pre-medical student at SUNY New Paltz transitioning from a career in HR technology. I'd be grateful for the chance to shadow you for a day or two this summer, at whatever time is convenient. I'm happy to complete any paperwork your office requires. Thank you for considering it!”`},
+ tip:`Template: “Dear Dr. ___, I'm a pre-medical student at ___, changing careers into medicine. I'd be grateful for the chance to shadow you for a day or two this summer, at whatever time is convenient. I'm happy to complete any paperwork your office requires. Thank you for considering it!”`},
 
 {id:"q2_3", ch:2, title:"Seek the Osteopath", xp:100, when:"Summer–Fall 2027",
  what:`Shadow at least one <b>DO</b> physician. You can search for DOs through the American Osteopathic Association's resources.`,
@@ -476,13 +475,13 @@ const QUESTS = [
 
 // ---------- CHAPTER 3 ----------
 {id:"q3_1", ch:3, title:"Advanced spells: Orgo & Physics", xp:80, when:"Fall 2027",
- what:`Take <b>Organic Chemistry I + lab</b> and <b>Physics I + lab</b> (algebra-based is usually fine), plus psych major courses.`,
+ what:`Take <b>Organic Chemistry I + lab</b> and <b>Physics I + lab</b> (algebra-based is usually fine), plus your major's courses.`,
  why:`These are heavily tested on the MCAT. Orgo has a reputation, but it's learnable with daily practice.`,
  steps:["Register for Orgo I + Physics I","Do practice problems daily (not just before exams)","Enter your grades at the end of the semester"],
  tip:`Orgo is like a language: learn the mechanisms (how electrons move) instead of memorizing reactions.`},
 
 {id:"q3_2", ch:3, title:"Join a research party", xp:100, when:"Fall 2027",
- what:`Join a faculty member's research lab. <b>Psychology research counts!</b> As a psych major, a psych lab is a natural fit.`,
+ what:`Join a faculty member's research lab. <b>Psychology research counts!</b> A lab in your own major is a natural fit.`,
  why:`Research isn't required at most schools, but it shows curiosity and scientific thinking, and it can lead to a strong letter.`,
  steps:["Read faculty pages in Psychology (and Biology)","Email 3 professors whose work interests you","Offer roughly 6–10 hours a week and ask if course credit is possible","Log research hours in the Journal"],
  tip:`Mention a specific paper or project of theirs in your email. It shows you did your homework.`},
@@ -495,18 +494,17 @@ const QUESTS = [
 
 {id:"q3_4", ch:3, title:"Peek at the dragon", xp:80, when:"End of Fall 2027",
  what:`Take a practice MCAT to see your starting point. The MCAT has 4 sections: <b>Chem/Phys</b>, <b>CARS</b> (reading and reasoning), <b>Bio/Biochem</b>, and <b>Psych/Soc</b>. Each is scored 118–132, for a total of 472–528.`,
- why:`A baseline score tells you where to focus. Your psych major gives you a head start on Psych/Soc!`,
+ why:`A baseline score tells you where to focus. If you've studied psychology, you have a head start on Psych/Soc!`,
  steps:["Take a diagnostic or sample test under timed conditions","Record your section scores in the quest notes","Identify your 2 weakest areas"]},
 
 {id:"q3_5", ch:3, title:"Recruit your letter writers", xp:100, when:"Fall 2027",
- what:`New Paltz advises building your list of possible recommenders in the <b>fall before you apply</b>. A typical set: 2 science professors, 1 non-science professor (psych!), a physician you shadowed, a DO (for DO schools), and a clinical or work supervisor.`,
- why:`Most programs want about 3–5 letters. Medical schools may also accept a composite letter, which summarizes several letters. Ask your advisor whether New Paltz offers one.`,
- steps:["List 6–7 possible letter writers","Ask your advisor whether New Paltz writes a committee or composite letter","Keep building those relationships this semester"],
- links:[{l:"New Paltz: Requesting letters",u:"https://www.newpaltz.edu/healthcareeradvisement/request-for-letters-of-recommendation-/"}]},
+ what:`Advisors suggest building your list of possible recommenders in the <b>fall before you apply</b>. A typical set: 2 science professors, 1 non-science professor (psych!), a physician you shadowed, a DO (for DO schools), and a clinical or work supervisor.`,
+ why:`Most programs want about 3–5 letters. Medical schools may also accept a composite letter, which summarizes several letters. Ask your advisor whether your school offers one.`,
+ steps:["List 6–7 possible letter writers","Ask your advisor whether your school writes a committee or composite letter","Keep building those relationships this semester"]},
 
 {id:"q3_6", ch:3, title:"Rise as a leader", xp:60, when:"Fall 2027 → Spring 2028",
  what:`Take on a leadership role: a club officer, a trainer at your job, or organizing a volunteer event.`,
- why:`Doctors lead care teams. You already have management experience, and new leadership shows you're still growing.`,
+ why:`Doctors lead care teams. Any leadership you already have counts, and new roles show you're still growing.`,
  steps:["Find one leadership opportunity","Take it on","Log your leadership hours"]},
 
 {id:"q3_7", ch:3, title:"Begin the story scroll", xp:50, when:"Fall 2027",
@@ -540,30 +538,29 @@ const QUESTS = [
 {id:"q4_4", ch:4, title:"Collect your letters", xp:120, when:"Early spring 2028",
  what:`Ask your recommenders, by <b>email</b>, not in a hallway. Include your résumé, your personal statement draft, what you did together, and why you're pursuing medicine. Offer them a polite way to say no.`,
  why:`Give writers several weeks. Faculty may be unavailable during breaks. Letters are submitted through the AMCAS Letter Service (MD) and AACOMAS (DO).`,
- steps:["Send letter request emails with your info packet","Follow up politely after 1–2 weeks if needed","Confirm each letter is submitted","Send thank-you notes"],
- links:[{l:"New Paltz: Requesting letters",u:"https://www.newpaltz.edu/healthcareeradvisement/request-for-letters-of-recommendation-/"}]},
+ steps:["Send letter request emails with your info packet","Follow up politely after 1–2 weeks if needed","Confirm each letter is submitted","Send thank-you notes"]},
 
 {id:"q4_5", ch:4, title:"Write your origin story", xp:150, when:"Feb–May 2028",
  what:`The <b>personal statement</b> is a short essay (AMCAS allows 5,300 characters including spaces) answering “Why do you want to be a doctor?”`,
- why:`Your story stands out: you moved from HR technology and people leadership into medicine. Explain the <i>why</i> with specific moments.`,
+ why:`Your story stands out: you changed careers to come to medicine. Explain the <i>why</i> with specific moments.`,
  steps:["Pick your 2–3 strongest moments from the Story Scroll","Write a rough draft","Get feedback from your advisor and the writing center","Revise at least 3 times","Final version done by early May"],
  tip:`Show, don't tell. Instead of “I'm compassionate,” describe the moment that proved it.`},
 
 {id:"q4_6", ch:4, title:"Build your school list", xp:100, when:"Spring 2028",
  what:`Choose where to apply. Use <b>MSAR</b> for MD schools (free with FAP) and AACOM's school information for DO schools. Compare median GPA/MCAT, location, mission, and cost.`,
- why:`A balanced list across MD and DO, with some reach, some target, and some safer schools, gives you the best odds. Check New York state residency rules for SUNY medical schools.`,
+ why:`A balanced list across MD and DO, with some reach, some target, and some safer schools, gives you the best odds. Check your state's residency rules for its public medical schools.`,
  steps:["Make a spreadsheet of possible MD schools","Add possible DO schools","Compare against your GPA and MCAT","Finalize your list with your advisor"]},
 
 {id:"q4_7", ch:4, title:"Budget the quest", xp:60, when:"Spring 2028",
  what:`Applying costs real money. For the 2027 cycle, AMCAS charged $180 for the first school and $48 for each additional school. AACOMAS, secondaries, and situational judgment tests add more.`,
- why:`Budgeting ahead (you're great at this!) and applying for FAP prevents surprises in June.`,
+ why:`Budgeting ahead and applying for FAP prevents surprises in June.`,
  steps:["Estimate primary application costs for your list","Add secondary fees (roughly $50–150 each)","Set aside a savings target"]},
 
 // ---------- CHAPTER 5 ----------
 {id:"q5_1", ch:5, title:"Open the castle gates", xp:120, when:"Early May 2028",
  what:`AMCAS and AACOMAS open in early May. Start filling them in: biographical info, then <b>every course you've ever taken</b>, entered exactly from your transcripts.`,
  why:`Entering coursework is tedious and has to match your transcripts exactly. Your Spellbook will help a lot.`,
- steps:["Open your AMCAS application","Open your AACOMAS application","Enter all coursework from every transcript","Request official transcripts be sent from Lone Star and New Paltz"]},
+ steps:["Open your AMCAS application","Open your AACOMAS application","Enter all coursework from every transcript","Request official transcripts be sent from every college you attended"]},
 
 {id:"q5_2", ch:5, title:"Chronicle your deeds", xp:120, when:"May 2028",
  what:`Fill in the <b>Work & Activities</b> section. AMCAS allows up to 15 experiences and lets you mark up to 3 as “most meaningful” (those get an extra essay).`,
@@ -582,12 +579,12 @@ const QUESTS = [
 
 {id:"q5_5", ch:5, title:"Situational judgment trials", xp:80, when:"Summer 2028",
  what:`Some schools require <b>Casper</b> (Acuity Insights) or the AAMC <b>PREview</b> exam. These test how you'd handle real-world ethical and interpersonal situations.`,
- why:`Your years managing people and handling HR situations are real practice for this.`,
+ why:`Any job where you've handled people or tricky situations is real practice for this.`,
  steps:["Check which of your schools require Casper or PREview","Register early","Take a practice test","Complete the required test(s)"]},
 
 // ---------- CHAPTER 6 ----------
 {id:"q6_1", ch:6, title:"Interview training", xp:100, when:"Fall 2028",
- what:`Practice traditional interviews and <b>MMIs</b> (Multiple Mini Interviews: short timed stations with scenarios). New Paltz pre-health advisors offer mock interviews.`,
+ what:`Practice traditional interviews and <b>MMIs</b> (Multiple Mini Interviews: short timed stations with scenarios). Many pre-health advisors offer mock interviews.`,
  why:`An interview invite means you're academically qualified. Now they want to know who you are.`,
  steps:["Prep answers to “Tell me about yourself,” “Why medicine?” and “Why DO?”","Do a mock interview with your advisor","Practice 3 MMI-style scenarios"]},
 
@@ -597,7 +594,7 @@ const QUESTS = [
  steps:["Prepare for each school's mission and curriculum","Attend your first interview","Send a thank-you note after each interview"]},
 
 {id:"q6_3", ch:6, title:"Finish senior year strong", xp:80, when:"2028–2029",
- what:`Keep your grades up and finish your psychology degree.`,
+ what:`Keep your grades up and finish your degree.`,
  why:`Schools see your final transcript, and acceptances can depend on finishing well.`,
  steps:["Finish fall 2028 courses","Finish spring 2029 courses","Confirm you'll graduate on time"]},
 
@@ -622,7 +619,7 @@ const QUESTS = [
  why:`Med school is expensive. Smart planning now reduces debt stress later.`,
  steps:["File the FAFSA","Apply to 3+ scholarships","Make a med school budget"]},
 
-{id:"q7_4", ch:7, title:"Graduate from New Paltz", xp:250, when:"≈ May 2029",
+{id:"q7_4", ch:7, title:"Graduate", xp:250, when:"≈ May 2029",
  what:`Walk across the stage. <b>Bachelor's degree: complete.</b> 🎓`,
  why:`You started this quest with no degree. Now you have one.`,
  steps:["Apply for graduation","Attend commencement","Send your final transcript to your med school"]},
@@ -648,7 +645,7 @@ const GOALS = [
   {group:"clinical", label:"Clinical experience", goal:300, note:"Direct patient contact. Many applicants have a few hundred hours"},
   {group:"service", label:"Non-clinical service", goal:150, note:"Long-term commitment matters more than total hours"},
   {group:"research", label:"Research", goal:100, note:"Optional at many schools, but valued"},
-  {group:"leadership", label:"Leadership", goal:100, note:"Your past management experience counts too!"}
+  {group:"leadership", label:"Leadership", goal:100, note:"Leadership from past jobs counts too!"}
 ];
 
 const DEFAULT_COURSES = [
@@ -675,7 +672,7 @@ const CODEX = [
   ["Clinical experience","Hands-on, direct patient contact (paid or volunteer): scribe, EMT, CNA, MA, hospice volunteer, and similar roles."],
   ["Non-clinical service","Helping people outside healthcare, such as a food pantry, tutoring, or a shelter. It shows service orientation."],
   ["Letters of recommendation","Usually 3–5 letters from science and non-science professors, physicians, and supervisors. DO schools often want one from a DO."],
-  ["Committee / Composite letter","Some colleges write one combined letter on behalf of their pre-med students. Ask your New Paltz advisor whether they offer one."],
+  ["Committee / Composite letter","Some colleges write one combined letter on behalf of their pre-med students. Ask your advisor whether they offer one."],
   ["MSAR","Medical School Admission Requirements: the AAMC database of MD schools' stats and requirements. Free with the Fee Assistance Program."],
   ["Secondary application","Extra school-specific essays (and a fee) that arrive after you submit your primary application."],
   ["Casper / PREview","Situational judgment tests that some schools require. They measure how you'd handle real-world interpersonal and ethical situations."],
@@ -688,8 +685,7 @@ const CODEX = [
 ];
 
 const KEY_DATES = [
-  {d:"2026-12-01", t:"Move-in day in New Paltz 🏡"},
-  {d:"2027-01-25", t:"Spring 2027 semester begins (check the New Paltz calendar)", est:1},
+  {d:"2027-01-25", t:"Spring 2027 semester begins (check your school's calendar)", est:1},
   {d:"2027-02-01", t:"AAMC Fee Assistance opens for 2027 (it opened Feb 2 in 2026)", est:1},
   {d:"2027-05-20", t:"Summer session: Bio II / Chem II", est:1},
   {d:"2027-10-20", t:"2028 MCAT registration opens (2027 dates opened Oct 20–22, 2026)", est:1},
@@ -697,7 +693,7 @@ const KEY_DATES = [
   {d:"2028-04-15", t:"Target MCAT window: Mar–May 2028", est:1},
   {d:"2028-05-04", t:"AMCAS & AACOMAS open (early May)", est:1},
   {d:"2028-05-28", t:"AMCAS submissions begin (late May)", est:1},
-  {d:"2029-05-20", t:"New Paltz graduation 🎓", est:1},
+  {d:"2029-05-20", t:"Graduation 🎓", est:1},
   {d:"2029-08-01", t:"Med school begins 🩺", est:1}
 ];
 
@@ -714,12 +710,47 @@ const QMAP=Object.fromEntries(QUESTS.map(q=>[q.id,q]));
 // ===================== STATE =====================
 const KEY="medquest_bailey_v1";
 function freshState(){
-  return {v:1,updatedAt:0,hero:{name:"Bailey",hair:0,skin:1,shirt:0},q:{},logs:[],
+  return {v:1,updatedAt:0,hero:{name:"Adventurer",hair:0,skin:1,shirt:0},q:{},logs:[],
     courses:DEFAULT_COURSES.map(([n,c,cr])=>({id:uid(),name:n,cat:c,cr,status:"todo",grade:"",school:"",prereq:true})),
     ach:{},seenIntro:false,sound:true,branch:"straight"};
 }
 let S=freshState();
 try{const raw=localStorage.getItem(KEY); if(raw){S=Object.assign(freshState(),JSON.parse(raw));}}catch(e){}
+
+// ===================== PRIVATE PACK =====================
+// Personal wording (school, advisor, past jobs, dates) is not kept in this public file.
+// It lives in a "private pack" inside your own save (S.pack, optional) and is laid over the generic text.
+const pk=(k,d)=>(S.pack&&S.pack.strings&&typeof S.pack.strings[k]==="string")?S.pack.strings[k]:d;
+const _cp=o=>JSON.parse(JSON.stringify(o));
+const _base={quests:_cp(QUESTS),chapters:_cp(CHAPTERS),codex:CODEX.map(e=>e[1]),keyDates:_cp(KEY_DATES),goals:GOALS.map(g=>g.note)};
+const isObj=o=>!!o&&typeof o==="object"&&!Array.isArray(o);
+function applyPack(){const P=isObj(S.pack)?S.pack:{};
+  // id, chapter and XP never come from the pack, so a pack can't change progress or levels
+  QUESTS.forEach((q,i)=>{Object.keys(q).forEach(k=>delete q[k]);Object.assign(q,_cp(_base.quests[i]));const o=isObj(P.quests)&&P.quests[q.id];
+    if(isObj(o)){const {id,ch,xp,...rest}=o;Object.assign(q,_cp(rest));}});
+  CHAPTERS.forEach((c,i)=>{const o=isObj(P.chapters)&&P.chapters[i];Object.assign(c,_cp(_base.chapters[i]),isObj(o)?o:{});c.id=i;});
+  CODEX.forEach((e,i)=>{const v=isObj(P.codex)&&P.codex[e[0]];e[1]=typeof v==="string"?v:_base.codex[i];});
+  KEY_DATES.splice(0,KEY_DATES.length,..._cp(Array.isArray(P.keyDates)?P.keyDates:_base.keyDates));
+  GOALS.forEach((g,i)=>{g.note=pk("goal_"+g.group,_base.goals[i]);});
+  applyStatic();}
+function applyStatic(){
+  document.title=pk("pageTitle","MedQuest: The Road to the White Coat");
+  const set=(sel,k,d)=>{const el=$(sel);if(el)el.innerHTML=pk(k,d);};
+  set("#datesNote","datesNote","≈ = estimated from last cycle's published pattern. Always confirm on the official AAMC and AACOM sites and with your school. (Dates checked Nov 2026.)");
+  set("#spellIntro","spellIntro","Med schools count <b>every</b> college course you've taken, including any from earlier colleges. Mark each prereq's status and grade. Science courses (B/C/P/M) count toward your <b>BCPM GPA</b>.");
+  set("#addCourseHead","addCourseHead","➕ Add another course (your major, earlier colleges, electives…)");
+  set("#footer","footer","MedQuest · Progress saves automatically");
+  const sc=$("#courseForm [name=school]");if(sc)sc.placeholder=pk("schoolPlaceholder","Your school");}
+function setPack(P){S.pack=P;applyPack();renderCodex();save();renderAll();}
+// A full pack replaces the one in your save. An add-on is merged into it, key by key.
+function loadPack(text){let P;try{P=JSON.parse(text);}catch(e){toast("That isn't a pack file.");return false;}
+  if(!isObj(P)||(P.kind!=="medquest-private-pack"&&P.kind!=="medquest-pack-addon")){toast("That isn't a MedQuest pack.");return false;}
+  const addon=P.kind==="medquest-pack-addon";delete P.kind;
+  if(addon){const cur=isObj(S.pack)?_cp(S.pack):{};Object.entries(P).forEach(([k,v])=>{cur[k]=isObj(v)&&isObj(cur[k])?Object.assign(cur[k],v):v;});P=cur;}
+  setPack(P);closeModal();toast(addon?"🔒 Add-on merged into your private pack.":"🔒 Private pack loaded. It saves with your game, not in the public code.");return true;}
+// Restores, resets and cloud loads keep the pack you already have if the incoming save has none.
+const keepPack=(next,prev)=>{if(!isObj(next.pack)&&isObj(prev))next.pack=prev;return next;};
+applyPack();
 
 let cloud={db:null,ref:null,ok:false,writing:false,pending:false};
 let saveTimer=null;
@@ -743,7 +774,7 @@ async function initCloud(){
     // on the website: save to the Family Village account (shared/cloudsave.js)
     if(!window.CloudSave){setSaveStat("Saved in this browser");return;}
     const ref=await CloudSave.connect({game:"medquest",localKey:KEY,getState:()=>S,status:setSaveStat,
-      setState:d=>{S=Object.assign(freshState(),d);localStorage.setItem(KEY,JSON.stringify(S));renderAll();}});
+      setState:d=>{const kp=S.pack;S=keepPack(Object.assign(freshState(),d),kp);applyPack();renderCodex();localStorage.setItem(KEY,JSON.stringify(S));renderAll();}});
     if(ref){cloud.ref=ref;await pushCloud();}
     return;
   }
@@ -758,7 +789,7 @@ async function initCloud(){
     if(remote&&remote.data&&remote.state===undefined) remote=remote.data;
     cloud.ref=ref;
     if(remote&&remote.state&&(remote.updatedAt||0)>(S.updatedAt||0)){
-      try{S=Object.assign(freshState(),JSON.parse(remote.state));localStorage.setItem(KEY,JSON.stringify(S));renderAll();}catch(e){}
+      try{const kp=S.pack;S=keepPack(Object.assign(freshState(),JSON.parse(remote.state)),kp);applyPack();renderCodex();localStorage.setItem(KEY,JSON.stringify(S));renderAll();}catch(e){}
       setSaveStat("☁ Synced with your account");
     } else { await pushCloud(); }
   }catch(e){ setSaveStat("Saved in this browser"); }
@@ -1145,7 +1176,7 @@ function renderBackupBanner(){const el=$("#bkBanner");if(!el)return;const now=Da
   $("#bkLater").addEventListener("click",()=>{S.snoozeBackup=Date.now()+864e5;save();renderBackupBanner();});}
 let persistAsked=false;
 function askPersist(){if(persistAsked||!hasData())return;persistAsked=true;try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist().catch(()=>{});}catch(e){}}
-function restoreText(txt){try{const d=JSON.parse(txt);if(!d||!d.q)throw 0;S=Object.assign(freshState(),d);closeModal();afterChange();toast("✅ Save restored!");return true;}catch(e){toast("That backup didn't work. Make sure it's the whole code or the right file.");return false;}}
+function restoreText(txt){try{const d=JSON.parse(txt);if(!d||!d.q)throw 0;const kp=S.pack;S=keepPack(Object.assign(freshState(),d),kp);applyPack();renderCodex();closeModal();afterChange();toast("✅ Save restored!");return true;}catch(e){toast("That backup didn't work. Make sure it's the whole code or the right file.");return false;}}
 
 
 // ===================== SPELLBOOK =====================
@@ -1162,7 +1193,7 @@ function renderSpell(){
     <td><input type="number" min="0" step="0.5" value="${esc(c.cr)}" data-f="cr" style="width:56px"></td>
     <td><select data-f="status"><option value="todo"${c.status==="todo"?" selected":""}>Not yet</option><option value="doing"${c.status==="doing"?" selected":""}>In progress</option><option value="done"${c.status==="done"?" selected":""}>✓ Done</option></select></td>
     <td><select data-f="grade">${opts(c.grade)}</select></td>
-    <td><input data-f="school" value="${esc(c.school)}" placeholder="Lone Star / New Paltz" style="width:140px"></td>
+    <td><input data-f="school" value="${esc(c.school)}" placeholder="${esc(pk("schoolsPlaceholder","Earlier college / your school"))}" style="width:140px"></td>
     <td>${c.prereq?"":`<button class="btn sm ghost" data-rm="${c.id}" aria-label="Remove course">🗑</button>`}</td></tr>`).join("");
   $$("#courseTable [data-f]").forEach(el=>el.addEventListener("change",()=>{
     const c=S.courses.find(x=>x.id===el.closest("tr").dataset.id),f=el.dataset.f;
@@ -1221,6 +1252,11 @@ $("#setBtn").addEventListener("click",()=>{
    <textarea id="bkIn" style="width:100%;height:90px;margin-top:10px" placeholder="Paste a backup code here to restore"></textarea>
    <button class="btn ghost" id="bkLoad" style="margin-top:6px">Restore from code</button>
    <div class="dl" style="margin-top:10px;font-size:13px;font-weight:700">Or restore from a backup file: <input type="file" id="bkFile" accept=".json,application/json"></div>
+   <h3 class="px">🔒 Private pack</h3>
+   <p class="muted" style="font-size:13px">${isObj(S.pack)?"Loaded. Your personal wording is in your save and syncs with your account. Reset keeps it.":"Not loaded. If you have a MedQuest pack file, load it here to bring in your own school, advisor and dates."}</p>
+   <div style="font-size:13px;font-weight:700">Pack file: <input type="file" id="pkFile" accept=".json,application/json"></div>
+   <textarea id="pkIn" style="width:100%;height:60px;margin-top:6px" placeholder="Or paste a pack here"></textarea>
+   <button class="btn ghost" id="pkLoad" style="margin-top:6px">Load pack</button>
    <h3 class="px">🔄 Replay</h3>
    <button class="btn ghost" id="introBtn">Replay the Sage's intro</button>
    <button class="btn ghost" id="resetBtn" style="margin-left:6px">Reset all progress</button>
@@ -1229,20 +1265,22 @@ $("#setBtn").addEventListener("click",()=>{
   $("#bkCopy").addEventListener("click",()=>copyText(JSON.stringify(S),"Backup code",markBackup));
   $("#bkDl").addEventListener("click",async()=>{if(await download(`medquest-backup-${fileStamp()}.json`,JSON.stringify(S,null,1),"application/json")){markBackup();toast("💾 Backup file downloaded");}});
   $("#bkFile").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>restoreText(r.result);r.readAsText(f);});
-  $("#bkLoad").addEventListener("click",()=>{try{const d=JSON.parse($("#bkIn").value);if(!d||!d.q)throw 0;S=Object.assign(freshState(),d);closeModal();afterChange();toast("✅ Save restored!");}
+  $("#bkLoad").addEventListener("click",()=>{try{const d=JSON.parse($("#bkIn").value);if(!d||!d.q)throw 0;const kp=S.pack;S=keepPack(Object.assign(freshState(),d),kp);applyPack();renderCodex();closeModal();afterChange();toast("✅ Save restored!");}
     catch(e){$("#bkIn").style.borderColor="#e2607f";toast("That code didn't work. Check that you pasted all of it.");}});
+  $("#pkFile").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>loadPack(r.result);r.readAsText(f);});
+  $("#pkLoad").addEventListener("click",()=>{if(!loadPack($("#pkIn").value))$("#pkIn").style.borderColor="#e2607f";});
   $("#introBtn").addEventListener("click",()=>{closeModal();intro(0);});
-  $("#resetBtn").addEventListener("click",e=>{const b=e.target;if(b.dataset.c){S=freshState();S.seenIntro=true;closeModal();save();renderAll();toast("Fresh start! 🌱");}
+  $("#resetBtn").addEventListener("click",e=>{const b=e.target;if(b.dataset.c){const kp=S.pack;S=keepPack(freshState(),kp);S.seenIntro=true;closeModal();save();renderAll();toast("Fresh start! 🌱");}
     else{b.dataset.c=1;b.textContent="Click again to erase everything";b.classList.add("pink");$("#resetMsg").textContent="Tip: copy a backup code first.";}});
 });
 
 // ===================== INTRO =====================
 const INTRO=[
   ()=>`Hoo-hoo! Hello, <b>${esc(S.hero.name)}</b>! I'm the Sage, and I'll be your guide on the long road to the <b>white coat</b>. 🥼`,
-  ()=>`Here's your quest: <b>finish your bachelor's at SUNY New Paltz</b> while collecting everything medical schools look for: grades, the MCAT, shadowing, clinical hours, service, and great letters.`,
+  ()=>pk("intro1",`Here's your quest: <b>finish your bachelor's degree</b> while collecting everything medical schools look for: grades, the MCAT, shadowing, clinical hours, service, and great letters.`),
   ()=>`Every <b>quest</b> explains <i>what</i> a thing is, <i>why</i> it matters, and the exact <i>steps</i>. Check off steps for XP. Log real hours in your <b>Journal</b> and real classes in your <b>Spellbook</b>, and you'll level up as you actually progress.`,
   ()=>`You chose the <b>Straight Through</b> route: apply in May 2028 and start med school in 2029. It's a brave, fast route! I'll put a checkpoint, <b>The Fork in the Road</b>, in Jan 2028 so you can choose a gap year if you need one. Both paths end in a white coat.`,
-  ()=>`One more thing: your years in HR, management and tech are <b>not</b> wasted. They're experience points medical schools value. Ready? Your first quest is waiting in <b>Moving Day Meadow</b>! 🏡`
+  ()=>pk("intro4",`One more thing: if you've worked before, those years are <b>not</b> wasted. They're experience points medical schools value. Ready? Your first quest is waiting in <b>Moving Day Meadow</b>! 🏡`)
 ];
 function intro(i){
   openModal(`<div class="sage" style="margin-top:4px">${owlSVG()}<div class="bubble" style="min-height:96px">${INTRO[i]()}</div></div>
