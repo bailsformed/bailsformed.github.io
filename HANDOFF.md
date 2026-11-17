@@ -375,3 +375,25 @@ The public file no longer contains the advisor's name, email or links, school an
 - Don't change Hades's lines. Don't change the Hecate button's wording or what it opens. Quincy stays as he is until Bailey supplies art.
 - Keep numbers one layer down: pictures first, figures on tap.
 - Any personal wording belongs in the pack, not the public file.
+
+---
+
+## 9. Cloud-save bug: a blank or stale game could overwrite the real save (fixed 2026-11-16)
+
+**What happened.** On a device already linked to a Village account, the Apothecary opened with its local save missing, made a fresh blank game, and that blank game replaced Bailey's real cloud save. She restored it from a backup file.
+
+**Why.** Two games called `save()` while the page was loading, before `CloudSave.connect()` had run: the Apothecary (the daily Fortuna roll) and The Moveable Feast (a `save()` at boot, plus its "daily guest" a second later). `save()` stamps the game with the current time, and on a linked device "newest wins". So a blank game, or an out-of-date one, looked newest and was pushed over the cloud save. The Fortuna line predates the revamp. The other games did not save on load.
+
+**The fix** (tag `pre-cloudsave-fix` marks `main` just before it):
+
+- `shared/cloudsave.js`: `connect()` accepts an optional `isEmpty(state)`. A game with no real progress **always takes the cloud copy**, whatever its timestamp. And whenever a device's game does replace a different cloud save, the cloud copy is first kept on that device as `<key>_cloud_before_sync` (before, only on first link).
+- Apothecary and Feast: nothing calls `save()` during load. `stash()` writes the device copy without a timestamp. `isBlank()` (equal to a fresh game, ignoring things that change on their own) is passed to `connect()`. A blank game is never pushed.
+- Apothecary and Feast: **`save()` is held in memory until the cloud check has finished** (`cloudChecked` / `heldSave` / `cloudCheckDone()`), then applied. It is released after 8 seconds or on `pagehide`, so a change is never held for long. If the cloud game gets loaded, a change made in that first moment is dropped along with the out-of-date game it was made on.
+
+**Rules for any game that uses `shared/cloudsave.js`:**
+
+- Never call `save()` while the page loads. If something must be remembered on load, write it without touching `updatedAt`.
+- Pass `isEmpty` to `connect()`.
+- The other six games (MedQuest, Dungeon, Magnolia Isle, Open Field, Little Freak, Gremlin Town) do not save on load, but they do **not** hold saves until the cloud check finishes. A change made in the first second on a device with an out-of-date game can still make that device win there. The cloud copy is kept on the device when that happens.
+
+**Testing note.** This was tested against a fake cloud in a local copy, not a real account. **The Claude desktop app's built-in browser is logged in to Bailey's Village account**: opening a live game there loads and saves as her. Section 6 applies to it too.
