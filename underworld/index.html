@@ -1122,7 +1122,7 @@ async function initWeb(){if(!window.CloudSave){setSaveStat("Saved on this device
  // connect() has finished (and may have loaded the cloud game): now today's Fortuna can be kept, without a timestamp
  if(rollFortuna())renderCottage();stash();
  if(ref){cloud.ref=ref;if(!isBlank(S))push();}}
-async function initClaude(){if(!IN_CLAUDE){initWeb().catch(()=>{}).then(cloudCheckDone);return;}cloudCheckDone();try{window.claude.use("downloads").then(d=>{dlCap=d;if(d)document.body.classList.remove("inclaude");}).catch(()=>{});}catch(e){}
+async function initClaude(){if(!IN_CLAUDE){initWeb().catch(()=>{}).then(cloudCheckDone).then(readMedQuestCloud);return;}cloudCheckDone();try{window.claude.use("downloads").then(d=>{dlCap=d;if(d)document.body.classList.remove("inclaude");}).catch(()=>{});}catch(e){}
  try{const [db,user]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);if(!db||!user)return;const id=await user.id();if(!id)return;const ref=db.collection("data/users/"+id).doc("save");
   let s=await ref.get();let r=s&&typeof s.data==="function"?s.data():s;if(r&&r.data&&r.state===undefined)r=r.data;cloud.ref=ref;
   if(r&&r.state&&(r.updatedAt||0)>(S.updatedAt||0)){S=Object.assign(fresh(),JSON.parse(r.state));applyPack();localStorage.setItem(KEY,JSON.stringify(S));renderAll();}else push();}catch(e){}}
@@ -1206,7 +1206,13 @@ function moonPhase(d=new Date()){const syn=29.530588853,ref=Date.UTC(2000,0,6,18
 // ---------- progress ----------
 const LV=[0,120,300,550,850,1250,1750,2350,3050,3900,4900,6000];
 let MQ={};function readMedQuest(){try{const r=localStorage.getItem("medquest_bailey_v1"),d=r?JSON.parse(r):null;MQ=d&&d.q&&typeof d.q==="object"?d.q:{};}catch(e){MQ={};}}
-readMedQuest();const mqDone=id=>/^q\d/.test(id)&&!!(MQ[id]&&MQ[id].d);
+readMedQuest();
+// MedQuest progress from your cloud save, so a rite finished on another device counts here too.
+// Read only and kept in memory: nothing is written to MedQuest, to this device or to the cloud.
+let MQC={};async function readMedQuestCloud(){if(IN_CLAUDE||!window.CloudSave||!CloudSave.peek)return;let q={};
+ try{const d=await CloudSave.peek("medquest");q=d&&d.q&&typeof d.q==="object"?d.q:{};}catch(e){return;}
+ const was=JSON.stringify(MQC);MQC=q;if(JSON.stringify(MQC)!==was)renderAll();}
+const mqDone=id=>/^q\d/.test(id)&&(!!(MQ[id]&&MQ[id].d)||!!(MQC[id]&&MQC[id].d));
 const isDone=id=>!!(S.q[id]&&S.q[id].d)||mqDone(id);
 const qs=id=>S.q[id]||(S.q[id]={d:0,s:[],n:""});
 const sumH=f=>S.hours.filter(f).reduce((a,h)=>a+(+h.hrs||0),0);
@@ -1785,7 +1791,7 @@ const hh=(location.hash||"").slice(1);if(hh)show(hh);try{history.replaceState({v
 const _do=new URLSearchParams(location.search).get("do");if(_do&&S.seenIntro)setTimeout(()=>{if(_do==="spend")openTx();else if(_do==="hours")openHours();else if(_do==="hearth")go("hearth");},350);
 // A new day while the app stayed open: move the Hearth and Treasury on to today.
 let _day=today();function dayCheck(){if(today()===_day)return;const old=_day;_day=today();rollFortuna();stash();$("#hDate").value=_day;if(viewMonth===monthKey(old))viewMonth=monthKey();renderAll();hadesSays(hadesContext());}
-document.addEventListener("visibilitychange",()=>{if(document.visibilityState!=="visible")return;dayCheck();const was=JSON.stringify(MQ);readMedQuest();if(JSON.stringify(MQ)!==was)renderAll();});
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState!=="visible")return;dayCheck();const was=JSON.stringify(MQ);readMedQuest();if(JSON.stringify(MQ)!==was)renderAll();readMedQuestCloud();});
 if(!S.seenIntro)setTimeout(()=>intro(0),400);
 window.addEventListener("load",initClaude);   // waits for the cloud-save scripts below
 let _tod=tod();setInterval(()=>{dayCheck();if(tod()!==_tod){_tod=tod();renderScene();hadesSays(hadesContext());}},60000);
