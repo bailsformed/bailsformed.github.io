@@ -1101,16 +1101,28 @@ function fresh(){return {v:1,updatedAt:0,outfit:0,pbCap:true,/* outfit and pbCap
  ceremony:"",pbLuck:[],fortuna:{},verified:{},courses:DEFAULT_COURSES.map(([n,c,cr])=>({id:uid(),name:n,cat:c,cr,status:"todo",grade:""})),hecateUntil:0,lastBackup:0,sound:true,seenIntro:false,rules:{},imports:[]};}
 let S=fresh();try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(fresh(),JSON.parse(r));}catch(e){}
 let cloud={ref:null,w:false,p:false},stT=null;
-function save(){S.updatedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}clearTimeout(stT);stT=setTimeout(push,1000);}
+// Keep this device's copy up to date WITHOUT stamping it as newer (for small things that happen on load).
+function stash(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+// A game with nothing in it: the same as a fresh one once the things that change on their own are set aside.
+function isBlank(st){try{const skip=["updatedAt","fortuna","seenIntro","sound","hecateUntil","lastBackup","verified","outfit","pbCap"],norm=o=>{const c=JSON.parse(JSON.stringify(o));skip.forEach(k=>delete c[k]);(c.courses||[]).forEach(x=>delete x.id);return JSON.stringify(c);};return norm(Object.assign(fresh(),st))===norm(fresh());}catch(e){return false;}}
+// Until the cloud save has been checked, a save is only remembered, not written or pushed: stamping this
+// device's copy before then could make an out-of-date game look newest. It is applied right after the check
+// (or after 8 seconds, or when the page is being left, so a change is never held for long).
+let cloudChecked=false,heldSave=false;
+function cloudCheckDone(){if(cloudChecked)return;cloudChecked=true;if(heldSave){heldSave=false;save();}}
+setTimeout(cloudCheckDone,8000);addEventListener("pagehide",cloudCheckDone);
+function save(){if(!cloudChecked){heldSave=true;return;}S.updatedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}clearTimeout(stT);stT=setTimeout(push,1000);}
 async function push(){if(!cloud.ref)return;if(cloud.w){cloud.p=true;return;}cloud.w=true;try{await cloud.ref.set({state:JSON.stringify(S),updatedAt:S.updatedAt});}catch(e){}cloud.w=false;if(cloud.p){cloud.p=false;push();}}
 const IN_CLAUDE=!!(window.claude&&typeof window.claude.use==="function");if(IN_CLAUDE)document.body.classList.add("inclaude");
 let dlCap=null;
 function setSaveStat(t){const e=document.getElementById("saveStat");if(e)e.textContent=t;}
-async function initWeb(){if(!window.CloudSave){setSaveStat("Saved on this device");return;}
- const ref=await CloudSave.connect({game:"underworld",localKey:KEY,getState:()=>S,status:setSaveStat,
-  setState:d=>{const keep=S.pack;S=Object.assign(fresh(),d);if(!S.pack&&keep)S.pack=keep;applyPack();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}renderAll();}});
- if(ref){cloud.ref=ref;push();}}
-async function initClaude(){if(!IN_CLAUDE){initWeb();return;}try{window.claude.use("downloads").then(d=>{dlCap=d;if(d)document.body.classList.remove("inclaude");}).catch(()=>{});}catch(e){}
+async function initWeb(){if(!window.CloudSave){setSaveStat("Saved on this device");stash();return;}
+ const ref=await CloudSave.connect({game:"underworld",localKey:KEY,getState:()=>S,status:setSaveStat,isEmpty:isBlank,
+  setState:d=>{heldSave=false;const keep=S.pack;S=Object.assign(fresh(),d);if(!S.pack&&keep)S.pack=keep;applyPack();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}renderAll();}});
+ // connect() has finished (and may have loaded the cloud game): now today's Fortuna can be kept, without a timestamp
+ if(rollFortuna())renderCottage();stash();
+ if(ref){cloud.ref=ref;if(!isBlank(S))push();}}
+async function initClaude(){if(!IN_CLAUDE){initWeb().catch(()=>{}).then(cloudCheckDone);return;}cloudCheckDone();try{window.claude.use("downloads").then(d=>{dlCap=d;if(d)document.body.classList.remove("inclaude");}).catch(()=>{});}catch(e){}
  try{const [db,user]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);if(!db||!user)return;const id=await user.id();if(!id)return;const ref=db.collection("data/users/"+id).doc("save");
   let s=await ref.get();let r=s&&typeof s.data==="function"?s.data():s;if(r&&r.data&&r.state===undefined)r=r.data;cloud.ref=ref;
   if(r&&r.state&&(r.updatedAt||0)>(S.updatedAt||0)){S=Object.assign(fresh(),JSON.parse(r.state));applyPack();localStorage.setItem(KEY,JSON.stringify(S));renderAll();}else push();}catch(e){}}
@@ -1373,7 +1385,10 @@ function callHecate(){S.hecateUntil=Date.now()+36e5*6;save();renderScene();const
 function crossroads(done,next){petals(120);SFX.lvl();openModal(`<h2>The Crossroads</h2><div class="who-row"><div class="face" style="width:72px;height:72px">${face(HECATE_O)}</div><div class="bub" style="flex:1"><b class="who">Hecate</b>${esc(done.name)} is behind you. Ahead: <b>${esc(next.name)}</b> (${esc(next.when)}). I lit the first torch. Quincy walks with you.</div></div>
   <div class="bub" style="margin-top:10px"><b class="who">Hades</b>${esc((CHAPTER_QUIPS[next.id]||"").replace(/^Hades: '|'$/g,""))}</div><div class="foot"><span></span><button class="btn" onclick="closeModal()">Onward</button></div>`);}
 // fortuna daily
-(function(){const t=today();if(!(t in S.fortuna)){S.fortuna[t]=Math.random()<.3?pick(FORTUNA):"";save();}if(S.fortuna[t]===""&&false){}})();
+// Rolled in memory only. It must NOT call save() while the page loads: save() stamps the game as "newest",
+// and a blank or stale game would then overwrite the real cloud save. It is written to this device after connect().
+function rollFortuna(){const t=today();if(t in S.fortuna)return false;S.fortuna[t]=Math.random()<.3?pick(FORTUNA):"";return true;}
+rollFortuna();
 // ---------- All Quiet ----------
 function allQuietItems(){const m=monthKey(),musts=dueMusts(),unpaid=musts.filter(c=>!isPaid(m,c.id)),day=new Date().getDate(),rw=runway(),f=fire7();
  const lastH=S.hours.length?[...S.hours].sort((a,b)=>b.date.localeCompare(a.date))[0].date:null,daysSince=d=>d?Math.max(0,Math.round((new Date(today()+"T12:00")-new Date(d+"T12:00"))/864e5)):null;
@@ -1769,7 +1784,7 @@ const hh=(location.hash||"").slice(1);if(hh)show(hh);try{history.replaceState({v
 // Home-screen shortcuts (long-press the app icon): /underworld/?do=spend | hours | hearth
 const _do=new URLSearchParams(location.search).get("do");if(_do&&S.seenIntro)setTimeout(()=>{if(_do==="spend")openTx();else if(_do==="hours")openHours();else if(_do==="hearth")go("hearth");},350);
 // A new day while the app stayed open: move the Hearth and Treasury on to today.
-let _day=today();function dayCheck(){if(today()===_day)return;const old=_day;_day=today();$("#hDate").value=_day;if(viewMonth===monthKey(old))viewMonth=monthKey();renderAll();hadesSays(hadesContext());}
+let _day=today();function dayCheck(){if(today()===_day)return;const old=_day;_day=today();rollFortuna();stash();$("#hDate").value=_day;if(viewMonth===monthKey(old))viewMonth=monthKey();renderAll();hadesSays(hadesContext());}
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState!=="visible")return;dayCheck();const was=JSON.stringify(MQ);readMedQuest();if(JSON.stringify(MQ)!==was)renderAll();});
 if(!S.seenIntro)setTimeout(()=>intro(0),400);
 window.addEventListener("load",initClaude);   // waits for the cloud-save scripts below
