@@ -279,13 +279,20 @@ details.ch>summary .pbar{flex:1 1 60px;min-width:60px}
 .bub b.who{color:#6a1220}
 .who-row .face{border-color:#8a6a44;background:#0a0807}
 .hearth button{min-height:76px}.seg button{min-height:40px}
+.av{background:#0a0807}
+.next{position:relative;overflow:hidden;min-height:150px}
+.next .eyebrow,.next h2,.next .muted{margin-right:96px}
+.next h2{font-size:27px}
+.mecomp{position:absolute;right:-6px;top:6px;width:108px;height:auto;pointer-events:none;filter:drop-shadow(0 0 18px #7a162655)}
+.next .btn.big{position:relative}
+.pbcomp{width:84px;height:auto;flex:none;align-self:flex-end;margin:-6px -8px -18px 0;filter:drop-shadow(0 0 14px #7a162655)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="top">
-    <div class="av" id="meAv" role="button" tabindex="0" aria-label="Wardrobe and settings"></div>
+    <div class="av" id="meAv" role="button" tabindex="0" aria-label="Settings"></div>
     <div class="tt">
       <div class="title">The Underworld Apothecary</div>
       <div class="lvl" id="lvl"></div>
@@ -1089,7 +1096,7 @@ const q01=QUESTS.find(q=>q.id==="q0_1");if(q01){q01.title="Meet the God of the D
 const ALLQ=[...RITES.map(r=>Object.assign({ch:-1},r)),...QUESTS];const QM=Object.fromEntries(ALLQ.map(q=>[q.id,q]));
 // ---------- state ----------
 const KEY="underworld_apothecary_v1";
-function fresh(){return {v:1,updatedAt:0,outfit:0,pbCap:true,q:{},hours:[],tx:[],fin:Object.assign({},FIN_DEFAULTS),budget:Object.fromEntries(BUDGET_CATS.map(c=>[c.id,c.amt])),paid:{},
+function fresh(){return {v:1,updatedAt:0,outfit:0,pbCap:true,/* outfit and pbCap are from the old wardrobe: kept so older saves and backups stay the same shape */q:{},hours:[],tx:[],fin:Object.assign({},FIN_DEFAULTS),budget:Object.fromEntries(BUDGET_CATS.map(c=>[c.id,c.amt])),paid:{},
  war:{q:[],opps:[],saved:0},hearth:{},cards:[],games:{},oath:["Love and hope, always","Heal. Find. Keep looking.","Everything I do helps the people I love","I am a firecracker when I need to be","",""],
  ceremony:"",pbLuck:[],fortuna:{},verified:{},courses:DEFAULT_COURSES.map(([n,c,cr])=>({id:uid(),name:n,cat:c,cr,status:"todo",grade:""})),hecateUntil:0,lastBackup:0,sound:true,seenIntro:false,rules:{},imports:[]};}
 let S=fresh();try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(fresh(),JSON.parse(r));}catch(e){}
@@ -1111,7 +1118,6 @@ async function initClaude(){if(!IN_CLAUDE){initWeb();return;}try{window.claude.u
 let ac=null;function chime(fs){if(!S.sound)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==="suspended")ac.resume();let t=ac.currentTime;fs.forEach(f=>{const o=ac.createOscillator(),g=ac.createGain();o.type="triangle";o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.07,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.6);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+.65);t+=.12;});}catch(e){}}
 const SFX={tap:()=>chime([740]),ok:()=>chime([587,880]),done:()=>chime([440,554,659,880]),lvl:()=>chime([392,494,587,784,988])};
 // ---------- art: chibis ----------
-const OUTFITS=[{name:"Green sweatshirt",c:"#1f4a3a",sleeve:true},{name:"Pink pajamas + eye patches",c:"#f3a7c4",sleeve:true,patches:true},{name:"Black & red rose dress",c:"#2a141c",sleeve:false,roses:true}];
 function chibiInner(o){const sk=o.skin||"#f6d5c2",h=o.hair,e=o.eye||"#5a3a26";let s="";
  // back hair
  if(o.style==="halfup")s+=`<path d="M22 58 Q16 112 32 128 L88 128 Q104 112 98 58 Z" fill="${h}"/>`;
@@ -1160,8 +1166,6 @@ function chibiInner(o){const sk=o.skin||"#f6d5c2",h=o.hair,e=o.eye||"#5a3a26";le
  if(o.torches)s+=`<rect x="6" y="104" width="4" height="40" fill="#6b4a2a"/><path class="flame" d="M8 104 q-7 -10 0 -20 q7 10 0 20z" fill="#e8743b"/><rect x="110" y="104" width="4" height="40" fill="#6b4a2a"/><path class="flame" d="M112 104 q-7 -10 0 -20 q7 10 0 20z" fill="#e8743b"/>`;
  if(o.wheel)s+=`<circle cx="104" cy="136" r="12" fill="none" stroke="#e8c66a" stroke-width="2.5"/>${[0,45,90,135].map(a=>`<line x1="${104-12*Math.cos(a*Math.PI/180)}" y1="${136-12*Math.sin(a*Math.PI/180)}" x2="${104+12*Math.cos(a*Math.PI/180)}" y2="${136+12*Math.sin(a*Math.PI/180)}" stroke="#e8c66a" stroke-width="1.5"/>`).join("")}`;
  return s;}
-const ME=()=>{const o=OUTFITS[S.outfit]||OUTFITS[0];return {style:"halfup",hair:"#8a4a2c",skin:"#f6d2bd",eye:"#6a4228",outfit:o.c,sleeve:o.sleeve,patches:o.patches,roses:o.roses,freckles:true,hoops:true,lashes:true,tattoo:!o.sleeve,lip:o.roses?"#8e1f2e":"#c0566f",coat:isDone("q7_5")};};
-const PB=()=>({style:"curly",hair:"#8b5536",skin:"#f4cdb2",eye:"#4a6a8a",outfit:"#5a6aa8",plaid:true,stache:true,stubble:true,mouth:"kiss",cap:S.pbCap,brow:"#6a4028"});
 const HADES_O={style:"slick",hair:"#1c1424",skin:"#e8dcd6",eye:"#7a6aa8",outfit:"#16101c",robeInner:"#6e1d29",mouth:"smirk",crown:"silver",brooch:true,brow:"#1c1424"};
 const HECATE_O={style:"long",hair:"#d8d4e4",skin:"#e8d8cc",eye:"#8a6ab8",outfit:"#2e2132",robeInner:"#5a1220",crown:"moon",torches:true,lashes:true,brow:"#a89ab8"};
 const FORTUNA_O={style:"long",hair:"#e8c66a",skin:"#f6dcc6",eye:"#4a8a7a",outfit:"#f6ead8",robeInner:"#e8c66a",crown:"laurel",wheel:true,lashes:true,lip:"#d06a7a"};
@@ -1282,53 +1286,66 @@ function show(v){v=OLDTAB[v]||v;const room=SUBVIEW[v]||v;if(!ROOMS[room])return 
 function go(v){v=OLDTAB[v]||v;const was=_view;if(!show(v))return;SFX.tap();if(v!==was){try{history.pushState({v},"","#"+v);}catch(e){}}scrollTo({top:0,behavior:"smooth"});}
 $$(".tab").forEach(t=>t.addEventListener("click",()=>go(t.dataset.v)));
 // ---------- header & scene ----------
-function renderTop(){const li=levelInfo();$("#meAv").innerHTML=face(ME());$("#lvl").textContent=`Level ${li.lv} · ${li.name}`;$("#xpbar").style.width=(li.nxt?Math.max(2,(li.x-li.cur)/(li.nxt-li.cur)*100):100)+"%";lastLv=li.lv;lastCh=curChapter();}
+function renderTop(){const li=levelInfo();$("#meAv").innerHTML=`<img src="art/bailey-calm.webp" alt="" style="width:100%;height:100%;object-fit:cover">`;$("#lvl").textContent=`Level ${li.lv} · ${li.name}`;$("#xpbar").style.width=(li.nxt?Math.max(2,(li.x-li.cur)/(li.nxt-li.cur)*100):100)+"%";lastLv=li.lv;lastCh=curChapter();}
 function hadesContext(){const h=new Date().getHours();if(fire7()<.3&&Object.keys(S.hearth).length)return pick(HADES.hearthLow);const m=monthKey();
  const over=BUDGET_CATS.filter(c=>c.tier===3&&spentIn(m,c.id)>budgetOf(c.id)&&budgetOf(c.id)>0);if(over.length&&Math.random()<.5)return pick(HADES.spendOver);
  const t=tod(h);if(t==="night")return pick(HADES.night);if(t==="morning")return pick(HADES.morning);if(t==="evening")return pick(Math.random()<.3?HADES.random:HADES.evening);return pick(Math.random()<.25?HADES.random:Math.random()<.3?HADES.study:HADES.day);}
 const hadesFace=(m="calm")=>`<img src="art/hades-${m}.webp" alt="Hades" style="width:100%;height:100%;object-fit:cover">`;
 const candle=on=>`<svg viewBox="0 0 10 26" width="10" height="26" aria-hidden="true"><rect x="2.5" y="10" width="5" height="16" rx="1" fill="${on?"#e6dcc6":"#5a5248"}"/>${on?`<circle cx="5" cy="6" r="5" fill="#e8c66a" opacity=".22"/><path class="flame" d="M5 10 q-3.4 -4.5 0 -9 q3.4 4.5 0 9z" fill="#e8c66a"/>`:`<path d="M5 10 v-2.5" stroke="#3a342e" stroke-width="1"/>`}</svg>`;
-function renderScene(){const T=tod(),m=monthKey(),musts=dueMusts(),rw=runway(),fire=fire7(),mp=moonPhase(),hec=Date.now()<S.hecateUntil;
+function renderScene(){const T=tod(),m=monthKey(),musts=dueMusts(),rw=runway(),fire=fire7(),mp=moonPhase(),hec=Date.now()<S.hecateUntil,dark=T==="night"||T==="evening";
  const cats=HOUR_CATS.filter(c=>S.hours.some(h=>h.cat===c.id));
- const SKY={morning:["#b98f6a","#e6cfa6"],day:["#6f8f9c","#c9d3c4"],evening:["#8a3a2a","#2e1c2a"],night:["#090b16","#17182a"]}[T];
- let o=`<defs><linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#15110f"/><stop offset="1" stop-color="#201913"/></linearGradient>
+ const SKY={morning:["#c79a86","#ecd2b4"],day:["#7f93b0","#d4d0d6"],evening:["#5a2a52","#c4705a"],night:["#1c1338","#4a2f6e"]}[T];
+ const leaf=(x,y,r)=>`<ellipse cx="${x}" cy="${y}" rx="3.4" ry="1.6" transform="rotate(${r} ${x} ${y})" fill="#22382b"/>`,berry=(x,y)=>`<circle cx="${x}" cy="${y}" r="2" fill="#8a1c2c"/><circle cx="${x-.6}" cy="${y-.6}" r=".6" fill="#d06a74"/>`;
+ const vine=(pts)=>pts.map(([x,y],i)=>leaf(x,y,(i*53)%180)+(i%3===1?berry(x+2.4,y+2.6):"")).join("");
+ const column=x=>`<rect x="${x-3}" y="8" width="22" height="6" fill="#3a2c40"/><rect x="${x}" y="14" width="16" height="174" fill="url(#col)"/>${[3.4,6.8,10,13.2].map(d=>`<path d="M${x+d} 16 V186" stroke="#120c18" stroke-width=".8" opacity=".7"/>`).join("")}<rect x="${x-3}" y="184" width="22" height="6" fill="#2c2032"/>`;
+ let o=`<defs><linearGradient id="wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c1322"/><stop offset=".7" stop-color="#150e19"/><stop offset="1" stop-color="#0e090f"/></linearGradient>
   <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${SKY[0]}"/><stop offset="1" stop-color="${SKY[1]}"/></linearGradient>
-  <radialGradient id="glow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#d8703a" stop-opacity=".5"/><stop offset="1" stop-color="#d8703a" stop-opacity="0"/></radialGradient>
-  <radialGradient id="cglow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#e8c66a" stop-opacity=".5"/><stop offset="1" stop-color="#e8c66a" stop-opacity="0"/></radialGradient>
-  <radialGradient id="vig" cx=".5" cy=".55" r=".75"><stop offset=".5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".72"/></radialGradient></defs>
- <rect width="400" height="250" fill="url(#wall)"/>${T==="night"?"":`<rect width="400" height="250" fill="${T==="morning"?"#e6c79a":T==="day"?"#e9dcc0":"#c8643a"}" opacity=".07"/>`}
- <rect y="150" width="400" height="38" fill="#16241c"/>${[0,1,2,3,4,5,6,7,8,9].map(i=>`<line x1="${i*44+10}" y1="152" x2="${i*44+10}" y2="186" stroke="#0f1a14" stroke-width="1.5"/>`).join("")}<rect y="148" width="400" height="2.5" fill="#6a5632"/>
- <rect y="186" width="400" height="64" fill="#16100c"/>${[0,1,2,3,4,5,6,7].map(i=>`<line x1="0" y1="${190+i*8}" x2="400" y2="${190+i*8}" stroke="#241912" stroke-width="1"/>`).join("")}
- <ellipse cx="200" cy="224" rx="150" ry="19" fill="#4a1119" opacity=".8"/><ellipse cx="200" cy="224" rx="128" ry="13" fill="none" stroke="#b8975a" stroke-opacity=".35"/>`;
- // arched window + the real moon phase
- o+=`<rect x="30" y="24" width="70" height="66" rx="34" fill="url(#sky)" stroke="#4a3c26" stroke-width="4"/>`;
- if(T==="night"||T==="evening")o+=[[42,44],[88,40],[50,74],[84,70],[60,34]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="1" fill="#fff" opacity="${T==="night"?1:.6}"/>`).join("");
- if(T==="morning"||T==="day")o+=`<circle cx="${T==="morning"?46:72}" cy="${T==="morning"?72:46}" r="9" fill="#f0cf8a"/><circle cx="${T==="morning"?46:72}" cy="${T==="morning"?72:46}" r="13" fill="#f0cf8a" opacity=".3"/><ellipse cx="80" cy="76" rx="12" ry="4" fill="#fff" opacity=".6"/><ellipse cx="50" cy="44" rx="9" ry="3" fill="#fff" opacity=".5"/>`;
- const mx=72,my=56,mr=11,ph=mp.p;const lit=Math.cos(ph*2*Math.PI);if(T==="night"||T==="evening")o+=`<circle cx="${mx}" cy="${my}" r="${mr+5}" fill="#f2efe4" opacity=".08"/><circle cx="${mx}" cy="${my}" r="${mr}" fill="#22203a"/><path d="M${mx} ${my-mr} A${mr} ${mr} 0 0 ${ph<.5?1:0} ${mx} ${my+mr} A${Math.abs(lit)*mr} ${mr} 0 0 ${(ph<.5)===(lit>0)?0:1} ${mx} ${my-mr}Z" fill="#f2efe4"/>`;
- o+=`<line x1="65" y1="24" x2="65" y2="90" stroke="#4a3c26" stroke-width="3"/>`;
- // a shelf of old books
- o+=`<rect x="160" y="46" width="112" height="3" fill="#3a2a1c"/>`+Array.from({length:13},(_,i)=>{const h=14+((i*7)%9);return `<rect x="${163+i*8.2}" y="${46-h}" width="6.6" height="${h}" fill="${["#5a1820","#1f3a2d","#3a2a1c","#6a5632","#2a1c22"][i%5]}"/><rect x="${163+i*8.2}" y="${46-h+3}" width="6.6" height="1" fill="#b8975a" opacity=".5"/>`;}).join("");
+  <linearGradient id="col" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3a2c40"/><stop offset=".5" stop-color="#2a1f30"/><stop offset="1" stop-color="#15101a"/></linearGradient>
+  <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a1014"/><stop offset="1" stop-color="#0a0608"/></linearGradient>
+  <radialGradient id="glow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#e07a3a" stop-opacity=".55"/><stop offset="1" stop-color="#e07a3a" stop-opacity="0"/></radialGradient>
+  <radialGradient id="cglow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#f0c66a" stop-opacity=".55"/><stop offset="1" stop-color="#f0c66a" stop-opacity="0"/></radialGradient>
+  <radialGradient id="mist" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#6a4a9a" stop-opacity=".4"/><stop offset="1" stop-color="#6a4a9a" stop-opacity="0"/></radialGradient>
+  <radialGradient id="haura" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#8a1c2c" stop-opacity=".55"/><stop offset="1" stop-color="#8a1c2c" stop-opacity="0"/></radialGradient>
+  <radialGradient id="vig" cx=".5" cy=".5" r=".75"><stop offset=".45" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".8"/></radialGradient>
+  <filter id="grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="7"/><feColorMatrix values="0 0 0 0 .9  0 0 0 0 .8  0 0 0 0 .85  0 0 0 .22 0"/></filter>
+  <filter id="soft"><feGaussianBlur stdDeviation="3"/></filter>
+  <clipPath id="win"><path d="M146 150 V70 Q146 22 200 12 Q254 22 254 70 V150Z"/></clipPath></defs>
+ <rect width="400" height="250" fill="url(#wall)"/>
+ ${[40,76,112,148].map((y,r)=>`<path d="M0 ${y} H400" stroke="#0c0810" stroke-width="1" opacity=".55"/>`+Array.from({length:8},(_,i)=>`<path d="M${i*56+(r%2?28:0)} ${y} v36" stroke="#0c0810" stroke-width="1" opacity=".4"/>`).join("")).join("")}
+ <ellipse cx="200" cy="120" rx="150" ry="90" fill="url(#mist)"/>`;
+ // the tall arched window: the sky follows the hour, and the moon is tonight's real phase
+ o+=`<path d="M146 150 V70 Q146 22 200 12 Q254 22 254 70 V150Z" fill="url(#sky)"/><g clip-path="url(#win)">`;
+ if(dark)o+=[[160,40],[236,36],[170,84],[232,90],[188,28],[244,64],[156,110],[214,112]].map(([x,y],i)=>`<circle cx="${x}" cy="${y}" r="${i%3?.8:1.2}" fill="#f2e9ff" opacity="${T==="night"?.9:.5}"/>`).join("")+`<ellipse cx="170" cy="126" rx="34" ry="9" fill="#2a1a48" opacity=".8" filter="url(#soft)"/><ellipse cx="236" cy="104" rx="30" ry="7" fill="#2a1a48" opacity=".7" filter="url(#soft)"/>`;
+ else o+=`<circle cx="${T==="morning"?172:226}" cy="${T==="morning"?112:52}" r="12" fill="#f6dfa8"/><circle cx="${T==="morning"?172:226}" cy="${T==="morning"?112:52}" r="20" fill="#f6dfa8" opacity=".3"/><ellipse cx="226" cy="118" rx="26" ry="6" fill="#fff" opacity=".5" filter="url(#soft)"/><ellipse cx="176" cy="60" rx="20" ry="5" fill="#fff" opacity=".45" filter="url(#soft)"/>`;
+ const mx=200,my=62,mr=15,ph=mp.p,lit=Math.cos(ph*2*Math.PI);if(dark)o+=`<circle cx="${mx}" cy="${my}" r="${mr+12}" fill="#e9dcff" opacity=".12" filter="url(#soft)"/><circle cx="${mx}" cy="${my}" r="${mr}" fill="#2a2046"/><path d="M${mx} ${my-mr} A${mr} ${mr} 0 0 ${ph<.5?1:0} ${mx} ${my+mr} A${Math.abs(lit)*mr} ${mr} 0 0 ${(ph<.5)===(lit>0)?0:1} ${mx} ${my-mr}Z" fill="#f4eee0"/>`;
+ o+=`</g><path d="M146 150 V70 Q146 22 200 12 Q254 22 254 70 V150Z" fill="none" stroke="#3a2c40" stroke-width="5"/><path d="M146 150 V70 Q146 22 200 12 Q254 22 254 70 V150Z" fill="none" stroke="#a8824a" stroke-width=".8" opacity=".7"/>
+  <path d="M200 12 V150 M146 96 H254" stroke="#2c2032" stroke-width="3"/><path d="M173 150 V52 Q173 36 200 30 M227 150 V52 Q227 36 200 30" stroke="#2c2032" stroke-width="2" fill="none"/>`;
+ o+=column(120)+column(264);
+ o+=vine([[124,22],[130,34],[122,46],[132,58],[126,72],[134,90],[124,104],[140,18],[152,14],[166,10]])+vine([[276,22],[270,36],[278,50],[268,64],[276,80],[270,98],[260,18],[248,14],[234,10]]);
  // apothecary shelves: one plant per kind of hours logged
- o+=`<rect x="284" y="40" width="92" height="4" fill="#3a2a1c"/><rect x="284" y="84" width="92" height="4" fill="#3a2a1c"/><rect x="284" y="43.4" width="92" height=".8" fill="#6a5632"/><rect x="284" y="87.4" width="92" height=".8" fill="#6a5632"/>`;
- cats.slice(0,8).forEach((c,i)=>{const x=288+(i%4)*21,y=i<4?14:58;o+=`<rect x="${x+4}" y="${y+18}" width="14" height="10" rx="2" fill="#6a4630"/>${nest(plantSVG(c.color,c.id).replace(/^<svg[^>]*>|<\/svg>$/g,""),x,y,22,30,"0 0 24 36")}`;});
- if(!cats.length)o+=`<text x="330" y="68" text-anchor="middle" font-size="8" fill="#b9ab90" font-family="Spectral,serif" font-style="italic">plants grow here</text>`;
- // fireplace: the fire is as big as this week's hearth
- const fs=.4+fire*.9;o+=`<rect x="20" y="118" width="74" height="70" fill="#2a2320"/><path d="M20 136 h74 M20 154 h10 M84 154 h10 M20 172 h10 M84 172 h10 M44 118 v18 M70 118 v18" stroke="#1a1513" stroke-width="1"/><rect x="30" y="134" width="54" height="54" rx="3" fill="#070505"/><rect x="14" y="112" width="86" height="8" fill="#3a2f28"/><rect x="14" y="118.6" width="86" height="1" fill="#6a5632"/>
-  <ellipse cx="57" cy="176" rx="40" ry="26" fill="url(#glow)"/><g transform="translate(57 186) scale(${fs})"><path class="flame" d="M0 0 q-20 -12 -6 -36 q4 12 10 6 q8 -14 2 -26 q22 16 10 44 q-6 12 -16 12z" fill="#c8643a"/><path class="flame" d="M0 0 q-10 -8 -2 -22 q4 8 8 2 q8 12 0 20z" fill="#e8c66a"/></g>
-  ${[[44,150],[68,140],[58,126]].map(([x,y],i)=>`<circle class="float" cx="${x}" cy="${y}" r=".9" fill="#e8a04a" opacity="${.7-i*.2}"/>`).join("")}`;
- // altar: one candle per must-pay bill, lit when it's paid; pomegranate seeds are months of runway
- o+=`<rect x="240" y="138" width="100" height="10" fill="#2a1c16"/><rect x="246" y="148" width="88" height="40" fill="#1c1512"/><path d="M246 148 h88 v9 h-88z" fill="#5a141c"/><path d="M246 157 h88" stroke="#b8975a" stroke-width=".6" opacity=".6"/>`;
- const cw=Math.min(8.6,84/Math.max(1,musts.length));musts.forEach((c,i)=>{const x=248+i*cw,on=isPaid(m,c.id);o+=`${on?`<circle cx="${x+2.5}" cy="119" r="8" fill="url(#cglow)"/>`:""}<rect x="${x}" y="122" width="5" height="16" fill="${on?"#e6dcc6":"#6a6258"}"/>${on?`<path class="flame" d="M${x+2.5} 122 q-3 -4 0 -8 q3 4 0 8z" fill="#e8c66a"/>`:""}`;});
- const seeds=Math.max(0,Math.min(12,Math.floor(rw.months)));o+=`<circle cx="292" cy="102" r="16" fill="#7a1c26"/><path d="M286 87 l6 -6 l6 6" fill="#b8975a"/><circle cx="292" cy="102" r="11" fill="#2a070c"/>`;
- for(let i=0;i<12;i++){const a=i/12*Math.PI*2,r=i%2?7:4;o+=`<circle cx="${292+Math.cos(a)*r}" cy="${102+Math.sin(a)*r}" r="2" fill="${i<seeds?"#e0455a":"#3a0a12"}"/>`;}
- // the green couch
- o+=`<rect x="110" y="168" width="140" height="34" rx="12" fill="#2f4a38"/><rect x="104" y="150" width="152" height="30" rx="14" fill="#37573f"/><rect x="100" y="164" width="20" height="40" rx="9" fill="#27402f"/><rect x="240" y="164" width="20" height="40" rx="9" fill="#27402f"/>`;
- o+=nest(chibiInner(ME()),118,112,58,77);o+=nest(chibiInner(PB()),180,110,58,77);
- if(S.fortuna[today()])o+=`<text x="232" y="118" font-size="14" class="float">✨</text>`;
- o+=`<defs><radialGradient id="haura" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#8a1c2c" stop-opacity=".55"/><stop offset="1" stop-color="#8a1c2c" stop-opacity="0"/></radialGradient></defs><g id="sceneHades" style="cursor:pointer"><ellipse class="aura" cx="366" cy="140" rx="40" ry="62" fill="url(#haura)"/><image href="art/hades-small.webp" x="336" y="94" width="58" height="98"/></g>`;
- if(hec){o+=`<rect x="108" y="40" width="44" height="110" rx="22" fill="#0a0810" opacity=".6"/>`+nest(chibiInner(HECATE_O),104,62,52,69)+nest(quincy(),150,150,30,40);}
- o+=`<rect width="400" height="250" fill="url(#vig)" pointer-events="none"/>`;
- if(T==="night")o+=`<rect width="400" height="250" fill="#05040a" opacity=".2" pointer-events="none"/><ellipse cx="57" cy="170" rx="90" ry="60" fill="url(#glow)" pointer-events="none"/>`;
+ o+=`<rect x="294" y="40" width="92" height="4" fill="#33222a"/><rect x="294" y="84" width="92" height="4" fill="#33222a"/><rect x="294" y="43.4" width="92" height=".8" fill="#a8824a" opacity=".7"/><rect x="294" y="87.4" width="92" height=".8" fill="#a8824a" opacity=".7"/>`;
+ cats.slice(0,8).forEach((c,i)=>{const x=298+(i%4)*21,y=i<4?14:58;o+=`<rect x="${x+4}" y="${y+18}" width="14" height="10" rx="2" fill="#5a3528"/>${nest(plantSVG(c.color,c.id).replace(/^<svg[^>]*>|<\/svg>$/g,""),x,y,22,30,"0 0 24 36")}`;});
+ if(!cats.length)o+=`<text x="340" y="68" text-anchor="middle" font-size="8" fill="#bba898" font-family="Spectral,serif" font-style="italic">plants grow here</text>`;
+ // floor
+ o+=`<rect y="186" width="400" height="64" fill="url(#floor)"/>${[-3,-2,-1,0,1,2,3].map(i=>`<path d="M${200+i*38} 186 L${200+i*92} 250" stroke="#241820" stroke-width="1"/>`).join("")}<path d="M0 204 H400 M0 226 H400" stroke="#241820" stroke-width="1"/>
+  <ellipse cx="190" cy="222" rx="150" ry="19" fill="#4a0f1c" opacity=".85"/><ellipse cx="190" cy="222" rx="132" ry="14" fill="none" stroke="#c59d5f" stroke-opacity=".4"/><ellipse cx="190" cy="222" rx="120" ry="11" fill="none" stroke="#c59d5f" stroke-opacity=".2"/>`;
+ // fireplace: the fire is as big as this week's hearth; one candle on the mantel per must-pay bill, lit when it's paid
+ const fs=.4+fire*.9;o+=`<rect x="12" y="120" width="92" height="68" fill="#241a26"/><path d="M12 138 h92 M12 156 h14 M90 156 h14 M12 172 h14 M90 172 h14 M40 120 v18 M76 120 v18" stroke="#120c16" stroke-width="1"/><path d="M26 188 V150 Q26 134 58 132 Q90 134 90 150 V188Z" fill="#050305"/><rect x="6" y="112" width="104" height="9" rx="1" fill="#3a2c40"/><rect x="6" y="119.4" width="104" height="1" fill="#a8824a" opacity=".8"/>
+  <ellipse cx="58" cy="176" rx="46" ry="30" fill="url(#glow)"/><g transform="translate(58 187) scale(${fs})"><path class="flame" d="M0 0 q-20 -12 -6 -36 q4 12 10 6 q8 -14 2 -26 q22 16 10 44 q-6 12 -16 12z" fill="#d06a34"/><path class="flame" d="M0 0 q-10 -8 -2 -22 q4 8 8 2 q8 12 0 20z" fill="#f0c66a"/></g>
+  ${[[44,150],[70,142],[58,128]].map(([x,y],i)=>`<circle class="float" cx="${x}" cy="${y}" r=".9" fill="#f0a04a" opacity="${.7-i*.2}"/>`).join("")}<ellipse cx="58" cy="200" rx="50" ry="8" fill="#e07a3a" opacity="${.08+fire*.14}"/>`;
+ const cw=Math.min(9.6,92/Math.max(1,musts.length));musts.forEach((c,i)=>{const x=12+i*cw+(cw-5)/2,on=isPaid(m,c.id),h=11+(i*5)%7;o+=`${on?`<circle cx="${x+2.5}" cy="${108-h}" r="9" fill="url(#cglow)"/>`:""}<rect x="${x}" y="${112-h}" width="5" height="${h}" rx=".8" fill="${on?"#eadccb":"#6a5e62"}"/>${on?`<path class="flame" d="M${x+2.5} ${112-h} q-3 -4 0 -8.4 q3 4.4 0 8.4z" fill="#f0c66a"/>`:`<path d="M${x+2.5} ${112-h} v-2" stroke="#3a3034" stroke-width=".8"/>`}`;});
+ // the pomegranate on its stand: each lit seed is a month of runway
+ const seeds=Math.max(0,Math.min(12,Math.floor(rw.months)));o+=`<path d="M304 188 V160 h16 V188Z" fill="#241a26"/><rect x="299" y="156" width="26" height="5" rx="1" fill="#3a2c40"/><rect x="299" y="159.6" width="26" height=".9" fill="#a8824a" opacity=".8"/>
+  <circle cx="312" cy="138" r="20" fill="url(#haura)"/><circle cx="312" cy="140" r="16" fill="#7a1626"/><circle cx="307" cy="134" r="5" fill="#a02a3a" opacity=".5"/><path d="M306 125 l6 -6 l6 6" fill="#c59d5f"/><circle cx="312" cy="140" r="11" fill="#22060b"/>`;
+ for(let i=0;i<12;i++){const a=i/12*Math.PI*2-Math.PI/2,r=i%2?7:4;o+=`<circle class="${i<seeds?"seed":""}" cx="${312+Math.cos(a)*r}" cy="${140+Math.sin(a)*r}" r="2" fill="${i<seeds?"#e0455a":"#3a0a12"}"/>`;}
+ // the couch, with Bailey and PB (art from her own sheet)
+ o+=`<ellipse cx="190" cy="206" rx="92" ry="9" fill="#000" opacity=".45"/><image href="art/couch-us.webp" x="107" y="92" width="166" height="114"/>`;
+ if(S.fortuna[today()])o+=`<text x="236" y="112" font-size="14" class="float">✨</text>`;
+ o+=`<g id="sceneHades" style="cursor:pointer"><ellipse class="aura" cx="366" cy="140" rx="40" ry="62" fill="url(#haura)"/><ellipse cx="366" cy="192" rx="24" ry="4" fill="#000" opacity=".45"/><image href="art/hades-small.webp" x="337" y="96" width="58" height="98"/></g>`;
+ if(hec)o+=`<ellipse cx="116" cy="150" rx="30" ry="50" fill="url(#mist)"/>`+nest(chibiInner(HECATE_O),92,106,46,61)+nest(quincy(),108,172,30,40);
+ o+=`<rect width="400" height="250" filter="url(#grain)" opacity=".5" pointer-events="none"/><rect width="400" height="250" fill="url(#vig)" pointer-events="none"/>`;
+ if(T==="night")o+=`<rect width="400" height="250" fill="#06040c" opacity=".16" pointer-events="none"/>`;
+ else if(!dark)o+=`<path d="M146 150 L96 250 H304 L254 150Z" fill="#f6dfa8" opacity=".05" pointer-events="none"/>`;
  $("#scene").setAttribute("aria-label",`Your apothecary study, ${T}`);$("#scene").innerHTML=o;}
 let _justHs=null;
 function renderHearthStrip(){const h=S.hearth[today()]||{};
@@ -1339,11 +1356,11 @@ function renderQuietRow(){const it=allQuietItems(),bad=it.filter(i=>i.st==="warn
  $("#quietRow").innerHTML=`<span class="cnd">${it.map(i=>candle(i.st!=="warn")).join("")}</span><span class="qt"><b>${bad?`${bad} thing${bad>1?"s":""} need${bad>1?"":"s"} you`:"All quiet"}</b><small>${bad?"Everything else is quiet.":"Every candle is lit."}</small></span><span class="chev" aria-hidden="true">›</span>`;}
 function renderCottage(){renderScene();if(!$("#hadesSay").textContent)hadesSays(hadesContext());
  const q=nextQuest(),c=CHAPTERS[curChapter()];
- $("#todayCard").innerHTML=q?`<div class="eyebrow">The next torch</div><h2>${esc(q.title)}</h2>
-  <div class="muted">${q.ch>=0?esc(c.name)+" · ":"Life rite · "}${esc(q.when)}</div><button class="btn gold big" id="goQ">Begin the rite</button>`:`<div class="eyebrow">The next torch</div><h2>Every rite complete.</h2>`;
+ $("#todayCard").innerHTML=`<img class="mecomp" src="art/bailey-companion.webp" width="255" height="334" alt="">`+(q?`<div class="eyebrow">The next torch</div><h2>${esc(q.title)}</h2>
+  <div class="muted">${q.ch>=0?esc(c.name)+" · ":"Life rite · "}${esc(q.when)}</div><button class="btn gold big" id="goQ">Begin the rite</button>`:`<div class="eyebrow">The next torch</div><h2>Every rite complete.</h2>`);
  const g=$("#goQ");if(g)g.addEventListener("click",()=>openQuest(q.id));
  $("#moonLine").textContent=`${moonPhase().name} tonight`;renderHearthStrip();renderQuietRow();
- const fo=S.fortuna[today()];$("#fortunaCard").innerHTML=fo?`<div class="card"><div class="who-row"><div class="face">${face(FORTUNA_O)}</div><div class="bub" style="flex:1"><b class="who">Fortuna</b>${esc(fo)}</div></div></div>`:"";}
+ const fo=S.fortuna[today()];$("#fortunaCard").innerHTML=fo?`<div class="card"><div class="who-row"><div class="face">${face(FORTUNA_O)}</div><div class="bub" style="flex:1"><b class="who">Fortuna</b>${esc(fo)}</div><img class="pbcomp" src="art/pb-companion.webp" width="276" height="382" alt="PB"></div></div>`:"";}
 $("#quietRow").addEventListener("click",()=>go("quiet"));
 $$("[data-quick]").forEach(b=>b.addEventListener("click",()=>{const k=b.dataset.quick;if(k==="hours")openHours();else if(k==="spend")openTx();else go("hearth");}));
 $("#hecateBtn").addEventListener("click",callHecate);
@@ -1676,7 +1693,7 @@ function renderAltar(){$("#oath").innerHTML=S.oath.map((v,i)=>`<input data-oath=
   <div class="muted" style="text-align:center">🌙 Tonight: ${moonPhase().name}</div><button class="btn ghost" id="hec2" style="width:100%;margin-top:10px">Call Hecate</button>`;
  $("#hec2").addEventListener("click",callHecate);
  const L=[...S.pbLuck].reverse(),fo=Object.entries(S.fortuna).filter(([d,t])=>t).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,5);
- $("#pbList").innerHTML=`<div class="who-row"><div class="face">${face(FORTUNA_O)}</div><div class="face">${face(PB())}</div></div>`+(L.length?L.map(x=>`<div class="muted" style="margin-top:6px">✨ ${esc(x.date)}: ${esc(x.t)}</div>`).join(""):`<p class="muted">Log PB's real-life lucky moments here. Fortuna is keeping score.</p>`)+(fo.length?`<h3 style="font-size:16px">Fortuna's recent gifts</h3>${fo.map(([d,t])=>`<div class="muted">${esc(d)}: ${esc(t)}</div>`).join("")}`:"");}
+ $("#pbList").innerHTML=`<div class="who-row"><div class="face">${face(FORTUNA_O)}</div><div class="face"><img src="art/pb-calm.webp" alt="PB" style="width:100%;height:100%;object-fit:cover"></div></div>`+(L.length?L.map(x=>`<div class="muted" style="margin-top:6px">✨ ${esc(x.date)}: ${esc(x.t)}</div>`).join(""):`<p class="muted">Log PB's real-life lucky moments here. Fortuna is keeping score.</p>`)+(fo.length?`<h3 style="font-size:16px">Fortuna's recent gifts</h3>${fo.map(([d,t])=>`<div class="muted">${esc(d)}: ${esc(t)}</div>`).join("")}`:"");}
 $("#pbLuck").addEventListener("click",()=>{openModal(`<h2>✨ PB got lucky</h2><input id="pl" placeholder="Found $20 on the subway"><div class="foot"><span></span><button class="btn gold" id="plok">Tell Fortuna</button></div>`);$("#plok").addEventListener("click",()=>{const t=$("#pl").value.trim();if(!t)return;S.pbLuck.push({date:today(),t});closeModal();SFX.ok();changed();});});
 // ---------- exports ----------
 async function download(name,text,type){if(dlCap){try{await dlCap.save({filename:name,data:text});return true;}catch(e){if(e&&e.code!=="declined")toast("Download didn't go through. Try Copy instead.");return false;}}
@@ -1712,8 +1729,6 @@ function askReset(){openModal(`<h2>Erase everything and start over?</h2><p>This 
 function undoChange(){const b=readBefore();if(!b)return;const cur=JSON.stringify(S);try{S=Object.assign(fresh(),JSON.parse(b.state));}catch(e){toast("That copy couldn't be read.");return;}
  try{localStorage.setItem(SAFE,JSON.stringify({at:Date.now(),why:"undo",state:cur}));}catch(e){}applyPack();closeModal();changed();toast("Your earlier game is back");}
 function openSettings(){openModal(`<h2>Settings & Scrolls</h2>
- <h3>Wardrobe</h3><div class="seg" id="ow">${OUTFITS.map((o,i)=>`<button data-i="${i}" class="${S.outfit===i?"on":""}">${esc(o.name)}</button>`).join("")}</div>
- <label class="row" style="margin-top:8px;font-weight:700"><input type="checkbox" id="pbc" style="width:auto" ${S.pbCap?"checked":""}> PB wears his cap</label>
  <label class="row" style="margin-top:6px;font-weight:700"><input type="checkbox" id="snd" style="width:auto" ${S.sound?"checked":""}> Soft sounds</label>
  <h3>📜 The Scroll Room: every CSV</h3><div class="muted" style="font-size:13px;margin-bottom:6px">Download opens straight in Excel or Google Sheets. Copy pastes into cell A1.</div>
  <div style="display:grid;gap:6px">${Object.entries(EXPORTS).map(([k,E])=>`<div class="row sp" style="background:#1a1512;border:1px solid var(--edge);border-radius:10px;padding:6px 10px"><span>${esc(E.label)}</span><span class="row"><button class="btn sm ghost" data-copy="${k}">Copy</button><button class="btn sm gold" data-dl="${k}">⬇ CSV</button></span></div>`).join("")}</div>
@@ -1725,8 +1740,7 @@ function openSettings(){openModal(`<h2>Settings & Scrolls</h2>
  <input type="file" id="pkf" accept=".json,application/json" style="margin-top:6px"><label class="f" for="pkt">Or paste it</label><textarea id="pkt" rows="2"></textarea><button class="btn ghost sm" id="pkr" style="margin-top:6px">Load pack</button>
  <h3>🧾 Sorting rules I've learned</h3><div class="muted" style="font-size:13px">From your answers during imports. Remove one if it's sorting things wrong.</div><div id="rulesBox">${Object.keys(S.rules||{}).length?Object.entries(S.rules).map(([k,v])=>`<div class="row sp" style="padding:3px 0;border-bottom:1px dashed var(--edge)"><span style="font-size:13px">${esc(k)} → <b>${esc(labelOf(v))}</b></span><button class="btn ghost sm" data-rr="${esc(k)}">✕</button></div>`).join(""):`<div class="muted" style="font-size:13px">None yet.</div>`}</div>
  <h3>Other</h3><button class="btn ghost sm" id="intro2">Replay the welcome</button> <button class="btn ghost sm" id="rst">Reset everything</button>${readBefore()?`<div style="margin-top:8px"><button class="btn ghost sm" id="undo1">Bring back my game from before the last ${esc(readBefore().why==="reset"?"reset":readBefore().why==="undo"?"undo":"restore")} (${new Date(readBefore().at).toLocaleDateString()})</button></div>`:""}`);
- $$("#ow button").forEach(b=>b.addEventListener("click",()=>{S.outfit=+b.dataset.i;$$("#ow button").forEach(x=>x.classList.toggle("on",x===b));SFX.tap();changed();}));
- $("#pbc").addEventListener("change",e=>{S.pbCap=e.target.checked;changed();});$("#snd").addEventListener("change",e=>{S.sound=e.target.checked;save();});
+ $("#snd").addEventListener("change",e=>{S.sound=e.target.checked;save();});
  const mark=()=>{S.lastBackup=Date.now();changed();};
  $("#bkd").addEventListener("click",async()=>{if(await download(`apothecary-backup-${today()}.json`,JSON.stringify(S,null,1),"application/json")){toast("💾 Backup saved");mark();}});
  $("#bkc").addEventListener("click",async()=>{try{await navigator.clipboard.writeText(JSON.stringify(S));toast("Backup code copied");mark();}catch(e){toast("Copy blocked. Use download.");}});
