@@ -402,7 +402,7 @@ The public file no longer contains the advisor's name, email or links, school an
 
 ## 10. MedQuest privacy and the Apothecary's cloud read (2026-11-17)
 
-Branch `feat/medquest-private-pack` (off `main`). Tag `pre-medquest-privacy` marks `main` just before the merge, as a rollback point.
+Built on `feat/medquest-private-pack` (off `main`), **merged into `main` and pushed on 2026-11-17** (merge commit 90c8db8). Tag `pre-medquest-privacy` marks `main` just before the merge, as a rollback point. Bailey still needs to load her add-on once in MedQuest (Settings → 🔒 Private pack).
 
 ### 10a. What changed
 
