@@ -656,20 +656,33 @@ function fresh(){return {v:1,updatedAt:0,cs:"LUKE",me:{hair:0,skin:1,jacket:0},m
   courses:DEFAULT_COURSES.map(([n,c,cr,st])=>({id:uid(),name:n,cat:c,cr,status:st||"todo",grade:"",prereq:true})),coClicks:0,seenIntro:false,lastBackup:0,startAt:0,snooze:0,sound:true};}
 let S=fresh();try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(fresh(),JSON.parse(r));}catch(e){}
 let cloud={ref:null,w:false,p:false},st=null;
-function save(){S.updatedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}clearTimeout(st);st=setTimeout(push,1200);}
+// No real progress in this save? (A fresh game, or one with only a callsign or looks.)
+// A blank game always takes the cloud save and is never pushed over it.
+function isBlank(g){if(!g)return true;
+  const m=Object.values(g.m||{}).some(x=>x&&(x.d||(Array.isArray(x.s)&&x.s.some(Boolean))||String(x.n||"").trim()));
+  const def=Object.fromEntries(DEFAULT_COURSES.map(([n,c,cr,st])=>[n,st||"todo"]));
+  const c=(g.courses||[]).some(k=>k&&(!(k.name in def)||(k.status||"todo")!==def[k.name]||k.grade||!k.prereq));
+  return !m&&!c&&!(g.aars||[]).length&&!(g.logs||[]).length&&!(g.rh||[]).length&&!Object.keys(g.intel||{}).length&&!g.values&&!g.path;}
+// Until the cloud save has been checked, a save is only remembered, not written or pushed: stamping this
+// device's copy before then could make an out-of-date game look newest. It is applied right after the check
+// (or after 8 seconds, or when the page is being left, so a change is never held for long).
+let cloudChecked=false,heldSave=false;
+function cloudCheckDone(){if(cloudChecked)return;cloudChecked=true;if(heldSave){heldSave=false;save();}}
+setTimeout(cloudCheckDone,8000);addEventListener("pagehide",cloudCheckDone);
+function save(){if(!cloudChecked){heldSave=true;return;}S.updatedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}clearTimeout(st);st=setTimeout(push,1200);}
 async function push(){if(!cloud.ref)return;if(cloud.w){cloud.p=true;return;}cloud.w=true;try{await cloud.ref.set({state:JSON.stringify(S),updatedAt:S.updatedAt});}catch(e){}cloud.w=false;if(cloud.p){cloud.p=false;push();}}
 const IN_CLAUDE=!!(window.claude&&typeof window.claude.use==="function");if(IN_CLAUDE)document.body.classList.add("inclaude");
 let dlCap=null;
 // on the website: save to Luke's Family Village account (shared/cloudsave.js)
 async function initWebSave(){if(IN_CLAUDE||!window.CloudSave)return;
-  const ref=await CloudSave.connect({game:"luke",localKey:KEY,getState:()=>S,
-    setState:d=>{S=Object.assign(fresh(),d);localStorage.setItem(KEY,JSON.stringify(S));renderAll();}});
-  if(!ref)return;cloud.ref=ref;$("#footSave").textContent=("saves on this device + "+ref.where).toUpperCase();push();
+  const ref=await CloudSave.connect({game:"luke",localKey:KEY,getState:()=>S,isEmpty:isBlank,
+    setState:d=>{heldSave=false;S=Object.assign(fresh(),d);localStorage.setItem(KEY,JSON.stringify(S));renderAll();}});
+  if(!ref)return;cloud.ref=ref;$("#footSave").textContent=("saves on this device + "+ref.where).toUpperCase();if(!isBlank(S))push();
   if(!localStorage.getItem("open_field_cloud_hello")){localStorage.setItem("open_field_cloud_hello","1");toast("☁ PROGRESS NOW BACKED UP TO YOUR VILLAGE ACCOUNT","g");}}
 async function initClaude(){if(!IN_CLAUDE)return;try{window.claude.use("downloads").then(d=>{dlCap=d;if(d)document.body.classList.remove("inclaude");}).catch(()=>{});}catch(e){}
   try{const [db,user]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);if(!db||!user)return;const id=await user.id();if(!id)return;const ref=db.collection("data/users/"+id).doc("save");
     let s=await ref.get();let r=s&&typeof s.data==="function"?s.data():s;if(r&&r.data&&r.state===undefined)r=r.data;cloud.ref=ref;
-    if(r&&r.state&&(r.updatedAt||0)>(S.updatedAt||0)){S=Object.assign(fresh(),JSON.parse(r.state));localStorage.setItem(KEY,JSON.stringify(S));renderAll();}else push();}catch(e){}}
+    if(r&&r.state&&(r.updatedAt||0)>(S.updatedAt||0)){heldSave=false;S=Object.assign(fresh(),JSON.parse(r.state));localStorage.setItem(KEY,JSON.stringify(S));renderAll();}else push();}catch(e){}}
 // ---------- sound ----------
 let ac=null;function tone(n,type="square"){if(!S.sound)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.state==="suspended")ac.resume();let t=ac.currentTime;
   n.forEach(([f,d])=>{const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;g.gain.setValueAtTime(.04,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+d);t+=d*.9;});}catch(e){}}
@@ -964,7 +977,7 @@ checkConditional();renderAll();
 const hh=(location.hash||"").slice(1);if($(`.tab[data-v="${hh}"]`))go(hh);
 if(!S.seenIntro)setTimeout(()=>intro(0),400);
 initClaude();
-window.addEventListener("load",initWebSave);   // waits for the cloud-save scripts below
+window.addEventListener("load",()=>initWebSave().catch(()=>{}).then(cloudCheckDone));   // waits for the cloud-save scripts below; saves are held until then
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script src="../shared/cloudsave.js"></script>

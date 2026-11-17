@@ -395,7 +395,7 @@ The public file no longer contains the advisor's name, email or links, school an
 
 - Never call `save()` while the page loads. If something must be remembered on load, write it without touching `updatedAt`.
 - Pass `isEmpty` to `connect()`.
-- MedQuest got the same fix on 2026-11-17 (section 11). The other five games (Dungeon, Magnolia Isle, Open Field, Little Freak, Gremlin Town) do not save on load, but they have **no `isEmpty`** and do **not** hold saves until the cloud check finishes. A leftover near-empty copy that is newer than the real game, or a change made in the first second, can still make that device win. The cloud copy is kept on the device when that happens. A plan for them is in section 11d.
+- On 2026-11-17 MedQuest and then the other five games (Dungeon, Magnolia Isle, Open Field, Little Freak, Gremlin Town) got the same fix (section 11). Every game on `shared/cloudsave.js` now passes `isEmpty` and holds saves until the cloud check finishes.
 
 **Testing note.** This was tested against a fake cloud in a local copy, not a real account. **The Claude desktop app's built-in browser is logged in to Bailey's Village account**: opening a live game there loads and saves as her. Section 6 applies to it too.
 
@@ -470,7 +470,7 @@ from game_saves g left join members m on g.owner = 'member:' || m.id
 order by g.saved_at desc;
 ```
 
-### 11d. Plan for the five other games (not built yet)
+### 11d. The five other games (built 2026-11-17 on `fix/games-cloud-hold`)
 
 Each gets the MedQuest/Apothecary pattern: an `isBlank()` passed as `isEmpty`, saves held until the cloud check finishes, no push of a blank game on connect, and a cloud load drops a held save. **No game's save shape, key or cloud name changes**, no SQL, no change to `shared/cloudsave.js`. "Blank" per game (settings like colours, sound or fonts never count as progress):
 
@@ -482,4 +482,16 @@ Each gets the MedQuest/Apothecary pattern: an `isBlank()` passed as `isEmpty`, s
 | Little Freak | `little-freak/index.html` | no name, 0 XP and heat, no rooms, ideas, customer, trophies, scenes or king visits |
 | Gremlin Town | `kyla/app.js` | no quests, `got`, snack points, boxes, days, rest, log, colleges, job details, transactions, `pm`, hats, fics or focus minutes, and the jars and owned items still at their defaults |
 
-Before building, each game's load path is to be re-checked for any save during load (none known). Testing: a local copy with the stand-in database, same four cases as MedQuest (leftover copy, tap before the check, normal play, logged out), old code against new.
+Two games turned out to save during load without a tap, and the hold now covers both: **Open Field**'s backup banner stamps `startAt` the first time it sees progress, and **Gremlin Town** can show a "hot" pop-up about 7 seconds after load and stamp `lastHot`. Pop-up counters don't count as progress.
+
+Tested in a local copy with the real `shared/cloudsave.js` against a stand-in database (`game_save_put` keeps the real "only newer" rule); no real login. The same four cases for each game, old code against new:
+
+| Game | Leftover near-empty copy, a day newer | Save in the first moment, slow cloud check | Normal play | Logged out |
+|---|---|---|---|---|
+| Dungeon | old **lost** the real game · new kept it | old **lost** · new kept | both sync | both save (new: held, then saved) |
+| Magnolia Isle | old **lost** · new kept | old **lost** · new kept | both sync | both save (new: held, then saved) |
+| Open Field | old **lost** · new kept | old **lost** · new kept | both sync | both save (new: held, then saved) |
+| Little Freak | old **lost** · new kept | old **lost** · new kept | both sync | both save (new: held, then saved) |
+| Gremlin Town | old **lost** · new kept | old **lost** · new kept | both sync | both save (new: held, then saved) |
+
+No console errors. Every game that uses `shared/cloudsave.js` now passes `isEmpty` and holds saves until the cloud check has finished. What's still possible everywhere: a stale copy *with real progress* that is newer by date can win; the cloud copy is then kept on that device as `<key>_cloud_before_sync`.

@@ -913,7 +913,19 @@ function freshState(){return {v:1,updatedAt:0,hero:{name:"Crawler",hair:0,skin:1
 let S=freshState();
 try{const raw=localStorage.getItem(KEY);if(raw)S=Object.assign(freshState(),JSON.parse(raw));}catch(e){}
 let cloud={ref:null,writing:false,pending:false},saveTimer=null;
-function save(){S.updatedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}clearTimeout(saveTimer);saveTimer=setTimeout(pushCloud,1200);}
+// No real progress in this save? (A fresh game, or one with only a name, colours or empty quest windows.)
+// A blank game always takes the cloud save and is never pushed over it.
+function isBlank(st){if(!st)return true;
+  const q=Object.values(st.q||{}).some(x=>x&&(x.d||(Array.isArray(x.s)&&x.s.some(Boolean))||String(x.n||"").trim()));
+  const c=(st.courses||[]).some(k=>k&&((k.status&&k.status!=="todo")||k.grade||String(k.school||"").trim()||!k.prereq));
+  return !q&&!c&&!(st.logs||[]).length&&!Object.keys(st.ach||{}).length&&!(st.boxes||[]).length&&!(st.inv||[]).length;}
+// Until the cloud save has been checked, a save is only remembered, not written or pushed: stamping this
+// device's copy before then could make an out-of-date game look newest. It is applied right after the check
+// (or after 8 seconds, or when the page is being left, so a change is never held for long).
+let cloudChecked=false,heldSave=false;
+function cloudCheckDone(){if(cloudChecked)return;cloudChecked=true;if(heldSave){heldSave=false;save();}}
+setTimeout(cloudCheckDone,8000);addEventListener("pagehide",cloudCheckDone);
+function save(){if(!cloudChecked){heldSave=true;return;}S.updatedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}clearTimeout(saveTimer);saveTimer=setTimeout(pushCloud,1200);}
 async function pushCloud(){if(!cloud.ref)return;if(cloud.writing){cloud.pending=true;return;}cloud.writing=true;
   try{await cloud.ref.set({state:JSON.stringify(S),updatedAt:S.updatedAt});setSaveStat(cloud.ref.where?"☁ Saved to "+cloud.ref.where:"☁ Synced");}catch(e){setSaveStat("Saved on this device");}
   cloud.writing=false;if(cloud.pending){cloud.pending=false;pushCloud();}}
@@ -926,17 +938,17 @@ async function initCloud(){
   if(!(window.claude&&typeof window.claude.use==="function")){
     // on the website: save to PB's Pot login, or a Village account (shared/cloudsave.js)
     if(!window.CloudSave)return;
-    const ref=await CloudSave.connect({game:"dungeon",localKey:KEY,getState:()=>S,status:setSaveStat,pot:window.potOpts,
+    const ref=await CloudSave.connect({game:"dungeon",localKey:KEY,getState:()=>S,status:setSaveStat,isEmpty:isBlank,pot:window.potOpts,
       potClient:()=>{if(!window.Pot)return null;window.Pot.start({skin:"dungeon",theme:"dungeon"});return window.Pot.client();},
-      setState:d=>{S=Object.assign(freshState(),d);localStorage.setItem(KEY,JSON.stringify(S));renderAll();}});
-    if(ref){cloud.ref=ref;const fs=$("#footSave");if(fs)fs.textContent="progress saves on this device + "+ref.where;await pushCloud();}
+      setState:d=>{heldSave=false;S=Object.assign(freshState(),d);localStorage.setItem(KEY,JSON.stringify(S));renderAll();}});
+    if(ref){cloud.ref=ref;const fs=$("#footSave");if(fs)fs.textContent="progress saves on this device + "+ref.where;if(!isBlank(S))await pushCloud();}
     return;
   }
   try{const [db,user]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);if(!db||!user)return;
     const id=await user.id();if(!id)return;const ref=db.collection("data/users/"+id).doc("save");
     let snap=await ref.get();let remote=snap&&typeof snap.data==="function"?snap.data():snap;if(remote&&remote.data&&remote.state===undefined)remote=remote.data;
     cloud.ref=ref;
-    if(remote&&remote.state&&(remote.updatedAt||0)>(S.updatedAt||0)){S=Object.assign(freshState(),JSON.parse(remote.state));localStorage.setItem(KEY,JSON.stringify(S));renderAll();setSaveStat("☁ Synced");}
+    if(remote&&remote.state&&(remote.updatedAt||0)>(S.updatedAt||0)){heldSave=false;S=Object.assign(freshState(),JSON.parse(remote.state));localStorage.setItem(KEY,JSON.stringify(S));renderAll();setSaveStat("☁ Synced");}
     else await pushCloud();}catch(e){}
 }
 
@@ -1350,7 +1362,7 @@ function renderAll(){renderBackupBanner();askPersist();renderHUD();renderMap();r
 renderCodex();checkAch();renderAll();
 const h=(location.hash||"").slice(1);const tb=$(`.tab[data-v="${h}"]`);if(tb)tb.click();
 if(!S.seenIntro)setTimeout(()=>intro(0),400);
-window.addEventListener("load",initCloud);   // waits for the cloud-save scripts below
+window.addEventListener("load",()=>initCloud().catch(()=>{}).then(cloudCheckDone));   // waits for the cloud-save scripts below; saves are held until then
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
