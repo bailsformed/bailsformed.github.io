@@ -754,7 +754,20 @@ applyPack();
 
 let cloud={db:null,ref:null,ok:false,writing:false,pending:false};
 let saveTimer=null;
+// No real progress in this save? (A fresh game, or one with only a name, colours or empty quest windows.)
+// A blank game always takes the cloud save and is never pushed over it.
+function isBlank(st){if(!st)return true;
+  const q=Object.values(st.q||{}).some(x=>x&&(x.d||(Array.isArray(x.s)&&x.s.some(Boolean))||String(x.n||"").trim()));
+  const c=(st.courses||[]).some(k=>k&&((k.status&&k.status!=="todo")||k.grade||String(k.school||"").trim()||!k.prereq));
+  return !q&&!c&&!(st.logs||[]).length&&!Object.keys(st.ach||{}).length;}
+// Until the cloud save has been checked, a save is only remembered, not written or pushed: stamping this
+// device's copy before then could make an out-of-date game look newest. It is applied right after the check
+// (or after 8 seconds, or when the page is being left, so a change is never held for long).
+let cloudChecked=false,heldSave=false;
+function cloudCheckDone(){if(cloudChecked)return;cloudChecked=true;if(heldSave){heldSave=false;save();}}
+setTimeout(cloudCheckDone,8000);addEventListener("pagehide",cloudCheckDone);
 function save(){
+  if(!cloudChecked){heldSave=true;return;}
   S.updatedAt=Date.now();
   try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}
   clearTimeout(saveTimer); saveTimer=setTimeout(pushCloud,1200);
@@ -773,9 +786,9 @@ async function initCloud(){
   if(!(window.claude&&typeof window.claude.use==="function")){
     // on the website: save to the Family Village account (shared/cloudsave.js)
     if(!window.CloudSave){setSaveStat("Saved in this browser");return;}
-    const ref=await CloudSave.connect({game:"medquest",localKey:KEY,getState:()=>S,status:setSaveStat,
-      setState:d=>{const kp=S.pack;S=keepPack(Object.assign(freshState(),d),kp);applyPack();renderCodex();localStorage.setItem(KEY,JSON.stringify(S));renderAll();}});
-    if(ref){cloud.ref=ref;await pushCloud();}
+    const ref=await CloudSave.connect({game:"medquest",localKey:KEY,getState:()=>S,status:setSaveStat,isEmpty:isBlank,
+      setState:d=>{heldSave=false;const kp=S.pack;S=keepPack(Object.assign(freshState(),d),kp);applyPack();renderCodex();localStorage.setItem(KEY,JSON.stringify(S));renderAll();}});
+    if(ref){cloud.ref=ref;if(!isBlank(S))await pushCloud();}
     return;
   }
   try{
@@ -789,7 +802,7 @@ async function initCloud(){
     if(remote&&remote.data&&remote.state===undefined) remote=remote.data;
     cloud.ref=ref;
     if(remote&&remote.state&&(remote.updatedAt||0)>(S.updatedAt||0)){
-      try{const kp=S.pack;S=keepPack(Object.assign(freshState(),JSON.parse(remote.state)),kp);applyPack();renderCodex();localStorage.setItem(KEY,JSON.stringify(S));renderAll();}catch(e){}
+      try{heldSave=false;const kp=S.pack;S=keepPack(Object.assign(freshState(),JSON.parse(remote.state)),kp);applyPack();renderCodex();localStorage.setItem(KEY,JSON.stringify(S));renderAll();}catch(e){}
       setSaveStat("☁ Synced with your account");
     } else { await pushCloud(); }
   }catch(e){ setSaveStat("Saved in this browser"); }
@@ -1304,7 +1317,7 @@ checkAch();
 renderAll();
 const h=(location.hash||"").slice(1);const tb=$(`.tab[data-v="${h}"]`);if(tb)tb.click();
 if(!S.seenIntro) setTimeout(()=>intro(0),400);
-window.addEventListener("load",initCloud);   // waits for the cloud-save scripts below
+window.addEventListener("load",()=>initCloud().catch(()=>{}).then(cloudCheckDone));   // waits for the cloud-save scripts below; saves are held until then
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script src="../shared/cloudsave.js"></script>

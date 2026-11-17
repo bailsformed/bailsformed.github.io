@@ -273,6 +273,7 @@ On iPhone an installed app has **its own storage, apart from Safari**, so the ga
 
   Keep tests to one clearly labeled post, and delete it right after.
 - **Don't answer today's trivia as a real member.** Each person gets one answer per day.
+- **No QA or testing on live pages in the Claude app's built-in browser while it's logged in as Bailey** (it is, by default). Bailey's rule, 2026-11-17. Use a local copy with a fake cloud, or a logged-out browser (for example headless Chrome with a fresh, empty profile). A test left in that browser stays there and can overwrite her real saves days later: see section 11.
 - **Don't open games while your browser is logged in to the Village as a real member** (or the Pot as PB/Bailey). The game will load and save over that person's cloud save. **Test games in a private/incognito window**, where saves stay in that window only.
 - **The Pot holds real household finances.** Don't sign in with real credentials. Don't record transactions, mark bills paid, edit balances, or connect/add to Google Calendar. You can create your own throwaway email login to see the empty "create a pot" screens. That makes an account in the real project, so tell Bailey so it can be deleted.
 - **Don't paste anyone's real farm key** into Sunbeam Farm, or load anything into the Underworld's "Private pack" box.
@@ -394,7 +395,7 @@ The public file no longer contains the advisor's name, email or links, school an
 
 - Never call `save()` while the page loads. If something must be remembered on load, write it without touching `updatedAt`.
 - Pass `isEmpty` to `connect()`.
-- The other six games (MedQuest, Dungeon, Magnolia Isle, Open Field, Little Freak, Gremlin Town) do not save on load, but they do **not** hold saves until the cloud check finishes. A change made in the first second on a device with an out-of-date game can still make that device win there. The cloud copy is kept on the device when that happens.
+- MedQuest got the same fix on 2026-11-17 (section 11). The other five games (Dungeon, Magnolia Isle, Open Field, Little Freak, Gremlin Town) do not save on load, but they have **no `isEmpty`** and do **not** hold saves until the cloud check finishes. A leftover near-empty copy that is newer than the real game, or a change made in the first second, can still make that device win. The cloud copy is kept on the device when that happens. A plan for them is in section 11d.
 
 **Testing note.** This was tested against a fake cloud in a local copy, not a real account. **The Claude desktop app's built-in browser is logged in to Bailey's Village account**: opening a live game there loads and saves as her. Section 6 applies to it too.
 
@@ -428,3 +429,57 @@ Built on `feat/medquest-private-pack` (off `main`), **merged into `main` and pus
 - The real `cloudsave.js` `peek()` was run against a stub Supabase that records every call: only `getSession` and `game_save_get`, nothing stored on the device.
 - The Apothecary with a fake cloud: a rite finished only in the cloud showed as done; nothing was saved or pushed.
 - **Not tested:** the real Village database (the live functions are assumed to match the repo's SQL), and a real phone.
+
+---
+
+## 11. MedQuest's cloud save was overwritten by a leftover test copy (found and fixed 2026-11-17)
+
+### 11a. What happened
+
+- When Bailey loaded her MedQuest add-on, her cloud save turned out to be a near-empty game (hero "Bailey", one empty quest window, no logs or trophies), last saved Nov 16, 10:25 pm Central, from the Claude app's built-in browser. Her real game ("Dr. Bails", last changed **Nov 11, 4:27 pm**) was restored from a backup, and the add-on was merged into it. The near-empty version is kept in that browser as `medquest_bailey_v1_before_restore`.
+- **Cause:** on Nov 12 (about 9:03 pm Central), a QA session ("Full live run-through") tested live MedQuest **in the built-in browser while it was logged in as Bailey**. It logged a TEST entry, then "restored" a cleaned-out save to undo it. That left a near-empty MedQuest in that browser, stamped **Nov 12, 9:03 pm**, a day newer than her real game. (At that moment her cloud save was still empty, so nothing was lost then; Dr. Bails was only on her own device.)
+- Because that browser had linked to her account before, "newest save wins" applied: any later load of MedQuest there pushed the leftover copy over her real cloud save, with no tap needed. Reproduced on the old code against a stand-in database: it happens on load.
+- No Claude session opened live MedQuest on Nov 16 (checked against every session's history on this Mac). The 10:25 pm stamp means one quest window was opened there and saved; who did it is unknown and doesn't matter: the leftover copy explains the damage either way.
+
+### 11b. The MedQuest fix (branch `fix/medquest-cloud-hold`)
+
+- `isBlank(state)`: no finished or checked quests, no quest notes, no logs, no course marked or graded, no trophies. It is passed to `CloudSave.connect()` as `isEmpty`, so a blank game always takes the cloud save and is never pushed. The Nov 12 leftover counts as blank.
+- `save()` is held in memory until the cloud check has finished (`cloudChecked` / `heldSave` / `cloudCheckDone()`), released after 8 seconds or on `pagehide`. A cloud load drops a held save.
+- Same key, same save shape, `shared/cloudsave.js` unchanged.
+- Tested with the real `cloudsave.js` against a stand-in database in a local copy (no real login): the leftover-copy case and the tap-before-the-check case both lost the real game on the old code and kept it on the new one; normal play and a logged-out device still save.
+- **Still possible:** a stale copy *with real progress* that is newer by date can still win. The cloud copy is then kept on that device as `<key>_cloud_before_sync`.
+
+### 11c. Other games
+
+| Game | Exposure found |
+|---|---|
+| Magnolia Isle | The same Nov 12 QA left a cleaned-out TEST copy in the built-in browser (stamped Nov 12, 9:05 pm). It saved to **Bailey's** account's Magnolia Isle slot, not Nola's. Cleared on 2026-11-17 with Bailey's OK: only `magnolia_isle_v1`, `magnolia_isle_v1_before_sync`, `cloudsave-linked-nola` and `magnolia_cloud_hello`, read and removed from a page that runs no game code. There was no `_cloud_before_sync` copy. |
+| Dungeon, Open Field | Opened in that browser on Nov 12 but not changed; their copies there are blank and take the cloud save. |
+| Little Freak, Gremlin Town | Never opened live in that browser. |
+| Apothecary, Feast | Fixed in section 9. |
+| Village, The Pot | Not affected: single rows, no whole-game save to swap. |
+| Sunbeam Farm | Not affected: its own farm key, and never opened in that browser. |
+
+Cloud last-saved times can't be read without logging in as the player. Bailey can see them all in the Supabase SQL editor (read-only):
+
+```sql
+select coalesce(m.display_name, g.owner) as player, g.game,
+       to_timestamp(g.updated_ms/1000) at time zone 'America/Chicago' as game_last_changed,
+       g.saved_at at time zone 'America/Chicago' as reached_cloud
+from game_saves g left join members m on g.owner = 'member:' || m.id
+order by g.saved_at desc;
+```
+
+### 11d. Plan for the five other games (not built yet)
+
+Each gets the MedQuest/Apothecary pattern: an `isBlank()` passed as `isEmpty`, saves held until the cloud check finishes, no push of a blank game on connect, and a cloud load drops a held save. **No game's save shape, key or cloud name changes**, no SQL, no change to `shared/cloudsave.js`. "Blank" per game (settings like colours, sound or fonts never count as progress):
+
+| Game | File | Blank means |
+|---|---|---|
+| Magnolia Isle | `nola/index.html` | no finished/checked/noted quests, no logs, no stickers (`stk`), nothing in `read`, every course still at its starting status/grade/school |
+| Open Field | `luke/index.html` | no missions (`m`), AARs, logs, `rh`, `intel`, no `values`/`path` chosen, courses at their starting status/grade |
+| Dungeon | `dungeon/index.html` | no quests, logs, trophies, boxes or inventory, courses untouched. This one can save to **PB's Pot login**, so it has the most at stake. Its Loot Ledger reads Pot tables and is not touched. |
+| Little Freak | `little-freak/index.html` | no name, 0 XP and heat, no rooms, ideas, customer, trophies, scenes or king visits |
+| Gremlin Town | `kyla/app.js` | no quests, `got`, snack points, boxes, days, rest, log, colleges, job details, transactions, `pm`, hats, fics or focus minutes, and the jars and owned items still at their defaults |
+
+Before building, each game's load path is to be re-checked for any save during load (none known). Testing: a local copy with the stand-in database, same four cases as MedQuest (leftover copy, tap before the check, normal play, logged out), old code against new.
