@@ -188,7 +188,9 @@ async function account(opts = {}) {
   }
 }
 
-/* opts: { game, localKey, getState(), setState(obj), status(text), potClient(), pot }
+/* opts: { game, localKey, getState(), setState(obj), status(text), isEmpty(state), potClient(), pot }
+   isEmpty (optional) says whether a save has no real progress in it. A game should not call its
+   save() while loading, before connect() has finished: that stamps a fresh game as "newest".
    Returns a ref with set({ state, updatedAt }) once connected, or null (device-only). */
 async function connect(opts) {
   const say = t => { try { opts.status && opts.status(t); } catch (e) {} };
@@ -220,19 +222,23 @@ async function connect(opts) {
   const linkKey = 'cloudsave-linked-' + opts.game, linkVal = read(linkKey);
   // linked = this device already synced with this same account ('1' = linked before accounts were recorded)
   const linked = !!linkVal && (linkVal === '1' || linkVal === who);
+  // A game with nothing played in it must never replace a real cloud save, whatever its
+  // timestamp says (a blank game that saved itself while loading used to count as "newest").
+  let blank = !local.updatedAt;
+  if (!blank && opts.isEmpty) { try { blank = !!opts.isEmpty(local); } catch (e) { blank = false; } }
   if (remote.state && remote.state !== localText) {
     let takeRemote;
-    if (linked) takeRemote = (remote.updated_ms || 0) > (local.updatedAt || 0);   // newest wins
-    else if (!local.updatedAt) takeRemote = true;                                 // nothing played here yet
+    if (blank) takeRemote = true;                                                      // nothing played here yet
+    else if (linked) takeRemote = (remote.updated_ms || 0) > (local.updatedAt || 0);   // newest wins
     else takeRemote = (await chooseSave(where, local, localText, remote)) === 'remote';
     if (takeRemote) {
       write(opts.localKey + '_before_sync', localText);   // just in case
       try { opts.setState(JSON.parse(remote.state)); } catch (e) {}
-    } else if (!linked) {
-      // keeping this device's save: tuck the cloud copy away, and make this one the newest
-      // so the cloud accepts it instead of loading the other one over it
+    } else {
+      // keeping this device's save: always tuck the cloud copy away first, so it can be recovered
       write(opts.localKey + '_cloud_before_sync', remote.state);
-      local.updatedAt = Date.now();
+      // first link: make this one the newest so the cloud accepts it instead of loading the other one over it
+      if (!linked) local.updatedAt = Date.now();
     }
   }
   write(linkKey, who);
