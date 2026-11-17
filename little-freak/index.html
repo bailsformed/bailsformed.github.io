@@ -197,7 +197,18 @@ try { const r = localStorage.getItem(KEY); if (r) S = Object.assign(fresh(), JSO
 let cloud = { ref: null, w: false, p: false }, st = null;
 // ask the browser not to clear this site's storage when space runs low (harmless if refused)
 let persistAsked = false;
-function save() { S.updatedAt = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+// No real progress in this save? (A fresh shop with nothing earned, built or met yet.)
+// A blank game always takes the cloud save and is never pushed over it.
+function isBlank(g) { if (!g) return true;
+  return !String(g.name || "").trim() && !(+g.xp) && !(+g.heat) && !Object.keys(g.rooms || {}).length && !(g.ideas || []).length && !g.customer
+    && !Object.keys(g.ach || {}).length && !Object.keys(g.seenScenes || {}).length && !(+g.kingVisits) && !g.archiveDone; }
+// Until the cloud save has been checked, a save is only remembered, not written or pushed: stamping this
+// device's copy before then could make an out-of-date game look newest. It is applied right after the check
+// (or after 8 seconds, or when the page is being left, so a change is never held for long).
+let cloudChecked=false,heldSave=false;
+function cloudCheckDone(){if(cloudChecked)return;cloudChecked=true;if(heldSave){heldSave=false;save();}}
+setTimeout(cloudCheckDone,8000);addEventListener("pagehide",cloudCheckDone);
+function save() { if (!cloudChecked) { heldSave = true; return; } S.updatedAt = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
   if (!persistAsked) { persistAsked = true; try { navigator.storage && navigator.storage.persist && navigator.storage.persist().catch(() => {}); } catch (e) {} } clearTimeout(st); st = setTimeout(push, 1200); }
 async function push() {
   if (!cloud.ref) return; if (cloud.w) { cloud.p = true; return; } cloud.w = true;
@@ -207,9 +218,9 @@ async function push() {
 function setSave(t) { const e = $("#saveStat"); if (e) e.textContent = t; }
 async function initWebSave() {
   if (!window.CloudSave) return;
-  const ref = await CloudSave.connect({ game: "freak", localKey: KEY, getState: () => S, status: setSave,
-    setState: d => { S = Object.assign(fresh(), d); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} renderAll(); } });
-  if (ref) { cloud.ref = ref; push(); }
+  const ref = await CloudSave.connect({ game: "freak", localKey: KEY, getState: () => S, status: setSave, isEmpty: isBlank,
+    setState: d => { heldSave = false; S = Object.assign(fresh(), d); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} renderAll(); } });
+  if (ref) { cloud.ref = ref; if (!isBlank(S)) push(); }
 }
 
 /* ---------- names & templating ---------- */
@@ -981,7 +992,7 @@ $("#herFace").innerHTML = face("me");
 $$("#tabs button").forEach(b => b.onclick = () => go(b.dataset.v));
 { const h = new Date().getHours(); if (h >= 23 || h < 4) setTimeout(() => award("night"), 2000); }   // 11 p.m. to 4 a.m.
 renderHUD(); VIEWS.map();
-window.addEventListener("load", initWebSave);   // waits for the cloud-save scripts below
+window.addEventListener("load", () => initWebSave().catch(() => {}).then(cloudCheckDone));   // waits for the cloud-save scripts below; saves are held until then
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
 <script src="../shared/cloudsave.js"></script>

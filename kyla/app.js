@@ -31,7 +31,23 @@ try { const r = localStorage.getItem(KEY); if (r) S = Object.assign(fresh(), JSO
 let cloud = {ref:null, w:false, p:false}, stT = null;
 // ask the browser not to clear this site's storage when space runs low (harmless if refused)
 let persistAsked = false;
-function save() { S.updatedAt = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+// No real progress in this save? (A fresh town: only a name, profile, settings or pop-up counters.)
+// A blank game always takes the cloud save and is never pushed over it.
+function isBlank(g) { if (!g) return true;
+  const n = o => Object.keys(o || {}).length, a = x => (x || []).length, j = g.job || {};
+  const q = Object.values(g.q || {}).some(x => x && (x.d || (Array.isArray(x.s) && x.s.some(Boolean)) || String(x.n || "").trim()));
+  const jars = g.jars && JSON.stringify(g.jars) !== JSON.stringify(DEFAULT_JARS);
+  const owned = g.owned && JSON.stringify(g.owned) !== JSON.stringify({hop:1, flip:1, spin:1});
+  return !q && !n(g.got) && !(+g.snk) && !(+g.snkEarned) && !(+g.bx) && !n(g.days) && !n(g.rest) && !a(g.log) && !a(g.colleges)
+    && !String(j.where || "").trim() && !String(j.rate || "").trim() && !String(j.hours || "").trim()
+    && !a(g.tx) && !n(g.pm) && !n(g.hats) && !a(g.fics) && !(+g.focusMin) && !jars && !owned; }
+// Until the cloud save has been checked, a save is only remembered, not written or pushed: stamping this
+// device's copy before then could make an out-of-date game look newest. It is applied right after the check
+// (or after 8 seconds, or when the page is being left, so a change is never held for long).
+let cloudChecked=false,heldSave=false;
+function cloudCheckDone(){if(cloudChecked)return;cloudChecked=true;if(heldSave){heldSave=false;save();}}
+setTimeout(cloudCheckDone,8000);addEventListener("pagehide",cloudCheckDone);
+function save() { if (!cloudChecked) { heldSave = true; return; } S.updatedAt = Date.now(); try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
   if (!persistAsked) { persistAsked = true; try { navigator.storage && navigator.storage.persist && navigator.storage.persist().catch(() => {}); } catch (e) {} } clearTimeout(stT); stT = setTimeout(push, 1000); }
 async function push() { if (!cloud.ref) return; if (cloud.w) { cloud.p = true; return; } cloud.w = true;
   try { await cloud.ref.set({state:JSON.stringify(S), updatedAt:S.updatedAt}); } catch (e) {} cloud.w = false; if (cloud.p) { cloud.p = false; push(); } }
@@ -39,10 +55,10 @@ function setSaveStat(t) { const e = $("#saveStat"); if (e) e.textContent = t; }
 async function initCloud() {
   if (!window.CloudSave) { setSaveStat("Saved on this device"); return; }
   try {
-    const ref = await CloudSave.connect({game:"kyla", localKey:KEY, getState:() => S, status:setSaveStat,
-      setState:d => { S = Object.assign(fresh(), d); lastLv = levelInfo().lv; try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+    const ref = await CloudSave.connect({game:"kyla", localKey:KEY, getState:() => S, status:setSaveStat, isEmpty:isBlank,
+      setState:d => { heldSave = false; S = Object.assign(fresh(), d); lastLv = levelInfo().lv; try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
         if (S.seenIntro && ($("#i1") || $("#i2") || $("#i3"))) closeModal(); renderAll(); }});
-    if (ref) { cloud.ref = ref; push(); }
+    if (ref) { cloud.ref = ref; if (!isBlank(S)) push(); }
   } catch (e) { setSaveStat("Saved on this device"); }
 }
 
@@ -627,5 +643,5 @@ lastLv = levelInfo().lv; S.met.tab_home = 1;
 renderAll(); contextSay();
 if (S.tab && S.tab !== "home") go(S.tab);
 if (!S.seenIntro) setTimeout(() => intro(0), 500); else maybeHot(.3, 7000);
-window.addEventListener("load", initCloud);
+window.addEventListener("load", () => initCloud().catch(() => {}).then(cloudCheckDone));   // saves are held until the cloud check has finished
 let _h = new Date().getHours(); setInterval(() => { const h = new Date().getHours(); if (h !== _h) { _h = h; renderScene(); } }, 60000);
