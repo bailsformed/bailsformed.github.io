@@ -5,8 +5,8 @@
   "start_url": "/underworld/",
   "scope": "/underworld/",
   "display": "standalone",
-  "background_color": "#160f1c",
-  "theme_color": "#160f1c",
+  "background_color": "#0a0807",
+  "theme_color": "#0a0807",
   "icons": [
     {
       "src": "icon-192.png",
@@ -23,6 +23,23 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Log money",
+      "short_name": "Money",
+      "url": "/underworld/?do=spend"
+    },
+    {
+      "name": "Log hours",
+      "short_name": "Hours",
+      "url": "/underworld/?do=hours"
+    },
+    {
+      "name": "Hearth check-in",
+      "short_name": "Hearth",
+      "url": "/underworld/?do=hearth"
     }
   ]
 }
