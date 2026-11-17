@@ -895,14 +895,20 @@ function stash(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 let cloudDone;const cloudReady=new Promise(r=>{cloudDone=r;});setTimeout(()=>cloudDone(),8000);
 // A game with nothing in it: the same as a fresh one once the things that change on their own are set aside.
 function isBlank(st){try{const skip=["updatedAt","visits","lastVisit","seenIntro","sound","ach"],norm=o=>{const c=JSON.parse(JSON.stringify(o));skip.forEach(k=>delete c[k]);return JSON.stringify(c);};return norm(Object.assign(fresh(),st))===norm(fresh());}catch(e){return false;}}
-function save(){S.updatedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}clearTimeout(stT);stT=setTimeout(push,1000);}
+// Until the cloud save has been checked, a save is only remembered, not written or pushed: stamping this
+// device's copy before then could make an out-of-date game look newest. It is applied right after the check
+// (or after 8 seconds, or when the page is being left, so a change is never held for long).
+let cloudChecked=false,heldSave=false;
+function cloudCheckDone(){if(cloudChecked)return;cloudChecked=true;if(heldSave){heldSave=false;save();}}
+setTimeout(cloudCheckDone,8000);addEventListener("pagehide",cloudCheckDone);
+function save(){if(!cloudChecked){heldSave=true;return;}S.updatedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}clearTimeout(stT);stT=setTimeout(push,1000);}
 async function push(){if(!cloud.ref)return;if(cloud.w){cloud.p=true;return;}cloud.w=true;
  try{await cloud.ref.set({state:JSON.stringify(S),updatedAt:S.updatedAt});setSave("☁ Saved to "+(cloud.ref.where||"your account"));}catch(e){setSave("Saved in this browser (the cloud didn't answer, will retry)");}
  cloud.w=false;if(cloud.p){cloud.p=false;push();}}
 function setSave(t){const e=$("#savestat");if(e)e.textContent=t;}
 async function initCloud(){if(!window.CloudSave){setSave("Saved in this browser");return;}
  const ref=await CloudSave.connect({game:"feast",localKey:KEY,getState:()=>S,status:setSave,isEmpty:isBlank,
-  setState:d=>{if(!d||d.v!==2)return;S=merge(d);try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}if(introOpen&&S.seenIntro){introOpen=false;closeModal();}renderAll();}});
+  setState:d=>{if(!d||d.v!==2)return;heldSave=false;S=merge(d);try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}if(introOpen&&S.seenIntro){introOpen=false;closeModal();}renderAll();}});
  if(ref){cloud.ref=ref;$("#footSave").textContent="progress saves in this browser + "+ref.where;if(!isBlank(S))await push();}else $("#footSave").textContent="progress saves in this browser only";}
 function applyPrefs(){const h=document.documentElement;h.classList.toggle("easy",S.font==="easy");h.classList.toggle("size1",S.size===1);h.classList.toggle("size2",S.size===2);h.classList.toggle("rough",!!S.rough);}
 
@@ -1763,7 +1769,7 @@ if(!S.seenIntro)setTimeout(()=>{if(!S.seenIntro)intro(0);},400);
 else if(S.rough&&S.roughDay&&S.roughDay<today())setTimeout(roughCheckIn,500);
 // The daily guest saves the game, so it waits until the cloud save has been checked (or 8 seconds, if that never answers).
 else if(S.guestDay!==today())cloudReady.then(()=>setTimeout(()=>{if(S.guestDay!==today()&&!$("#scrim").classList.contains("on"))guestSits(guestOfTheDay());},900));
-window.addEventListener("load",()=>initCloud().catch(()=>{}).then(()=>cloudDone()));
+window.addEventListener("load",()=>initCloud().catch(()=>{}).then(()=>{cloudCheckDone();cloudDone();}));
 let _tod=tod();setInterval(()=>{if(tod()!==_tod){_tod=tod();renderScene();catSays(catContext());}},60000);
 </script>
 

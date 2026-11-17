@@ -1105,18 +1105,24 @@ let cloud={ref:null,w:false,p:false},stT=null;
 function stash(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
 // A game with nothing in it: the same as a fresh one once the things that change on their own are set aside.
 function isBlank(st){try{const skip=["updatedAt","fortuna","seenIntro","sound","hecateUntil","lastBackup","verified","outfit","pbCap"],norm=o=>{const c=JSON.parse(JSON.stringify(o));skip.forEach(k=>delete c[k]);(c.courses||[]).forEach(x=>delete x.id);return JSON.stringify(c);};return norm(Object.assign(fresh(),st))===norm(fresh());}catch(e){return false;}}
-function save(){S.updatedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}clearTimeout(stT);stT=setTimeout(push,1000);}
+// Until the cloud save has been checked, a save is only remembered, not written or pushed: stamping this
+// device's copy before then could make an out-of-date game look newest. It is applied right after the check
+// (or after 8 seconds, or when the page is being left, so a change is never held for long).
+let cloudChecked=false,heldSave=false;
+function cloudCheckDone(){if(cloudChecked)return;cloudChecked=true;if(heldSave){heldSave=false;save();}}
+setTimeout(cloudCheckDone,8000);addEventListener("pagehide",cloudCheckDone);
+function save(){if(!cloudChecked){heldSave=true;return;}S.updatedAt=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}clearTimeout(stT);stT=setTimeout(push,1000);}
 async function push(){if(!cloud.ref)return;if(cloud.w){cloud.p=true;return;}cloud.w=true;try{await cloud.ref.set({state:JSON.stringify(S),updatedAt:S.updatedAt});}catch(e){}cloud.w=false;if(cloud.p){cloud.p=false;push();}}
 const IN_CLAUDE=!!(window.claude&&typeof window.claude.use==="function");if(IN_CLAUDE)document.body.classList.add("inclaude");
 let dlCap=null;
 function setSaveStat(t){const e=document.getElementById("saveStat");if(e)e.textContent=t;}
 async function initWeb(){if(!window.CloudSave){setSaveStat("Saved on this device");stash();return;}
  const ref=await CloudSave.connect({game:"underworld",localKey:KEY,getState:()=>S,status:setSaveStat,isEmpty:isBlank,
-  setState:d=>{const keep=S.pack;S=Object.assign(fresh(),d);if(!S.pack&&keep)S.pack=keep;applyPack();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}renderAll();}});
+  setState:d=>{heldSave=false;const keep=S.pack;S=Object.assign(fresh(),d);if(!S.pack&&keep)S.pack=keep;applyPack();try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}renderAll();}});
  // connect() has finished (and may have loaded the cloud game): now today's Fortuna can be kept, without a timestamp
  if(rollFortuna())renderCottage();stash();
  if(ref){cloud.ref=ref;if(!isBlank(S))push();}}
-async function initClaude(){if(!IN_CLAUDE){initWeb();return;}try{window.claude.use("downloads").then(d=>{dlCap=d;if(d)document.body.classList.remove("inclaude");}).catch(()=>{});}catch(e){}
+async function initClaude(){if(!IN_CLAUDE){initWeb().catch(()=>{}).then(cloudCheckDone);return;}cloudCheckDone();try{window.claude.use("downloads").then(d=>{dlCap=d;if(d)document.body.classList.remove("inclaude");}).catch(()=>{});}catch(e){}
  try{const [db,user]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);if(!db||!user)return;const id=await user.id();if(!id)return;const ref=db.collection("data/users/"+id).doc("save");
   let s=await ref.get();let r=s&&typeof s.data==="function"?s.data():s;if(r&&r.data&&r.state===undefined)r=r.data;cloud.ref=ref;
   if(r&&r.state&&(r.updatedAt||0)>(S.updatedAt||0)){S=Object.assign(fresh(),JSON.parse(r.state));applyPack();localStorage.setItem(KEY,JSON.stringify(S));renderAll();}else push();}catch(e){}}
