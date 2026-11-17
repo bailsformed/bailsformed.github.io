@@ -20,7 +20,7 @@ Written 2026-11-13 from the repo (main at `541f506`), the git history, the SQL s
 | URL path | What it is | Who it's for | Status | On homepage? |
 |---|---|---|---|---|
 | `/` | Homepage: pixel-art cards linking to everything below | Everyone | Live | n/a |
-| `/medquest/` | **MedQuest: Bailey's Road to the White Coat**, a study/pre-med progress RPG | Bailey (site owner) | Live | ✅ "My projects" |
+| `/medquest/` | **MedQuest: The Road to the White Coat** (generic in public; Bailey's wording comes from her private pack, see section 10), a study/pre-med progress RPG | Bailey (site owner) | Live | ✅ "My projects" |
 | (card only) | "Next project", a "Coming soon" placeholder card with no link | n/a | Placeholder | ✅ |
 | `/village/` | **The Family Village**, a private family social app (section 2) | The whole family | Live | ✅ "The family village" |
 | `/dungeon/` | **Med School Dungeon**, a dungeon-crawler study game with a 💰 Loot Ledger tab tied to The Pot | PB (Bailey's partner) | Live | ✅ "Made for someone special" |
@@ -346,7 +346,7 @@ The tag `pre-underworld-revamp` marks `main` just before the merge, as a rollbac
 - **New extra key on the device only:** `underworld_apothecary_v1_before_change` holds a copy of the game from just before the last Restore or Reset. Settings offers to bring it back.
 - **Restore and Reset now ask first.** Reset keeps the private pack.
 - **A must-pay bill with a $0 budget is not counted as unpaid** (`dueMusts()`).
-- **MedQuest is read, never written.** The Path reads `medquest_bailey_v1` from the same browser's storage; a rite finished there counts as finished here. It does not read MedQuest's cloud save, so progress made on another device won't show. Bailey has accepted this for now.
+- **MedQuest is read, never written.** The Path reads `medquest_bailey_v1` from the same browser's storage, and (since section 10) MedQuest's cloud save too, through the read-only `CloudSave.peek()`. A rite finished in either counts as finished here.
 
 ### 8d. Personal details and the private pack
 
@@ -357,7 +357,7 @@ The public file no longer contains the advisor's name, email or links, school an
 - Until she loads the add-on on her live save, she sees the generic wording. Nothing is lost either way.
 - Verified with her real backup: with the add-on loaded, every quest, chapter, key date, lexicon entry, battle-plan line and Hades line matched the pre-change game exactly.
 - Git history still contains the old text. Bailey chose to leave it.
-- **MedQuest (`/medquest/`) still has the same details in public.** A separate plan for that is pending Bailey's go-ahead.
+- **MedQuest (`/medquest/`)** got the same treatment on 2026-11-17. See section 10.
 
 ### 8e. Not connected, on purpose
 
@@ -397,3 +397,34 @@ The public file no longer contains the advisor's name, email or links, school an
 - The other six games (MedQuest, Dungeon, Magnolia Isle, Open Field, Little Freak, Gremlin Town) do not save on load, but they do **not** hold saves until the cloud check finishes. A change made in the first second on a device with an out-of-date game can still make that device win there. The cloud copy is kept on the device when that happens.
 
 **Testing note.** This was tested against a fake cloud in a local copy, not a real account. **The Claude desktop app's built-in browser is logged in to Bailey's Village account**: opening a live game there loads and saves as her. Section 6 applies to it too.
+
+---
+
+## 10. MedQuest privacy and the Apothecary's cloud read (2026-11-17)
+
+Branch `feat/medquest-private-pack` (off `main`). Tag `pre-medquest-privacy` marks `main` just before the merge, as a rollback point.
+
+### 10a. What changed
+
+- **Generic public text.** `medquest/index.html` no longer names Bailey, her school or earlier college, the advisor (name, email, links), her town, her past jobs or her move-in date. The quests, chapters and Codex reuse the Apothecary's generic wording wherever the quests match (same 52 quest IDs). The rest was made generic here: page title, default hero name ("Adventurer"), footer, intro pages 2 and 5, Spellbook text, school placeholders, the dates note, the leadership goal note, and four quest lines. Chapters show Prologue, Semester 1 and so on. Quest "when" dates and the route (apply May 2028) stay public, as in the Apothecary.
+- **Private pack.** The same overlay as the Apothecary: `applyPack()` lays `S.pack` over `quests`, `chapters`, `codex`, `keyDates` and `strings` (read with `pk(key, fallback)`). A pack can't change a quest's `id`, `ch` or `xp`, so it can't change progress or levels. Settings → 🔒 Private pack loads a file or pasted text. `kind: "medquest-private-pack"` replaces the pack; `kind: "medquest-pack-addon"` is merged into it. Restore, Reset and cloud loads keep the pack if the incoming save has none.
+- **Bailey's add-on** is at `~/Downloads/medquest-private-pack-addon.json`, never in the repo (`.gitignore` blocks `*private-pack*.json`). Until she loads it once, she sees the generic wording; nothing is lost either way.
+- **Guide** (`medquest/guide.html`): generic, since it can't read a pack. It stays public (Bailey's choice). MedQuest stays on the homepage.
+
+### 10b. Saves
+
+- Same key `medquest_bailey_v1`, same cloud game name `medquest`, same shape. One new optional field, `pack`. No migration, no SQL. Nothing saves on load.
+
+### 10c. The Apothecary reads MedQuest's cloud save
+
+- `shared/cloudsave.js` has a new **`CloudSave.peek(game)`**: a read-only look at another game's cloud save for the logged-in Village member. It calls only `getSession` and `game_save_get` (a `STABLE` select in `village/setup/07_game_saves_and_safety.sql`, which can't create or change a row) and writes nothing to the device. `connect()` and saving are unchanged.
+- The Apothecary keeps that MedQuest progress in memory (`MQC`), read after its own cloud check and whenever the tab comes back. A rite counts as done if this browser's MedQuest **or** the cloud copy says so (Bailey wants finished rites to stay finished). No `save()` is called.
+
+### 10d. Tested and not tested
+
+- Local copy with a fake cloud only; no one logged in as Bailey.
+- With no pack, every tab, all 52 quest windows and all 5 intro screens matched the old `main` before the wording changed.
+- With her real backup (`medquest-backup-2026-11-17.json`) and the add-on, the new page matched today's game word for word (same level and XP). Loading changed nothing in the save; loading the add-on added only `pack`.
+- The real `cloudsave.js` `peek()` was run against a stub Supabase that records every call: only `getSession` and `game_save_get`, nothing stored on the device.
+- The Apothecary with a fake cloud: a rite finished only in the cloud showed as done; nothing was saved or pushed.
+- **Not tested:** the real Village database (the live functions are assumed to match the repo's SQL), and a real phone.
